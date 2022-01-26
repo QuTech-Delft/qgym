@@ -22,6 +22,8 @@ class mappingEnv(Env):
         
         # Other initializations?
         
+    def __reward_function(self, action):
+        pass
     
     """ What happens when we take a step, how do we treat actions """
     def step(self, action):
