@@ -1,52 +1,73 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 19 09:48:27 2022
-
-@author: lindesgvd
-"""
-from gym import Env
-
-
-
-class mappingEnv(Env):
-    """ Initialize actions, observations, space"""
-    def __init__(self):
-        # What actions can we take?
+class Env:
+# =============================================================================
+#     Initialize the action space, state space and initial state
+#     Arguments:
+#         initialisation_input     this could for example be cQASM file 
+#     Returns:
+#         Void
+# =============================================================================
+    def __init__(self, initialisation_input):
         self.action_space = None
-        
-        # What are the possible observations?
-        self.observation_space = None
-        
-        # Is the initial state random or given?
+        self.state_space = None
         self.state = None
-        
         # Other initializations?
-        
-    def __reward_function(self, action):
-        pass
+        self.step_nmbr = 0
     
-    """ What happens when we take a step, how do we treat actions """
+# =============================================================================
+#     Produce a new state and give a reward, done-indicator and (optionally) 
+#     debugging info based on the given action
+#     Arguments:
+#         action       valid action from the action space
+#     Returns:
+#         self.state   new current state
+#         reward       reward based on the new state
+#         done         Boolean value indicating if the episode is finished
+#         info         dictionary  with debugging info
+# =============================================================================
     def step(self, action):
+        #Increase the step number
+        self.step_nmbr += 1
         
-        # What is the reward?
-        reward = None
-        
-        # When are we done?
-        done = False
-        
-        # What kind of info do we want to give
-        info = {}
+        #Update the current state
+        self.state = None
+
+        #Calculate the reward, done indicator and debugging info
+        reward = self.__reward_function()
+        done   = self.__done_function()
+        info   = {"step_nmbr" : self.step_nmbr}
         
         return self.state, reward, done, info
     
-    """ Used for visualisation"""
-    def render(self):
-        pass
-    """ Reset after training run or epsidode """
-    def reset(self):
-        # Reset to the initial state
-        self.state = None
-        
+# =============================================================================
+#     Reset the environment  to the initial state. To be used after an episode 
+#     is finished. Optionally, one can implement increasingly more difficult 
+#     environments for curriculum learning, or give new problem altogether.
+#     Arguments:
+#         optional_arguments    turn on curriculum learning or give new problem
+#     Returns:
+#         self.state            initial state after the reset        
+# =============================================================================
+    def reset(self, optional_arguments):
+        # Reset to the initial state and step number
+        self.state     = None
+        self.step_nmbr = 0
+          
         # Do some other stuff
         
         return self.state
+    
+# =============================================================================
+#     Give a reward based on the current state
+# =============================================================================
+    def __reward_function(self):
+        reward = None #make some sort of reward based on self.state
+        return reward
+    
+# =============================================================================
+#     Give a done-indicator based on the current state
+# =============================================================================    
+    def __done_function(self):
+        done = True #determine if 'done' based on self.state
+        return done
+        
+
