@@ -55,6 +55,13 @@ class Env:
         # Do some other stuff
         
         return self.state
+        
+# =============================================================================
+#     Take a random step.
+# =============================================================================
+    def random_step(self):
+        action = None #Take some raondom action
+        return self.step(action)
     
 # =============================================================================
 #     Give a reward based on the current state
