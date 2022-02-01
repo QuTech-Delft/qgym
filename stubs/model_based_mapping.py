@@ -1,4 +1,6 @@
-import cmodule
+from typing import Callable
+
+import cmodule  # this should be the OpenQL lib
 
 
 class ModelBasedMapping(cmodule.CPPModelBasedMapping):
@@ -9,7 +11,17 @@ class ModelBasedMapping(cmodule.CPPModelBasedMapping):
     polymorphism.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(self)
+
+    def set_model(self, model: Callable[]) -> None:
+        """
+        Set RL-based model that on input of a state returns an action.
+        :return:
+        """
+        done = False
+        while not done:
+            action = model(state)
+            done = state.do_action(action)
 
 
