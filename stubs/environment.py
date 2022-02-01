@@ -1,4 +1,8 @@
 class Environment:
+    """
+    RL Environment containing the current state of the problem.
+    """
+
     def __init__(self, initialisation_input) -> None:
         """
         Initialize the action space, state space and initial state
@@ -11,7 +15,7 @@ class Environment:
         self._state = None
 
         # other attributes
-        self.step_nmbr = 0
+        self.step_number = 0
         # todo: more?
 
     @property
@@ -46,7 +50,7 @@ class Environment:
             stating whether the new state is a final state (i.e. if we are done); 4) Additional (debugging) information.
         """
         # Increase the step number
-        self.step_nmbr += 1
+        self.step_number += 1
 
         # Update the current state
         self._update_state(action)
@@ -54,7 +58,7 @@ class Environment:
         # Compute the reward, done indicator and define debugging info
         reward = self._compute_reward()
         done = self._is_done()
-        info = {"step_nmbr": self.step_nmbr}
+        info = {"step_nmbr": self.step_number}
 
         return self.state, reward, done, info
 
@@ -78,7 +82,7 @@ class Environment:
         """
         # Reset to the initial state and step number
         self.state = None
-        self.step_nmbr = 0
+        self.step_number = 0
 
         # Do some other stuff
 
