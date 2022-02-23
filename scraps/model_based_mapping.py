@@ -14,7 +14,7 @@ class ModelBasedMapping(cmodule.CPPModelBasedMapping):
     def __init__(self) -> None:
         super().__init__(self)
 
-    def set_model(self, model: Callable[]) -> None:
+    def set_model(self, model: Callable) -> None:
         """
         Set RL-based model that on input of a state returns an action.
         :return:
@@ -23,5 +23,3 @@ class ModelBasedMapping(cmodule.CPPModelBasedMapping):
         while not done:
             action = model(state)
             done = state.do_action(action)
-
-
