@@ -1,4 +1,4 @@
-from typing import Any, Iterable, List, Optional
+from typing import Any, Iterable, Optional
 
 import numpy as np
 from numpy.random import Generator
