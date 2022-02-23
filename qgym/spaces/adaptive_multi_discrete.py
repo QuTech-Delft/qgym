@@ -1,3 +1,11 @@
+"""
+A multi-discrete space that can be updated after an action has been done, such that the same actions can not be
+executed more than once.
+
+Implemented as multiple sets, where one sample from the space consists of one item from each set. Once an item has been
+used in a sample it should be removed from that set.
+"""
+
 from typing import Any, Generator, Iterable, List, Optional
 
 import numpy as np
@@ -29,9 +37,9 @@ class AdaptiveMultiDiscrete(Space[NDArray[np.int_]]):
 
     def sample(self) -> NDArray[np.int_]:
         sample = []
-        for set in self._sets:
-            sample.append(self.rng.choice(set))
-        return sample
+        for set_ in self._sets:
+            sample.append(self.rng.choice(set_))
+        return np.array(sample)
 
     def __contains__(self, value: Any) -> bool:
         if isinstance(value, Iterable):

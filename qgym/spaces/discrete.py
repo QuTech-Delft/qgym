@@ -1,3 +1,6 @@
+"""
+A discrete space, i.e. a discrete interval.
+"""
 from typing import Any, Optional, SupportsInt
 
 from numpy.random import Generator

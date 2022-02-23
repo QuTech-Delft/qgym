@@ -1,3 +1,7 @@
+"""
+A multi-discrete space, i.e. multiple discrete intervals. A sample takes one item from each interval.
+"""
+
 from typing import Any, Iterable, List, Optional
 
 import numpy as np

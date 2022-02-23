@@ -1,3 +1,7 @@
+"""
+A space that represents a partial injective map from x elements to n bins, with n >= x.
+"""
+
 from typing import Any, Iterable, Optional
 
 import numpy as np

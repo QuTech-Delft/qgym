@@ -1,3 +1,7 @@
+"""
+General spaces to be used as action or observation space in RL Environments.
+"""
+
 from qgym.spaces.adaptive_multi_discrete import (
     AdaptiveMultiDiscrete as AdaptiveMultiDiscrete,
 )
