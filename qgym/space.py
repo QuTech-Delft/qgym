@@ -10,6 +10,7 @@ class Space(Generic[ValueT]):
     """
     Action or observation space of a RL environment.
     """
+
     def __init__(self, rng: Optional[Generator] = None):
         self._rng = rng
 

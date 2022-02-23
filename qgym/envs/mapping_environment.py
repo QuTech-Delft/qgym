@@ -16,6 +16,7 @@ class BasicRewarder(Rewarder):
     """
     Basic rewarder for the InitialMapping environment.
     """
+
     def __init__(self):
         """
         Initializes a new BasicRewarder.
@@ -152,7 +153,7 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
         """
         Render the current state.
         """
-        raise NotImplementedError  # todo: implement this
+        raise NotImplementedError  # todo: implement this (probably based on plotting code below)
 
     def _update_state(self, action: NDArray[np.int_]) -> None:
         """

@@ -6,6 +6,7 @@ class Rewarder:
     """
     RL Rewarder, for computing rewards on a state.
     """
+
     _reward_range: Tuple[float, float]
 
     @abstractmethod
