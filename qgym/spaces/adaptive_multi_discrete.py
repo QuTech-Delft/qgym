@@ -16,26 +16,55 @@ from qgym import Space
 
 class AdaptiveMultiDiscrete(Space[NDArray[np.int_]]):
     def __init__(
-        self, sizes: List[int], starts: List[int], rng: Optional[Generator] = None
+        self,
+        sizes: List[int],
+        starts: Optional[List[int]] = None,
+        rng: Optional[Generator] = None,
     ):
+        """
+        Initialize an adaptive multi-discrete space, i.e. multiple discrete intervals of given sizes and with given
+        lowest values. This state can be updated with samples, such that the state space removes all states that have
+        (partial) overlap with the given sample.
+
+        :param sizes: Sizes of all intervals in order.
+        :param starts: Start values of all intervals in order. If `None` each interval will start at 0.
+        :param rng: Random number generator to be used in this space. If `None` a new one will be constructed.
+        """
         super().__init__(rng)
+        if starts is None:
+            starts = np.zeros_like(sizes)
+        if len(starts) != len(sizes):
+            raise ValueError("Both `sizes` and `starts` should have the same length.")
         self._initial_sizes = sizes
         self._initial_starts = starts
         self._sets = [
             [start + _ for _ in range(size)] for start, size in zip(starts, sizes)
         ]
 
-    def update(self, sample: NDArray[np.int_]):
+    def update(self, sample: NDArray[np.int_]) -> None:
+        """
+        Update this space with the given sample. I.e. remove all states that have (partial) overlap with this sample.
+
+        :param sample: Sample to update this space with.
+        """
         for index, value in enumerate(sample):
             self._sets[index].remove(value)
 
-    def reset(self):
+    def reset(self) -> None:
+        """
+        Resset this space to its initial state. I.e. all states are allowed again.
+        """
         self._sets = [
             [start + _ for _ in range(size)]
             for start, size in zip(self._initial_starts, self._initial_sizes)
         ]
 
     def sample(self) -> NDArray[np.int_]:
+        """
+        Sample a random value from this space.
+
+        :return: Random value from this space.
+        """
         sample = []
         for set_ in self._sets:
             sample.append(self.rng.choice(set_))

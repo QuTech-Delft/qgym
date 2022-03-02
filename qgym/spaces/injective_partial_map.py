@@ -15,11 +15,23 @@ class InjectivePartialMap(Space[NDArray[np.int_]]):
     def __init__(
         self, domain_size: int, codomain_size: int, rng: Optional[Generator] = None
     ):
+        """
+        Initialize a space that models actions for a partial injective map from x elements to n bins, with n>=x.
+
+        :param domain_size: Number of elements to map (x).
+        :param codomain_size: Number of bins to map elements to (n).
+        :param rng: Random number generator to be used in this space. If `None` a new one will be constructed.
+        """
         super().__init__(rng)
         self._domain_size = domain_size
         self._codomain_size = codomain_size
 
     def sample(self) -> NDArray[np.int_]:
+        """
+        Sample a random value from this space.
+
+        :return: Random value from this space.
+        """
         num_mapped = self.rng.integers(0, self._domain_size, endpoint=True)
         num_unmapped = self._codomain_size - num_mapped
         mapped = self.rng.choice(
