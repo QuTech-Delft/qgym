@@ -3,7 +3,13 @@ from typing import Any, Dict, Optional, Tuple, Union
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-from networkx import Graph, adjacency_matrix, fast_gnp_random_graph, grid_graph
+from networkx import (
+    Graph,
+    adjacency_matrix,
+    fast_gnp_random_graph,
+    grid_graph,
+    from_numpy_matrix,
+)
 from numpy.typing import NDArray
 from scipy.sparse import csr_matrix
 
@@ -41,12 +47,12 @@ class BasicRewarder(Rewarder):
             for j in range(connection_graph_matrix.shape[0]):
                 if (
                     connection_graph_matrix[i, j] == 0
-                    and interaction_graph_matrix[state[i], state[j]] == 1
+                    and interaction_graph_matrix[state[i], state[j]] != 0
                 ):
                     reward -= 1
                 if (
-                    connection_graph_matrix[i, j] == 1
-                    and interaction_graph_matrix[state[i], state[j]] == 1
+                    connection_graph_matrix[i, j] != 0
+                    and interaction_graph_matrix[state[i], state[j]] != 0
                 ):
                     reward += 1
         return reward
@@ -106,6 +112,71 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
         self._steps_done = 0
         self._max_steps = self._interaction_graph.number_of_nodes()
 
+    @classmethod
+    def from_networkx_graph(cls, connection_graph: Graph, interaction_graph: Graph):
+        """
+        Initialize the action space, observation space, and initial states
+        according to given networkx graphs
+
+        :param connection_graph: networkx graph representation of the QPU topology
+        :param interaction_graph: networkx graph representation of the interactions in a quantum circuit
+        """
+
+        if not (
+            isinstance(connection_graph, Graph) and isinstance(interaction_graph, Graph)
+        ):
+            raise TypeError(
+                "connection_graph and interaction_graph must be of type Graph"
+            )
+
+        n_connection = connection_graph.number_of_nodes()
+        n_interaction = interaction_graph.number_of_nodes()
+        mapping_env = cls(
+            connection_grid_size=(n_connection, 1),
+            interaction_graph_qubits=n_interaction,
+        )
+
+        mapping_env._connection_graph = connection_graph
+        mapping_env._connection_graph_matrix = adjacency_matrix(connection_graph)
+
+        mapping_env._interaction_graph = interaction_graph
+        mapping_env._interaction_graph_matrix = adjacency_matrix(interaction_graph)
+        return mapping_env
+
+    @classmethod
+    def from_adjacency_matrix(
+        cls, connection_graph_matrix: csr_matrix, interaction_graph_matrix: csr_matrix
+    ):
+        """
+        Initialize the action space, observation space, and initial states
+        according to given adjacency matrix representations of the graphs.
+
+        :param connection_graph_matrix: adjacency matrix representation of the QPU topology
+        :param interaction_graph_matrix: adjacency matrix representation of the interactions in a quantum circuit
+        """
+        try:
+            connection_graph_matrix[0, 0]
+            interaction_graph_matrix[0, 0]
+        except:
+            raise TypeError(
+                "connection_graph_matrix and interaction_graph_matrix must be matrix like"
+            )
+
+        n_connection = connection_graph_matrix.shape[0]
+        n_interaction = interaction_graph_matrix.shape[0]
+
+        mapping_env = cls(
+            connection_grid_size=(n_connection, 1),
+            interaction_graph_qubits=n_interaction,
+        )
+
+        mapping_env._connection_graph_matrix = connection_graph_matrix
+        mapping_env._connection_graph = from_numpy_matrix(connection_graph_matrix)
+
+        mapping_env._interaction_graph_matrix = interaction_graph_matrix
+        mapping_env._interaction_graph = from_numpy_matrix(interaction_graph_matrix)
+        return mapping_env
+
     def step(
         self, action: NDArray[np.int_], *, return_info: bool = False
     ) -> Union[
@@ -154,6 +225,21 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
         Render the current state.
         """
         raise NotImplementedError  # todo: implement this (probably based on plotting code below)
+
+    def add_random_edge_weights(self) -> None:
+        """
+        Add random weights to the connection graph and interaction graph
+        :param seed: Seed for the random number generator, should only be provided (optionally) on the first reset call,
+            i.e. before any learning is done.
+        """
+
+        for (u, v) in self._connection_graph.edges():
+            self._connection_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
+        self._connection_graph_matrix = adjacency_matrix(self._connection_graph)
+
+        for (u, v) in self._interaction_graph.edges():
+            self._interaction_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
+        self._interaction_graph_matrix = adjacency_matrix(self._interaction_graph)
 
     def _update_state(self, action: NDArray[np.int_]) -> None:
         """
