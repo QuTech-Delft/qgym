@@ -7,8 +7,8 @@ from networkx import (
     Graph,
     adjacency_matrix,
     fast_gnp_random_graph,
-    grid_graph,
     from_numpy_matrix,
+    grid_graph,
 )
 from numpy.typing import NDArray
 from scipy.sparse import csr_matrix
