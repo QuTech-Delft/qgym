@@ -1,21 +1,20 @@
-from typing import Any, Dict, Optional, Tuple, Union
+from __future__ import annotations
+
+from copy import deepcopy
+from typing import Any, Dict, Optional, Set, Tuple, Union
 
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-from networkx import (
-    Graph,
-    adjacency_matrix,
-    fast_gnp_random_graph,
-    from_numpy_matrix,
-    grid_graph,
-)
+from networkx import Graph, adjacency_matrix, fast_gnp_random_graph, grid_graph
 from numpy.typing import NDArray
-from scipy.sparse import csr_matrix
 
 from qgym import Rewarder
 from qgym.environment import Environment
-from qgym.spaces import AdaptiveMultiDiscrete, InjectivePartialMap
+from qgym.spaces import MultiDiscrete
+from qgym.spaces.matrix_discrete import MatrixDiscrete
+from qgym.spaces.tuple import TupleSpace
+from qgym.utils import check_adjacency_matrix
 
 
 class BasicRewarder(Rewarder):
@@ -31,75 +30,137 @@ class BasicRewarder(Rewarder):
 
     def compute_reward(
         self,
-        state: NDArray[np.int_],
-        connection_graph_matrix: csr_matrix,
-        interaction_graph_matrix: csr_matrix,
+        *,
+        old_state: Dict[Any, Any],
+        action: NDArray[np.int_],
+        new_state: Dict[Any, Any],
     ):
         """
         Compute a reward, based on the current state, and the connection and interaction graphs.
 
-        :param state: Current state of the InitialMapping
-        :param connection_graph_matrix: Adjacency matrix of the connection graph of the InitialMapping Environment.
-        :param interaction_graph_matrix: Adjacency matrix of the interaction graph of the InitialMapping Environment.
+        :param old_state: State of the InitialMapping before the current action.
+        :param action: Action that has just been taken
+        :param new_state: Updated state of the InitialMapping
         """
         reward = 0.0  # compute a reward based on self.state
-        for i in range(connection_graph_matrix.shape[0]):
-            for j in range(connection_graph_matrix.shape[0]):
-                if (
-                    connection_graph_matrix[i, j] == 0
-                    and interaction_graph_matrix[state[i], state[j]] != 0
-                ):
-                    reward -= 1
-                if (
-                    connection_graph_matrix[i, j] != 0
-                    and interaction_graph_matrix[state[i], state[j]] != 0
-                ):
-                    reward += 1
+        if (
+            action[0] not in old_state["physical_qubits_mapped"]
+            and action[1] not in old_state["logical_qubits_mapped"]
+        ):
+            for i in range(new_state["connection_graph_matrix"].shape[0]):
+                for j in range(new_state["connection_graph_matrix"].shape[0]):
+                    if (
+                        new_state["connection_graph_matrix"][i, j] == 0
+                        and new_state["interaction_graph_matrix"][
+                            new_state["mapping"][i], new_state["mapping"][j]
+                        ]
+                        != 0
+                    ):
+                        reward -= 1
+                    if (
+                        new_state["connection_graph_matrix[i, j]"] != 0
+                        and new_state["interaction_graph_matrix"][
+                            new_state["mapping"][i], new_state["mapping"][j]
+                        ]
+                        != 0
+                    ):
+                        reward += 1
+        else:
+            reward = -1
         return reward
 
 
-class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
+class InitialMapping(
+    Environment[Tuple[NDArray[np.int_], NDArray[np.int_]], NDArray[np.int_]]
+):
     """
     RL environment for the initial mapping problem.
     """
 
     def __init__(
         self,
-        connection_grid_size: Tuple[int, int] = (3, 3),
-        interaction_graph_qubits: int = 6,
-        interaction_graph_edge_probability: float = 0.5,
+        connection_graph: Optional[Graph] = None,
+        interaction_graph: Optional[Graph] = None,
+        connection_graph_matrix: Optional[NDArray[Any]] = None,
+        interaction_graph_matrix: Optional[NDArray[Any]] = None,
+        connection_grid_size: Optional[Tuple[int, int]] = None,
+        interaction_graph_edge_probability: Optional[float] = None,
     ) -> None:
         """
         Initialize the action space, observation space, and initial states. This also defines the connection and
         random interaction graph based on the arguments.
 
+        :param connection_graph: networkx graph representation of the QPU topology
+        :param interaction_graph: networkx graph representation of the interactions in a quantum circuit
+        :param connection_graph_matrix: adjacency matrix representation of the QPU topology
+        :param interaction_graph_matrix: adjacency matrix representation of the interactions in a quantum circuit
         :param connection_grid_size: Size of the connection graph. We only support grid-shaped connection graphs at the
             moment.
-        :param interaction_graph_qubits: Number of qubits of the random interaction graph.
         :param interaction_graph_edge_probability: Probability that an edge between any pair of qubits in the random
-            interaction graph exists.
+            interaction graph exists. the interaction graph will have the same number of nodes as the connection graph.
+            Nodes without any interactions can be seen as 'null' nodes.
         """
+        if connection_graph is not None and interaction_graph is not None:
+            (
+                self._connection_graph,
+                self._interaction_graph,
+            ) = self._parse_network_graphs(connection_graph, interaction_graph)
+        elif (
+            connection_graph_matrix is not None and interaction_graph_matrix is not None
+        ):
+            (
+                self._connection_graph,
+                self._interaction_graph,
+            ) = self._parse_adjacency_matrices(
+                connection_graph_matrix, interaction_graph_matrix
+            )
+        elif (
+            connection_grid_size is not None
+            and interaction_graph_edge_probability is not None
+        ):
+            # Generate connection grid graph
+            self._connection_graph: Graph = grid_graph(connection_grid_size)
 
-        # Interaction graph
-        self._connection_graph: Graph = grid_graph(connection_grid_size)
-        self._connection_graph_matrix = adjacency_matrix(self._connection_graph)
+            # Create a random connection graph with `num_nodes` and with edges existing with probability
+            # `interaction_graph_edge_probability` (nodes without connections can be seen as 'null' nodes)
+            self._interaction_graph = fast_gnp_random_graph(
+                self._connection_graph.number_of_nodes(),
+                interaction_graph_edge_probability,
+            )
+        else:
+            raise ValueError(
+                "No valid arguments for instantiation of this environment were provided."
+            )
 
-        # Create a random connection graph with `interaction_graph_qubits` nodes and with edges existing with
-        # probability `interaction_graph_edge_probability`
-        self._interaction_graph = fast_gnp_random_graph(
-            interaction_graph_qubits, interaction_graph_edge_probability
-        )
-        self._interaction_graph_matrix = adjacency_matrix(self._interaction_graph)
+        # Define internal attributes
+        self._state = {
+            "connection_graph_matrix": adjacency_matrix(self._connection_graph),
+            "num_nodes": self._connection_graph.number_of_nodes(),
+            "interaction_graph_matrix": adjacency_matrix(self._interaction_graph),
+            "steps_done": 0,
+            "mapping": np.full(self._connection_graph.number_of_nodes(), -1),
+            "physical_qubits_mapped": set(),
+            "logical_qubits_mapped": set(),
+        }
 
         # Define attributes defined in parent class
-        self._observation_space = InjectivePartialMap(
-            domain_size=self._interaction_graph.number_of_nodes(),
-            codomain_size=self._connection_graph.number_of_nodes(),
-        )
-        self._action_space: AdaptiveMultiDiscrete = AdaptiveMultiDiscrete(
+        mapping_space = MultiDiscrete(
             sizes=[
-                self._connection_graph.number_of_nodes(),
-                self._interaction_graph.number_of_nodes(),
+                self._state["num_nodes"] + 1 for _ in range(self._state["num_nodes"])
+            ],
+            starts=[-1 for _ in range(self._state["num_nodes"])],
+            rng=self.rng,
+        )
+        interaction_matrix_space = MatrixDiscrete(
+            low=0, high=None, shape=(self._state["num_nodes"], self._state["num_nodes"])
+        )
+        self._observation_space = TupleSpace(
+            (mapping_space, interaction_matrix_space), rng=self.rng
+        )
+        self._action_space = MultiDiscrete(
+            sizes=[
+                self._state["num_nodes"],
+                self._state["num_nodes"],
             ],
             starts=[0, 0],
             rng=self.rng,
@@ -107,16 +168,12 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
         self._rewarder = BasicRewarder()
         # todo: metadata (probably for rendering options)
 
-        # Define internal attributes
-        self._state = np.full(self._connection_graph.number_of_nodes(), -1)
-        self._steps_done = 0
-        self._max_steps = self._interaction_graph.number_of_nodes()
-
-    @classmethod
-    def from_networkx_graph(cls, connection_graph: Graph, interaction_graph: Graph):
+    @staticmethod
+    def _parse_network_graphs(
+        connection_graph: Graph, interaction_graph: Graph
+    ) -> Tuple[Graph, Graph]:
         """
-        Initialize the action space, observation space, and initial states
-        according to given networkx graphs
+        Parse a given interaction and connection graph to the correct format.
 
         :param connection_graph: networkx graph representation of the QPU topology
         :param interaction_graph: networkx graph representation of the interactions in a quantum circuit
@@ -126,56 +183,56 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
             isinstance(connection_graph, Graph) and isinstance(interaction_graph, Graph)
         ):
             raise TypeError(
-                "connection_graph and interaction_graph must be of type Graph"
+                "The connection graph and interaction graph must both be of type Graph."
             )
 
+        # deepcopy the graphs for safety
+        connection_graph = deepcopy(connection_graph)
+        interaction_graph = deepcopy(interaction_graph)
+
         n_connection = connection_graph.number_of_nodes()
-        n_interaction = interaction_graph.number_of_nodes()
-        mapping_env = cls(
-            connection_grid_size=(n_connection, 1),
-            interaction_graph_qubits=n_interaction,
-        )
+        if interaction_graph.number_of_nodes() > n_connection:
+            raise ValueError(
+                f"The number of nodes in the interaction graph ({interaction_graph.number_of_nodes()}) "
+                f"should be smaller than or equal to the number of nodes in the connection graph "
+                f"({n_connection})"
+            )
 
-        mapping_env._connection_graph = connection_graph
-        mapping_env._connection_graph_matrix = adjacency_matrix(connection_graph)
+        # extend the interaction graph to the proper size
+        null_index = 0
+        while interaction_graph.number_of_nodes() < n_connection:
+            interaction_graph.add_node(f"null_{null_index}")
+            null_index += 1
 
-        mapping_env._interaction_graph = interaction_graph
-        mapping_env._interaction_graph_matrix = adjacency_matrix(interaction_graph)
-        return mapping_env
+        return connection_graph, interaction_graph
 
-    @classmethod
-    def from_adjacency_matrix(
-        cls, connection_graph_matrix: csr_matrix, interaction_graph_matrix: csr_matrix
-    ):
+    @staticmethod
+    def _parse_adjacency_matrices(
+        connection_graph_matrix: NDArray[Any], interaction_graph_matrix: NDArray[Any]
+    ) -> Tuple[Graph, Graph]:
         """
-        Initialize the action space, observation space, and initial states
-        according to given adjacency matrix representations of the graphs.
+        Parse a given interaction and connection adjacency matrix to their respective graphs.
 
         :param connection_graph_matrix: adjacency matrix representation of the QPU topology
         :param interaction_graph_matrix: adjacency matrix representation of the interactions in a quantum circuit
         """
-        try:
-            connection_graph_matrix[0, 0]
-            interaction_graph_matrix[0, 0]
-        except:
+        if not check_adjacency_matrix(
+            connection_graph_matrix
+        ) or not check_adjacency_matrix(interaction_graph_matrix):
             raise TypeError(
-                "connection_graph_matrix and interaction_graph_matrix must be matrix like"
+                "Both the connection and interaction graph adjacency matrices should be square 2-D Numpy arrays."
             )
 
-        n_connection = connection_graph_matrix.shape[0]
-        n_interaction = interaction_graph_matrix.shape[0]
+        # Construct an extended interaction matrix
+        n_interaction = interaction_graph_matrix.size[0]
+        extended_interaction_graph_matrix = np.zeros_like(connection_graph_matrix)
+        extended_interaction_graph_matrix[
+            :n_interaction, :n_interaction
+        ] = interaction_graph_matrix
 
-        mapping_env = cls(
-            connection_grid_size=(n_connection, 1),
-            interaction_graph_qubits=n_interaction,
-        )
-
-        mapping_env._connection_graph_matrix = connection_graph_matrix
-        mapping_env._connection_graph = from_numpy_matrix(connection_graph_matrix)
-
-        mapping_env._interaction_graph_matrix = interaction_graph_matrix
-        mapping_env._interaction_graph = from_numpy_matrix(interaction_graph_matrix)
-        return mapping_env
+        connection_graph = nx.from_numpy_array(connection_graph_matrix)
+        interaction_graph = nx.from_numpy_array(extended_interaction_graph_matrix)
+        return connection_graph, interaction_graph
 
     def step(
         self, action: NDArray[np.int_], *, return_info: bool = False
@@ -193,12 +250,14 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
             value stating whether the new state is a final state (i.e. if we are done); 4) Optional Additional
             (debugging) information.
         """
-        self._action_space.update(action)
         return super().step(action, return_info=return_info)
 
-    def reset(  # todo we can use addiotional keyword-arguments to specify options for reset
+    def reset(  # todo we can use additional keyword-arguments to specify options for reset
         self, *, seed: Optional[int] = None, return_info: bool = False, **_kwargs: Any
-    ) -> Union[NDArray[np.int_], Tuple[NDArray[np.int_], Dict[Any, Any]]]:
+    ) -> Union[
+        Tuple[NDArray[np.int_], NDArray[np.int_]],
+        Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[Any, Any]],
+    ]:
         """
         Reset state, action space and step number and load a new random initial state. To be used after an episode
         is finished.
@@ -211,11 +270,11 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
         """
 
         # Reset the state, action space, and step number
-        self._state = np.full(self._connection_graph.number_of_nodes(), -1)
-        self._action_space.reset()
-        self._steps_done = 0
-
-        # todo: new random graphs
+        # todo: new random interaction graph
+        self._state["steps_done"] = 0
+        self._state["mapping"] = np.full(self._state["num_nodes"], -1)
+        self._state["physical_qubits_mapped"] = set()
+        self._state["logical_qubits_mapped"] = set()
 
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, return_info=return_info)
@@ -235,11 +294,15 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
 
         for (u, v) in self._connection_graph.edges():
             self._connection_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
-        self._connection_graph_matrix = adjacency_matrix(self._connection_graph)
+        self._state["connection_graph_matrix"] = adjacency_matrix(
+            self._connection_graph
+        )
 
         for (u, v) in self._interaction_graph.edges():
             self._interaction_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
-        self._interaction_graph_matrix = adjacency_matrix(self._interaction_graph)
+        self._state["interaction_graph_matrix"] = adjacency_matrix(
+            self._interaction_graph
+        )
 
     def _update_state(self, action: NDArray[np.int_]) -> None:
         """
@@ -248,38 +311,50 @@ class InitialMapping(Environment[NDArray[np.int_], NDArray[np.int_]]):
         :param action: Mapping action to be executed.
         """
         # Increase the step number
-        self._steps_done += 1
+        self._state["steps_done"] += 1
 
         # update state based on the given action
         physical_qubit_index = action[0]
         logical_qubit_index = action[1]
-        self._state[physical_qubit_index] = logical_qubit_index
+        if (
+            physical_qubit_index not in self._state["physical_qubits_mapped"]
+            and logical_qubit_index not in self._state["logical_qubits_mapped"]
+        ):
+            self._state["mapping"][physical_qubit_index] = logical_qubit_index
+            self._state["physical_qubits_mapped"].add(physical_qubit_index)
+            self._state["logical_qubits_mapped"].add(logical_qubit_index)
 
-    def _compute_reward(self) -> float:
+    def _compute_reward(
+        self,
+        old_state: Dict[Any, Any],
+        action: NDArray[np.int_],
+        *_args: Any,
+        **_kwargs: Any,
+    ) -> float:
         """
         Asks the rewarder to compute a reward, given the current state.
         """
         return super()._compute_reward(
-            self._state, self._connection_graph_matrix, self._interaction_graph_matrix
+            old_state=old_state, action=action, new_state=self._state
         )
 
-    def _obtain_observation(self) -> NDArray[np.int_]:
+    def _obtain_observation(self) -> Tuple[NDArray[np.int_], NDArray[np.int_]]:
         """
         :return: Observation based on the current state.
         """
-        return self._state
+        return self._state["mapping"], self._state["interaction_graph_matrix"]
 
     def _is_done(self) -> bool:
         """
         :return: Boolean value stating whether we are in a final state.
         """
-        return self._steps_done >= self._max_steps
+        return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]
 
     def _obtain_info(self) -> Dict[Any, Any]:
         """
         :return: Optional debugging info for the current state.
         """
-        return {"Steps done": self._steps_done}
+        return {"Steps done": self._state["steps_done"]}
 
 
 # todo: maybe move part of this to render and some clean-up
@@ -290,9 +365,9 @@ if __name__ == "__main__":
         if not MappingEnv._is_done():
             raise ValueError("MappingEnv is_done is not 'True'")
 
-        A = MappingEnv._connection_graph_matrix
-        B = MappingEnv._interaction_graph_matrix
-        mapping = MappingEnv._state
+        A = MappingEnv._state["connection_graph_matrix"]
+        B = MappingEnv._state["interaction_graph_matrix"]
+        mapping = MappingEnv._state["mapping"]
 
         # Generate the 'mapped' graph
         # gray edges are edges that are not used
@@ -313,8 +388,12 @@ if __name__ == "__main__":
 
         # Draw the 3 graphs
         fig, axes = plt.subplots(1, 3, figsize=(12, 6))
-        nx.draw(nx.from_numpy_matrix(env._connection_graph_matrix), ax=axes[0])
-        nx.draw(nx.from_numpy_matrix(env._interaction_graph_matrix), ax=axes[1])
+        nx.draw(
+            nx.from_numpy_matrix(env._mapping["connection_graph_matrix"]), ax=axes[0]
+        )
+        nx.draw(
+            nx.from_numpy_matrix(env._mapping["interaction_graph_matrix"]), ax=axes[1]
+        )
 
         edges = G.edges()
         colors = [G[u][v]["color"] for u, v in edges]

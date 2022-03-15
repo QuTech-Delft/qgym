@@ -44,12 +44,14 @@ class MultiDiscrete(Space[NDArray[np.int_]]):
     def __contains__(self, value: Any) -> bool:
         if isinstance(value, Iterable):
             value = np.array(value)
-            if value.dtype == np.int_:
-                return np.all(self._starts <= value) and np.all(value < self._sizes)
+            if value.dtype.kind == "i":
+                return np.all(self._starts <= value) and np.all(
+                    value < self._starts + self._sizes
+                )
         return False
 
     def __str__(self) -> str:
         return f"Discrete({list(self._sizes)})"
 
-    def __eq__(self, other: Any):
+    def __eq__(self, other: Any) -> bool:
         return isinstance(other, MultiDiscrete) and self._sizes == other._sizes
