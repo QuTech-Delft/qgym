@@ -73,7 +73,7 @@ class AdaptiveMultiDiscrete(Space[NDArray[np.int_]]):
     def __contains__(self, value: Any) -> bool:
         if isinstance(value, Iterable):
             value = np.array(value)
-            if value.dtype == np.int_:
+            if value.dtype.kind == "i":
                 if len(value) != len(self._sets):
                     return False
                 for index, value in enumerate(value):

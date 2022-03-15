@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from copy import deepcopy
 from typing import Any, Dict, Generic, Optional, Tuple, TypeVar, Union
 
 from numpy.random import Generator, default_rng
@@ -19,6 +20,7 @@ class Environment(Generic[ObservationT, ActionT]):
     # --- These properties should be set in any subclass ---
     _action_space: Space[ActionT]
     _observation_space: Space[ObservationT]
+    _state: Dict[Any, Any]
     _rewarder: Rewarder
     _metadata: Dict[Any, Any]
 
@@ -41,15 +43,16 @@ class Environment(Generic[ObservationT, ActionT]):
             value stating whether the new state is a final state (i.e. if we are done); 4) Optional Additional
             (debugging) information.
         """
+        old_state = deepcopy(self._state)
         self._update_state(action)
         if return_info:
             return (
                 self._obtain_observation(),
-                self._compute_reward(),
+                self._compute_reward(old_state, action),
                 self._is_done(),
                 self._obtain_info(),
             )
-        return self._obtain_observation(), self._compute_reward(), self._is_done()
+        return self._obtain_observation(), self._compute_reward(old_state, action), self._is_done()
 
     @abstractmethod
     def reset(
@@ -144,7 +147,9 @@ class Environment(Generic[ObservationT, ActionT]):
         self.close()
 
     @abstractmethod
-    def _compute_reward(self, *args: Any, **kwargs: Any) -> float:
+    def _compute_reward(
+        self, old_state: Dict[Any, Any], action: ActionT, *args: Any, **kwargs: Any
+    ) -> float:
         """
         Asks the rewarder to compute a reward, based on the given arguments.
 

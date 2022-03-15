@@ -42,7 +42,7 @@ class InjectivePartialMap(Space[NDArray[np.int_]]):
     def __contains__(self, value: Any) -> bool:
         if isinstance(value, Iterable):
             value = np.array(value)
-            if value.dtype == np.int_:
+            if value.dtype.kind == "i":
                 mapped = np.setdiff1d(value, [-1])
                 return len(value) == self._codomain_size and len(mapped) == len(
                     np.unique(mapped)
