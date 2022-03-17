@@ -52,7 +52,11 @@ class Environment(Generic[ObservationT, ActionT]):
                 self._is_done(),
                 self._obtain_info(),
             )
-        return self._obtain_observation(), self._compute_reward(old_state, action), self._is_done()
+        return (
+            self._obtain_observation(),
+            self._compute_reward(old_state, action),
+            self._is_done(),
+        )
 
     @abstractmethod
     def reset(
@@ -85,7 +89,7 @@ class Environment(Generic[ObservationT, ActionT]):
     def close(self) -> None:
         """
         This method is called on this object being removed. Should take care of loose ends. To be implemented in
-        specific subclaees.
+        specific subclasses.
         """
         pass
 
@@ -156,7 +160,10 @@ class Environment(Generic[ObservationT, ActionT]):
         :param args: Arguments for the Rewarder.
         :param kwargs: Keyword-arguments for the Rewarder.
         """
-        return self._rewarder.compute_reward(*args, **kwargs)
+        return self._rewarder.compute_reward(
+            *args, old_state=old_state, action=action, **kwargs
+        )
+
 
     @abstractmethod
     def _update_state(self, action: ActionT) -> None:

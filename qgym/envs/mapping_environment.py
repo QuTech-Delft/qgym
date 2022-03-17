@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, Optional, Set, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
-import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+import pygame
 from networkx import Graph, adjacency_matrix, fast_gnp_random_graph, grid_graph
 from numpy.typing import NDArray
+from pygame import gfxdraw
 
 from qgym import Rewarder
 from qgym.environment import Environment
@@ -15,6 +16,15 @@ from qgym.spaces import MultiDiscrete
 from qgym.spaces.matrix_discrete import MatrixDiscrete
 from qgym.spaces.tuple import TupleSpace
 from qgym.utils import check_adjacency_matrix
+
+# Define some colors used during rendering
+WHITE = (225, 225, 225)
+GRAY = (150, 150, 150)
+BLACK = (0, 0, 0)
+RED = (225, 0, 0)
+GREEN = (0, 225, 0)
+DARKGRAY = (100, 100, 100)
+BLUE = (0, 0, 225)
 
 
 class BasicRewarder(Rewarder):
@@ -58,7 +68,7 @@ class BasicRewarder(Rewarder):
                     ):
                         reward -= 1
                     if (
-                        new_state["connection_graph_matrix[i, j]"] != 0
+                        new_state["connection_graph_matrix"][i, j] != 0
                         and new_state["interaction_graph_matrix"][
                             new_state["mapping"][i], new_state["mapping"][j]
                         ]
@@ -167,6 +177,12 @@ class InitialMapping(
         )
         self._rewarder = BasicRewarder()
         # todo: metadata (probably for rendering options)
+        # Rendering data
+        self.screen = None
+        self.isopen = False
+        self.screen_width = 1300
+        self.screen_height = 730
+        self.padding = 10
 
     @staticmethod
     def _parse_network_graphs(
@@ -279,17 +295,9 @@ class InitialMapping(
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, return_info=return_info)
 
-    def render(self):
-        """
-        Render the current state.
-        """
-        raise NotImplementedError  # todo: implement this (probably based on plotting code below)
-
     def add_random_edge_weights(self) -> None:
         """
         Add random weights to the connection graph and interaction graph
-        :param seed: Seed for the random number generator, should only be provided (optionally) on the first reset call,
-            i.e. before any learning is done.
         """
 
         for (u, v) in self._connection_graph.edges():
@@ -356,63 +364,196 @@ class InitialMapping(
         """
         return {"Steps done": self._state["steps_done"]}
 
+    def render(self) -> bool:
+        """
+        Render the current state using pygame. The upper left screen shows the
+        connection graph. The lower left screen the interaction graph. The
+        right screen shows the mapped graph. Gray edges are unused, green edges
+        are mapped correctly and red edges need at least on swap.
+        """
+        if self.screen is None:
+            pygame.display.init()
+            self.screen = pygame.display.set_mode(
+                (self.screen_width, self.screen_height)
+            )
+            pygame.display.set_caption("Mapping Environment")
+            self.isopen = True
 
-# todo: maybe move part of this to render and some clean-up
-if __name__ == "__main__":
+        pygame.time.delay(10)
 
-    def plot_mapping(MappingEnv):
-        # Check if the mapping is done
-        if not MappingEnv._is_done():
-            raise ValueError("MappingEnv is_done is not 'True'")
+        self.screen.fill(GRAY)
 
-        A = MappingEnv._state["connection_graph_matrix"]
-        B = MappingEnv._state["interaction_graph_matrix"]
-        mapping = MappingEnv._state["mapping"]
-
-        # Generate the 'mapped' graph
-        # gray edges are edges that are not used
-        # green edges are present in both the connectivity graph as well as the embedded graph
-        # red edges are present in the connectivity grapg, but not in the embedded graph
-        G = nx.Graph()
-        for i in range(A.shape[0]):
-            G.add_node(i)
-
-        for i in range(A.shape[0]):
-            for j in range(A.shape[0]):
-                if A[i, j] == 0 and B[mapping[i], mapping[j]] == 1:
-                    G.add_edge(i, j, color="red")
-                if A[i, j] == 1 and B[mapping[i], mapping[j]] == 1:
-                    G.add_edge(i, j, color="green")
-                if A[i, j] == 1 and B[mapping[i], mapping[j]] == 0:
-                    G.add_edge(i, j, color="gray")
-
-        # Draw the 3 graphs
-        fig, axes = plt.subplots(1, 3, figsize=(12, 6))
-        nx.draw(
-            nx.from_numpy_matrix(env._mapping["connection_graph_matrix"]), ax=axes[0]
+        # draw screens for testing
+        small_screen_dim = (
+            self.screen_width / 2 - 1.5 * self.padding,
+            self.screen_height / 2 - 1.5 * self.padding,
         )
-        nx.draw(
-            nx.from_numpy_matrix(env._mapping["interaction_graph_matrix"]), ax=axes[1]
+        large_screen_dim = (
+            self.screen_width / 2 - 1.5 * self.padding,
+            self.screen_height - 2 * self.padding,
         )
 
-        edges = G.edges()
-        colors = [G[u][v]["color"] for u, v in edges]
-        nx.draw(G, ax=axes[2], edge_color=colors)
+        screen1_pos = (self.padding, self.padding)
+        screen2_pos = (self.padding, small_screen_dim[1] + 2 * self.padding)
+        screen3_pos = (small_screen_dim[0] + 2 * self.padding, self.padding)
 
-        axes[0].set_title("Topology Graph")
-        axes[1].set_title("Connectivity Graph")
-        axes[2].set_title("'Mapped' Graph")
+        subscreen1 = pygame.draw.rect(
+            self.screen,
+            WHITE,
+            [screen1_pos[0], screen1_pos[1], small_screen_dim[0], small_screen_dim[1]],
+        )
+        subscreen2 = pygame.draw.rect(
+            self.screen,
+            WHITE,
+            [screen2_pos[0], screen2_pos[1], small_screen_dim[0], small_screen_dim[1]],
+        )
+        subscreen3 = pygame.draw.rect(
+            self.screen,
+            WHITE,
+            [screen3_pos[0], screen3_pos[1], large_screen_dim[0], large_screen_dim[1]],
+        )
 
-        plt.show()
+        mapped_graph = self._get_mapped_graph()
 
-    env = InitialMapping()
+        self._draw_graph(self._connection_graph, subscreen1)
+        self._draw_graph(self._interaction_graph, subscreen2)
+        self._draw_graph(mapped_graph, subscreen3, pivot_graph=self._connection_graph)
 
-    for __ in range(3):
-        observation = env.reset()
-        for _ in range(100):
-            action = env.action_space.sample()
-            state, reward, done = env.step(action)
+        pygame.event.pump()
+        pygame.display.flip()
 
-            if done:
-                plot_mapping(env)
-                break
+        return self.isopen
+
+    def _get_mapped_graph(self) -> Graph:
+        """
+        Constructs a mapped graph. In this graph gray edges are unused, green
+        edges are mapped correctly and red edges need at least on swap. This
+        function is used during rendering.
+
+        :return: Mapped graph
+        """
+        mapping = self._get_mapping()
+
+        # Make the adjacency matrix of the mapped graph
+        mapped_adjacency_matrix = np.zeros(self._state["connection_graph_matrix"].shape)
+        for map_i, i in mapping.items():
+            for map_j, j in mapping.items():
+                mapped_adjacency_matrix[i, j] = self._state["interaction_graph_matrix"][
+                    map_i, map_j
+                ]
+
+        # Make a networkx graph of the mapped graph
+        graph = nx.Graph()
+        for i in range(self._state["connection_graph_matrix"].shape[0]):
+            graph.add_node(i)
+
+        for i in range(self._state["connection_graph_matrix"].shape[0]):
+            for j in range(self._state["connection_graph_matrix"].shape[1]):
+                self._add_colored_edge(graph, mapped_adjacency_matrix, (i, j))
+
+        # Relabel nodes for drawing
+        nodes_mapping = dict(
+            [(i, node) for i, node in enumerate(self._connection_graph.nodes)]
+        )
+        graph = nx.relabel_nodes(graph, nodes_mapping)
+
+        return graph
+
+    def _get_mapping(self) -> Dict[int, int]:
+        """
+        Makes a dictionary from the current state. The keys are indices of the
+        connection graph and the values are the indices of the connection graph.
+        """
+        mapping = {}
+        for i, map_i in enumerate(self._state["mapping"]):
+            if map_i != -1:
+                mapping[map_i] = i
+        return mapping
+
+    def _add_colored_edge(
+        self, graph: Graph, mapped_adjacency_matrix: np.matrix, edge: Tuple[int, int]
+    ) -> None:
+        """
+        Utility function for making the mapped graph. Gives and edge of the
+        graph a certain color. Gray edges are unused, green edges are mapped
+        correctly and red edges need at least on swap.
+
+        :param graph: The graph of which the edges must be colored
+        :param mapped_adjacency_matrix: the adjacency matrix of the mapped graph
+        :param edge: The edge that will be colored
+        """
+        (i, j) = edge
+        is_connected = self._state["connection_graph_matrix"][i, j] != 0
+        is_mapped = mapped_adjacency_matrix[i, j] != 0
+        if not is_connected and is_mapped:
+            graph.add_edge(i, j, color="red")
+        if is_connected and is_mapped:
+            graph.add_edge(i, j, color="green")
+        if is_connected and not is_mapped:
+            graph.add_edge(i, j, color="gray")
+
+    def _draw_graph(
+        self, graph: Graph, subscreen: pygame.Rect, pivot_graph: Optional[Graph] = None
+    ) -> None:
+        """
+        Draws a graph on one of the subscreens.
+
+        :param graph: the graph to be drawn
+        :param subscreen: the subscreen on which the graph must be drawn
+        :param pivot_graph: optional graph for which the spectral structure
+            will be used for visualisation
+        """
+        if pivot_graph == None:
+            node_positions = self._get_render_positions(graph, subscreen)
+        else:
+            assert graph.nodes == pivot_graph.nodes
+            node_positions = self._get_render_positions(pivot_graph, subscreen)
+
+        # Draw the nodes of the graph on the subscreen
+        for node, pos in node_positions.items():
+            gfxdraw.filled_circle(self.screen, int(pos[0]), int(pos[1]), 5, BLUE)
+        # Draw the edges of the graph on the subscreen
+        for (u, v) in graph.edges():
+            pos_u = node_positions[u]
+            pos_v = node_positions[v]
+            color = BLACK
+            if "color" in graph.edges[u, v]:
+                if graph.edges[u, v]["color"] == "red":
+                    color = RED
+                if graph.edges[u, v]["color"] == "green":
+                    color = GREEN
+                if graph.edges[u, v]["color"] == "gray":
+                    color = DARKGRAY
+            pygame.draw.aaline(self.screen, color, pos_u, pos_v)
+
+    @staticmethod
+    def _get_render_positions(
+        graph: Graph, subscreen: pygame.Rect
+    ) -> Dict[Any, Tuple[float, float]]:
+        """
+        Utility function used during render. Give the positions of the nodes
+        of a graph on a given subscreen.
+
+        :param graph: the graph of which the node positions must be determined
+        :param subscreen: the subscreen on which the graph will be drawn
+        :return: a dictionary where the keys are the names of the nodes and the
+            values are the coordinates of these nodes
+        """
+        x_scaling = 0.45 * subscreen.width
+        y_scaling = 0.45 * subscreen.height
+        x_offset = subscreen.centerx
+        y_offset = subscreen.centery
+        node_positions = nx.spectral_layout(graph)
+        for node in node_positions:
+            node_positions[node][0] += node_positions[node][0] * x_scaling + x_offset
+            node_positions[node][1] += node_positions[node][1] * y_scaling + y_offset
+        return node_positions
+
+    def close(self):
+        """
+        Closed the screen used for rendering
+        """
+        if self.screen is not None:
+            pygame.display.quit()
+            self.isopen = False
+            self.screen = None
