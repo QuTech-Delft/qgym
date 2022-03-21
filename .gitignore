@@ -3,3 +3,6 @@
 
 # Python
 /venv/
+
+# Pytest
+**/.pytest_cache/
