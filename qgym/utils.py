@@ -7,10 +7,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 
-def check_adjacency_matrix(adjacency_matrix: NDArray[Any]) -> bool:
+def check_adjacency_matrix(adjacency_matrix: NDArray[Any]) -> None:
     """
     :param adjacency_matrix: Matrix to check.
-    :return: Whether this matrix could be a valid adjacency matrix.
+    :raise ValueError: In case the provided input is not a valid matrix.
     """
     if (
         not adjacency_matrix.ndim == 2

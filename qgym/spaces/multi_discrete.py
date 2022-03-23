@@ -2,56 +2,46 @@
 A multi-discrete space, i.e. multiple discrete intervals. A sample takes one item from each interval.
 """
 
-from typing import Any, Iterable, List, Optional
+from typing import List, Optional, Type, Union
 
+import gym.spaces
 import numpy as np
-from numpy.random import Generator
+from numpy.random import Generator, default_rng
 from numpy.typing import NDArray
 
-from qgym import Space
 
+class MultiDiscrete(gym.spaces.MultiDiscrete):
+    """
+    Multi-discrete action/observation space for use in RL environments.
+    """
 
-class MultiDiscrete(Space[NDArray[np.int_]]):
     def __init__(
         self,
-        sizes: List[int],
-        starts: Optional[List[int]] = None,
+        nvec: List[int],
+        dtype: Optional[Union[Type, str]] = np.int64,
         rng: Optional[Generator] = None,
     ):
         """
-        Initialize a multi-discrete space, i.e. multiple discrete intervals of given sizes and with given lowest values.
+        Initialize a multi-discrete space, i.e. multiple discrete intervals of given sizes.
 
-        :param sizes: Sizes of all intervals in order.
-        :param starts: Start values of all intervals in order. If `None` each interval will start at 0.
+        :param nvec: Vector containing the size of each discrete interval.
+        :param dtype: Type of the values in each interval (default np.int64)
         :param rng: Random number generator to be used in this space. If `None` a new one will be constructed.
         """
-        super().__init__(rng)
-        if starts is None:
-            starts = np.zeros_like(sizes)
-        if len(starts) != len(sizes):
-            raise ValueError("Both `sizes` and `starts` should have the same length.")
-        self._sizes = np.array(sizes)
-        self._starts = np.array(starts)
+        super(MultiDiscrete, self).__init__(nvec, dtype=dtype)
+        self._np_random = rng  # this overrides the default behaviour of the gym space
 
-    def sample(self) -> NDArray[np.int_]:
+    def seed(self, seed: Optional[int] = None) -> List[int]:
         """
-        Sample a random value from this space.
+        Seed the rng of this space.
 
-        :return: Random value from this space.
+        :param seed: Seed for the rng
         """
-        return self._starts + self.rng.integers(0, self._sizes)
+        self._np_random = default_rng(seed)
+        return [seed]
 
-    def __contains__(self, value: Any) -> bool:
-        if isinstance(value, Iterable):
-            value = np.array(value)
-            if value.dtype.kind == "i":
-                return np.all(self._starts <= value) and np.all(
-                    value < self._starts + self._sizes
-                )
-        return False
-
-    def __str__(self) -> str:
-        return f"Discrete({list(self._sizes)})"
-
-    def __eq__(self, other: Any) -> bool:
-        return isinstance(other, MultiDiscrete) and self._sizes == other._sizes
+    def sample(self) -> NDArray:
+        """
+        :return: Random sampled element of this space.
+        """
+        return (self.np_random.random(self.nvec.shape) * self.nvec).astype(self.dtype)

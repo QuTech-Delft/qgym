@@ -1,3 +1,7 @@
+"""
+Generic abstract base class for a RL rewarder.
+"""
+
 from abc import abstractmethod
 from typing import Any, Tuple
 

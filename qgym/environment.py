@@ -1,34 +1,39 @@
+"""
+Generic abstract base class for RL environments.
+"""
+
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Generic, Optional, Tuple, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union
 
+import gym
+from gym import Space
 from numpy.random import Generator, default_rng
 
 from qgym.rewarder import Rewarder
-from qgym.space import Space
 
 ObservationT = TypeVar("ObservationT")
 ActionT = TypeVar("ActionT")
 SelfT = TypeVar("SelfT")
 
 
-class Environment(Generic[ObservationT, ActionT]):
+class Environment(Generic[ObservationT, ActionT], gym.Env):
     """
     RL Environment containing the current state of the problem.
     """
 
     # --- These properties should be set in any subclass ---
-    _action_space: Space[ActionT]
-    _observation_space: Space[ObservationT]
+    action_space: Space
+    observation_space: Space
+    metadata: Dict[Any, Any]
     _state: Dict[Any, Any]
     _rewarder: Rewarder
-    _metadata: Dict[Any, Any]
 
     # --- Other properties ---
     _rng: Optional[Generator] = None
 
     def step(
-        self, action: ActionT, *, return_info: bool = False
+        self, action: ActionT, *, return_info: bool = True
     ) -> Union[
         Tuple[ObservationT, float, bool],
         Tuple[ObservationT, float, bool, Dict[Any, Any]],
@@ -73,47 +78,30 @@ class Environment(Generic[ObservationT, ActionT]):
         :return: Initial observation and optional debugging info.
         """
         if seed is not None:
-            self._rng = default_rng(seed)
+            self.seed(seed)
 
         if return_info:
             return self._obtain_observation(), self._obtain_info()
         return self._obtain_observation()
 
+    def seed(self, seed: Optional[int] = None) -> List[int]:
+        """
+        Seed the random number generator of this environment.
+
+        :param seed: Seed to use
+        :return: The used seeds
+        """
+        self._rng = default_rng(seed)
+        return [seed]
+
     @abstractmethod
-    def render(self) -> None:
+    def render(self, mode: str = "human") -> None:
         """
         Render the current state.
-        """
-        pass
 
-    def close(self) -> None:
+        :param mode: The mode to render with (default is 'human')
         """
-        This method is called on this object being removed. Should take care of loose ends. To be implemented in
-        specific subclasses.
-        """
-        pass
-
-    @property
-    def action_space(self) -> Space[ActionT]:
-        """
-        Description of the current action space, i.e. the set of allowed actions (potentially depending on the current
-        state).
-        """
-        return self._action_space
-
-    @property
-    def metadata(self) -> Dict[Any, Any]:
-        """
-        Metadata of this environment.
-        """
-        return self._metadata
-
-    @property
-    def observation_space(self) -> Space[ObservationT]:
-        """
-        Description of the observation space, i.e. how observations can look like.
-        """
-        return self.observation_space
+        raise NotImplementedError
 
     @property
     def rewarder(self) -> Rewarder:
@@ -125,13 +113,7 @@ class Environment(Generic[ObservationT, ActionT]):
     @rewarder.setter
     def rewarder(self, rewarder: Rewarder) -> None:
         self._rewarder = rewarder
-
-    @property
-    def reward_range(self) -> Tuple[float, float]:
-        """
-        Reward range of the rewarder. I.e. range that rewards can lie in.
-        """
-        return self._rewarder.reward_range
+        self.reward_range = rewarder.reward_range
 
     @property
     def rng(self) -> Generator:
@@ -163,7 +145,6 @@ class Environment(Generic[ObservationT, ActionT]):
         return self._rewarder.compute_reward(
             *args, old_state=old_state, action=action, **kwargs
         )
-
 
     @abstractmethod
     def _update_state(self, action: ActionT) -> None:
