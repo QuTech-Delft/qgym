@@ -12,6 +12,7 @@ import numpy as np
 import pygame
 from networkx import Graph, fast_gnp_random_graph, grid_graph, to_scipy_sparse_matrix
 from numpy.typing import NDArray
+from scipy.sparse import csr_matrix
 from pygame import gfxdraw
 
 import qgym.spaces
@@ -54,33 +55,79 @@ class BasicRewarder(Rewarder):
         :param action: Action that has just been taken
         :param new_state: Updated state of the InitialMapping
         """
+        
+        if self._is_illegal(action, old_state):
+            return -10
+        
+        mapping = self._get_mapping_dct(new_state['mapping'])
+        
+        mapped_edges = []
+        checked = set()
+        
+        for logical_qubit_index, physical_qubit_index in mapping.items():
+            neighbours = self._get_neighbours(logical_qubit_index, new_state["interaction_graph_matrix"])
+            mapped_neighbours = neighbours & new_state["logical_qubits_mapped"]
+            mapped_neighbours = mapped_neighbours - checked
+            
+            checked.add(logical_qubit_index)
+            
+            for mapped_neighbour in mapped_neighbours:
+                mapped_edges.append([physical_qubit_index, mapping[mapped_neighbour]])
+        
+        reward = 0.0
+        for i,j in mapped_edges:
+            if new_state['connection_graph_matrix'][i,j] == 0:
+                reward -= 1
+            else:
+                reward += 5
+                
+        """
+        
         reward = 0.0  # compute a reward based on self.state
-        if (
-            action[0] not in old_state["physical_qubits_mapped"]
-            and action[1] not in old_state["logical_qubits_mapped"]
-        ):
-            for i in range(new_state["connection_graph_matrix"].shape[0]):
-                for j in range(new_state["connection_graph_matrix"].shape[0]):
-                    if (
-                        new_state["connection_graph_matrix"][i, j] == 0
-                        and new_state["interaction_graph_matrix"][
-                            new_state["mapping"][i] - 1, new_state["mapping"][j] - 1
-                        ]
-                        != 0
-                    ):
-                        reward -= 1
-                    if (
-                        new_state["connection_graph_matrix"][i, j] != 0
-                        and new_state["interaction_graph_matrix"][
-                            new_state["mapping"][i] - 1, new_state["mapping"][j] - 1
-                        ]
-                        != 0
-                    ):
-                        reward += 5
-        else:
-            reward = -10
-        return reward
+        for i in range(new_state["connection_graph_matrix"].shape[0]):
+            for j in range(new_state["connection_graph_matrix"].shape[0]):
+                if (
+                    new_state["connection_graph_matrix"][i, j] == 0
+                    and new_state["interaction_graph_matrix"][
+                        new_state["mapping"][i] - 1, new_state["mapping"][j] - 1
+                    ]
+                    != 0
+                ):
+                    reward -= 1
+                if (
+                    new_state["connection_graph_matrix"][i, j] != 0
+                    and new_state["interaction_graph_matrix"][
+                        new_state["mapping"][i] - 1, new_state["mapping"][j] - 1
+                    ]
+                    != 0
+                ):
+                    reward += 5
+        """
 
+        return reward
+    
+    @staticmethod
+    def _is_illegal(action : NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+        return (
+            action[0] in old_state["physical_qubits_mapped"]
+            and action[1] in old_state["logical_qubits_mapped"]
+        )
+    
+    @staticmethod
+    def _get_mapping_dct(mapping_array : NDArray[np.int_]) -> Dict[int, int]:
+        mapping_dct = {}
+        for physical_qubit_index, logical_qubit_index in enumerate(mapping_array):
+            if logical_qubit_index != 0:
+                mapping_dct[logical_qubit_index-1] = physical_qubit_index
+        return mapping_dct
+    
+    @staticmethod
+    def _get_neighbours(node_index : int, adjacency_matrix : csr_matrix) -> set:
+        neighbours = set()
+        for neighbour_index in range(adjacency_matrix.shape[0]):
+            if adjacency_matrix[node_index, neighbour_index] != 0:
+                neighbours.add(neighbour_index)
+        return neighbours
 
 class InitialMapping(
     Environment[Tuple[NDArray[np.int_], NDArray[np.int_]], NDArray[np.int_]]
