@@ -12,8 +12,8 @@ import numpy as np
 import pygame
 from networkx import Graph, fast_gnp_random_graph, grid_graph, to_scipy_sparse_matrix
 from numpy.typing import NDArray
-from scipy.sparse import csr_matrix
 from pygame import gfxdraw
+from scipy.sparse import csr_matrix
 
 import qgym.spaces
 from qgym import Rewarder
@@ -35,11 +35,23 @@ class BasicRewarder(Rewarder):
     Basic rewarder for the InitialMapping environment.
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        illegal_action_penalty: Optional[float] = -10,
+        reward_per_edge: Optional[float] = 5,
+        penalty_per_edge: Optional[float] = -1,
+    ) -> None:
         """
-        Initializes a new BasicRewarder.
+        Initialize the reward range and set the rewards and penaltyies
+
+        :param illegal_action_penalty: penalty for performing an illegal action.
+        :param reward_per_edge: reward for performing a 'good' action
+        :param new_state: penalty for performing a 'bad' action
         """
         self._reward_range = (-float("inf"), float("inf"))
+        self._illegal_action_penalty = illegal_action_penalty
+        self._reward_per_edge = reward_per_edge
+        self._penalty_per_edge = penalty_per_edge
 
     def compute_reward(
         self,
@@ -55,79 +67,100 @@ class BasicRewarder(Rewarder):
         :param action: Action that has just been taken
         :param new_state: Updated state of the InitialMapping
         """
-        
+
         if self._is_illegal(action, old_state):
-            return -10
-        
-        mapping = self._get_mapping_dct(new_state['mapping'])
-        
-        mapped_edges = []
-        checked = set()
-        
-        for logical_qubit_index, physical_qubit_index in mapping.items():
-            neighbours = self._get_neighbours(logical_qubit_index, new_state["interaction_graph_matrix"])
-            mapped_neighbours = neighbours & new_state["logical_qubits_mapped"]
-            mapped_neighbours = mapped_neighbours - checked
-            
-            checked.add(logical_qubit_index)
-            
-            for mapped_neighbour in mapped_neighbours:
-                mapped_edges.append([physical_qubit_index, mapping[mapped_neighbour]])
-        
+            return self._illegal_action_penalty
+
+        mapped_edges = self._get_mapped_edges(new_state)
+
         reward = 0.0
-        for i,j in mapped_edges:
-            if new_state['connection_graph_matrix'][i,j] == 0:
-                reward -= 1
+        for i, j in mapped_edges:
+            if new_state["connection_graph_matrix"][i, j] == 0:
+                reward += self._penalty_per_edge
             else:
-                reward += 5
-                
-        """
-        
-        reward = 0.0  # compute a reward based on self.state
-        for i in range(new_state["connection_graph_matrix"].shape[0]):
-            for j in range(new_state["connection_graph_matrix"].shape[0]):
-                if (
-                    new_state["connection_graph_matrix"][i, j] == 0
-                    and new_state["interaction_graph_matrix"][
-                        new_state["mapping"][i] - 1, new_state["mapping"][j] - 1
-                    ]
-                    != 0
-                ):
-                    reward -= 1
-                if (
-                    new_state["connection_graph_matrix"][i, j] != 0
-                    and new_state["interaction_graph_matrix"][
-                        new_state["mapping"][i] - 1, new_state["mapping"][j] - 1
-                    ]
-                    != 0
-                ):
-                    reward += 5
-        """
+                reward += self._reward_per_edge
 
         return reward
-    
+
+    def _get_mapped_edges(self, new_state: Dict[Any, Any]) -> list[list[int, int]]:
+        """
+        Computes a list of mapped edges of the new state
+
+        :param new_state: Updated state of the InitialMapping
+        """
+
+        mapping = self._get_mapping_dct(new_state["mapping"])
+
+        mapped_edges = []
+
+        for logical_qubit_idx, physical_qubit_idx in mapping.items():
+            neighbours = self._get_neighbours(
+                logical_qubit_idx, new_state["interaction_graph_matrix"]
+            )
+
+            mapped_neighbours = neighbours & new_state["logical_qubits_mapped"]
+
+            for mapped_neighbour in mapped_neighbours:
+                mapped_edges.append(
+                    [physical_qubit_idx - 1, mapping[mapped_neighbour] - 1]
+                )
+
+        return mapped_edges
+
     @staticmethod
-    def _is_illegal(action : NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+    def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+        """
+        Checks if the given action is illegal, i.e. checks if qubits are mapped multiple times.
+
+        :param action: Action that has just been taken
+        :param old_state: State of the InitialMapping before the current action.
+        """
         return (
             action[0] in old_state["physical_qubits_mapped"]
             and action[1] in old_state["logical_qubits_mapped"]
         )
-    
+
     @staticmethod
-    def _get_mapping_dct(mapping_array : NDArray[np.int_]) -> Dict[int, int]:
+    def _get_mapping_dct(mapping_array: NDArray[np.int_]) -> Dict[int, int]:
+        """
+        Converts the mapping array of a state to a dictionary.
+        For example np.ndarray([3, 0, 2, 0]) --> {2 : 3, 3 : 1}
+
+        :param mapping_array: mapping_array of the state to be converted.
+        """
         mapping_dct = {}
-        for physical_qubit_index, logical_qubit_index in enumerate(mapping_array):
+        for i, logical_qubit_index in enumerate(mapping_array):
+            physical_qubit_index = i + 1
             if logical_qubit_index != 0:
-                mapping_dct[logical_qubit_index-1] = physical_qubit_index
+                mapping_dct[logical_qubit_index] = physical_qubit_index
         return mapping_dct
-    
-    @staticmethod
-    def _get_neighbours(node_index : int, adjacency_matrix : csr_matrix) -> set:
+
+    def _get_neighbours(self, qubit_idx: int, adjacency_matrix: csr_matrix) -> set:
+        """
+        Computes a set of neighbours of a given qubit (i.e. a set of nodes whith with this node has a connection.)
+
+        :param qubit_idx: index of the qubit of which the neihbours are computed.
+        :param adjacency_matrix: adjacency matrix of a graph
+        """
         neighbours = set()
-        for neighbour_index in range(adjacency_matrix.shape[0]):
-            if adjacency_matrix[node_index, neighbour_index] != 0:
-                neighbours.add(neighbour_index)
+        for i in range(adjacency_matrix.shape[0]):
+            neighbour_idx = i + 1
+            if self._are_neighbours((qubit_idx, neighbour_idx), adjacency_matrix):
+                neighbours.add(neighbour_idx)
         return neighbours
+
+    @staticmethod
+    def _are_neighbours(
+        qubit_idxs: Tuple[int, int], adjacency_matrix: csr_matrix
+    ) -> bool:
+        """
+        Checks if two qubits are neighbours
+
+        :param qubit_idxs: indexes of the qubits to check
+        :param adjacency_matrix: adjacency matrix of a graph
+        """
+        return adjacency_matrix[qubit_idxs[0] - 1, qubit_idxs[1] - 1] != 0
+
 
 class InitialMapping(
     Environment[Tuple[NDArray[np.int_], NDArray[np.int_]], NDArray[np.int_]]
