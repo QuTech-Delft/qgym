@@ -156,6 +156,10 @@ class BasicRewarder(Rewarder):
 
 
 class SingleStepRewarder(BasicRewarder):
+    """
+    Rewarder for the InitialMapping environment which gives a rewarde based on
+    the improvement in the current step.
+    """
     
     def compute_reward(
         self,
@@ -194,3 +198,73 @@ class SingleStepRewarder(BasicRewarder):
                 reward += self._reward_per_edge
         
         return reward
+
+class SingleStepRewarder(BasicRewarder):
+    
+    def compute_reward(
+        self,
+        *,
+        old_state: Dict[Any, Any],
+        action: NDArray[np.int_],
+        new_state: Dict[Any, Any],
+    ):
+        """
+        Compute a reward, based on the current state, and the connection and interaction graphs.
+
+        :param old_state: State of the InitialMapping before the current action.
+        :param action: Action that has just been taken
+        :param new_state: Updated state of the InitialMapping
+        """
+
+        if self._is_illegal(action, old_state):
+            return self._illegal_action_penalty
+
+        
+        old_cumulative_reward = self.compute_cumulative_reward(old_state)
+        new_cumulative_reward = self.compute_cumulative_reward(new_state)
+        
+        reward = new_cumulative_reward - old_cumulative_reward
+        
+        return reward
+    
+    def compute_cumulative_reward(self, state : Dict[Any, Any]):
+        mapped_edges = self._get_mapped_edges(state)
+        
+        reward = 0.0
+        for i, j in mapped_edges:
+            if state["connection_graph_matrix"][i, j] == 0:
+                reward += self._penalty_per_edge
+            else:
+                reward += self._reward_per_edge
+        
+        return reward
+
+class EpisodeRewarder(BasicRewarder):
+    """
+    Rewarder for the InitialMapping environment, which only gives a reward at 
+    the end of the episode or when an illegal action is taken.
+    """
+    
+    def compute_reward(
+        self,
+        *,
+        old_state: Dict[Any, Any],
+        action: NDArray[np.int_],
+        new_state: Dict[Any, Any],
+    ):
+        """
+        Compute a reward, based on the current state, and the connection and interaction graphs.
+
+        :param old_state: State of the InitialMapping before the current action.
+        :param action: Action that has just been taken
+        :param new_state: Updated state of the InitialMapping
+        """
+
+        if self._is_illegal(action, old_state):
+            return self._illegal_action_penalty
+
+        if len(new_state['physical_qubits_mapped']) != new_state['connection_graph_matrix'].shape[0]:
+            return 0
+        
+        return super().compute_reward(old_state=old_state, action=action, new_state=new_state)
+        
