@@ -31,7 +31,6 @@ DARK_GRAY = (100, 100, 100)
 BLUE = (0, 0, 225)
 
 
-
 class InitialMapping(
     Environment[Tuple[NDArray[np.int_], NDArray[np.int_]], NDArray[np.int_]]
 ):
@@ -46,7 +45,7 @@ class InitialMapping(
         connection_graph_matrix: Optional[NDArray[Any]] = None,
         interaction_graph_matrix: Optional[NDArray[Any]] = None,
         connection_grid_size: Optional[Tuple[int, int]] = None,
-        interaction_graph_edge_probability: Optional[float] = None
+        interaction_graph_edge_probability: Optional[float] = None,
     ) -> None:
         """
         Initialize the action space, observation space, and initial states. This also defines the connection and
@@ -106,6 +105,7 @@ class InitialMapping(
             ).toarray(),
             "steps_done": 0,
             "mapping": np.full(self._connection_graph.number_of_nodes(), 0),
+            "mapping_dict": {},
             "physical_qubits_mapped": set(),
             "logical_qubits_mapped": set(),
         }
@@ -172,6 +172,7 @@ class InitialMapping(
         ).toarray()
         self._state["steps_done"] = 0
         self._state["mapping"] = np.full(self._state["num_nodes"], 0)
+        self._state["mapping_dict"] = {}
         self._state["physical_qubits_mapped"] = set()
         self._state["logical_qubits_mapped"] = set()
 
@@ -286,6 +287,7 @@ class InitialMapping(
             and logical_qubit_index not in self._state["logical_qubits_mapped"]
         ):
             self._state["mapping"][physical_qubit_index] = logical_qubit_index
+            self._state["mapping"][logical_qubit_index] = physical_qubit_index
             self._state["physical_qubits_mapped"].add(physical_qubit_index)
             self._state["logical_qubits_mapped"].add(logical_qubit_index)
 
