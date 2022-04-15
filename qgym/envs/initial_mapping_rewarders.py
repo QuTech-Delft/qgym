@@ -12,15 +12,6 @@ from numpy.typing import NDArray
 from qgym import Rewarder
 from scipy.sparse import csr_matrix
 
-# Define some colors used during rendering
-WHITE = (225, 225, 225)
-GRAY = (150, 150, 150)
-BLACK = (0, 0, 0)
-RED = (225, 0, 0)
-GREEN = (0, 225, 0)
-DARK_GRAY = (100, 100, 100)
-BLUE = (0, 0, 225)
-
 
 class BasicRewarder(Rewarder):
     """
@@ -65,7 +56,7 @@ class BasicRewarder(Rewarder):
             return self._illegal_action_penalty
 
         mapped_edges = self._get_mapped_edges(new_state)
-
+        
         reward = 0.0
         for i, j in mapped_edges:
             if new_state["connection_graph_matrix"][i, j] == 0:
@@ -93,8 +84,8 @@ class BasicRewarder(Rewarder):
             for mapped_neighbour in mapped_neighbours:
                 mapped_edges.append(
                     [
-                        physical_qubit_idx - 1,
-                        new_state["mapping_dict"][mapped_neighbour] - 1,
+                        physical_qubit_idx,
+                        new_state["mapping_dict"][mapped_neighbour],
                     ]
                 )
 
@@ -123,8 +114,7 @@ class BasicRewarder(Rewarder):
         :param adjacency_matrix: adjacency matrix of a graph
         """
         neighbours = set()
-        for i in range(adjacency_matrix.shape[0]):
-            neighbour_idx = i + 1
+        for neighbour_idx in range(adjacency_matrix.shape[0]):
             if self._are_neighbours((qubit_idx, neighbour_idx), adjacency_matrix):
                 neighbours.add(neighbour_idx)
         return neighbours

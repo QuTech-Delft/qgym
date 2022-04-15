@@ -35,12 +35,12 @@ def _episode_generator(
 
     new_state = deepcopy(old_state)
 
-    action = np.array([1, 1])
+    action = np.array([0, 0])
     _perform_action(new_state, action)
 
     yield (old_state, action, new_state)
 
-    for i in range(2, adjacency_matrices["connection_graph_matrix"].shape[0] + 1):
+    for i in range(1, adjacency_matrices["connection_graph_matrix"].shape[0]):
         _perform_action(old_state, action)
         action = np.array([i, i])
         _perform_action(new_state, action)

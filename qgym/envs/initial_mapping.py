@@ -13,13 +13,11 @@ import pygame
 from networkx import Graph, fast_gnp_random_graph, grid_graph, to_scipy_sparse_matrix
 from numpy.typing import NDArray
 from pygame import gfxdraw
-from scipy.sparse import csr_matrix
 
 import qgym.spaces
-from qgym import Rewarder
 from qgym.environment import Environment
 from qgym.utils import check_adjacency_matrix
-from .initial_mapping_rewarders import BasicRewarder
+from qgym.envs.initial_mapping_rewarders import BasicRewarder
 
 # Define some colors used during rendering
 WHITE = (225, 225, 225)
@@ -29,6 +27,7 @@ RED = (225, 0, 0)
 GREEN = (0, 225, 0)
 DARK_GRAY = (100, 100, 100)
 BLUE = (0, 0, 225)
+
 
 
 class InitialMapping(
@@ -104,7 +103,7 @@ class InitialMapping(
                 self._interaction_graph
             ).toarray(),
             "steps_done": 0,
-            "mapping": np.full(self._connection_graph.number_of_nodes(), 0),
+            "mapping": np.full(self._connection_graph.number_of_nodes(), self._connection_graph.number_of_nodes()),
             "mapping_dict": {},
             "physical_qubits_mapped": set(),
             "logical_qubits_mapped": set(),
@@ -171,7 +170,7 @@ class InitialMapping(
             self._interaction_graph
         ).toarray()
         self._state["steps_done"] = 0
-        self._state["mapping"] = np.full(self._state["num_nodes"], 0)
+        self._state["mapping"] = np.full(self._state["num_nodes"], self._state["num_nodes"])
         self._state["mapping_dict"] = {}
         self._state["physical_qubits_mapped"] = set()
         self._state["logical_qubits_mapped"] = set()
@@ -278,7 +277,7 @@ class InitialMapping(
         """
         # Increase the step number
         self._state["steps_done"] += 1
-
+        
         # update state based on the given action
         physical_qubit_index = action[0]
         logical_qubit_index = action[1]
@@ -287,7 +286,7 @@ class InitialMapping(
             and logical_qubit_index not in self._state["logical_qubits_mapped"]
         ):
             self._state["mapping"][physical_qubit_index] = logical_qubit_index
-            self._state["mapping"][logical_qubit_index] = physical_qubit_index
+            self._state["mapping_dict"][logical_qubit_index] = physical_qubit_index
             self._state["physical_qubits_mapped"].add(physical_qubit_index)
             self._state["logical_qubits_mapped"].add(logical_qubit_index)
 
@@ -400,7 +399,7 @@ class InitialMapping(
 
         :return: Mapped graph
         """
-        mapping = self._get_mapping()
+        mapping = self._state["mapping_dict"]
 
         # Make the adjacency matrix of the mapped graph
         mapped_adjacency_matrix = np.zeros(self._state["connection_graph_matrix"].shape)
@@ -427,16 +426,6 @@ class InitialMapping(
 
         return graph
 
-    def _get_mapping(self) -> Dict[int, int]:
-        """
-        Makes a dictionary from the current state. The keys are indices of the
-        connection graph and the values are the indices of the connection graph.
-        """
-        mapping = {}
-        for i, map_i in enumerate(self._state["mapping"]):
-            if map_i != 0:
-                mapping[map_i] = i - 1
-        return mapping
 
     def _add_colored_edge(
         self, graph: Graph, mapped_adjacency_matrix: NDArray, edge: Tuple[int, int]
