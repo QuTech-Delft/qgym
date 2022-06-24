@@ -51,7 +51,7 @@ class BasicRewarder(Rewarder):
         """
         reward = 0.0
         if action[1] != 0:
-            reward += self._illegal_action_penalty
+            reward += self._update_cycle_penalty
 
         if self._is_illegal(action, old_state):
             reward += self._illegal_action_penalty
