@@ -1,22 +1,8 @@
 """
-Generic utils for the Quantum RL Gym
+This module contains the GateEncoder class which encoded gate to integers and back.
 """
 from copy import deepcopy
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Tuple, Union
-
-from numpy.typing import NDArray
-
-
-def check_adjacency_matrix(adjacency_matrix: NDArray[Any]) -> None:
-    """
-    :param adjacency_matrix: Matrix to check.
-    :raise ValueError: In case the provided input is not a valid matrix.
-    """
-    if (
-        not adjacency_matrix.ndim == 2
-        and adjacency_matrix.shape[0] == adjacency_matrix.shape[1]
-    ):
-        raise ValueError("The provided value should be a square 2-D adjacency matrix.")
 
 
 class GateEncoder:
@@ -46,7 +32,10 @@ class GateEncoder:
         return self
 
     def encode_gates(
-        self, gates: Union[str, Mapping[str, Any], Sequence[Tuple[str, int, int]]]
+        self,
+        gates: Union[
+            str, Mapping[str, Any], Sequence[Tuple[str, int, int]], Iterable[str]
+        ],
     ) -> Union[int, Dict[int, Any], List[Tuple[int, int, int]]]:
         """
         Encodes gate names in gates to integers, based on the gates seen in the
@@ -60,15 +49,29 @@ class GateEncoder:
 
         elif isinstance(gates, Mapping):
             encoded_gates = {}
-            for gate_name in gates:
+            for gate_name, item in gates.items():
                 gate_encoding = self.encoding_dct[gate_name]
-                encoded_gates[gate_encoding] = deepcopy(gates[gate_name])
+                if isinstance(item, int):
+                    encoded_gates[gate_encoding] = item
+                elif isinstance(item, Iterable):
+                    item_encoded = []
+                    for i in item:
+                        item_encoded.append(self.encoding_dct[i])
+                    encoded_gates[gate_encoding] = item_encoded
+                else:
+                    raise ValueError("Unkown mapping")
 
         elif isinstance(gates, Sequence):
             encoded_gates = []
             for gate_name, control_qubit, target_qubit in gates:
                 gate_encoding = self.encoding_dct[gate_name]
                 encoded_gates.append((gate_encoding, control_qubit, target_qubit))
+
+        elif isinstance(gates, Iterable):
+            encoded_gates = []
+            for gate_name in gates:
+                gate_encoding = self.encoding_dct[gate_name]
+                encoded_gates.append(gate_encoding)
 
         else:
             raise TypeError(
@@ -79,7 +82,9 @@ class GateEncoder:
 
     def decode_gates(
         self,
-        encoded_gates: Union[int, Mapping[int, Any], Sequence[Tuple[int, int, int]]],
+        encoded_gates: Union[
+            int, Mapping[int, Any], Sequence[Tuple[int, int, int]], Iterable[int]
+        ],
     ) -> Union[str, Dict[str, Any], List[Tuple[str, int, int]]]:
         """
         Decodes int encoded gate names to the original gate names based on the gates
@@ -102,6 +107,12 @@ class GateEncoder:
             for gate_int, control_qubit, target_qubit in encoded_gates:
                 decoded_gate = self.decoding_dct[gate_int]
                 decoded_gates.append((decoded_gate, control_qubit, target_qubit))
+
+        elif isinstance(encoded_gates, Iterable):
+            decoded_gates = []
+            for gate_int in encoded_gates:
+                decoded_gate = self.decoding_dct[gate_int]
+                decoded_gates.append(decoded_gate)
 
         else:
             raise TypeError(

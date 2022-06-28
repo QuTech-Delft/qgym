@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 from stable_baselines3.common.env_checker import check_env
 
 import qgym.spaces
@@ -17,9 +18,28 @@ mp = {
         "swap": 3,
         "measure": 10,
     },
-    "machine_restrictions": set(),
+    "machine_restrictions": {
+        "same_start": {"measure"},
+        "not_in_same_cycle": {"x": ["y", "z"], "y": ["x", "z"], "z": ["x", "y"]},
+    },
     "commutation_rules": set(),
 }
+
+
+def naive_schedule_algorithm(scheduling_env, circuit=None):
+    obs = scheduling_env.reset(circuit=circuit)
+    action = np.array([0, 0])
+    done = False
+
+    while not done:
+        while obs["legal_actions"].any():
+            action[0] = obs["legal_actions"].argmax()
+            obs, _, done, _ = scheduling_env.step(action)
+
+        action[1] = 1
+        obs, _, done, _ = scheduling_env.step(action)
+        action[1] = 0
+    return scheduling_env._state["schedule"]
 
 
 def test_state() -> None:
@@ -37,11 +57,6 @@ def test_state() -> None:
     assert gate_encoder.n_gates == len(mp["gates"])
     assert len(gate_encoder.encoding_dct) == len(mp["gates"])
     assert len(gate_encoder.encoding_dct) == len(mp["gates"])
-
-    assert isinstance(env._state["encoded_gates"], dict)
-    encoded_gates = env._state["encoded_gates"]
-    decoded_gates = gate_encoder.decode_gates(encoded_gates)
-    assert decoded_gates == mp["gates"]
 
 
 def test_observation_space() -> None:
@@ -89,3 +104,30 @@ def test_validity() -> None:
     env = Scheduling(mp)
     check_env(env, warn=True)  # todo: maybe switch this to the gym env checker
     assert True
+
+
+def test_full_cnot_circuit() -> None:
+    env = Scheduling(mp)
+    circuit = [
+        ("cnot", 0, 1),
+        ("cnot", 2, 3),
+        ("cnot", 4, 5),
+        ("cnot", 6, 7),
+        ("cnot", 8, 9),
+    ]
+    schedule = naive_schedule_algorithm(env, circuit=circuit)
+    assert (schedule == np.zeros(5)).all()
+
+
+def test_same_start_machine_restriction() -> None:
+    env = Scheduling(mp)
+    circuit = [("measure", 1, 1), ("y", 1, 1), ("measure", 0, 0)]
+    schedule = naive_schedule_algorithm(env, circuit=circuit)
+    assert (schedule == np.array([10, 0, 0])).all()
+
+
+def test_not_in_same_cycle_machine_restriction() -> None:
+    env = Scheduling(mp)
+    circuit = [("x", 0, 0), ("y", 1, 1), ("y", 3, 3), ("z", 2, 2)]
+    schedule = naive_schedule_algorithm(env, circuit=circuit)
+    assert (schedule == np.array([0, 2, 2, 4])).all()
