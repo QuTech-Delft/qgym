@@ -1,6 +1,7 @@
 """General utils functions for graph related operations"""
-from numpy.typing import NDArray
 from typing import Any
+
+from numpy.typing import NDArray
 
 
 def check_adjacency_matrix(adjacency_matrix: NDArray[Any]) -> None:

@@ -9,8 +9,9 @@ from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 from numpy.typing import NDArray
-from qgym import Rewarder
 from scipy.sparse import csr_matrix
+
+from qgym import Rewarder
 
 
 class BasicRewarder(Rewarder):
@@ -20,7 +21,7 @@ class BasicRewarder(Rewarder):
 
     def __init__(
         self,
-        illegal_action_penalty: Optional[float] = -10,
+        illegal_action_penalty: Optional[float] = -100,
         reward_per_edge: Optional[float] = 5,
         penalty_per_edge: Optional[float] = -1,
     ) -> None:
@@ -56,7 +57,7 @@ class BasicRewarder(Rewarder):
             return self._illegal_action_penalty
 
         mapped_edges = self._get_mapped_edges(new_state)
-        
+
         reward = 0.0
         for i, j in mapped_edges:
             if new_state["connection_graph_matrix"][i, j] == 0:
@@ -102,7 +103,7 @@ class BasicRewarder(Rewarder):
         """
         return (
             action[0] in old_state["physical_qubits_mapped"]
-            and action[1] in old_state["logical_qubits_mapped"]
+            or action[1] in old_state["logical_qubits_mapped"]
         )
 
     def _get_neighbours(self, qubit_idx: int, adjacency_matrix: csr_matrix) -> set:

@@ -1,6 +1,6 @@
 """This module contains a class that can generate random circuits"""
-from typing import List, Tuple, Union, Optional
 from numbers import Integral
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from numpy.random import Generator, default_rng
