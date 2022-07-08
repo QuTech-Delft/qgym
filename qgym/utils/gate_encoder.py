@@ -1,7 +1,6 @@
 """
 This module contains the GateEncoder class which encoded gate to integers and back.
 """
-from copy import deepcopy
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Tuple, Union
 
 
@@ -19,15 +18,11 @@ class GateEncoder:
         self.encoding_dct = {}
         self.decoding_dct = {}
         self.longest_name = 0
-        for idx, gate_name in enumerate(gates):
-            if gate_name in self.encoding_dct:
-                # Don't save duplicate names
-                idx -= 1
-            else:
-                self.encoding_dct[gate_name] = idx
-                self.decoding_dct[idx] = gate_name
-                self.longest_name = max(self.longest_name, len(gate_name))
-        self.n_gates = idx + 1
+        for idx, gate_name in enumerate(gates, 1):
+            self.encoding_dct[gate_name] = idx
+            self.decoding_dct[idx] = gate_name
+            self.longest_name = max(self.longest_name, len(gate_name))
+        self.n_gates = idx
 
         return self
 

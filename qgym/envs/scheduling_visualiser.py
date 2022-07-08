@@ -1,4 +1,5 @@
-"""This module contains a class used for rendering the shceduling environment"""
+"""This module contains a class used for rendering the scheduling environment."""
+
 from numbers import Integral
 from typing import Any, Mapping
 
@@ -13,6 +14,8 @@ GATE_COLOR = (0, 0, 0)  # Black
 
 
 class SchedulingVisualiser:
+    """Visualiser class for the scheduling environment"""
+
     def __init__(
         self,
         *,
@@ -20,6 +23,12 @@ class SchedulingVisualiser:
         gate_cycle_length: Mapping[Integral, Integral],
         n_qubits: Integral
     ) -> None:
+        """Initialize the visualiser.
+
+        :param GateEncoder: GateEncoder object of the scheduling environment.
+        :param gate_cycle_length: Mapping of cycle lengths for the gates of the
+            scheduling environment.
+        :param n_qubits: number of qubits of the scheduling environment."""
 
         # Rendering data
         self.screen = None
@@ -33,17 +42,14 @@ class SchedulingVisualiser:
         self._gate_height = self.screen_height / self._n_qubits
 
     def render(self, state: Mapping[str, Any]) -> bool:
-        """
-        Render the current state using pygame.
-        :param mode: The mode to render with (default is 'human')
-        """
+        """Render the current state using pygame.
+
+        :param mode: The mode to render with (default is 'human')."""
 
         if self.screen is None:
             self.start()
 
-        # Check if this is a new episode. If it is a new epsidode, update the circuit.
-        if state["steps_done"] == 0:
-            self._encoded_circuit = state["encoded_circuit"]
+        self._encoded_circuit = state["encoded_circuit"]
 
         self.screen.fill(BACKGROUND_COLOR)
 
@@ -63,6 +69,10 @@ class SchedulingVisualiser:
     def _draw_scheduled_gate(
         self, gate_idx: Integral, scheduled_cycle: Integral
     ) -> None:
+        """Draw a gate on the screen.
+
+        :param gate_idx: index of the gate to draw.
+        :param scheduled_cycle: cycle the gate is scheduled."""
 
         gate_intname, control_qubit, target_qubit = self._encoded_circuit[gate_idx]
 
@@ -73,6 +83,11 @@ class SchedulingVisualiser:
     def _draw_gate_block(
         self, gate_intname: Integral, qubit: Integral, scheduled_cycle: Integral
     ) -> None:
+        """Draw a single block of a gate (gates can consist of 1 or 2 blocks).
+
+        :param gate_intname: integer encoding of the gate name.
+        :param qubit: qubit in which the gate acts.
+        :param scheduled_cycle: cycle in which the gate is scheduled."""
 
         gate_width = self._cycle_width * self._gate_cycle_length[gate_intname]
 
@@ -88,7 +103,9 @@ class SchedulingVisualiser:
         text_postition = text.get_rect(center=gate_box.center)
         self.screen.blit(text, text_postition)
 
-    def start(self):
+    def start(self) -> None:
+        """Start pygame."""
+
         pygame.display.init()
         pygame.display.set_caption("Scheduling Environment")
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
@@ -98,10 +115,9 @@ class SchedulingVisualiser:
 
         self.is_open = True
 
-    def close(self):
-        """
-        Close the screen used for rendering
-        """
+    def close(self) -> None:
+        """Close the screen used for rendering."""
+
         if self.screen is not None:
             pygame.display.quit()
             pygame.font.quit()
