@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 from stable_baselines3.common.env_checker import check_env
 
 import qgym.spaces
