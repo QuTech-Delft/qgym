@@ -67,7 +67,7 @@ class Scheduling(Environment):
             np.full(2 * max_gates, n_qubits + 1), rng=self.rng
         )
         scheduled_after_space = qgym.spaces.MultiDiscrete(
-            np.full(n_qubits * max_gates, max_gates + 1), rng=self.rng
+            np.full(2 * max_gates, max_gates), rng=self.rng
         )
 
         self.observation_space = qgym.spaces.Dict(
@@ -241,10 +241,7 @@ class Scheduling(Environment):
 
         gate_names = np.zeros(self._state["max_gates"], dtype=int)
         acts_on = np.zeros((2, self._state["max_gates"]), dtype=int)
-        scheduled_after = np.zeros(
-            (self._state["n_qubits"], self._state["max_gates"]),
-            dtype=int,
-        )
+        scheduled_after = np.zeros((2, self._state["max_gates"]), dtype=int)
 
         for idx, (gate_name, qubit1, qubit2) in enumerate(circuit):
             gate_names[idx] = gate_name
@@ -295,8 +292,8 @@ class Scheduling(Environment):
                 legal_actions[gate_idx] = True
 
             # Check if dependent gates are already scheduled
-            for qubit in range(self._state["n_qubits"]):
-                dependent_gate = self._state["scheduled_after"][qubit, gate_idx]
+            for row in range(2):
+                dependent_gate = self._state["scheduled_after"][row, gate_idx]
                 if dependent_gate == 0:
                     continue
 

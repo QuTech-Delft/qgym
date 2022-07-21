@@ -100,6 +100,36 @@ def test_action_space() -> None:
         assert sample[1] in range(2)
 
 
+def test_scheduled_after() -> None:
+    env = Scheduling(mp)
+    circuit = [("cnot", 1, 2), ("x", 2, 2), ("cnot", 1, 3)]
+    obs = env.reset(circuit=circuit)
+
+    expected_scheduled_after1 = np.zeros(400, dtype=int)
+    expected_scheduled_after1[0] = 1
+    expected_scheduled_after1[200] = 2
+
+    expected_scheduled_after2 = np.zeros(400, dtype=int)
+    expected_scheduled_after2[0] = 2
+    expected_scheduled_after2[200] = 1
+
+    assert (obs["scheduled_after"] == expected_scheduled_after1).all() or (
+        obs["scheduled_after"] == expected_scheduled_after2
+    ).all()
+
+
+def test_legal_actions() -> None:
+    env = Scheduling(mp)
+    circuit = [("cnot", 1, 2), ("x", 2, 2), ("cnot", 1, 3)]
+    obs = env.reset(circuit=circuit)
+
+    expected_legal_actions = np.zeros(200, dtype=bool)
+    expected_legal_actions[1] = True
+    expected_legal_actions[2] = True
+
+    assert (obs["legal_actions"] == expected_legal_actions).all()
+
+
 def test_validity() -> None:
     env = Scheduling(mp)
     check_env(env, warn=True)  # todo: maybe switch this to the gym env checker
