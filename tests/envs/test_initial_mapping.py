@@ -8,7 +8,7 @@ from scipy.sparse import csr_matrix
 from stable_baselines3.common.env_checker import check_env
 
 from qgym.envs import InitialMapping
-from qgym.envs.initial_mapping_rewarders import (
+from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
     SingleStepRewarder,

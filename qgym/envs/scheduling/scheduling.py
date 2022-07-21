@@ -8,8 +8,8 @@ from numpy.typing import NDArray
 
 import qgym.spaces
 from qgym.environment import Environment
-from qgym.envs.scheduling_rewarders import BasicRewarder
-from qgym.envs.scheduling_visualiser import SchedulingVisualiser
+from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
+from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.utils import GateEncoder, RandomCircuitGenerator
 
 

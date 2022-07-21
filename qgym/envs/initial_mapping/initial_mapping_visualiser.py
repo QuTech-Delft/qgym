@@ -26,7 +26,7 @@ class InitialMappingVisualiser:
 
         self.connection_graph = connection_graph
         self.connection_graph_nodes = connection_graph.nodes
-        self.connection_graph_matrix = nx.to_scipy_sparse_matrix(connection_graph)
+        self.connection_graph_matrix = nx.to_scipy_sparse_array(connection_graph)
 
         # Rendering data
         self.screen = None

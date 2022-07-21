@@ -8,13 +8,15 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np
-from networkx import Graph, fast_gnp_random_graph, grid_graph, to_scipy_sparse_matrix
+from networkx import Graph, fast_gnp_random_graph, grid_graph, to_scipy_sparse_array
 from numpy.typing import NDArray
 
 import qgym.spaces
 from qgym.environment import Environment
-from qgym.envs.initial_mapping_rewarders import BasicRewarder
-from qgym.envs.initial_mapping_visualiser import InitialMappingVisualiser
+from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
+from qgym.envs.initial_mapping.initial_mapping_visualiser import (
+    InitialMappingVisualiser,
+)
 from qgym.utils import check_adjacency_matrix
 
 
@@ -60,9 +62,9 @@ class InitialMapping(
 
         # Define internal attributes
         self._state = {
-            "connection_graph_matrix": to_scipy_sparse_matrix(self._connection_graph),
+            "connection_graph_matrix": to_scipy_sparse_array(self._connection_graph),
             "num_nodes": self._connection_graph.number_of_nodes(),
-            "interaction_graph_matrix": to_scipy_sparse_matrix(
+            "interaction_graph_matrix": to_scipy_sparse_array(
                 self._interaction_graph
             ).toarray(),
             "steps_done": 0,
@@ -125,7 +127,7 @@ class InitialMapping(
             self._connection_graph.number_of_nodes(),
             self._interaction_graph_edge_probability,
         )
-        self._state["interaction_graph_matrix"] = to_scipy_sparse_matrix(
+        self._state["interaction_graph_matrix"] = to_scipy_sparse_array(
             self._interaction_graph
         ).toarray()
         self._state["steps_done"] = 0
@@ -162,13 +164,13 @@ class InitialMapping(
 
         for (u, v) in self._connection_graph.edges():
             self._connection_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
-        self._state["connection_graph_matrix"] = to_scipy_sparse_matrix(
+        self._state["connection_graph_matrix"] = to_scipy_sparse_array(
             self._connection_graph
         )
 
         for (u, v) in self._interaction_graph.edges():
             self._interaction_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
-        self._state["interaction_graph_matrix"] = to_scipy_sparse_matrix(
+        self._state["interaction_graph_matrix"] = to_scipy_sparse_array(
             self._interaction_graph
         )
 
