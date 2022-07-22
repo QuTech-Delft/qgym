@@ -74,11 +74,11 @@ class SchedulingVisualiser:
         :param gate_idx: index of the gate to draw.
         :param scheduled_cycle: cycle the gate is scheduled."""
 
-        gate_intname, control_qubit, target_qubit = self._encoded_circuit[gate_idx]
+        gate = self._encoded_circuit[gate_idx]
 
-        self._draw_gate_block(gate_intname, control_qubit, scheduled_cycle)
-        if control_qubit != target_qubit:
-            self._draw_gate_block(gate_intname, target_qubit, scheduled_cycle)
+        self._draw_gate_block(gate.name, gate.q1, scheduled_cycle)
+        if gate.q1 != gate.q2:
+            self._draw_gate_block(gate.name, gate.q2, scheduled_cycle)
 
     def _draw_gate_block(
         self, gate_intname: Integral, qubit: Integral, scheduled_cycle: Integral

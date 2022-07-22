@@ -7,6 +7,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
+from qgym._custom_types import Gate
 from qgym.environment import Environment
 from qgym.envs.scheduling.rulebook import CommutionRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
@@ -150,20 +151,20 @@ class Scheduling(Environment):
 
         :param gate_idx: Index of the gate to schedule"""
 
-        gate_name, qubit1, qubit2 = self._state["encoded_circuit"][gate_idx]
+        gate = self._state["encoded_circuit"][gate_idx]
 
         # add the gate to the schedule
         self._state["schedule"][gate_idx] = self._state["cycle"]
 
-        self._state["busy"][qubit1] = self._state["gate_cycle_length"][gate_name]
-        self._state["busy"][qubit2] = self._state["gate_cycle_length"][gate_name]
+        self._state["busy"][gate.q1] = self._state["gate_cycle_length"][gate.name]
+        self._state["busy"][gate.q2] = self._state["gate_cycle_length"][gate.name]
 
-        if gate_name in self._state["not_in_same_cycle"]:
-            for gate_to_exlude in self._state["not_in_same_cycle"][gate_name]:
+        if gate.name in self._state["not_in_same_cycle"]:
+            for gate_to_exlude in self._state["not_in_same_cycle"][gate.name]:
                 self._exclude_gate(gate_to_exlude)
 
-        if gate_name in self._state["same_start"]:
-            self._state["exclude_in_next_cycle"].add(gate_name)
+        if gate.name in self._state["same_start"]:
+            self._state["exclude_in_next_cycle"].add(gate.name)
 
         # Update "dependencies" observation
         self._state["blocking_matrix"][:, gate_idx] = False
@@ -201,7 +202,7 @@ class Scheduling(Environment):
     def reset(
         self,
         *,
-        circuit: Optional[List[Tuple[str, Integral, Integral]]] = None,
+        circuit: Optional[List[Gate]] = None,
         seed: Optional[Integral] = None,
         return_info: bool = False,
     ) -> Union[
@@ -273,10 +274,10 @@ class Scheduling(Environment):
         gate_names = np.zeros(self._state["max_gates"], dtype=int)
         acts_on = np.zeros((2, self._state["max_gates"]), dtype=int)
 
-        for idx, (gate_name, qubit1, qubit2) in enumerate(circuit):
-            gate_names[idx] = gate_name
-            acts_on[0, idx] = qubit1
-            acts_on[1, idx] = qubit2
+        for gate_idx, gate in enumerate(circuit):
+            gate_names[gate_idx] = gate.name
+            acts_on[0, gate_idx] = gate.q1
+            acts_on[1, gate_idx] = gate.q2
 
         self._state["gate_names"] = gate_names
         self._state["acts_on"] = acts_on

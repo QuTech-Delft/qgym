@@ -1,7 +1,9 @@
 """
 This module contains the GateEncoder class which encoded gate to integers and back.
 """
-from typing import Any, Dict, Iterable, List, Mapping, Sequence, Tuple, Union
+from typing import Any, Dict, Iterable, List, Mapping, Sequence, Union
+
+from qgym._custom_types import Gate
 
 
 class GateEncoder:
@@ -28,10 +30,8 @@ class GateEncoder:
 
     def encode_gates(
         self,
-        gates: Union[
-            str, Mapping[str, Any], Sequence[Tuple[str, int, int]], Iterable[str]
-        ],
-    ) -> Union[int, Dict[int, Any], List[Tuple[int, int, int]]]:
+        gates: Union[str, Mapping[str, Any], Sequence[Gate], Iterable[str]],
+    ) -> Union[int, Dict[int, Any], List[Gate]]:
         """
         Encodes gate names in gates to integers, based on the gates seen in the
         learn_gates function.
@@ -58,9 +58,9 @@ class GateEncoder:
 
         elif isinstance(gates, Sequence):
             encoded_gates = []
-            for gate_name, control_qubit, target_qubit in gates:
-                gate_encoding = self.encoding_dct[gate_name]
-                encoded_gates.append((gate_encoding, control_qubit, target_qubit))
+            for gate in gates:
+                encoded_name = self.encoding_dct[gate.name]
+                encoded_gates.append(Gate(encoded_name, gate.q1, gate.q2))
 
         elif isinstance(gates, Iterable):
             encoded_gates = []
@@ -77,10 +77,8 @@ class GateEncoder:
 
     def decode_gates(
         self,
-        encoded_gates: Union[
-            int, Mapping[int, Any], Sequence[Tuple[int, int, int]], Iterable[int]
-        ],
-    ) -> Union[str, Dict[str, Any], List[Tuple[str, int, int]]]:
+        encoded_gates: Union[int, Mapping[int, Any], Sequence[Gate], Iterable[int]],
+    ) -> Union[str, Dict[str, Any], List[Gate]]:
         """
         Decodes int encoded gate names to the original gate names based on the gates
         seen in the learn_gates function.
@@ -99,9 +97,9 @@ class GateEncoder:
 
         elif isinstance(encoded_gates, Sequence):
             decoded_gates = []
-            for gate_int, control_qubit, target_qubit in encoded_gates:
-                decoded_gate = self.decoding_dct[gate_int]
-                decoded_gates.append((decoded_gate, control_qubit, target_qubit))
+            for gate in encoded_gates:
+                decoded_gatename = self.decoding_dct[gate.name]
+                decoded_gates.append(Gate(decoded_gatename, gate.q1, gate.q2))
 
         elif isinstance(encoded_gates, Iterable):
             decoded_gates = []

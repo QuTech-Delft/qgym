@@ -1,9 +1,11 @@
 """This module contains a class that can generate random circuits"""
 from numbers import Integral
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 import numpy as np
 from numpy.random import Generator, default_rng
+
+from qgym._custom_types import Gate
 
 
 class RandomCircuitGenerator:
@@ -29,9 +31,7 @@ class RandomCircuitGenerator:
     def rng(self, rng: Generator) -> None:
         self._rng = rng
 
-    def generate_circuit(
-        self, n_gates: Union[str, Integral] = "random"
-    ) -> List[Tuple[str, int, int]]:
+    def generate_circuit(self, n_gates: Union[str, Integral] = "random") -> List[Gate]:
         """Make a random circuit with prep, measure, x, y, z, and cnot operations
 
         :param n_gates: If "random", then a circuit of random length will be made, if
@@ -47,21 +47,21 @@ class RandomCircuitGenerator:
 
         # Every circuit should start by initializing the qubits
         for qubit in range(self.n_qubits):
-            circuit[qubit] = ("prep", qubit, qubit)
+            circuit[qubit] = Gate("prep", qubit, qubit)
 
-        gates = ["x", "y", "z", "cnot", "measure"]
+        gate_names = ["x", "y", "z", "cnot", "measure"]
         p = [0.16, 0.16, 0.16, 0.5, 0.02]
         for idx in range(self.n_qubits, n_gates):
-            gate = self.rng.choice(gates, p=p)
+            name = self.rng.choice(gate_names, p=p)
 
-            if gate == "cnot":
-                control_qubit, target_qubit = self.rng.choice(
+            if name == "cnot":
+                q1, q2 = self.rng.choice(
                     np.arange(self.n_qubits), size=2, replace=False
                 )
             else:
-                control_qubit = self.rng.integers(self.n_qubits)
-                target_qubit = control_qubit
+                q1 = self.rng.integers(self.n_qubits)
+                q2 = q1
 
-            circuit[idx] = (gate, control_qubit, target_qubit)
+            circuit[idx] = Gate(name, q1, q2)
 
         return circuit
