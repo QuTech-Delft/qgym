@@ -32,34 +32,36 @@ class Scheduling(Environment):
             raise NotImplementedError(
                 "Loading machine properties from files is not yet implemented."
             )
-
+        
         n_qubits = machine_properties["qubit_number"]
-        gate_encoder = GateEncoder().learn_gates(machine_properties["gates"])
-        gate_cycle_length = gate_encoder.encode_gates(machine_properties["gates"])
-        same_start = gate_encoder.encode_gates(
-            machine_properties["machine_restrictions"]["same_start"]
-        )
-        not_in_same_cycle = gate_encoder.encode_gates(
-            machine_properties["machine_restrictions"]["not_in_same_cycle"]
-        )
-        random_circuit_generator = RandomCircuitGenerator(
+        self._gate_encoder = GateEncoder().learn_gates(machine_properties["gates"])
+        self._random_circuit_generator = RandomCircuitGenerator(
             n_qubits, max_gates, rng=self.rng
         )
+        self._commutation_rulebook = CommutionRulebook()
+        
+        
+        gate_cycle_length = self._gate_encoder.encode_gates(machine_properties["gates"])
+        same_start = self._gate_encoder.encode_gates(
+            machine_properties["machine_restrictions"]["same_start"]
+        )
+        not_in_same_cycle = self._gate_encoder.encode_gates(
+            machine_properties["machine_restrictions"]["not_in_same_cycle"]
+        )
+        
+        
 
         self._state = {
             "max_gates": max_gates,
             "n_qubits": n_qubits,
-            "gate_encoder": gate_encoder,
-            "random_circuit_generator": random_circuit_generator,
             "gate_cycle_length": gate_cycle_length,
             "same_start": same_start,
             "not_in_same_cycle": not_in_same_cycle,
-            "commutation_rulebook": CommutionRulebook(),
         }
 
         self.reset()
 
-        n_gate_names = gate_encoder.n_gates
+        n_gate_names = self._gate_encoder.n_gates
 
         legal_actions_space = qgym.spaces.MultiBinary(max_gates, rng=self.rng)
         gate_names_space = qgym.spaces.MultiDiscrete(
@@ -84,7 +86,7 @@ class Scheduling(Environment):
 
         self._rewarder = BasicRewarder()
         self._visualiser = SchedulingVisualiser(
-            gate_encoder=gate_encoder,
+            gate_encoder=self._gate_encoder,
             gate_cycle_length=gate_cycle_length,
             n_qubits=n_qubits,
         )
@@ -222,9 +224,9 @@ class Scheduling(Environment):
 
         # Generate a circuit if None is given
         if circuit is None:
-            circuit = self._state["random_circuit_generator"].generate_circuit()
+            circuit = self._random_circuit_generator.generate_circuit()
 
-        encoded_circuit = self._state["gate_encoder"].encode_gates(circuit)
+        encoded_circuit = self._gate_encoder.encode_gates(circuit)
         self._state["encoded_circuit"] = encoded_circuit
 
         self._state["schedule"] = np.full(len(circuit), -1, dtype=int)
@@ -253,9 +255,7 @@ class Scheduling(Environment):
         self._state["gate_names"] = gate_names
         self._state["acts_on"] = acts_on
 
-        scheduled_after = self._state["commutation_rulebook"].get_scheduled_after(
-            circuit
-        )
+        scheduled_after = self._commutation_rulebook.get_scheduled_after(circuit)
         self._state["scheduled_after"] = np.pad(
             scheduled_after, [(0, 0), (0, self._state["max_gates"] - len(circuit))]
         )
@@ -312,7 +312,7 @@ class Scheduling(Environment):
             return deepcopy(self._state["encoded_circuit"])
 
         elif mode.lower() == "human":
-            return self._state["gate_encoder"].decode_gates(
+            return self._gate_encoder.decode_gates(
                 self._state["encoded_circuit"]
             )
 

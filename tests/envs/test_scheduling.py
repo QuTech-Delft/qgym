@@ -48,8 +48,8 @@ def test_state() -> None:
     assert isinstance(env._state["n_qubits"], int)
     assert env._state["n_qubits"] == mp["qubit_number"]
 
-    assert isinstance(env._state["gate_encoder"], GateEncoder)
-    gate_encoder = env._state["gate_encoder"]
+    assert isinstance(env._gate_encoder, GateEncoder)
+    gate_encoder = env._gate_encoder
     assert hasattr(gate_encoder, "encoding_dct")
     assert hasattr(gate_encoder, "decoding_dct")
     assert hasattr(gate_encoder, "longest_name")
