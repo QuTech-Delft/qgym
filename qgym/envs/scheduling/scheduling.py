@@ -8,6 +8,7 @@ from numpy.typing import NDArray
 
 import qgym.spaces
 from qgym.environment import Environment
+from qgym.envs.scheduling.rulebook import CommutionRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.utils import GateEncoder, RandomCircuitGenerator
@@ -53,6 +54,7 @@ class Scheduling(Environment):
             "gate_cycle_length": gate_cycle_length,
             "same_start": same_start,
             "not_in_same_cycle": not_in_same_cycle,
+            "commutation_rulebook": CommutionRulebook(),
         }
 
         self.reset()
@@ -241,35 +243,22 @@ class Scheduling(Environment):
 
         gate_names = np.zeros(self._state["max_gates"], dtype=int)
         acts_on = np.zeros((2, self._state["max_gates"]), dtype=int)
-        scheduled_after = np.zeros((2, self._state["max_gates"]), dtype=int)
+        # scheduled_after = np.zeros((2, self._state["max_gates"]), dtype=int)
 
         for idx, (gate_name, qubit1, qubit2) in enumerate(circuit):
             gate_names[idx] = gate_name
             acts_on[0, idx] = qubit1
             acts_on[1, idx] = qubit2
 
-            # check the dependencies
-            scheduled_after[0, idx] = self._find_next_gate(idx, qubit1)
-            if qubit1 != qubit2:
-                scheduled_after[1, idx] = self._find_next_gate(idx, qubit2)
-
         self._state["gate_names"] = gate_names
         self._state["acts_on"] = acts_on
-        self._state["scheduled_after"] = scheduled_after
 
-    def _find_next_gate(self, start_idx: Integral, qubit: Integral) -> int:
-        """Finds the next gate acting on the qubit, start searching from start_idx.
-
-        :param start_idx: index to start the search.
-        :param qubit: qubits to search on.
-        :return: index of the next gate acting on qubit."""
-
-        for idx_next in range(start_idx + 1, len(self._state["encoded_circuit"])):
-            qubit1_next = self._state["encoded_circuit"][idx_next][1]
-            qubit2_next = self._state["encoded_circuit"][idx_next][2]
-            if qubit == qubit1_next or qubit == qubit2_next:
-                return idx_next
-        return 0
+        scheduled_after = self._state["commutation_rulebook"].get_scheduled_after(
+            circuit
+        )
+        self._state["scheduled_after"] = np.pad(
+            scheduled_after, [(0, 0), (0, self._state["max_gates"] - len(circuit))]
+        )
 
     def _exclude_gate(self, gate_name: Integral) -> None:
         """Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.

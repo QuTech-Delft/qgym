@@ -105,17 +105,21 @@ def test_scheduled_after() -> None:
     circuit = [("cnot", 1, 2), ("x", 2, 2), ("cnot", 1, 3)]
     obs = env.reset(circuit=circuit)
 
-    expected_scheduled_after1 = np.zeros(400, dtype=int)
-    expected_scheduled_after1[0] = 1
-    expected_scheduled_after1[200] = 2
+    expected_scheduled_after = np.zeros(400, dtype=int)
+    expected_scheduled_after[0] = 2
+    expected_scheduled_after[200] = 1
 
-    expected_scheduled_after2 = np.zeros(400, dtype=int)
-    expected_scheduled_after2[0] = 2
-    expected_scheduled_after2[200] = 1
+    assert (obs["scheduled_after"] == expected_scheduled_after).all()
 
-    assert (obs["scheduled_after"] == expected_scheduled_after1).all() or (
-        obs["scheduled_after"] == expected_scheduled_after2
-    ).all()
+
+def test_same_gates_commute() -> None:
+    env = Scheduling(mp)
+    circuit = [("cnot", 1, 2), ("cnot", 1, 2)]
+    obs = env.reset(circuit=circuit)
+
+    expected_scheduled_after = np.zeros(400, dtype=int)
+
+    assert (obs["scheduled_after"] == expected_scheduled_after).all()
 
 
 def test_legal_actions() -> None:
