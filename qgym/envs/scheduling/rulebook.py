@@ -1,3 +1,19 @@
+"""This module contains the CommutationRulebook class together with basic commutation
+rules used in the scheduling environment.
+
+Example:
+
+# cnot gates with the same controll qubit commute
+def cnot_commutation(gate1, gate2):
+    if gate1[0] == "cnot" and gate2[0] == "cnot":
+        if gate1[1] ==  gate2[1]:
+            return True, True
+    return False, False
+
+rulebook = CommutionRulebook()
+rulebook.add_rule(rulebook)
+"""
+
 from numbers import Integral
 from typing import Callable, List, Tuple
 
@@ -80,7 +96,7 @@ class CommutionRulebook:
                 return True
         return False
 
-    def add_rules(
+    def add_rule(
         self,
         rule: Callable[
             [Tuple[str, Integral, Integral], Tuple[str, Integral, Integral]],
