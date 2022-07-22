@@ -68,7 +68,7 @@ def test_observation_space() -> None:
         ("legal_actions", qgym.spaces.MultiBinary),
         ("gate_names", qgym.spaces.MultiDiscrete),
         ("acts_on", qgym.spaces.MultiDiscrete),
-        ("scheduled_after", qgym.spaces.MultiDiscrete),
+        ("dependencies", qgym.spaces.MultiDiscrete),
     ]
 
     for name, space_type in observation_space:
@@ -101,15 +101,15 @@ def test_action_space() -> None:
 
 
 def test_scheduled_after() -> None:
-    env = Scheduling(mp)
+    env = Scheduling(mp, dependency_depth=2)
     circuit = [("cnot", 1, 2), ("x", 2, 2), ("cnot", 1, 3)]
     obs = env.reset(circuit=circuit)
 
     expected_scheduled_after = np.zeros(400, dtype=int)
-    expected_scheduled_after[0] = 2
-    expected_scheduled_after[200] = 1
+    expected_scheduled_after[0] = 1
+    expected_scheduled_after[200] = 2
 
-    assert (obs["scheduled_after"] == expected_scheduled_after).all()
+    assert (obs["dependencies"] == expected_scheduled_after).all()
 
 
 def test_same_gates_commute() -> None:
@@ -117,9 +117,9 @@ def test_same_gates_commute() -> None:
     circuit = [("cnot", 1, 2), ("cnot", 1, 2)]
     obs = env.reset(circuit=circuit)
 
-    expected_scheduled_after = np.zeros(400, dtype=int)
+    expected_scheduled_after = np.zeros(200, dtype=int)
 
-    assert (obs["scheduled_after"] == expected_scheduled_after).all()
+    assert (obs["dependencies"] == expected_scheduled_after).all()
 
 
 def test_legal_actions() -> None:

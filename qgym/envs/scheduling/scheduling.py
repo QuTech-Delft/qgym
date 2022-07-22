@@ -21,26 +21,30 @@ class Scheduling(Environment):
         self,
         machine_properties: Union[Mapping[str, Any], str],
         max_gates: Integral = 200,
+        dependency_depth: Integral = 1,
     ) -> None:
         """Initialize the scheduling environment.
 
         :param machine_properties: mapping of machine properties.
-        :param max_gates: maximum number of gates allowed in a circuit."""
+        :param max_gates: maximum number of gates allowed in a circuit.
+        :param dependency_depth: number of dependencies given in the observation.
+            Detemines the shape of the "dependencies" observation, which has the shape
+            (dependency_depth, max_gates)"""
         self._reward_range = (-float("inf"), float("inf"))
 
         if isinstance(machine_properties, str):
             raise NotImplementedError(
                 "Loading machine properties from files is not yet implemented."
             )
-        
+
         n_qubits = machine_properties["qubit_number"]
+        self._dependency_depth = dependency_depth
         self._gate_encoder = GateEncoder().learn_gates(machine_properties["gates"])
         self._random_circuit_generator = RandomCircuitGenerator(
             n_qubits, max_gates, rng=self.rng
         )
         self._commutation_rulebook = CommutionRulebook()
-        
-        
+
         gate_cycle_length = self._gate_encoder.encode_gates(machine_properties["gates"])
         same_start = self._gate_encoder.encode_gates(
             machine_properties["machine_restrictions"]["same_start"]
@@ -48,8 +52,6 @@ class Scheduling(Environment):
         not_in_same_cycle = self._gate_encoder.encode_gates(
             machine_properties["machine_restrictions"]["not_in_same_cycle"]
         )
-        
-        
 
         self._state = {
             "max_gates": max_gates,
@@ -70,8 +72,8 @@ class Scheduling(Environment):
         acts_on_space = qgym.spaces.MultiDiscrete(
             np.full(2 * max_gates, n_qubits + 1), rng=self.rng
         )
-        scheduled_after_space = qgym.spaces.MultiDiscrete(
-            np.full(2 * max_gates, max_gates), rng=self.rng
+        dependencies_space = qgym.spaces.MultiDiscrete(
+            np.full(dependency_depth * max_gates, max_gates), rng=self.rng
         )
 
         self.observation_space = qgym.spaces.Dict(
@@ -79,7 +81,7 @@ class Scheduling(Environment):
             legal_actions=legal_actions_space,
             gate_names=gate_names_space,
             acts_on=acts_on_space,
-            scheduled_after=scheduled_after_space,
+            dependencies=dependencies_space,
         )
 
         self.action_space = qgym.spaces.MultiDiscrete([max_gates, 2], rng=self.rng)
@@ -98,7 +100,7 @@ class Scheduling(Environment):
         return {
             "gate_names": self._state["gate_names"],
             "acts_on": self._state["acts_on"].flatten(),
-            "scheduled_after": self._state["scheduled_after"].flatten(),
+            "dependencies": self._state["dependencies"].flatten(),
             "legal_actions": self._state["legal_actions"],
         }
 
@@ -148,8 +150,11 @@ class Scheduling(Environment):
 
         :param gate_idx: Index of the gate to schedule"""
 
-        self._state["schedule"][gate_idx] = self._state["cycle"]
         gate_name, qubit1, qubit2 = self._state["encoded_circuit"][gate_idx]
+
+        # add the gate to the schedule
+        self._state["schedule"][gate_idx] = self._state["cycle"]
+
         self._state["busy"][qubit1] = self._state["gate_cycle_length"][gate_name]
         self._state["busy"][qubit2] = self._state["gate_cycle_length"][gate_name]
 
@@ -159,6 +164,10 @@ class Scheduling(Environment):
 
         if gate_name in self._state["same_start"]:
             self._state["exclude_in_next_cycle"].add(gate_name)
+
+        # Update "dependencies" observation
+        self._state["blocking_matrix"][:, gate_idx] = False
+        self._state["dependencies"] = self._get_dependencies()
 
         self._update_legal_actions()
 
@@ -225,6 +234,10 @@ class Scheduling(Environment):
         # Generate a circuit if None is given
         if circuit is None:
             circuit = self._random_circuit_generator.generate_circuit()
+        self._state[
+            "blocking_matrix"
+        ] = self._commutation_rulebook.make_blocking_matrix(circuit)
+        self._state["dependencies"] = self._get_dependencies()
 
         encoded_circuit = self._gate_encoder.encode_gates(circuit)
         self._state["encoded_circuit"] = encoded_circuit
@@ -237,15 +250,28 @@ class Scheduling(Environment):
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, return_info=return_info)
 
+    def _get_dependencies(self) -> NDArray[np.int_]:
+        """:return: array of shape (dependency_depth, max_gates) with the dependencies
+        for each gate."""
+        dependencies = np.zeros(
+            (self._dependency_depth, self._state["max_gates"]), dtype=int
+        )
+        for gate_idx, blocking_row in enumerate(self._state["blocking_matrix"]):
+
+            blocking_gates = blocking_row.nonzero()[0]
+            for depth in range(min(self._dependency_depth, blocking_gates.shape[0])):
+                dependencies[depth, gate_idx] = blocking_gates[depth]
+
+        return dependencies
+
     def _update_episode_constant_observations(self) -> None:
-        """Updates episode constant observations "gate_names", "acts_on" and
-        "scheduled_after" based on the circuit of this episode."""
+        """Updates episode constant observations "gate_names" and "acts_on" based on
+        the circuit of this episode."""
 
         circuit = self._state["encoded_circuit"]
 
         gate_names = np.zeros(self._state["max_gates"], dtype=int)
         acts_on = np.zeros((2, self._state["max_gates"]), dtype=int)
-        # scheduled_after = np.zeros((2, self._state["max_gates"]), dtype=int)
 
         for idx, (gate_name, qubit1, qubit2) in enumerate(circuit):
             gate_names[idx] = gate_name
@@ -254,11 +280,6 @@ class Scheduling(Environment):
 
         self._state["gate_names"] = gate_names
         self._state["acts_on"] = acts_on
-
-        scheduled_after = self._commutation_rulebook.get_scheduled_after(circuit)
-        self._state["scheduled_after"] = np.pad(
-            scheduled_after, [(0, 0), (0, self._state["max_gates"] - len(circuit))]
-        )
 
     def _exclude_gate(self, gate_name: Integral) -> None:
         """Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.
@@ -280,22 +301,22 @@ class Scheduling(Environment):
             if self._state["schedule"][gate_idx] == -1:
                 legal_actions[gate_idx] = True
 
-            # Check if dependent gates are already scheduled
-            for row in range(2):
-                dependent_gate = self._state["scheduled_after"][row, gate_idx]
-                if dependent_gate == 0:
-                    continue
+            # Check if there is a non-scheduled dependent gate
 
-                if self._state["schedule"][dependent_gate] == -1:
-                    legal_actions[gate_idx] = False
+            dependent_gates = self._state["dependencies"][:, gate_idx]
+            if (dependent_gates > 0).any():
+                legal_actions[gate_idx] = False
+                continue
 
             # Check if the qubits are busy
             if self._state["busy"][qubit1] > 0 or self._state["busy"][qubit2] > 0:
                 legal_actions[gate_idx] = False
+                continue
 
             # Check if gates should be excluded
             if gate_name in self._state["excluded_gates"]:
                 legal_actions[gate_idx] = False
+                continue
 
         self._state["legal_actions"] = legal_actions
 
@@ -312,9 +333,7 @@ class Scheduling(Environment):
             return deepcopy(self._state["encoded_circuit"])
 
         elif mode.lower() == "human":
-            return self._gate_encoder.decode_gates(
-                self._state["encoded_circuit"]
-            )
+            return self._gate_encoder.decode_gates(self._state["encoded_circuit"])
 
         else:
             raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
