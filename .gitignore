@@ -6,7 +6,15 @@
 /build/
 /dist/
 /*.egg-info/
-/__pycache__/
+**/__pycache__/
+*.whl
+
+# Jupyter
+**/.ipynb_checkpoints/
 
 # Pytest
 **/.pytest_cache/
+
+# Data/pictures
+/images/
+/openql_output/
