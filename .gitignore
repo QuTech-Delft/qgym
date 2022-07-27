@@ -3,6 +3,10 @@
 
 # Python
 /venv/
+/build/
+/dist/
+/*.egg-info/
+/__pycache__/
 
 # Pytest
 **/.pytest_cache/
