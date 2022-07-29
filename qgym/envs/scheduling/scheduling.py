@@ -21,8 +21,10 @@ class Scheduling(Environment):
     def __init__(
         self,
         machine_properties: Union[Mapping[str, Any], str],
+        *,
         max_gates: Integral = 200,
         dependency_depth: Integral = 1,
+        rulebook: Optional[CommutionRulebook] = None,
     ) -> None:
         """Initialize the scheduling environment.
 
@@ -30,7 +32,11 @@ class Scheduling(Environment):
         :param max_gates: maximum number of gates allowed in a circuit.
         :param dependency_depth: number of dependencies given in the observation.
             Detemines the shape of the "dependencies" observation, which has the shape
-            (dependency_depth, max_gates)"""
+            (dependency_depth, max_gates)
+        :param rulebook: rulebook describing the commutation rules. If None is given,
+            the default CommutationRulebook will be used. (See CommutationRulebook for
+            more info on the default rules.)"""
+
         self._reward_range = (-float("inf"), float("inf"))
 
         if isinstance(machine_properties, str):
@@ -44,15 +50,23 @@ class Scheduling(Environment):
         self._random_circuit_generator = RandomCircuitGenerator(
             n_qubits, max_gates, rng=self.rng
         )
-        self._commutation_rulebook = CommutionRulebook()
+
+        if rulebook is None:
+            self._commutation_rulebook = CommutionRulebook()
+        elif isinstance(rulebook, CommutionRulebook):
+            self._commutation_rulebook = rulebook
+        else:
+            msg = "Rulebook must be None or of type CommutionRulebook, but was of type "
+            msg += f"{type(rulebook)}."
+            raise TypeError(msg)
 
         gate_cycle_length = self._gate_encoder.encode_gates(machine_properties["gates"])
-        same_start = self._gate_encoder.encode_gates(
-            machine_properties["machine_restrictions"]["same_start"]
-        )
-        not_in_same_cycle = self._gate_encoder.encode_gates(
-            machine_properties["machine_restrictions"]["not_in_same_cycle"]
-        )
+
+        same_start = machine_properties["machine_restrictions"]["same_start"]
+        same_start = self._gate_encoder.encode_gates(same_start)
+
+        diff_cycle = machine_properties["machine_restrictions"]["not_in_same_cycle"]
+        not_in_same_cycle = self._gate_encoder.encode_gates(diff_cycle)
 
         self._state = {
             "max_gates": max_gates,

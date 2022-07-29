@@ -3,6 +3,8 @@ rules used in the scheduling environment.
 
 Example:
 
+from qgym.env.scheduling.rulebook import CommutionRulebook
+
 # cnot gates with the same controll qubit commute
 def cnot_commutation(gate1, gate2):
     if gate1[0] == "cnot" and gate2[0] == "cnot":
@@ -10,6 +12,7 @@ def cnot_commutation(gate1, gate2):
             return True
     return False
 
+# init the rulebook and add the commutation rule
 rulebook = CommutionRulebook()
 rulebook.add_rule(rulebook)
 """
@@ -29,7 +32,8 @@ class CommutionRulebook:
     def __init__(self, default_rules: bool = True):
         """Init of the CommutionRulebook.
 
-        :param default_rules: If True disjoint qubit and gates that are exactly the
+        :param default_rules: If True, default rules are used. Default rules dictate
+            that gates with disjoint qubits commute and that gates that are exactly the
             same commute. If False, then no rules will be initialized."""
 
         if default_rules:
@@ -38,8 +42,8 @@ class CommutionRulebook:
             self.rulebook = []
 
     def make_blocking_matrix(self, circuit: List[Gate]) -> NDArray[np.int_]:
-        """Makes a 2xlen(circuit) array with dependencies based on the commutation given
-        rules.
+        """Makes a len(circuit)xlen(circuit) array with dependencies based on the given
+        commutation rules.
 
         :param circuit: circuit to check dependencies.
         :return: dependencies of the circuit bases on the rules and scheduling from
@@ -62,8 +66,7 @@ class CommutionRulebook:
 
         :param gate1: gate to check the commutation.
         :param gate2: gate to check gate1 against.
-        :return: True if gate1 commutes with gate2. False
-            otherwise."""
+        :return: True if gate1 commutes with gate2. False otherwise."""
         for rule in self.rulebook:
             if rule(gate1, gate2):
                 return True
@@ -79,7 +82,7 @@ class CommutionRulebook:
         """Add a commutation rule to the rulebook
 
         :param rule: Rule to add to the rulebook. A rule takes as input two gates and
-            returns True if two gate commutte according to the rule and False otherwise.
+            returns True if two gate commute according to the rule and False otherwise.
         """
         self.rulebook.append(rule)
 
