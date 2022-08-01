@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 import qgym.spaces
 from qgym._custom_types import Gate
 from qgym.environment import Environment
-from qgym.envs.scheduling.rulebook import CommutionRulebook
+from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.utils import GateEncoder, RandomCircuitGenerator
@@ -24,7 +24,7 @@ class Scheduling(Environment):
         *,
         max_gates: Integral = 200,
         dependency_depth: Integral = 1,
-        rulebook: Optional[CommutionRulebook] = None,
+        rulebook: Optional[CommutationRulebook] = None,
     ) -> None:
         """Initialize the scheduling environment.
 
@@ -52,11 +52,13 @@ class Scheduling(Environment):
         )
 
         if rulebook is None:
-            self._commutation_rulebook = CommutionRulebook()
-        elif isinstance(rulebook, CommutionRulebook):
+            self._commutation_rulebook = CommutationRulebook()
+        elif isinstance(rulebook, CommutationRulebook):
             self._commutation_rulebook = rulebook
         else:
-            msg = "Rulebook must be None or of type CommutionRulebook, but was of type "
+            msg = (
+                "Rulebook must be None or of type CommutationRulebook, but was of type "
+            )
             msg += f"{type(rulebook)}."
             raise TypeError(msg)
 

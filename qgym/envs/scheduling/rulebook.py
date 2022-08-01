@@ -3,7 +3,7 @@ rules used in the scheduling environment.
 
 Example:
 
-from qgym.env.scheduling.rulebook import CommutionRulebook
+from qgym.env.scheduling.rulebook import CommutationRulebook
 
 # cnot gates with the same controll qubit commute
 def cnot_commutation(gate1, gate2):
@@ -13,7 +13,7 @@ def cnot_commutation(gate1, gate2):
     return False
 
 # init the rulebook and add the commutation rule
-rulebook = CommutionRulebook()
+rulebook = CommutationRulebook()
 rulebook.add_rule(rulebook)
 """
 
@@ -26,11 +26,11 @@ from numpy.typing import NDArray
 from qgym._custom_types import Gate
 
 
-class CommutionRulebook:
+class CommutationRulebook:
     """Based on nearest blocking neighbour"""
 
     def __init__(self, default_rules: bool = True):
-        """Init of the CommutionRulebook.
+        """Init of the CommutationRulebook.
 
         :param default_rules: If True, default rules are used. Default rules dictate
             that gates with disjoint qubits commute and that gates that are exactly the
@@ -42,7 +42,7 @@ class CommutionRulebook:
             self.rulebook = []
 
     def make_blocking_matrix(self, circuit: List[Gate]) -> NDArray[np.int_]:
-        """Makes a len(circuit)xlen(circuit) array with dependencies based on the given
+        """Makes a len(circuit) x len(circuit) array with dependencies based on the given
         commutation rules.
 
         :param circuit: circuit to check dependencies.
