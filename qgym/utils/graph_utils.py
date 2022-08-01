@@ -5,7 +5,7 @@ from numpy.typing import NDArray
 
 
 def check_adjacency_matrix(adjacency_matrix: NDArray[Any]) -> None:
-    """Checks if a matrox is an adjacency matrix, i.e. a square matrix
+    """Checks if a matrix is an adjacency matrix, i.e. a square matrix
     :param adjacency_matrix: Matrix to check.
     :raise ValueError: In case the provided input is not a valid matrix."""
     if (
