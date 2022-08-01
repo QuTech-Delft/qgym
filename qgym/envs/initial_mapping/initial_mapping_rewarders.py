@@ -130,7 +130,7 @@ class BasicRewarder(Rewarder):
         :param qubit_idxs: indexes of the qubits to check
         :param adjacency_matrix: adjacency matrix of a graph
         """
-        return adjacency_matrix[qubit_idxs[0] - 1, qubit_idxs[1] - 1] != 0
+        return adjacency_matrix[qubit_idxs[0], qubit_idxs[1]] != 0
 
 
 class SingleStepRewarder(BasicRewarder):
