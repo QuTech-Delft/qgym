@@ -4,15 +4,16 @@ from typing import Any, Dict, Iterator, List, Tuple
 import numpy as np
 import pytest
 from numpy.typing import NDArray
+from scipy.sparse import csr_matrix
+from stable_baselines3.common.env_checker import check_env
+
 from qgym.envs import InitialMapping
-from qgym.envs.initial_mapping_rewarders import (
+from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
     SingleStepRewarder,
 )
 from qgym.rewarder import Rewarder
-from scipy.sparse import csr_matrix
-from stable_baselines3.common.env_checker import check_env
 
 
 def test_validity() -> None:
@@ -66,7 +67,7 @@ def test_illegal_actions(rewarder: Rewarder) -> None:
     reward = rewarder.compute_reward(
         old_state=old_state, action=action, new_state=new_state
     )
-    assert reward == -10
+    assert reward == -100
 
 
 """

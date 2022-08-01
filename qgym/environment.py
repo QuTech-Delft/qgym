@@ -1,6 +1,4 @@
-"""
-Generic abstract base class for RL environments.
-"""
+"""Generic abstract base class for RL environments."""
 
 from abc import abstractmethod
 from copy import deepcopy
@@ -38,15 +36,14 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         Tuple[ObservationT, float, bool],
         Tuple[ObservationT, float, bool, Dict[Any, Any]],
     ]:
-        """
-        Update the state based on the input action. Return observation, reward, done-indicator and (optional) debugging
-        info based on the updated state.
+        """Update the state based on the input action. Return observation, reward,
+        done-indicator and (optional) debugging info based on the updated state.
 
         :param action: Valid action to take.
         :param return_info: Whether to receive debugging info.
-        :return: A tuple containing three/four entries: 1) The updated state; 2) Reward of the new state; 3) Boolean
-            value stating whether the new state is a final state (i.e. if we are done); 4) Optional Additional
-            (debugging) information.
+        :return: A tuple containing three/four entries: 1) The updated state; 2) Reward
+            of the new state; 3) Boolean value stating whether the new state is a final
+            state (i.e. if we are done); 4) Optional Additional (debugging) information.
         """
         old_state = deepcopy(self._state)
         self._update_state(action)
@@ -67,16 +64,17 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     def reset(
         self, *, seed: Optional[int] = None, return_info: bool = False, **kwargs: Any
     ) -> Union[ObservationT, Tuple[ObservationT, Dict[Any, Any]]]:
-        """
-        Reset the environment and load a new random initial state. To be used after an episode is finished. Optionally,
-        one can provide additional options to configure the reset.
+        """Reset the environment and load a new random initial state. To be used after
+        an episode is finished. Optionally, one can provide additional options to
+        configure the reset.
 
-        :param seed: Seed for the random number generator, should only be provided (optionally) on the first reset call,
-            i.e. before any learning is done.
+        :param seed: Seed for the random number generator, should only be provided
+            (optionally) on the first reset call, i.e. before any learning is done.
         :param return_info: Whether to receive debugging info.
-        :param kwargs: Additional options to configure the reset. To be defined for a specific environment
-        :return: Initial observation and optional debugging info.
-        """
+        :param kwargs: Additional options to configure the reset. To be defined for a
+            specific environment
+        :return: Initial observation and optional debugging info."""
+
         if seed is not None:
             self.seed(seed)
 
@@ -85,29 +83,26 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         return self._obtain_observation()
 
     def seed(self, seed: Optional[int] = None) -> List[int]:
-        """
-        Seed the random number generator of this environment.
+        """Seed the random number generator of this environment.
 
         :param seed: Seed to use
-        :return: The used seeds
-        """
+        :return: The used seeds"""
+
         self._rng = default_rng(seed)
         return [seed]
 
     @abstractmethod
     def render(self, mode: str = "human") -> None:
-        """
-        Render the current state.
+        """Render the current state.
 
-        :param mode: The mode to render with (default is 'human')
-        """
+        :param mode: The mode to render with (default is 'human')."""
         raise NotImplementedError
 
     @property
     def rewarder(self) -> Rewarder:
-        """
-        The rewarder that is currently set for this environment. Is used to compute rewards after each step.
-        """
+        """The rewarder that is currently set for this environment. Is used to compute
+        rewards after each step."""
+
         return self._rewarder
 
     @rewarder.setter
@@ -117,10 +112,9 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
 
     @property
     def rng(self) -> Generator:
-        """
-        The random number generator of this environment. If none is set yet, this will generate a new one, with a
-        random seed.
-        """
+        """The random number generator of this environment. If none is set yet, this
+        will generate a new one, with a random seed."""
+
         if self._rng is None:
             self._rng = default_rng()
         return self._rng
@@ -136,42 +130,36 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     def _compute_reward(
         self, old_state: Dict[Any, Any], action: ActionT, *args: Any, **kwargs: Any
     ) -> float:
-        """
-        Asks the rewarder to compute a reward, based on the given arguments.
+        """Asks the rewarder to compute a reward, based on the given arguments.
 
         :param args: Arguments for the Rewarder.
-        :param kwargs: Keyword-arguments for the Rewarder.
-        """
+        :param kwargs: Keyword-arguments for the Rewarder."""
+
         return self._rewarder.compute_reward(
             *args, old_state=old_state, action=action, **kwargs
         )
 
     @abstractmethod
     def _update_state(self, action: ActionT) -> None:
-        """
-        Update the state of this environment using the given action.
+        """Update the state of this environment using the given action.
 
-        :param action: Action to be executed.
-        """
+        :param action: Action to be executed."""
+
         raise NotImplementedError
 
     @abstractmethod
     def _obtain_observation(self) -> ObservationT:
-        """
-        :return: Observation based on the current state.
-        """
+        """:return: Observation based on the current state."""
         raise NotImplementedError
 
     @abstractmethod
     def _is_done(self) -> bool:
-        """
-        :return: Boolean value stating whether we are in a final state.
-        """
+        """:return: Boolean value stating whether we are in a final state."""
+
         raise NotImplementedError
 
     @abstractmethod
     def _obtain_info(self) -> Dict[Any, Any]:
-        """
-        :return: Optional debugging info for the current state.
-        """
+        """:return: Optional debugging info for the current state."""
+
         raise NotImplementedError
