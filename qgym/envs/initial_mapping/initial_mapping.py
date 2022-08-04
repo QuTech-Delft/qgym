@@ -27,37 +27,33 @@ class InitialMapping(
 
     def __init__(
         self,
+        interaction_graph_edge_probability: float,
         connection_graph: Optional[Graph] = None,
-        interaction_graph: Optional[Graph] = None,
         connection_graph_matrix: Optional[NDArray[Any]] = None,
-        interaction_graph_matrix: Optional[NDArray[Any]] = None,
         connection_grid_size: Optional[Tuple[int, int]] = None,
-        interaction_graph_edge_probability: Optional[float] = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states. This
         also defines the connection and random interaction graph based on the arguments.
 
-        :param connection_graph: networkx graph representation of the QPU topology
-        :param interaction_graph: networkx graph representation of the interactions in
-            a quantum circuit
-        :param connection_graph_matrix: adjacency matrix representation of the QPU
-            topology
-        :param interaction_graph_matrix: adjacency matrix representation of the
-            interactions in a quantum circuit
-        :param connection_grid_size: Size of the connection graph. We only support
-            grid-shaped connection graphs at the moment.
         :param interaction_graph_edge_probability: Probability that an edge between any
             pair of qubits in the random interaction graph exists. the interaction
             graph will have the same number of nodes as the connection graph. Nodes
-            without any interactions can be seen as 'null' nodes."""
+            without any interactions can be seen as 'null' nodes.
+        :param connection_graph: networkx graph representation of the QPU topology
+        :param interaction_graph: networkx graph representation of the interactions in
+        :param connection_graph_matrix: adjacency matrix representation of the QPU
+            topology
+        :param interaction_graph_matrix: adjacency matrix representation of the
+        :param connection_grid_size: Size of the connection graph. We only support
+            grid-shaped connection graphs at the moment.
+        """
+
+        self._interaction_graph_edge_probability = interaction_graph_edge_probability
 
         (self._connection_graph, self._interaction_graph) = self._parse_user_input(
             connection_graph,
-            interaction_graph,
             connection_graph_matrix,
-            interaction_graph_matrix,
             connection_grid_size,
-            interaction_graph_edge_probability,
         )
 
         # Define internal attributes
@@ -103,12 +99,17 @@ class InitialMapping(
             rng=self.rng,
         )
         self._rewarder = BasicRewarder()
-        self.metadata = {"render.modes": ["human"]}
+        self.metadata = {"render.modes": ["human", "rgb_array"]}
 
         self._visualiser = InitialMappingVisualiser(self._connection_graph)
 
     def reset(
-        self, *, seed: Optional[int] = None, return_info: bool = False, **_kwargs: Any
+        self,
+        *,
+        seed: Optional[int] = None,
+        return_info: bool = False,
+        interaction_graph=None,
+        **_kwargs: Any,
     ) -> Union[
         Tuple[NDArray[np.int_], NDArray[np.int_]],
         Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[Any, Any]],
@@ -123,10 +124,13 @@ class InitialMapping(
         :return: Initial observation and optional debugging info."""
 
         # Reset the state, action space, and step number
-        self._interaction_graph = fast_gnp_random_graph(
-            self._connection_graph.number_of_nodes(),
-            self._interaction_graph_edge_probability,
-        )
+        if interaction_graph is None:
+            self._interaction_graph = fast_gnp_random_graph(
+                self._connection_graph.number_of_nodes(),
+                self._interaction_graph_edge_probability,
+            )
+        else:
+            self._interaction_graph = interaction_graph
         self._state["interaction_graph_matrix"] = to_scipy_sparse_array(
             self._interaction_graph
         ).toarray()
@@ -141,7 +145,7 @@ class InitialMapping(
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, return_info=return_info)
 
-    def render(self, mode: str = "human") -> bool:
+    def render(self, mode: str = "human") -> Any:
         """Render the current state using pygame. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The right screen
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly
@@ -152,7 +156,7 @@ class InitialMapping(
         if mode not in self.metadata["render.modes"]:
             raise ValueError("The given render mode is not supported.")
 
-        return self._visualiser.render(self._state, self._interaction_graph)
+        return self._visualiser.render(self._state, self._interaction_graph, mode)
 
     def close(self):
         """Closed the screen used for rendering"""
@@ -228,125 +232,60 @@ class InitialMapping(
     def _parse_user_input(
         self,
         connection_graph: Any,
-        interaction_graph: Any,
         connection_graph_matrix: Any,
-        interaction_graph_matrix: Any,
         connection_grid_size: Any,
-        interaction_graph_edge_probability: Any,
     ) -> Tuple[Graph, Graph]:
-        """Parse the user input from the __init__.
+        """Parse the user input from the initialization.
 
         :param connection_graph: networkx graph representation of the QPU topology
-        :param interaction_graph: networkx graph representation of the interactions in
             a quantum circuit
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
-        :param interaction_graph_matrix: adjacency matrix representation of the
-            interactions in a quantum circuit
         :param connection_grid_size: Size of the connection graph. We only support
             grid-shaped connection graphs at the moment.
-        :param interaction_graph_edge_probability: Probability that an edge between any
-            pair of qubits in the random interaction graph exists. the interaction
-            graph will have the same number of nodes as the connection graph. Nodes
-            without any interactions can be seen as 'null' nodes.
+
         :return: Tuple the connection graph and interaction graph."""
 
-        if connection_graph is not None and interaction_graph is not None:
-            return self._parse_network_graphs(connection_graph, interaction_graph)
-        elif (
-            connection_graph_matrix is not None and interaction_graph_matrix is not None
-        ):
-            return self._parse_adjacency_matrices(
-                connection_graph_matrix, interaction_graph_matrix
+        if connection_graph is not None:
+            # deepcopy the graphs for safety
+            connection_graph = deepcopy(connection_graph)
+        elif connection_graph_matrix is not None:
+            connection_graph = self._parse_adjacency_matrix(
+                connection_graph_matrix,
             )
-        elif (
-            connection_grid_size is not None
-            and interaction_graph_edge_probability is not None
-        ):
+        elif connection_grid_size is not None:
             # Generate connection grid graph
             connection_graph = grid_graph(connection_grid_size)
-            self._interaction_graph_edge_probability = (
-                interaction_graph_edge_probability
-            )
-
-            # Create a random connection graph with `num_nodes` and with edges existing
-            # with probability `interaction_graph_edge_probability` (nodes without
-            # connections can be seen as 'null' nodes)
-            interaction_graph = fast_gnp_random_graph(
-                connection_graph.number_of_nodes(),
-                interaction_graph_edge_probability,
-            )
-            return connection_graph, interaction_graph
         else:
             raise ValueError(
                 "No valid arguments for instantiation of the initial mapping "
                 "environment were provided."
             )
 
-    @staticmethod
-    def _parse_network_graphs(
-        connection_graph: Graph, interaction_graph: Graph
-    ) -> Tuple[Graph, Graph]:
-        """Parse a given interaction and connection graph to the correct format.
-
-        :param connection_graph: networkx graph representation of the QPU topology.
-        :param interaction_graph: networkx graph representation of the interactions in
-            a quantum circuit."""
-
-        if not (
-            isinstance(connection_graph, Graph) and isinstance(interaction_graph, Graph)
-        ):
-            raise TypeError(
-                "The connection graph and interaction graph must both be of type Graph."
-            )
-
-        # deepcopy the graphs for safety
-        connection_graph = deepcopy(connection_graph)
-        interaction_graph = deepcopy(interaction_graph)
-
-        n_connection = connection_graph.number_of_nodes()
-        if interaction_graph.number_of_nodes() > n_connection:
-            raise ValueError(
-                "The number of nodes in the interaction graph ("
-                f"{interaction_graph.number_of_nodes()}) should be smaller than or "
-                f"equal to the number of nodes in the connection graph ({n_connection})"
-            )
-
-        # extend the interaction graph to the proper size
-        null_index = 0
-        while interaction_graph.number_of_nodes() < n_connection:
-            interaction_graph.add_node(f"null_{null_index}")
-            null_index += 1
-
+        # Create a random connection graph with `num_nodes` and with edges existing
+        # with probability `interaction_graph_edge_probability` (nodes without
+        # connections can be seen as 'null' nodes)
+        interaction_graph = fast_gnp_random_graph(
+            connection_graph.number_of_nodes(),
+            self._interaction_graph_edge_probability,
+        )
         return connection_graph, interaction_graph
 
     @staticmethod
-    def _parse_adjacency_matrices(
-        connection_graph_matrix: NDArray[Any], interaction_graph_matrix: NDArray[Any]
+    def _parse_adjacency_matrix(
+        connection_graph_matrix: NDArray[Any],
     ) -> Tuple[Graph, Graph]:
         """Parse a given interaction and connection adjacency matrix to their respective
         graphs.
 
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology.
-        :param interaction_graph_matrix: adjacency matrix representation of the
-            interactions in a quantum circuit."""
+        """
 
-        if not check_adjacency_matrix(
-            connection_graph_matrix
-        ) or not check_adjacency_matrix(interaction_graph_matrix):
+        if not check_adjacency_matrix(connection_graph_matrix):
             raise TypeError(
                 "Both the connection and interaction graph adjacency matrices should be"
                 " square 2-D Numpy arrays."
             )
 
-        # Construct an extended interaction matrix
-        n_interaction = interaction_graph_matrix.size[0]
-        extended_interaction_graph_matrix = np.zeros_like(connection_graph_matrix)
-        extended_interaction_graph_matrix[
-            :n_interaction, :n_interaction
-        ] = interaction_graph_matrix
-
-        connection_graph = nx.from_numpy_array(connection_graph_matrix)
-        interaction_graph = nx.from_numpy_array(extended_interaction_graph_matrix)
-        return connection_graph, interaction_graph
+        return nx.from_numpy_array(connection_graph_matrix)

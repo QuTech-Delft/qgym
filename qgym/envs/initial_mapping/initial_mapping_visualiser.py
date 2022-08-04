@@ -58,7 +58,9 @@ class InitialMappingVisualiser:
             screen3_pos[0], screen3_pos[1], large_screen_width, large_screen_height
         )
 
-    def render(self, state: Mapping[str, Any], interaction_graph: nx.Graph) -> bool:
+    def render(
+        self, state: Mapping[str, Any], interaction_graph: nx.Graph, mode: str
+    ) -> Any:
         """Render the current state using pygame. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The
         right screen shows the mapped graph. Gray edges are unused, green edges
@@ -67,7 +69,7 @@ class InitialMappingVisualiser:
         :param state: state to render"""
 
         if self.screen is None:
-            self.start()
+            self.start(mode)
 
         pygame.time.delay(10)
 
@@ -85,10 +87,14 @@ class InitialMappingVisualiser:
             mapped_graph, self.subscreen3, pivot_graph=self.connection_graph
         )
 
-        pygame.event.pump()
-        pygame.display.flip()
-
-        return self.is_open
+        if mode == "human":
+            pygame.event.pump()
+            pygame.display.flip()
+            return self.is_open
+        elif mode == "rgb_array":
+            return np.transpose(
+                np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
+            )
 
     def _get_mapped_graph(self, state: Mapping[str, Any]) -> nx.Graph:
         """Constructs a mapped graph. In this graph gray edges are unused, green
@@ -207,11 +213,18 @@ class InitialMappingVisualiser:
             node_positions[node][1] += node_positions[node][1] * y_scaling + y_offset
         return node_positions
 
-    def start(self) -> None:
+    def start(self, mode: str) -> None:
         """Start pygame"""
 
         pygame.display.init()
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+
+        if mode == "human":
+            self.screen = pygame.display.set_mode(
+                (self.screen_width, self.screen_height)
+            )
+        elif mode == "rgb_array":
+            self.screen = pygame.Surface((self.screen_width, self.screen_height))
+
         pygame.display.set_caption("Mapping Environment")
         self.is_open = True
 
