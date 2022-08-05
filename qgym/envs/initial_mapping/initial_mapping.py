@@ -1,5 +1,7 @@
-"""Environment and rewarder for training an RL agent on the initial mapping problem of
-OpenQL."""
+"""
+Environment and rewarder for training an RL agent on the initial mapping problem of
+OpenQL.
+"""
 
 from __future__ import annotations
 
@@ -23,7 +25,9 @@ from qgym.utils import check_adjacency_matrix
 class InitialMapping(
     Environment[Tuple[NDArray[np.int_], NDArray[np.int_]], NDArray[np.int_]]
 ):
-    """RL environment for the initial mapping problem."""
+    """
+    RL environment for the initial mapping problem.
+    """
 
     def __init__(
         self,
@@ -32,7 +36,8 @@ class InitialMapping(
         connection_graph_matrix: Optional[NDArray[Any]] = None,
         connection_grid_size: Optional[Tuple[int, int]] = None,
     ) -> None:
-        """Initialize the action space, observation space, and initial states. This
+        """
+        Initialize the action space, observation space, and initial states. This
         also defines the connection and random interaction graph based on the arguments.
 
         :param interaction_graph_edge_probability: Probability that an edge between any
@@ -114,14 +119,16 @@ class InitialMapping(
         Tuple[NDArray[np.int_], NDArray[np.int_]],
         Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[Any, Any]],
     ]:
-        """Reset state, action space and step number and load a new random initial
+        """
+        Reset state, action space and step number and load a new random initial
         state. To be used after an episode is finished.
 
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call, i.e. before any learning is done.
         :param return_info: Whether to receive debugging info.
         :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optional debugging info."""
+        :return: Initial observation and optional debugging info.
+        """
 
         # Reset the state, action space, and step number
         if interaction_graph is None:
@@ -146,12 +153,14 @@ class InitialMapping(
         return super().reset(seed=seed, return_info=return_info)
 
     def render(self, mode: str = "human") -> Any:
-        """Render the current state using pygame. The upper left screen shows the
+        """
+        Render the current state using pygame. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The right screen
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly
         and red edges need at least on swap.
 
-        :param mode: The mode to render with (default is 'human')"""
+        :param mode: The mode to render with (default is 'human')
+        """
 
         if mode not in self.metadata["render.modes"]:
             raise ValueError("The given render mode is not supported.")
@@ -164,7 +173,9 @@ class InitialMapping(
         self._visualiser.close()
 
     def add_random_edge_weights(self) -> None:
-        """Add random weights to the connection graph and interaction graph."""
+        """
+        Add random weights to the connection graph and interaction graph.
+        """
 
         for (u, v) in self._connection_graph.edges():
             self._connection_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
@@ -179,9 +190,11 @@ class InitialMapping(
         )
 
     def _update_state(self, action: NDArray[np.int_]) -> None:
-        """Update the state of this environment using the given action.
+        """
+        Update the state of this environment using the given action.
 
-        :param action: Mapping action to be executed."""
+        :param action: Mapping action to be executed.
+        """
 
         # Increase the step number
         self._state["steps_done"] += 1
@@ -205,14 +218,18 @@ class InitialMapping(
         *_args: Any,
         **_kwargs: Any,
     ) -> float:
-        """Asks the rewarder to compute a reward, given the current state."""
+        """
+        Asks the rewarder to compute a reward, given the current state.
+        """
 
         return super()._compute_reward(
             old_state=old_state, action=action, new_state=self._state
         )
 
     def _obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
-        """:return: Observation based on the current state."""
+        """
+        :return: Observation based on the current state.
+        """
 
         return {
             "mapping": self._state["mapping"],
@@ -220,12 +237,16 @@ class InitialMapping(
         }
 
     def _is_done(self) -> bool:
-        """:return: Boolean value stating whether we are in a final state."""
+        """
+        :return: Boolean value stating whether we are in a final state.
+        """
 
         return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]
 
     def _obtain_info(self) -> Dict[Any, Any]:
-        """:return: Optional debugging info for the current state."""
+        """
+        :return: Optional debugging info for the current state.
+        """
 
         return {"Steps done": self._state["steps_done"]}
 
@@ -235,7 +256,8 @@ class InitialMapping(
         connection_graph_matrix: Any,
         connection_grid_size: Any,
     ) -> Tuple[Graph, Graph]:
-        """Parse the user input from the initialization.
+        """
+        Parse the user input from the initialization.
 
         :param connection_graph: networkx graph representation of the QPU topology
             a quantum circuit
@@ -244,7 +266,8 @@ class InitialMapping(
         :param connection_grid_size: Size of the connection graph. We only support
             grid-shaped connection graphs at the moment.
 
-        :return: Tuple the connection graph and interaction graph."""
+        :return: Tuple the connection graph and interaction graph.
+        """
 
         if connection_graph is not None:
             # deepcopy the graphs for safety
@@ -275,7 +298,8 @@ class InitialMapping(
     def _parse_adjacency_matrix(
         connection_graph_matrix: NDArray[Any],
     ) -> Tuple[Graph, Graph]:
-        """Parse a given interaction and connection adjacency matrix to their respective
+        """
+        Parse a given interaction and connection adjacency matrix to their respective
         graphs.
 
         :param connection_graph_matrix: adjacency matrix representation of the QPU

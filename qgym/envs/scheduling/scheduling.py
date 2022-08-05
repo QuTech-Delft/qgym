@@ -1,4 +1,6 @@
-"""Environment for training an RL agent on the scheduling problem of OpenQL."""
+"""
+Environment for training an RL agent on the scheduling problem of OpenQL.
+"""
 from copy import deepcopy
 from numbers import Integral
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
@@ -16,7 +18,9 @@ from qgym.utils import GateEncoder, RandomCircuitGenerator
 
 
 class Scheduling(Environment):
-    """RL environment for the scheduling problem."""
+    """
+    RL environment for the scheduling problem.
+    """
 
     def __init__(
         self,
@@ -26,7 +30,8 @@ class Scheduling(Environment):
         dependency_depth: Integral = 1,
         rulebook: Optional[CommutationRulebook] = None,
     ) -> None:
-        """Initialize the scheduling environment.
+        """
+        Initialize the scheduling environment.
 
         :param machine_properties: mapping of machine properties.
         :param max_gates: maximum number of gates allowed in a circuit.
@@ -35,7 +40,8 @@ class Scheduling(Environment):
             (dependency_depth, max_gates)
         :param rulebook: rulebook describing the commutation rules. If None is given,
             the default CommutationRulebook will be used. (See CommutationRulebook for
-            more info on the default rules.)"""
+            more info on the default rules.)
+        """
 
         self._reward_range = (-float("inf"), float("inf"))
 
@@ -110,10 +116,12 @@ class Scheduling(Environment):
             n_qubits=n_qubits,
         )
 
-        self.metadata = {"render.modes": ["human"]}
+        self.metadata = {"render.modes": ["human", "rgb_array"]}
 
     def _obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
-        """:return: Observation based on the current state."""
+        """
+        :return: Observation based on the current state.
+        """
         return {
             "gate_names": self._state["gate_names"],
             "acts_on": self._state["acts_on"].flatten(),
@@ -122,10 +130,12 @@ class Scheduling(Environment):
         }
 
     def _update_state(self, action: NDArray[np.int_]) -> None:
-        """Update the state of this environment using the given action.
+        """
+        Update the state of this environment using the given action.
 
         :param action: First entry determines a gate to schedule, the second entry
-            increases the cycle if nonzero."""
+            increases the cycle if nonzero.
+        """
         # Increase the step number
         self._state["steps_done"] += 1
 
@@ -139,7 +149,9 @@ class Scheduling(Environment):
             self._schedule_gate(gate_to_schedule)
 
     def _increment_cycle(self) -> None:
-        """Increment the cycle and update the state accordingly"""
+        """
+        Increment the cycle and update the state accordingly
+        """
 
         self._state["cycle"] += 1
 
@@ -163,9 +175,11 @@ class Scheduling(Environment):
         self._update_legal_actions()
 
     def _schedule_gate(self, gate_idx: Integral) -> None:
-        """Schedule a gate in the current cycle and update the state accordingly
+        """
+        Schedule a gate in the current cycle and update the state accordingly
 
-        :param gate_idx: Index of the gate to schedule"""
+        :param gate_idx: Index of the gate to schedule
+        """
 
         gate = self._state["encoded_circuit"][gate_idx]
 
@@ -195,19 +209,25 @@ class Scheduling(Environment):
         *_args: Any,
         **_kwargs: Any,
     ) -> float:
-        """Asks the rewarder to compute a reward, given the current state."""
+        """
+        Asks the rewarder to compute a reward, given the current state.
+        """
 
         return super()._compute_reward(
             old_state=old_state, action=action, new_state=self._state
         )
 
     def _is_done(self) -> bool:
-        """:return: Boolean value stating whether we are in a final state."""
+        """
+        :return: Boolean value stating whether we are in a final state.
+        """
 
         return bool((self._state["schedule"] != -1).all())
 
     def _obtain_info(self) -> Dict[Any, Any]:
-        """:return: Optional debugging info for the current state."""
+        """
+        :return: Optional debugging info for the current state.
+        """
 
         return {
             "Steps done": self._state["steps_done"],
@@ -225,7 +245,8 @@ class Scheduling(Environment):
         Tuple[NDArray[np.int_], NDArray[np.int_]],
         Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[Any, Any]],
     ]:
-        """Reset state, action space and step number and load a new (random) initial
+        """
+        Reset state, action space and step number and load a new (random) initial
         state. To be used after an episode is finished.
 
         :param circuit: Optional list of a circuit for the next episode, each entry in
@@ -235,7 +256,8 @@ class Scheduling(Environment):
             (optionally) on the first reset call, i.e. before any learning is done.
         :param return_info: Whether to receive debugging info.
         :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optional debugging info."""
+        :return: Initial observation and optional debugging info.
+        """
 
         # Reset counters
         self._state["steps_done"] = 0
@@ -268,8 +290,10 @@ class Scheduling(Environment):
         return super().reset(seed=seed, return_info=return_info)
 
     def _get_dependencies(self) -> NDArray[np.int_]:
-        """:return: array of shape (dependency_depth, max_gates) with the dependencies
-        for each gate."""
+        """
+        :return: array of shape (dependency_depth, max_gates) with the dependencies
+        for each gate.
+        """
         dependencies = np.zeros(
             (self._dependency_depth, self._state["max_gates"]), dtype=int
         )
@@ -282,8 +306,10 @@ class Scheduling(Environment):
         return dependencies
 
     def _update_episode_constant_observations(self) -> None:
-        """Updates episode constant observations "gate_names" and "acts_on" based on
-        the circuit of this episode."""
+        """
+        Updates episode constant observations "gate_names" and "acts_on" based on
+        the circuit of this episode.
+        """
 
         circuit = self._state["encoded_circuit"]
 
@@ -299,16 +325,20 @@ class Scheduling(Environment):
         self._state["acts_on"] = acts_on
 
     def _exclude_gate(self, gate_name: Integral) -> None:
-        """Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.
+        """
+        Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.
 
-        :param gate_name: integer encoding of the name of the gate."""
+        :param gate_name: integer encoding of the name of the gate.
+        """
 
         gate_cyle_length = self._state["gate_cycle_length"][gate_name]
         self._state["excluded_gates"][gate_name] = gate_cyle_length
 
     def _update_legal_actions(self) -> None:
-        """Checks which actions are legal based on the scheduled qubits, depedencies
-        and in the futere also machine restrictions"""
+        """
+        Checks which actions are legal based on the scheduled qubits, depedencies
+        and in the futere also machine restrictions
+        """
 
         legal_actions = np.zeros(self._state["max_gates"], dtype=bool)
         for gate_idx, (gate_name, qubit1, qubit2) in enumerate(
@@ -338,10 +368,12 @@ class Scheduling(Environment):
         self._state["legal_actions"] = legal_actions
 
     def get_circuit(self, mode: str = "human"):
-        """Return the quantum circuit of this episode.
+        """
+        Return the quantum circuit of this episode.
 
         :param mode: Choose from be 'human' or 'encoded'. Default is 'human'.
-        :return: human or encoded quantum circuit."""
+        :return: human or encoded quantum circuit.
+        """
 
         if not isinstance(mode, str):
             raise TypeError(f"mode must be of type str, but was {type(mode)}")
@@ -356,16 +388,20 @@ class Scheduling(Environment):
             raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
 
     def render(self, mode: str = "human") -> bool:
-        """Render the current state using pygame.
+        """
+        Render the current state using pygame.
 
-        :param mode: The mode to render with (default is 'human')"""
+        :param mode: The mode to render with (default is 'human')
+        """
 
         if mode not in self.metadata["render.modes"]:
             raise ValueError("The given render mode is not supported.")
 
-        return self._visualiser.render(self._state)
+        return self._visualiser.render(self._state, mode)
 
     def close(self):
-        """Close the screen used for rendering."""
+        """
+        Close the screen used for rendering.
+        """
 
         self._visualiser.close()
