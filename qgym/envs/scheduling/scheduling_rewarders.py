@@ -80,9 +80,7 @@ class BasicRewarder(Rewarder):
 
 class EpisodeRewarder(Rewarder):
     def __init__(
-        self,
-        illegal_action_penalty: Real = -5.0,
-        cycle_used_penalty: Real = -1.0
+        self, illegal_action_penalty: Real = -5.0, cycle_used_penalty: Real = -1.0
     ) -> None:
         """
         Initialize the reward range and set the rewards and penalties.
@@ -133,4 +131,3 @@ class EpisodeRewarder(Rewarder):
 
         gate_to_schedule = action[0]
         return not old_state["legal_actions"][gate_to_schedule]
-

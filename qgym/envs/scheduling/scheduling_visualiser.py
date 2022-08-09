@@ -71,12 +71,11 @@ class SchedulingVisualiser:
         if mode == "human":
             pygame.event.pump()
             pygame.display.flip()
+            return self.is_open
         elif mode == "rgb_array":
             return np.transpose(
                 np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
             )
-
-        return self.is_open
 
     def _draw_scheduled_gate(
         self, gate_idx: Integral, scheduled_cycle: Integral
@@ -126,11 +125,13 @@ class SchedulingVisualiser:
 
         pygame.display.init()
         if mode == "human":
-            self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+            self.screen = pygame.display.set_mode(
+                (self.screen_width, self.screen_height)
+            )
         elif mode == "rgb_array":
             self.screen = pygame.Surface((self.screen_width, self.screen_height))
 
-        pygame.display.set_caption("Scheduling Environment")
+        # pygame.display.set_caption("Scheduling Environment")
 
         pygame.font.init()
         self.font = pygame.font.SysFont("Arial", 12)
