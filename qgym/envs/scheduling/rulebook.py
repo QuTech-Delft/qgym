@@ -24,7 +24,7 @@ from typing import Callable, List, Tuple
 import numpy as np
 from numpy.typing import NDArray
 
-from qgym._custom_types import Gate
+from qgym.custom_types import Gate
 
 
 class CommutationRulebook:

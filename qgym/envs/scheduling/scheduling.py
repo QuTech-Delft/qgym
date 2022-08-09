@@ -8,7 +8,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym._custom_types import Gate
+from qgym.custom_types import Gate
 from qgym.environment import Environment
 from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder

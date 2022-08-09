@@ -7,7 +7,7 @@ from typing import List, Optional, Union
 import numpy as np
 from numpy.random import Generator, default_rng
 
-from qgym._custom_types import Gate
+from qgym.custom_types import Gate
 
 
 class RandomCircuitGenerator:

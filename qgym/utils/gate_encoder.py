@@ -3,7 +3,7 @@ This module contains the GateEncoder class encoding gate to integers and back.
 """
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Union
 
-from qgym._custom_types import Gate
+from qgym.custom_types import Gate
 
 
 class GateEncoder:
