@@ -46,7 +46,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         :param return_info: Whether to receive debugging info.
         :return: A tuple containing three/four entries: 1) The updated state; 2) Reward
             of the new state; 3) Boolean value stating whether the new state is a final
-            state (i.e. if we are done); 4) Optional Additional (debugging) information.
+            state (i.e., if we are done); 4) Optional Additional (debugging) information.
         """
         old_state = deepcopy(self._state)
         self._update_state(action)
@@ -73,7 +73,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         configure the reset.
 
         :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e. before any learning is done.
+            (optionally) on the first reset call, i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
         :param kwargs: Additional options to configure the reset. To be defined for a
             specific environment
@@ -110,7 +110,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     @property
     def rewarder(self) -> Rewarder:
         """
-        The rewarder that is currently set for this environment. Is used to compute
+        The rewarder that is set for this environment. Used to compute
         rewards after each step.
         """
 

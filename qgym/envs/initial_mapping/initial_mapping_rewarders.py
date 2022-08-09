@@ -26,11 +26,11 @@ class BasicRewarder(Rewarder):
         penalty_per_edge: Optional[float] = -1,
     ) -> None:
         """
-        Initialize the reward range and set the rewards and penaltyies
+        Initialize the reward range and set the rewards and penalties
 
         :param illegal_action_penalty: penalty for performing an illegal action.
         :param reward_per_edge: reward for performing a 'good' action
-        :param new_state: penalty for performing a 'bad' action
+        :param penalty_per_edge: penalty for performing a 'bad' action
         """
         self._reward_range = (-float("inf"), float("inf"))
         self._illegal_action_penalty = illegal_action_penalty
@@ -95,7 +95,7 @@ class BasicRewarder(Rewarder):
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
         """
-        Checks if the given action is illegal, i.e. checks if qubits are mapped
+        Checks if the given action is illegal i.e., checks if qubits are mapped
         multiple times.
 
         :param action: Action that has just been taken
@@ -108,10 +108,10 @@ class BasicRewarder(Rewarder):
 
     def _get_neighbours(self, qubit_idx: int, adjacency_matrix: csr_matrix) -> set:
         """
-        Computes a set of neighbours of a given qubit (i.e. a set of nodes whith with
+        Computes a set of neighbours of a given qubit (i.e., a set of nodes with which
         this node has a connection.)
 
-        :param qubit_idx: index of the qubit of which the neihbours are computed.
+        :param qubit_idx: index of the qubit of which the neighbours are computed.
         :param adjacency_matrix: adjacency matrix of a graph
         """
         neighbours = set()
@@ -135,7 +135,7 @@ class BasicRewarder(Rewarder):
 
 class SingleStepRewarder(BasicRewarder):
     """
-    Rewarder for the InitialMapping environment which gives a rewarde based on
+    Rewarder for the InitialMapping environment, which gives a reward based on
     the improvement in the current step.
     """
 

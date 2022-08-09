@@ -2,7 +2,6 @@
 Environment for training an RL agent on the scheduling problem of OpenQL.
 """
 from copy import deepcopy
-from numbers import Integral
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 import numpy as np
@@ -26,8 +25,8 @@ class Scheduling(Environment):
         self,
         machine_properties: Union[Mapping[str, Any], str],
         *,
-        max_gates: Integral = 200,
-        dependency_depth: Integral = 1,
+        max_gates: int = 200,
+        dependency_depth: int = 1,
         rulebook: Optional[CommutationRulebook] = None,
     ) -> None:
         """
@@ -36,7 +35,7 @@ class Scheduling(Environment):
         :param machine_properties: mapping of machine properties.
         :param max_gates: maximum number of gates allowed in a circuit.
         :param dependency_depth: number of dependencies given in the observation.
-            Detemines the shape of the "dependencies" observation, which has the shape
+            Determines the shape of the "dependencies" observation, which has the shape
             (dependency_depth, max_gates)
         :param rulebook: rulebook describing the commutation rules. If None is given,
             the default CommutationRulebook will be used. (See CommutationRulebook for
@@ -160,10 +159,10 @@ class Scheduling(Environment):
 
         # Exclude gates that should start at the same time
         while len(self._state["exclude_in_next_cycle"]) != 0:
-            gate_to_exlude = self._state["exclude_in_next_cycle"].pop()
-            self._exclude_gate(gate_to_exlude)
+            gate_to_exclude = self._state["exclude_in_next_cycle"].pop()
+            self._exclude_gate(gate_to_exclude)
 
-        # Decrease the number of cycles to exclude a gate and skip gates where the
+        # Decrease the amount of cycles to exclude a gate and skip gates where the
         # cycle becomes 0 (as it no longer should be excluded)
         updated_excluded_gates = {}
         while len(self._state["excluded_gates"]) != 0:
@@ -174,7 +173,7 @@ class Scheduling(Environment):
 
         self._update_legal_actions()
 
-    def _schedule_gate(self, gate_idx: Integral) -> None:
+    def _schedule_gate(self, gate_idx: int) -> None:
         """
         Schedule a gate in the current cycle and update the state accordingly
 
@@ -190,8 +189,8 @@ class Scheduling(Environment):
         self._state["busy"][gate.q2] = self._state["gate_cycle_length"][gate.name]
 
         if gate.name in self._state["not_in_same_cycle"]:
-            for gate_to_exlude in self._state["not_in_same_cycle"][gate.name]:
-                self._exclude_gate(gate_to_exlude)
+            for gate_to_exclude in self._state["not_in_same_cycle"][gate.name]:
+                self._exclude_gate(gate_to_exclude)
 
         if gate.name in self._state["same_start"]:
             self._state["exclude_in_next_cycle"].add(gate.name)
@@ -239,7 +238,7 @@ class Scheduling(Environment):
         self,
         *,
         circuit: Optional[List[Gate]] = None,
-        seed: Optional[Integral] = None,
+        seed: Optional[int] = None,
         return_info: bool = False,
     ) -> Union[
         Tuple[NDArray[np.int_], NDArray[np.int_]],
@@ -253,9 +252,8 @@ class Scheduling(Environment):
             the list must contain the name, qubit 1 and qubit 2. If the gate acts on a
             single qubit, then these entries should be the same.
         :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e. before any learning is done.
+            (optionally) on the first reset call, i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
-        :param _kwargs: Additional options to configure the reset.
         :return: Initial observation and optional debugging info.
         """
 
@@ -263,7 +261,7 @@ class Scheduling(Environment):
         self._state["steps_done"] = 0
         self._state["cycle"] = 0
 
-        # Number of cycles that a qubit is still busy (zero if available)
+        # Amount of cycles that a qubit is still busy (zero if available)
         self._state["busy"] = np.zeros(self._state["n_qubits"], dtype=int)
 
         # At the start no gates should be excluded
@@ -307,7 +305,7 @@ class Scheduling(Environment):
 
     def _update_episode_constant_observations(self) -> None:
         """
-        Updates episode constant observations "gate_names" and "acts_on" based on
+        Updates episode constant observations `gate_names` and `acts_on` based on
         the circuit of this episode.
         """
 
@@ -324,27 +322,27 @@ class Scheduling(Environment):
         self._state["gate_names"] = gate_names
         self._state["acts_on"] = acts_on
 
-    def _exclude_gate(self, gate_name: Integral) -> None:
+    def _exclude_gate(self, gate_name: int) -> None:
         """
         Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.
 
         :param gate_name: integer encoding of the name of the gate.
         """
 
-        gate_cyle_length = self._state["gate_cycle_length"][gate_name]
-        self._state["excluded_gates"][gate_name] = gate_cyle_length
+        gate_cycle_length = self._state["gate_cycle_length"][gate_name]
+        self._state["excluded_gates"][gate_name] = gate_cycle_length
 
     def _update_legal_actions(self) -> None:
         """
-        Checks which actions are legal based on the scheduled qubits, depedencies
-        and in the futere also machine restrictions
+        Checks which actions are legal based on the scheduled qubits, dependencies
+        and in the future also machine restrictions
         """
 
         legal_actions = np.zeros(self._state["max_gates"], dtype=bool)
         for gate_idx, (gate_name, qubit1, qubit2) in enumerate(
             self._state["encoded_circuit"]
         ):
-            # Set all gates which have not been scheduled to True
+            # Set all gates, which have not been scheduled to True
             if self._state["schedule"][gate_idx] == -1:
                 legal_actions[gate_idx] = True
 

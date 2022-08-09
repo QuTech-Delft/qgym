@@ -2,7 +2,6 @@
 This module contains a class used for rendering the initial mapping environment.
 """
 
-from numbers import Integral, Real
 from typing import Any, Mapping, Optional, Tuple
 
 import networkx as nx
@@ -37,11 +36,16 @@ class InitialMappingVisualiser:
         self.is_open = False
         self.screen_width = 1300
         self.screen_height = 730
-        self.init_subscreen_rects()
 
-    def init_subscreen_rects(self, padding=10) -> None:
+        # initialize rectangles
+        self.subscreen1 = None
+        self.subscreen2 = None
+        self.subscreen3 = None
+        self.init_subscreen_rectangles()
+
+    def init_subscreen_rectangles(self, padding=10) -> None:
         """
-        Initialize the pygame Rect objects used for drawing the subscreens
+        Initialize the pygame `Rect` objects used for drawing the subscreens
         """
 
         small_screen_width = self.screen_width / 2 - 1.5 * padding
@@ -74,6 +78,10 @@ class InitialMappingVisualiser:
         are mapped correctly and red edges need at least on swap.
 
         :param state: state to render
+        :param interaction_graph: interaction graph to render
+        :param mode: mode to render in.
+        :return: In 'human' mode returns a boolean value encoding whether the pygame screen is open. In `rgb_array` mode
+            returns an RGB array encoding of the rendered image.
         """
 
         if self.screen is None:
@@ -145,7 +153,7 @@ class InitialMappingVisualiser:
         self,
         graph: nx.Graph,
         mapped_adjacency_matrix: NDArray,
-        edge: Tuple[Integral, Integral],
+        edge: Tuple[int, int],
     ) -> None:
         """
         Utility function for making the mapped graph. Gives and edge of the
@@ -154,7 +162,7 @@ class InitialMappingVisualiser:
 
         :param graph: The graph of which the edges must be colored.
         :param mapped_adjacency_matrix: the adjacency matrix of the mapped graph.
-        :param edge: The edge that will be colored.
+        :param edge: The edge to color.
         """
 
         (i, j) = edge
@@ -208,14 +216,14 @@ class InitialMappingVisualiser:
     @staticmethod
     def _get_render_positions(
         graph: nx.Graph, subscreen: pygame.Rect
-    ) -> Mapping[Any, Tuple[Real, Real]]:
+    ) -> Mapping[Any, Tuple[float, float]]:
         """
         Utility function used during render. Give the positions of the nodes
         of a graph on a given subscreen.
 
         :param graph: the graph of which the node positions must be determined.
         :param subscreen: the subscreen on which the graph will be drawn.
-        :return: a dictionary where the keys are the names of the nodes and the
+        :return: a dictionary where the keys are the names of the nodes, and the
             values are the coordinates of these nodes.
         """
 

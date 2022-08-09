@@ -1,6 +1,5 @@
 """
-A dictionary of spaces, i.e. a dictionary with fixed string keys and space( sample)s
-as values.
+A dictionary of spaces, i.e., a dictionary with fixed strings as keys and spaces as values.
 """
 
 import typing
@@ -25,7 +24,7 @@ class Dict(gym.spaces.Dict):
 
         :param spaces: Dictionary containing string valued keys and spaces that are to
             form this Dictionary space.
-        :param rng: Random number generator to be used in this space. If `None` a new
+        :param rng: Random number generator to be used in this space, if `None` a new
             one will be constructed.
         :param spaces_kwargs: Spaces that are to form this Dictionary space.
         """

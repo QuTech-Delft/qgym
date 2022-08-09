@@ -2,23 +2,23 @@
 This module contains the CommutationRulebook class together with basic commutation
 rules used in the scheduling environment.
 
-Example:
+Example::
 
-from qgym.env.scheduling.rulebook import CommutationRulebook
+    from qgym.env.scheduling.rulebook import CommutationRulebook
 
-# cnot gates with the same controll qubit commute
-def cnot_commutation(gate1, gate2):
-    if gate1[0] == "cnot" and gate2[0] == "cnot":
-        if gate1[1] ==  gate2[1]:
-            return True
-    return False
+    # cnot gates with the same control qubit commute
+    def cnot_commutation(gate1, gate2):
+        if gate1[0] == "cnot" and gate2[0] == "cnot":
+            if gate1[1] ==  gate2[1]:
+                return True
+        return False
 
-# init the rulebook and add the commutation rule
-rulebook = CommutationRulebook()
-rulebook.add_rule(rulebook)
+    # init the rulebook and add the commutation rule
+    rulebook = CommutationRulebook()
+    rulebook.add_rule(rulebook)
+
 """
 
-from numbers import Integral
 from typing import Callable, List, Tuple
 
 import numpy as np
@@ -37,7 +37,7 @@ class CommutationRulebook:
         Init of the CommutationRulebook.
 
         :param default_rules: If True, default rules are used. Default rules dictate
-            that gates with disjoint qubits commute and that gates that are exactly the
+            that gates with disjoint qubits commute and that gates that are the
             same commute. If False, then no rules will be initialized.
         """
 
@@ -113,9 +113,7 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     )
 
 
-def same_gate(
-    gate1: Tuple[str, Integral, Integral], gate2: Tuple[str, Integral, Integral]
-) -> bool:
+def same_gate(gate1: Tuple[str, int, int], gate2: Tuple[str, int, int]) -> bool:
     """
     Gates that have disjoint qubits commute.
 

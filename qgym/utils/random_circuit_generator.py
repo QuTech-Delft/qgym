@@ -1,7 +1,7 @@
 """
-This module contains a class that can generate random circuits
+This module contains a class to generate random circuits
 """
-from numbers import Integral
+
 from typing import List, Optional, Union
 
 import numpy as np
@@ -17,7 +17,7 @@ class RandomCircuitGenerator:
     """
 
     def __init__(
-        self, n_qubits: Integral, max_gates: Integral, rng: Optional[Generator] = None
+        self, n_qubits: int, max_gates: int, rng: Optional[Generator] = None
     ) -> None:
         self.n_qubits = n_qubits
         self.max_gates = max_gates
@@ -37,7 +37,7 @@ class RandomCircuitGenerator:
     def rng(self, rng: Generator) -> None:
         self._rng = rng
 
-    def generate_circuit(self, n_gates: Union[str, Integral] = "random") -> List[Gate]:
+    def generate_circuit(self, n_gates: Union[str, int] = "random") -> List[Gate]:
         """
         Make a random circuit with prep, measure, x, y, z, and cnot operations
 
@@ -51,7 +51,7 @@ class RandomCircuitGenerator:
         else:
             n_gates = min(n_gates, self.max_gates)
 
-        circuit = [None] * n_gates
+        circuit: List[Gate] = [None] * n_gates
 
         # Every circuit should start by initializing the qubits
         for qubit in range(self.n_qubits):

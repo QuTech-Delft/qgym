@@ -4,11 +4,9 @@ Rewarder for training an RL agent on the scheduling problem of OpenQL.
 
 from __future__ import annotations
 
-from numbers import Real
 from typing import Any, Dict
 
 import numpy as np
-from numpy.random._examples.cffi.extending import state
 from numpy.typing import NDArray
 
 from qgym import Rewarder
@@ -21,9 +19,9 @@ class BasicRewarder(Rewarder):
 
     def __init__(
         self,
-        illegal_action_penalty: Real = -5.0,
-        update_cycle_penalty: Real = -1.0,
-        schedule_gate_bonus: Real = 0.0,
+        illegal_action_penalty: float = -5.0,
+        update_cycle_penalty: float = -1.0,
+        schedule_gate_bonus: float = 0.0,
     ) -> None:
         """
         Initialize the reward range and set the rewards and penalties.
@@ -67,7 +65,7 @@ class BasicRewarder(Rewarder):
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
         """
-        Checks if the given action is illegal, i.e. checks if qubits are mapped
+        Checks if the given action is illegal, i.e., checks if qubits are mapped
         multiple times.
 
         :param action: Action that has just been taken.
@@ -80,14 +78,13 @@ class BasicRewarder(Rewarder):
 
 class EpisodeRewarder(Rewarder):
     def __init__(
-        self, illegal_action_penalty: Real = -5.0, cycle_used_penalty: Real = -1.0
+        self, illegal_action_penalty: float = -5.0, cycle_used_penalty: float = -1.0
     ) -> None:
         """
         Initialize the reward range and set the rewards and penalties.
 
         :param illegal_action_penalty: penalty for performing an illegal action.
-        :param update_cycle_penalty: penalty for updating the cycle.
-        :param schedule_gate_bonus: bonus for scheduling a gate.
+        :param cycle_used_penalty: penalty for updating the cycle.
         """
 
         self._reward_range = (-float("inf"), 0)
@@ -122,7 +119,7 @@ class EpisodeRewarder(Rewarder):
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
         """
-        Checks if the given action is illegal, i.e. checks if qubits are mapped
+        Checks if the given action is illegal, i.e., checks if qubits are mapped
         multiple times.
 
         :param action: Action that has just been taken.

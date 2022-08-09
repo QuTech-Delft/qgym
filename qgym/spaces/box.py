@@ -1,5 +1,5 @@
 """
-A Box space, i.e. a possibly open-ended interval in n dimensions.
+A Box space, i.e., a possibly open-ended interval in n dimensions.
 """
 
 from typing import Generator, List, Optional, Sequence, SupportsFloat, Type, Union
@@ -11,7 +11,7 @@ from numpy.random import default_rng
 
 class Box(gym.spaces.Box):
     """
-    An n-dimensional box space, i.e. collection of possibly open-ended intervals.
+    An n-dimensional box space, i.e., collection of possibly open-ended intervals.
     """
 
     def __init__(
@@ -23,7 +23,7 @@ class Box(gym.spaces.Box):
         rng: Optional[Generator] = None,
     ):
         """
-        Initialize a Box space, i.e. a possibly open-ended interval in n dimensions.
+        Initialize a Box space, i.e., a possibly open-ended interval in n dimensions.
 
         :param low: Either one lower bound for all intervals, or an array of the correct
             shape with unique lower bound for each interval.
@@ -31,7 +31,7 @@ class Box(gym.spaces.Box):
             correct shape with unique upper bound for each interval.
         :param shape: Shape of this space.
         :param dtype: Type of the values in each interval.
-        :param rng: Random number generator to be used in this space. If `None` a new
+        :param rng: Random number generator to be used in this space, if `None` a new
             one will be constructed.
         """
 

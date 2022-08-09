@@ -1,5 +1,5 @@
 """
-A multi-binary space, i.e. an array of binary values. A sample gives a random binary
+A multi-binary space, i.e., an array of binary values. A sample gives a random binary
 array.
 """
 
@@ -22,11 +22,11 @@ class MultiBinary(gym.spaces.MultiBinary):
         rng: Optional[Generator] = None,
     ):
         """
-        Initialize a multi-discrete space, i.e. multiple discrete intervals of given
+        Initialize a multi-discrete space, i.e., multiple discrete intervals of given
         sizes.
 
         :param n: Number of elements in the space
-        :param rng: Random number generator to be used in this space. If `None` a new
+        :param rng: Random number generator to be used in this space, if `None` a new
             one will be constructed.
         """
 

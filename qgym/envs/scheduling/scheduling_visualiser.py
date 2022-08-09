@@ -1,6 +1,6 @@
 """This module contains a class used for rendering the scheduling environment."""
 
-from numbers import Integral
+
 from typing import Any, Mapping
 
 import numpy as np
@@ -23,13 +23,13 @@ class SchedulingVisualiser:
         self,
         *,
         gate_encoder: GateEncoder,
-        gate_cycle_length: Mapping[Integral, Integral],
-        n_qubits: Integral
+        gate_cycle_length: Mapping[int, int],
+        n_qubits: int
     ) -> None:
         """
         Initialize the visualiser.
 
-        :param GateEncoder: GateEncoder object of the scheduling environment.
+        :param gate_encoder: GateEncoder object of the scheduling environment.
         :param gate_cycle_length: Mapping of cycle lengths for the gates of the
             scheduling environment.
         :param n_qubits: number of qubits of the scheduling environment.
@@ -46,10 +46,16 @@ class SchedulingVisualiser:
         self._n_qubits = n_qubits
         self._gate_height = self.screen_height / self._n_qubits
 
+        # define attributes that are set later
+        self.font = None
+        self._cycle_width = None
+        self._encoded_circuit = None
+
     def render(self, state: Mapping[str, Any], mode: str) -> Any:
         """
         Render the current state using pygame.
 
+        :param state: Current state of the schedule.
         :param mode: The mode to render with (default is 'human').
         """
 
@@ -77,9 +83,7 @@ class SchedulingVisualiser:
                 np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
             )
 
-    def _draw_scheduled_gate(
-        self, gate_idx: Integral, scheduled_cycle: Integral
-    ) -> None:
+    def _draw_scheduled_gate(self, gate_idx: int, scheduled_cycle: int) -> None:
         """
         Draw a gate on the screen.
 
@@ -94,17 +98,17 @@ class SchedulingVisualiser:
             self._draw_gate_block(gate.name, gate.q2, scheduled_cycle)
 
     def _draw_gate_block(
-        self, gate_intname: Integral, qubit: Integral, scheduled_cycle: Integral
+        self, gate_int_name: int, qubit: int, scheduled_cycle: int
     ) -> None:
         """
         Draw a single block of a gate (gates can consist of 1 or 2 blocks).
 
-        :param gate_intname: integer encoding of the gate name.
+        :param gate_int_name: integer encoding of the gate name.
         :param qubit: qubit in which the gate acts.
         :param scheduled_cycle: cycle in which the gate is scheduled.
         """
 
-        gate_width = self._cycle_width * self._gate_cycle_length[gate_intname]
+        gate_width = self._cycle_width * self._gate_cycle_length[gate_int_name]
 
         gate_box = pygame.Rect(0, 0, gate_width, self._gate_height)
         box_x = self.screen_width - scheduled_cycle * self._cycle_width
@@ -113,10 +117,10 @@ class SchedulingVisualiser:
 
         pygame.draw.rect(self.screen, GATE_COLOR, gate_box)
 
-        gate_name = self._gate_encoder.decode_gates(gate_intname)
+        gate_name = self._gate_encoder.decode_gates(gate_int_name)
         text = self.font.render(gate_name.upper(), True, TEXT_COLOR)
-        text_postition = text.get_rect(center=gate_box.center)
-        self.screen.blit(text, text_postition)
+        text_position = text.get_rect(center=gate_box.center)
+        self.screen.blit(text, text_position)
 
     def start(self, mode: str) -> None:
         """

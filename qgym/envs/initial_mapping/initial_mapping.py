@@ -1,6 +1,5 @@
 """
-Environment and rewarder for training an RL agent on the initial mapping problem of
-OpenQL.
+Environment for training an RL agent on the initial mapping problem of OpenQL.
 """
 
 from __future__ import annotations
@@ -41,16 +40,13 @@ class InitialMapping(
         also defines the connection and random interaction graph based on the arguments.
 
         :param interaction_graph_edge_probability: Probability that an edge between any
-            pair of qubits in the random interaction graph exists. the interaction
-            graph will have the same number of nodes as the connection graph. Nodes
+            pair of qubits in the random interaction graph exists. The interaction
+            graph will have the same amount of nodes as the connection graph. Nodes
             without any interactions can be seen as 'null' nodes.
         :param connection_graph: networkx graph representation of the QPU topology
-        :param interaction_graph: networkx graph representation of the interactions in
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
-        :param interaction_graph_matrix: adjacency matrix representation of the
-        :param connection_grid_size: Size of the connection graph. We only support
-            grid-shaped connection graphs at the moment.
+        :param connection_grid_size: Size of the connection graph when the connection graph has a grid topology.
         """
 
         self._interaction_graph_edge_probability = interaction_graph_edge_probability
@@ -124,8 +120,10 @@ class InitialMapping(
         state. To be used after an episode is finished.
 
         :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e. before any learning is done.
+            (optionally) on the first reset call i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
+        :param interaction_graph: Interaction graph to be used for the next iteration, if `None` a random interaction
+            graph will be created.
         :param _kwargs: Additional options to configure the reset.
         :return: Initial observation and optional debugging info.
         """
@@ -159,7 +157,7 @@ class InitialMapping(
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly
         and red edges need at least on swap.
 
-        :param mode: The mode to render with (default is 'human')
+        :param mode: The mode to render with (should be one of the supported `render.modes` in `self.metadata`).
         """
 
         if mode not in self.metadata["render.modes"]:
@@ -257,14 +255,13 @@ class InitialMapping(
         connection_grid_size: Any,
     ) -> Tuple[Graph, Graph]:
         """
-        Parse the user input from the initialization.
+        Parse the user input from the initialization. Only one of these variables should be used.
 
         :param connection_graph: networkx graph representation of the QPU topology
             a quantum circuit
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
-        :param connection_grid_size: Size of the connection graph. We only support
-            grid-shaped connection graphs at the moment.
+        :param connection_grid_size: Size of the connection graph when the topology is a grid.
 
         :return: Tuple the connection graph and interaction graph.
         """

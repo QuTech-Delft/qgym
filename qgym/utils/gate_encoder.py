@@ -1,5 +1,5 @@
 """
-This module contains the GateEncoder class which encoded gate to integers and back.
+This module contains the GateEncoder class encoding gate to integers and back.
 """
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Union
 
@@ -11,15 +11,23 @@ class GateEncoder:
     Learns a set of gates and creates a mapping to integers and back.
     """
 
+    def __init__(self):
+        self.encoding_dct = None
+        self.decoding_dct = None
+        self.longest_name = None
+        self.n_gates = None
+
     def learn_gates(self, gates: Iterable) -> "GateEncoder":
         """
         Learns the gates names from and Iterable and creates a mapping from unique gate
         names to integers and back.
-        :gates: An Iterable containing the names of the gates which must be learned
+        :gates: An Iterable containing the names of the gates that must be learned
         """
         self.encoding_dct = {}
         self.decoding_dct = {}
         self.longest_name = 0
+
+        idx = 0  # in case gates is empty
         for idx, gate_name in enumerate(gates, 1):
             self.encoding_dct[gate_name] = idx
             self.decoding_dct[idx] = gate_name
@@ -37,7 +45,7 @@ class GateEncoder:
         learn_gates function.
         :param gates: gates to encode
         :return: integer encoded version of gates
-        :raise TypeError: In case that an unsoprted type is given
+        :raise TypeError: When an unsupported type is given
         """
         if isinstance(gates, str):
             encoded_gates = self.encoding_dct[gates]
@@ -54,7 +62,7 @@ class GateEncoder:
                         item_encoded.append(self.encoding_dct[i])
                     encoded_gates[gate_encoding] = item_encoded
                 else:
-                    raise ValueError("Unkown mapping")
+                    raise ValueError("Unknown mapping")
 
         elif isinstance(gates, Sequence):
             encoded_gates = []
@@ -84,7 +92,7 @@ class GateEncoder:
         seen in the learn_gates function.
         :param encoded_gates: gates to decode
         :return: decoded version of encoded_gates
-        :raise TypeError: In case that an unsoprted type is given
+        :raise TypeError: When an unsupported type is given
         """
         if isinstance(encoded_gates, int):
             decoded_gates = self.decoding_dct[encoded_gates]
@@ -98,8 +106,8 @@ class GateEncoder:
         elif isinstance(encoded_gates, Sequence):
             decoded_gates = []
             for gate in encoded_gates:
-                decoded_gatename = self.decoding_dct[gate.name]
-                decoded_gates.append(Gate(decoded_gatename, gate.q1, gate.q2))
+                decoded_gate_name = self.decoding_dct[gate.name]
+                decoded_gates.append(Gate(decoded_gate_name, gate.q1, gate.q2))
 
         elif isinstance(encoded_gates, Iterable):
             decoded_gates = []

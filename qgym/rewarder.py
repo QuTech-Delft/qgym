@@ -26,6 +26,6 @@ class Rewarder:
     @property
     def reward_range(self) -> Tuple[float, float]:
         """
-        Reward range of the rewarder. I.e. range that rewards can lie in.
+        Reward range of the rewarder. I.e., range that rewards can lie in.
         """
         return self._reward_range
