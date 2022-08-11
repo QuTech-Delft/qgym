@@ -21,7 +21,8 @@ class GateEncoder:
         """
         Learns the gates names from and Iterable and creates a mapping from unique gate
         names to integers and back.
-        :gates: An Iterable containing the names of the gates that must be learned
+
+        :param gates: An Iterable containing the names of the gates that must be learned
         """
         self.encoding_dct = {}
         self.decoding_dct = {}
@@ -43,6 +44,7 @@ class GateEncoder:
         """
         Encodes gate names in gates to integers, based on the gates seen in the
         learn_gates function.
+
         :param gates: gates to encode
         :return: integer encoded version of gates
         :raise TypeError: When an unsupported type is given
@@ -90,6 +92,7 @@ class GateEncoder:
         """
         Decodes int encoded gate names to the original gate names based on the gates
         seen in the learn_gates function.
+
         :param encoded_gates: gates to decode
         :return: decoded version of encoded_gates
         :raise TypeError: When an unsupported type is given
