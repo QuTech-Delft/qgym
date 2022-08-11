@@ -62,12 +62,12 @@ class BasicRewarder(Rewarder):
         for interaction_i, interaction_j in zip(*state["interaction_graph_matrix"].nonzero()):
             mapped_interaction_i = state["mapping_dict"][interaction_i]
             mapped_interaction_j = state["mapping_dict"][interaction_j]
-            if state["connection_graph_matrix"][mapped_interaction_i][mapped_interaction_j] == 0:
+            if state["connection_graph_matrix"][mapped_interaction_i, mapped_interaction_j] == 0:
                 reward += self._penalty_per_edge
             else:
                 reward += self._reward_per_edge
 
-        return reward
+        return reward / 2  # divide by two due to double counting of edges
 
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:

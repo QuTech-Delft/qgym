@@ -34,3 +34,7 @@ jupyter notebook
 
 As a result, either your browser will open a new webpage automatically, or you should copy the provided link into a
 browser.
+
+## Documentation
+If you're interested in more details on the code, one can find a (hopefully) up-to-date version of the documentation can
+by opening `docs/index.html` in your browser.
