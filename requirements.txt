@@ -1,16 +1,23 @@
-numpy~=1.22.3
-scipy~=1.8.0
+# minimum
+gym~=0.19.0
 networkx[default]~=2.7.1
+numpy~=1.22.3
 pygame~=2.1.2
-gym ~= 0.19.0
+scipy~=1.8.0
 
-# tests
+# tutorial
+matplotlib
+notebook
 stable-baselines3~=1.4.0
 
-# notebooks
-notebook
-
 # dev
+black[jupyter]
 isort
-black
+matplotlib
+notebook
 pytest
+sphinx
+sphinx-autodoc-typehints
+sphinx-math-dollar
+sphinx-rtd-theme~=1.0
+stable-baselines3~=1.4.0

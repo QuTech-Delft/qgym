@@ -3,7 +3,7 @@ import sys
 
 package_name = "qgym"
 sys.path.insert(
-    0, os.path.abspath(f"build/lib/qgym")
+    0, os.path.abspath(f"build/lib/{package_name}")
 )
 # -- Project information -----------------------------------------------------
 
@@ -12,8 +12,8 @@ import importlib
 
 year = datetime.date.today().year
 project = package_name
-copyright = f"2022-{year}, TNO; QuTech"
-author = "TNO; QuTech"
+copyright = "2022, QuTech & TNO"
+author = "QuTech & TNO"
 version = importlib.import_module(package_name).__version__
 
 # -- Extensions --------------------------------------------------------------
@@ -42,8 +42,6 @@ mathjax3_config = {
 
 html_title = project
 html_theme_options = {
-    "analytics_id": "G-7KJ0LH83V6",
-    "analytics_anonymize_ip": False,
     "logo_only": False,
     "display_version": True,
     "prev_next_buttons_location": "bottom",
@@ -51,11 +49,11 @@ html_theme_options = {
     # Toc options
     "collapse_navigation": False,
     "sticky_navigation": True,
-    "navigation_depth": 4,
+    "navigation_depth": -1,
     "includehidden": True,
     "titles_only": False,
 }
-html_static_path = ["docs/_templates"]
+html_static_path = ["_templates"]
 
 # NOTE: All the lines are after this are the theme-specific ones. These are
 #       written as part of the site generation pipeline for this project.

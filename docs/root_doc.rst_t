@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-OpenQL-Gym
+OpenQL Gym
 ===========
-This is a Reinforcement Learning gym developed to work on problems that occur in the compilation of quantum software.
+This reinforcement learning gym can be used to train agents on problems specific to the compilation of gate-based quantum software. It uses the concepts of OpenQL as basis for the provided environments.
 
 .. _introduction:
 
