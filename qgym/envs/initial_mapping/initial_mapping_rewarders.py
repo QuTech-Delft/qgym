@@ -60,8 +60,10 @@ class BasicRewarder(Rewarder):
     def _compute_state_reward(self, state: Dict[Any, Any]) -> float:
         reward = 0.0
         for interaction_i, interaction_j in zip(*state["interaction_graph_matrix"].nonzero()):
-            mapped_interaction_i = state["mapping_dict"][interaction_i]
-            mapped_interaction_j = state["mapping_dict"][interaction_j]
+            mapped_interaction_i = state["mapping_dict"].get(interaction_i, None)
+            mapped_interaction_j = state["mapping_dict"].get(interaction_j, None)
+            if mapped_interaction_i is None or mapped_interaction_j is None:
+                continue
             if state["connection_graph_matrix"][mapped_interaction_i, mapped_interaction_j] == 0:
                 reward += self._penalty_per_edge
             else:

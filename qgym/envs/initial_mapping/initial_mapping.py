@@ -209,21 +209,6 @@ class InitialMapping(
             self._state["physical_qubits_mapped"].add(physical_qubit_index)
             self._state["logical_qubits_mapped"].add(logical_qubit_index)
 
-    def _compute_reward(
-        self,
-        old_state: Dict[Any, Any],
-        action: NDArray[np.int_],
-        *_args: Any,
-        **_kwargs: Any,
-    ) -> float:
-        """
-        Asks the rewarder to compute a reward, given the current state.
-        """
-
-        return super()._compute_reward(
-            old_state=old_state, action=action, new_state=self._state
-        )
-
     def _obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
         """
         :return: Observation based on the current state.

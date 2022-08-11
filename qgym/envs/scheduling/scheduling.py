@@ -201,21 +201,6 @@ class Scheduling(Environment):
 
         self._update_legal_actions()
 
-    def _compute_reward(
-        self,
-        old_state: Dict[Any, Any],
-        action: NDArray[np.int_],
-        *_args: Any,
-        **_kwargs: Any,
-    ) -> float:
-        """
-        Asks the rewarder to compute a reward, given the current state.
-        """
-
-        return super()._compute_reward(
-            old_state=old_state, action=action, new_state=self._state
-        )
-
     def _is_done(self) -> bool:
         """
         :return: Boolean value stating whether we are in a final state.

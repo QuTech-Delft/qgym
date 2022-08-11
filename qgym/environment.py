@@ -20,16 +20,25 @@ SelfT = TypeVar("SelfT")
 class Environment(Generic[ObservationT, ActionT], gym.Env):
     """
     RL Environment containing the current state of the problem.
+
+    Each subclass should set at least the following attributes:
+
+    :ivar action_space: The action space of this environment.
+    :ivar observation_space: The observation space of this environment.
+    :ivar metadat: Additional metadata of this environment.
+    :ivar _state: The state space of this environment.
+    :ivar _rewarder: The rewarder of this environment.
+
     """
 
-    # --- These properties should be set in any subclass ---
+    # --- These attributes should be set in any subclass ---
     action_space: Space
     observation_space: Space
-    metadata: Dict[Any, Any]
-    _state: Dict[Any, Any]
+    metadata: Dict[str, Any]
+    _state: Dict[str, Any]
     _rewarder: Rewarder
 
-    # --- Other properties ---
+    # --- Other attributes ---
     _rng: Optional[Generator] = None
 
     def step(
@@ -42,7 +51,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         Update the state based on the input action. Return observation, reward,
         done-indicator and (optional) debugging info based on the updated state.
 
-        :param action: Valid action to take.
+        :param action: Action to be performed.
         :param return_info: Whether to receive debugging info.
         :return: A tuple containing three/four entries: 1) The updated state; 2) Reward
             of the new state; 3) Boolean value stating whether the new state is a final
@@ -65,7 +74,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
 
     @abstractmethod
     def reset(
-        self, *, seed: Optional[int] = None, return_info: bool = False, **kwargs: Any
+        self, *, seed: Optional[int] = None, return_info: bool = False, **_kwargs: Any
     ) -> Union[ObservationT, Tuple[ObservationT, Dict[Any, Any]]]:
         """
         Reset the environment and load a new random initial state. To be used after
@@ -75,9 +84,9 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call, i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
-        :param kwargs: Additional options to configure the reset. To be defined for a
-            specific environment
-        :return: Initial observation and optional debugging info.
+        :param _kwargs: Additional keyword arguments to configure the reset. To be defined for a
+            specific environment.
+        :return: Initial observation and optionally also debugging info.
         """
 
         if seed is not None:
@@ -91,8 +100,8 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         """
         Seed the random number generator of this environment.
 
-        :param seed: Seed to use
-        :return: The used seeds
+        :param seed: Seed to use.
+        :return: The used seeds.
         """
 
         self._rng = default_rng(seed)
@@ -141,17 +150,19 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
 
     @abstractmethod
     def _compute_reward(
-        self, old_state: Dict[Any, Any], action: ActionT, *args: Any, **kwargs: Any
+        self, old_state: Dict[str, Any], action: ActionT, *args: Any, **kwargs: Any
     ) -> float:
         """
-        Asks the rewarder to compute a reward, based on the given arguments.
+        Asks the rewarder to compute a reward, based on the given old state, the given action and the updated state.
 
-        :param args: Arguments for the Rewarder.
-        :param kwargs: Keyword-arguments for the Rewarder.
+        :param old_state: The state of the environment before the action was taken.
+        :param action: Action that was taken.
+        :param args: Optional other for the Rewarder.
+        :param kwargs: Optional keyword-arguments for the Rewarder.
         """
 
         return self._rewarder.compute_reward(
-            *args, old_state=old_state, action=action, **kwargs
+            *args, old_state=old_state, action=action, new_state=self._state, **kwargs
         )
 
     @abstractmethod

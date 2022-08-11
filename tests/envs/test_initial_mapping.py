@@ -99,7 +99,7 @@ Tests for the basic rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, 10, 30],
+            [0, 5, 15],
         ),
         (
             # connection graph fully connected, interaction graph no edges
@@ -123,7 +123,7 @@ Tests for the basic rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, -2, -6],
+            [0, -1, -3],
         ),
     ],
 )
@@ -171,7 +171,7 @@ Tests for the single step rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, 10, 20],
+            [0, 5, 10],
         ),
         (
             # connection graph fully connected, interaction graph no edges
@@ -195,7 +195,7 @@ Tests for the single step rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, -2, -4],
+            [0, -1, -2],
         ),
     ],
 )
@@ -243,7 +243,7 @@ Tests for the episode rewarder rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, 0, 30],
+            [0, 0, 15],
         ),
         (
             # connection graph fully connected, interaction graph no edges
@@ -267,7 +267,7 @@ Tests for the episode rewarder rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, 0, -6],
+            [0, 0, -3],
         ),
     ],
 )
