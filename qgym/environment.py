@@ -148,7 +148,6 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     def __del__(self) -> None:
         self.close()
 
-    @abstractmethod
     def _compute_reward(
         self, old_state: Dict[str, Any], action: ActionT, *args: Any, **kwargs: Any
     ) -> float:

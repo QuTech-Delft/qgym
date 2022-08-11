@@ -1,6 +1,7 @@
 """
 General utils functions for graph related operations
 """
+
 from typing import Any
 
 from numpy.typing import NDArray

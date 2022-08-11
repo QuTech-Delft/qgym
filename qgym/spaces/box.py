@@ -7,6 +7,7 @@ from typing import Generator, List, Optional, Sequence, SupportsFloat, Type, Uni
 import gym.spaces
 import numpy as np
 from numpy.random import default_rng
+from numpy.typing import NDArray
 
 
 class Box(gym.spaces.Box):
@@ -16,12 +17,12 @@ class Box(gym.spaces.Box):
 
     def __init__(
         self,
-        low: Union[SupportsFloat, np.ndarray],
-        high: Union[SupportsFloat, np.ndarray],
+        low: Union[SupportsFloat, NDArray],
+        high: Union[SupportsFloat, NDArray],
         shape: Optional[Sequence[int]] = None,
         dtype: Type = np.float32,
         rng: Optional[Generator] = None,
-    ):
+    ) -> None:
         """
         Initialize a Box space, i.e., a possibly open-ended interval in n dimensions.
 
@@ -43,6 +44,7 @@ class Box(gym.spaces.Box):
         Seed the rng of this space
 
         :param seed: Seed for the rng
+        :return: The used seeds.
         """
         self._np_random = default_rng(seed)
         return [seed]

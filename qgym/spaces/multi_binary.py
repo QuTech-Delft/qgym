@@ -18,9 +18,9 @@ class MultiBinary(gym.spaces.MultiBinary):
 
     def __init__(
         self,
-        n: Union[np.ndarray, Sequence[int], int],
+        n: Union[NDArray[np.int_], Sequence[int], int],
         rng: Optional[Generator] = None,
-    ):
+    ) -> None:
         """
         Initialize a multi-discrete space, i.e., multiple discrete intervals of given
         sizes.
@@ -38,12 +38,13 @@ class MultiBinary(gym.spaces.MultiBinary):
         Seed the rng of this space.
 
         :param seed: Seed for the rng
+        :return: The used seeds.
         """
 
         self._np_random = default_rng(seed)
         return [seed]
 
-    def sample(self) -> NDArray:
+    def sample(self) -> NDArray[np.int_]:
         """
         :return: Random sampled element of this space.
         """

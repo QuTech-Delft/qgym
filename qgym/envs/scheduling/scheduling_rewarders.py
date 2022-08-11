@@ -49,6 +49,7 @@ class BasicRewarder(Rewarder):
         :param old_state: State of the Scheduling before the current action.
         :param action: Action that has just been taken.
         :param new_state: Updated state of the Scheduling.
+        :return: The reward for this action.
         """
 
         reward = 0.0
@@ -70,6 +71,7 @@ class BasicRewarder(Rewarder):
 
         :param action: Action that has just been taken.
         :param old_state: State of the Scheduling before the current action.
+        :return: Whether this action was illegal.
         """
 
         gate_to_schedule = action[0]
@@ -104,6 +106,7 @@ class EpisodeRewarder(Rewarder):
         :param old_state: State of the Scheduling before the current action.
         :param action: Action that has just been taken.
         :param new_state: Updated state of the Scheduling.
+        :return: The reward for this action.
         """
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
@@ -124,6 +127,7 @@ class EpisodeRewarder(Rewarder):
 
         :param action: Action that has just been taken.
         :param old_state: State of the Scheduling before the current action.
+        :return: Whether this action was illegal.
         """
 
         gate_to_schedule = action[0]

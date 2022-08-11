@@ -13,12 +13,19 @@ from qgym.custom_types import Gate
 class RandomCircuitGenerator:
     """
     Generates random circuits in the form of a list of tuples.
-    ex format. [("prep", 0,0), ("prep", 1,1), ("cnot", 0,1)]
+    ex format. `[("prep", 0,0), ("prep", 1,1), ("cnot", 0,1)]`
     """
 
     def __init__(
         self, n_qubits: int, max_gates: int, rng: Optional[Generator] = None
     ) -> None:
+        """
+        Initialize the random circuit generator.
+
+        :param n_qubits: Number of qubits of the circuit.
+        :param max_gates: Maximum number of gates that a circuit may have.
+        :param rng: Optional random number generator.
+        """
         self.n_qubits = n_qubits
         self.max_gates = max_gates
         self._rng = rng

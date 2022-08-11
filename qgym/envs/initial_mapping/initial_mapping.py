@@ -37,7 +37,9 @@ class InitialMapping(
     ) -> None:
         """
         Initialize the action space, observation space, and initial states. This
-        also defines the connection and random interaction graph based on the arguments.
+        also defines the connection graph and edge probability for the random interaction graph of each episode.
+
+        The supported render modes of this environment are "human" and "rgb_array".
 
         :param interaction_graph_edge_probability: Probability that an edge between any
             pair of qubits in the random interaction graph exists. The interaction
@@ -113,7 +115,7 @@ class InitialMapping(
         **_kwargs: Any,
     ) -> Union[
         Tuple[NDArray[np.int_], NDArray[np.int_]],
-        Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[Any, Any]],
+        Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[str, Any]],
     ]:
         """
         Reset state, action space and step number and load a new random initial
@@ -125,7 +127,7 @@ class InitialMapping(
         :param interaction_graph: Interaction graph to be used for the next iteration, if `None` a random interaction
             graph will be created.
         :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optional debugging info.
+        :return: Initial observation and optionally debugging info.
         """
 
         # Reset the state, action space, and step number
@@ -158,6 +160,7 @@ class InitialMapping(
         and red edges need at least on swap.
 
         :param mode: The mode to render with (should be one of the supported `render.modes` in `self.metadata`).
+        :return: The result of rendering the current state..
         """
 
         if mode not in self.metadata["render.modes"]:
@@ -165,8 +168,10 @@ class InitialMapping(
 
         return self._visualiser.render(self._state, self._interaction_graph, mode)
 
-    def close(self):
-        """Closed the screen used for rendering"""
+    def close(self) -> None:
+        """
+        Closes the screen used for rendering.
+        """
 
         self._visualiser.close()
 
@@ -226,7 +231,7 @@ class InitialMapping(
 
         return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]
 
-    def _obtain_info(self) -> Dict[Any, Any]:
+    def _obtain_info(self) -> Dict[str, Any]:
         """
         :return: Optional debugging info for the current state.
         """
@@ -248,7 +253,7 @@ class InitialMapping(
             topology
         :param connection_grid_size: Size of the connection graph when the topology is a grid.
 
-        :return: Tuple the connection graph and interaction graph.
+        :return: Tuple containing both the connection graph and interaction graph.
         """
 
         if connection_graph is not None:
@@ -281,11 +286,11 @@ class InitialMapping(
         connection_graph_matrix: NDArray[Any],
     ) -> Tuple[Graph, Graph]:
         """
-        Parse a given interaction and connection adjacency matrix to their respective
-        graphs.
+        Parse a given connection graph adjacency matrix to its respective graph
 
-        :param connection_graph_matrix: adjacency matrix representation of the QPU
-            topology.
+        :param connection_graph_matrix: adjacency matrix representation of the QPU topology.
+        :raise TypeError: When the provided matrix is not a valid adjacency matrix.
+        :return: Graph representation of the adjacency matrix.
         """
 
         if not check_adjacency_matrix(connection_graph_matrix):

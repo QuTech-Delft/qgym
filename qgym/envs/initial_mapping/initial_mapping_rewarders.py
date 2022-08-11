@@ -42,7 +42,7 @@ class BasicRewarder(Rewarder):
         old_state: Dict[Any, Any],
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
-    ):
+    ) -> float:
         """
         Compute a reward, based on the current state, and the connection and
         interaction graphs.
@@ -50,6 +50,7 @@ class BasicRewarder(Rewarder):
         :param old_state: State of the InitialMapping before the current action.
         :param action: Action that has just been taken
         :param new_state: Updated state of the InitialMapping
+        :return reward: The reward for this action.
         """
 
         if self._is_illegal(action, old_state):
@@ -58,13 +59,26 @@ class BasicRewarder(Rewarder):
         return self._compute_state_reward(new_state)
 
     def _compute_state_reward(self, state: Dict[Any, Any]) -> float:
+        """
+        Compute the value of the mapping defined by the input state.
+
+        :param state: The state to compute the value of.
+        :return: Value of this state.
+        """
         reward = 0.0
-        for interaction_i, interaction_j in zip(*state["interaction_graph_matrix"].nonzero()):
+        for interaction_i, interaction_j in zip(
+            *state["interaction_graph_matrix"].nonzero()
+        ):
             mapped_interaction_i = state["mapping_dict"].get(interaction_i, None)
             mapped_interaction_j = state["mapping_dict"].get(interaction_j, None)
             if mapped_interaction_i is None or mapped_interaction_j is None:
                 continue
-            if state["connection_graph_matrix"][mapped_interaction_i, mapped_interaction_j] == 0:
+            if (
+                state["connection_graph_matrix"][
+                    mapped_interaction_i, mapped_interaction_j
+                ]
+                == 0
+            ):
                 reward += self._penalty_per_edge
             else:
                 reward += self._reward_per_edge
@@ -79,6 +93,7 @@ class BasicRewarder(Rewarder):
 
         :param action: Action that has just been taken
         :param old_state: State of the InitialMapping before the current action.
+        :return: Whether this action is valid for the given state.
         """
         return (
             action[0] in old_state["physical_qubits_mapped"]
@@ -98,7 +113,7 @@ class SingleStepRewarder(BasicRewarder):
         old_state: Dict[Any, Any],
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
-    ):
+    ) -> float:
         """
         Compute a reward, based on the current state, and the connection and
         interaction graphs.
@@ -106,12 +121,15 @@ class SingleStepRewarder(BasicRewarder):
         :param old_state: State of the InitialMapping before the current action.
         :param action: Action that has just been taken
         :param new_state: Updated state of the InitialMapping
+        :return reward: The reward for this action.
         """
 
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
-        return self._compute_state_reward(new_state) - self._compute_state_reward(old_state)
+        return self._compute_state_reward(new_state) - self._compute_state_reward(
+            old_state
+        )
 
 
 class EpisodeRewarder(BasicRewarder):
@@ -126,7 +144,7 @@ class EpisodeRewarder(BasicRewarder):
         old_state: Dict[Any, Any],
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
-    ):
+    ) -> float:
         """
         Compute a reward, based on the current state, and the connection and
         interaction graphs.
@@ -134,6 +152,7 @@ class EpisodeRewarder(BasicRewarder):
         :param old_state: State of the InitialMapping before the current action.
         :param action: Action that has just been taken
         :param new_state: Updated state of the InitialMapping
+        :return reward: The reward for this action.
         """
 
         if self._is_illegal(action, old_state):

@@ -2,11 +2,12 @@
 This module contains a class used for rendering the initial mapping environment.
 """
 
-from typing import Any, Mapping, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import networkx as nx
 import numpy as np
 import pygame
+from networkx import Graph
 from numpy.typing import NDArray
 from pygame import gfxdraw
 
@@ -25,7 +26,7 @@ class InitialMappingVisualiser:
     Visualiser class for the initial mapping environment
     """
 
-    def __init__(self, connection_graph) -> None:
+    def __init__(self, connection_graph: Graph) -> None:
 
         self.connection_graph = connection_graph
         self.connection_graph_nodes = connection_graph.nodes
@@ -43,9 +44,11 @@ class InitialMappingVisualiser:
         self.subscreen3 = None
         self.init_subscreen_rectangles()
 
-    def init_subscreen_rectangles(self, padding=10) -> None:
+    def init_subscreen_rectangles(self, padding: int = 10) -> None:
         """
-        Initialize the pygame `Rect` objects used for drawing the subscreens
+        Initialize the pygame `Rect` objects used for drawing the subscreens.
+
+        :param padding: The padding to be used inbetween the subscreens.
         """
 
         small_screen_width = self.screen_width / 2 - 1.5 * padding
@@ -69,7 +72,7 @@ class InitialMappingVisualiser:
         )
 
     def render(
-        self, state: Mapping[str, Any], interaction_graph: nx.Graph, mode: str
+        self, state: Dict[str, Any], interaction_graph: nx.Graph, mode: str
     ) -> Any:
         """
         Render the current state using pygame. The upper left screen shows the
@@ -79,7 +82,8 @@ class InitialMappingVisualiser:
 
         :param state: state to render
         :param interaction_graph: interaction graph to render
-        :param mode: mode to render in.
+        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
+        :raise ValueError: When an invalid mode is provided.
         :return: In 'human' mode returns a boolean value encoding whether the pygame screen is open. In `rgb_array` mode
             returns an RGB array encoding of the rendered image.
         """
@@ -111,8 +115,13 @@ class InitialMappingVisualiser:
             return np.transpose(
                 np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
             )
+        else:
+            raise ValueError(
+                f"You provided an invalid mode '{mode}',"
+                f" the only supported modes are 'human' and 'rgb_array'."
+            )
 
-    def _get_mapped_graph(self, state: Mapping[str, Any]) -> nx.Graph:
+    def _get_mapped_graph(self, state: Dict[str, Any]) -> nx.Graph:
         """
         Constructs a mapped graph. In this graph gray edges are unused, green
         edges are mapped correctly and red edges need at least on swap. This
@@ -216,7 +225,7 @@ class InitialMappingVisualiser:
     @staticmethod
     def _get_render_positions(
         graph: nx.Graph, subscreen: pygame.Rect
-    ) -> Mapping[Any, Tuple[float, float]]:
+    ) -> Dict[Any, Tuple[float, float]]:
         """
         Utility function used during render. Give the positions of the nodes
         of a graph on a given subscreen.
@@ -239,7 +248,10 @@ class InitialMappingVisualiser:
 
     def start(self, mode: str) -> None:
         """
-        Start pygame
+        Start pygame in the given mode.
+
+        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
+        :raise ValueError: When an invalid mode is provided.
         """
 
         pygame.display.init()
@@ -250,11 +262,16 @@ class InitialMappingVisualiser:
             )
         elif mode == "rgb_array":
             self.screen = pygame.Surface((self.screen_width, self.screen_height))
+        else:
+            raise ValueError(
+                f"You provided an invalid mode '{mode}',"
+                f" the only supported modes are 'human' and 'rgb_array'."
+            )
 
         pygame.display.set_caption("Mapping Environment")
         self.is_open = True
 
-    def close(self):
+    def close(self) -> None:
         """
         Closed the screen used for rendering.
         """

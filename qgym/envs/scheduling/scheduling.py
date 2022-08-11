@@ -149,7 +149,7 @@ class Scheduling(Environment):
 
     def _increment_cycle(self) -> None:
         """
-        Increment the cycle and update the state accordingly
+        Increment the cycle and update the state accordingly.
         """
 
         self._state["cycle"] += 1
@@ -203,12 +203,12 @@ class Scheduling(Environment):
 
     def _is_done(self) -> bool:
         """
-        :return: Boolean value stating whether we are in a final state.
+        :return: Whether we are in a valid final state.
         """
 
         return bool((self._state["schedule"] != -1).all())
 
-    def _obtain_info(self) -> Dict[Any, Any]:
+    def _obtain_info(self) -> Dict[str, Any]:
         """
         :return: Optional debugging info for the current state.
         """
@@ -239,7 +239,7 @@ class Scheduling(Environment):
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call, i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
-        :return: Initial observation and optional debugging info.
+        :return: Initial observation and optionally debugging info.
         """
 
         # Reset counters
@@ -320,7 +320,7 @@ class Scheduling(Environment):
     def _update_legal_actions(self) -> None:
         """
         Checks which actions are legal based on the scheduled qubits, dependencies
-        and in the future also machine restrictions
+        and in the future also machine restrictions.
         """
 
         legal_actions = np.zeros(self._state["max_gates"], dtype=bool)
@@ -355,6 +355,7 @@ class Scheduling(Environment):
         Return the quantum circuit of this episode.
 
         :param mode: Choose from be 'human' or 'encoded'. Default is 'human'.
+        :raise ValueError: If an unsupported mode is provided.
         :return: human or encoded quantum circuit.
         """
 
@@ -370,11 +371,13 @@ class Scheduling(Environment):
         else:
             raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
 
-    def render(self, mode: str = "human") -> bool:
+    def render(self, mode: str = "human") -> Any:
         """
         Render the current state using pygame.
 
-        :param mode: The mode to render with (default is 'human')
+        :param mode: The mode to render with (supported modes are found in `self.metadata`.).
+        :raise ValueError: If an unsupported mode is provided.
+        :return: Result of rendering.
         """
 
         if mode not in self.metadata["render.modes"]:
@@ -382,7 +385,7 @@ class Scheduling(Environment):
 
         return self._visualiser.render(self._state, mode)
 
-    def close(self):
+    def close(self) -> None:
         """
         Close the screen used for rendering.
         """

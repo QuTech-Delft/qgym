@@ -18,7 +18,7 @@ class Dict(gym.spaces.Dict):
         spaces: Optional[typing.Dict[str, gym.Space]] = None,
         rng: Optional[Generator] = None,
         **spaces_kwargs: gym.Space
-    ):
+    ) -> None:
         """
         Initialize a dictionary space, with string valued keys and Spaces as values.
 

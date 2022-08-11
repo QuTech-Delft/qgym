@@ -1,6 +1,8 @@
 """
 This module contains the GateEncoder class encoding gate to integers and back.
 """
+from __future__ import annotations
+
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Union
 
 from qgym.custom_types import Gate
@@ -11,18 +13,21 @@ class GateEncoder:
     Learns a set of gates and creates a mapping to integers and back.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """
+        Initialize the `GateEncoder`.
+        """
         self.encoding_dct = None
         self.decoding_dct = None
         self.longest_name = None
         self.n_gates = None
 
-    def learn_gates(self, gates: Iterable) -> "GateEncoder":
+    def learn_gates(self, gates: Iterable) -> GateEncoder:
         """
         Learns the gates names from and Iterable and creates a mapping from unique gate
         names to integers and back.
 
-        :param gates: An Iterable containing the names of the gates that must be learned
+        :param gates: An iterable containing the names of the gates that must be learned.
         """
         self.encoding_dct = {}
         self.decoding_dct = {}
@@ -42,10 +47,9 @@ class GateEncoder:
         gates: Union[str, Mapping[str, Any], Sequence[Gate], Iterable[str]],
     ) -> Union[int, Dict[int, Any], List[Gate]]:
         """
-        Encodes gate names in gates to integers, based on the gates seen in the
-        learn_gates function.
+        Encodes gate names in gates to integers, based on the gates seen in `learn_gates`.
 
-        :param gates: gates to encode
+        :param gates: gate name(s) to encode
         :return: integer encoded version of gates
         :raise TypeError: When an unsupported type is given
         """
@@ -90,11 +94,11 @@ class GateEncoder:
         encoded_gates: Union[int, Mapping[int, Any], Sequence[Gate], Iterable[int]],
     ) -> Union[str, Dict[str, Any], List[Gate]]:
         """
-        Decodes int encoded gate names to the original gate names based on the gates
+        Decodes integer encoded gate names to the original gate names based on the gates
         seen in the learn_gates function.
 
-        :param encoded_gates: gates to decode
-        :return: decoded version of encoded_gates
+        :param encoded_gates: Encoded gates that are to be decoded.
+        :return: Decoded version of encoded_gates.
         :raise TypeError: When an unsupported type is given
         """
         if isinstance(encoded_gates, int):

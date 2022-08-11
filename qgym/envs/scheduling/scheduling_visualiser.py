@@ -24,7 +24,7 @@ class SchedulingVisualiser:
         *,
         gate_encoder: GateEncoder,
         gate_cycle_length: Mapping[int, int],
-        n_qubits: int
+        n_qubits: int,
     ) -> None:
         """
         Initialize the visualiser.
@@ -56,7 +56,9 @@ class SchedulingVisualiser:
         Render the current state using pygame.
 
         :param state: Current state of the schedule.
-        :param mode: The mode to render with (default is 'human').
+        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
+        :raise ValueError: When an invalid mode is provided.
+        :return: The rendered state.
         """
 
         if self.screen is None:
@@ -81,6 +83,11 @@ class SchedulingVisualiser:
         elif mode == "rgb_array":
             return np.transpose(
                 np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
+            )
+        else:
+            raise ValueError(
+                f"You provided an invalid mode '{mode}',"
+                f" the only supported modes are 'human' and 'rgb_array'."
             )
 
     def _draw_scheduled_gate(self, gate_idx: int, scheduled_cycle: int) -> None:
@@ -124,7 +131,10 @@ class SchedulingVisualiser:
 
     def start(self, mode: str) -> None:
         """
-        Start pygame.
+        Start pygame in the given mode.
+
+        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
+        :raise ValueError: When an invalid mode is provided.
         """
 
         pygame.display.init()
@@ -134,8 +144,13 @@ class SchedulingVisualiser:
             )
         elif mode == "rgb_array":
             self.screen = pygame.Surface((self.screen_width, self.screen_height))
+        else:
+            raise ValueError(
+                f"You provided an invalid mode '{mode}',"
+                f" the only supported modes are 'human' and 'rgb_array'."
+            )
 
-        # pygame.display.set_caption("Scheduling Environment")
+        pygame.display.set_caption("Scheduling Environment")
 
         pygame.font.init()
         self.font = pygame.font.SysFont("Arial", 12)

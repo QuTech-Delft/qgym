@@ -32,7 +32,7 @@ class CommutationRulebook:
     Based on nearest blocking neighbour
     """
 
-    def __init__(self, default_rules: bool = True):
+    def __init__(self, default_rules: bool = True) -> None:
         """
         Init of the CommutationRulebook.
 
@@ -74,7 +74,7 @@ class CommutationRulebook:
 
         :param gate1: gate to check the commutation.
         :param gate2: gate to check gate1 against.
-        :return: True if gate1 commutes with gate2. False otherwise.
+        :return: Whether gate1 commutes with gate2.
         """
         for rule in self.rulebook:
             if rule(gate1, gate2):
@@ -92,7 +92,7 @@ class CommutationRulebook:
         Add a commutation rule to the rulebook
 
         :param rule: Rule to add to the rulebook. A rule takes as input two gates and
-            returns True if two gate commute according to the rule and False otherwise.
+        :return: Whether the two gates commute according to the given rule.
         """
         self.rulebook.append(rule)
 
@@ -103,7 +103,7 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
 
     :param gate1: gate to check disjointness.
     :param gate2: gate to check disjointness against.
-    :return: True if the gates are disjoint, False otherwise.
+    :return: Whether the gates are disjoint.
     """
     return (
         gate1.q1 != gate2.q1
@@ -115,10 +115,10 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
 
 def same_gate(gate1: Tuple[str, int, int], gate2: Tuple[str, int, int]) -> bool:
     """
-    Gates that have disjoint qubits commute.
+    Gates that are equal commute.
 
     :param gate1: gate to check equality.
     :param gate2: gate to check equality against.
-    :return: True if gate1 is equal to gate2, False otherwise.
+    :return: Whether the gates are equal.
     """
     return gate1 == gate2
