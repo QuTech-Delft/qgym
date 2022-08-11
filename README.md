@@ -1,43 +1,51 @@
 # OpenQL-Gym
-Software for RL-based OpenQL
 
-## Developer notes
-Below are some notes that are useful to developers of this package.
+**_Note: This library is still under development and might change severely._**
 
-### Installing requirements
-Make sure to install all requirements in your (preferably virtual) environment as follows.
-The first command installs the latest versions of `pip`, `setuptools`, and `wheel`.
-```commandline
-pip install -U pip setuptools wheel
-pip install -U -r requirements.txt
-```
+A Reinforcement Learning gym for training agents on problems that occur frequently in quantum compilation. This library
+is focussed around the specific compiler known as [OpenQL](https://github.com/QuTech-Delft/OpenQL).
+
+The gym supports two environments:
+1. Initial mapping: the problem of mapping virtual to physical qubits
+2. Scheduling: the problem of scheduling quantum gate operations such that hardware and commutation constraints are satisfied.
+
+## Tutorial notebooks
+We provide some tutorial notebooks to get to know Reinforcement Learning and this library. These notebooks are found in
+the folder [notebooks](notebooks).
+
+## Installation
+Below, we describe several steps for installing
 
 ### Building and installing from source
 To build a wheel from this source one can run the command below.
 This will create a built wheel in a folder called `dist`.
 
-_Make sure that `pip`, `setuptools`, `wheel` are up-to-date (see [above](#installing-requirements))_
+_Make sure that `pip`, `setuptools`, `wheel` are up-to-date._
 ```commandline
 python setup.py bdist_wheel
 ```
 
-### Building documentation
-To build the documentation one should run the two commands below.
-The HTML documentation will be placed in a folder called `docs_html`. This folder includes a file `index.html`, open this
-in a browser to view the documentation.
+### Setting up the environment
+Initially, make sure you have Python installed on your computer. The python version should be either 3.8 or 3.9, other
+versions are currently not supported.
 
-To successfully build the documentation, one has to have the `qgym` packages installed in the environment.
+You can check your Python version with the command `python --version`(Windows)/`python3 --version`(Unix).
+
+Subsequently, open a terminal inside the folder containing the notebooks and execute the following commands. This will
+create a Python virtual environment and require the qgym package and its requirements in it.
+
+Windows:
 ```commandline
-sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces qgym
-sphinx-build docs_build docs_html
+python -m venv venv
+.\venv\Script\activate
+pip install --upgrade pip setuptools wheel
+pip install .\dist\qgym-0.1.0a0-py3-none-any.whl[tutorial]
 ```
 
-### Developing jupyter notebooks
-To launch a jupyter notebook environment ensure that the latest version of this library is installed,
-including the developer dependencies.
-
-_Make sure that `pip`, `setuptools`, `wheel` are up-to-date (see [above](#installing-requirements))_
+Unix:
 ```commandline
-pip install -U .[dev]
-jupyter notebook
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip setuptools wheel
+pip install ./dist/qgym-0.1.0a0-py3-none-any.whl[tutorial]
 ```
