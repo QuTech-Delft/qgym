@@ -44,14 +44,16 @@ class RandomCircuitGenerator:
     def rng(self, rng: Generator) -> None:
         self._rng = rng
 
-    def generate_circuit(self, n_gates: Union[str, int] = "random", mode: str = "default") -> List[Gate]:
+    def generate_circuit(
+        self, n_gates: Union[str, int] = "random", mode: str = "default"
+    ) -> List[Gate]:
         """
         Make a random circuit with prep, measure, x, y, z, and cnot operations
 
         :param n_gates: If "random", then a circuit of random length will be made, if
             an int a circuit of length min(n_gates, max_gates) will be made.
         :param mode: If mode is "default", a curcuit will be generated containing the
-            'prep', 'x', 'y', 'z', 'cnot' and 'measure' gates. If mode is "workshop", 
+            'prep', 'x', 'y', 'z', 'cnot' and 'measure' gates. If mode is "workshop",
             a simpler circuit containing just 'h', 'cnot' and `measure` gates will be
             generated.
         :return: A randomly generated circuit
@@ -64,20 +66,16 @@ class RandomCircuitGenerator:
 
         circuit: List[Gate] = [None] * n_gates
 
-        # If mode is default, the circuit should start by initializing the qubits
-        if mode.lower() == "default":
-            for qubit in range(self.n_qubits):
-                circuit[qubit] = Gate("prep", qubit, qubit)
-        
         if mode.lower() == "default":
             gate_names = ["x", "y", "z", "cnot", "measure"]
             p = [0.16, 0.16, 0.16, 0.5, 0.02]
         elif mode.lower() == "workshop":
-            gate_names = ["h", "cnot", "measure"]
-            p = [0.4, 0.5, 0.1]
+            gate_names = ["x", "y", "cnot", "measure"]
+            p = [0.2, 0.2, 0.5, 0.1]
         else:
             raise ValueError("Unkown mode, choose 'default' or 'workshop'.")
-        for idx in range(self.n_qubits, n_gates):
+
+        for idx in range(n_gates):
             name = self.rng.choice(gate_names, p=p)
 
             if name == "cnot":
@@ -89,5 +87,10 @@ class RandomCircuitGenerator:
                 q2 = q1
 
             circuit[idx] = Gate(name, q1, q2)
+        
+        # If mode is default, the circuit should start by initializing the qubits
+        if mode.lower() == "default":
+            for qubit in range(self.n_qubits):
+                circuit[qubit] = Gate("prep", qubit, qubit)
 
         return circuit

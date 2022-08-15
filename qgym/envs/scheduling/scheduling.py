@@ -27,6 +27,7 @@ class Scheduling(Environment):
         *,
         max_gates: int = 200,
         dependency_depth: int = 1,
+        random_circuit_mode: str = "default",
         rulebook: Optional[CommutationRulebook] = None,
     ) -> None:
         """
@@ -37,6 +38,8 @@ class Scheduling(Environment):
         :param dependency_depth: number of dependencies given in the observation.
             Determines the shape of the "dependencies" observation, which has the shape
             (dependency_depth, max_gates)
+        :random_circuit_mode: Mode for the random circuit is generator. The mode can be
+            'default' or 'workshop'.
         :param rulebook: rulebook describing the commutation rules. If None is given,
             the default CommutationRulebook will be used. (See CommutationRulebook for
             more info on the default rules.)
@@ -52,6 +55,7 @@ class Scheduling(Environment):
         n_qubits = machine_properties["qubit_number"]
         self._dependency_depth = dependency_depth
         self._gate_encoder = GateEncoder().learn_gates(machine_properties["gates"])
+        self._random_circuit_mode = random_circuit_mode
         self._random_circuit_generator = RandomCircuitGenerator(
             n_qubits, max_gates, rng=self.rng
         )
@@ -112,7 +116,7 @@ class Scheduling(Environment):
         self._visualiser = SchedulingVisualiser(
             gate_encoder=self._gate_encoder,
             gate_cycle_length=gate_cycle_length,
-            n_qubits=n_qubits,
+            n_qubits=n_qubits
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
@@ -158,18 +162,18 @@ class Scheduling(Environment):
         self._state["busy"][self._state["busy"] > 0] -= 1
 
         # Exclude gates that should start at the same time
-        while len(self._state["exclude_in_next_cycle"]) != 0:
-            gate_to_exclude = self._state["exclude_in_next_cycle"].pop()
+        while len(self._exclude_in_next_cycle) != 0:
+            gate_to_exclude = self._exclude_in_next_cycle.pop()
             self._exclude_gate(gate_to_exclude)
 
         # Decrease the amount of cycles to exclude a gate and skip gates where the
         # cycle becomes 0 (as it no longer should be excluded)
         updated_excluded_gates = {}
-        while len(self._state["excluded_gates"]) != 0:
-            gate_name, cycles = self._state["excluded_gates"].popitem()
+        while len(self._excluded_gates) != 0:
+            gate_name, cycles = self._excluded_gates.popitem()
             if cycles > 1:
                 updated_excluded_gates[gate_name] = cycles - 1
-        self._state["excluded_gates"] = updated_excluded_gates
+        self._excluded_gates = updated_excluded_gates
 
         self._update_legal_actions()
 
@@ -193,10 +197,10 @@ class Scheduling(Environment):
                 self._exclude_gate(gate_to_exclude)
 
         if gate.name in self._state["same_start"]:
-            self._state["exclude_in_next_cycle"].add(gate.name)
+            self._exclude_in_next_cycle.add(gate.name)
 
         # Update "dependencies" observation
-        self._state["blocking_matrix"][:, gate_idx] = False
+        self._blocking_matrix[:, gate_idx] = False
         self._state["dependencies"] = self._get_dependencies()
 
         self._update_legal_actions()
@@ -250,15 +254,15 @@ class Scheduling(Environment):
         self._state["busy"] = np.zeros(self._state["n_qubits"], dtype=int)
 
         # At the start no gates should be excluded
-        self._state["excluded_gates"] = {}
-        self._state["exclude_in_next_cycle"] = set()
+        self._excluded_gates = {}
+        self._exclude_in_next_cycle = set()
 
         # Generate a circuit if None is given
         if circuit is None:
-            circuit = self._random_circuit_generator.generate_circuit()
-        self._state[
-            "blocking_matrix"
-        ] = self._commutation_rulebook.make_blocking_matrix(circuit)
+            circuit = self._random_circuit_generator.generate_circuit(
+                mode=self._random_circuit_mode
+            )
+        self._blocking_matrix = self._commutation_rulebook.make_blocking_matrix(circuit)
         self._state["dependencies"] = self._get_dependencies()
 
         encoded_circuit = self._gate_encoder.encode_gates(circuit)
@@ -280,7 +284,7 @@ class Scheduling(Environment):
         dependencies = np.zeros(
             (self._dependency_depth, self._state["max_gates"]), dtype=int
         )
-        for gate_idx, blocking_row in enumerate(self._state["blocking_matrix"]):
+        for gate_idx, blocking_row in enumerate(self._blocking_matrix):
 
             blocking_gates = blocking_row.nonzero()[0]
             for depth in range(min(self._dependency_depth, blocking_gates.shape[0])):
@@ -315,7 +319,7 @@ class Scheduling(Environment):
         """
 
         gate_cycle_length = self._state["gate_cycle_length"][gate_name]
-        self._state["excluded_gates"][gate_name] = gate_cycle_length
+        self._excluded_gates[gate_name] = gate_cycle_length
 
     def _update_legal_actions(self) -> None:
         """
@@ -344,7 +348,7 @@ class Scheduling(Environment):
                 continue
 
             # Check if gates should be excluded
-            if gate_name in self._state["excluded_gates"]:
+            if gate_name in self._excluded_gates:
                 legal_actions[gate_idx] = False
                 continue
 
