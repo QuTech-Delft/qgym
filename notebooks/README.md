@@ -2,13 +2,14 @@
 Below we explain how to prepare your environment for using the notebooks.
 
 ## Setting up the environment
-Initially, make sure you have Python installed on your computer. The python version should be either 3.8 or 3.9, other
-versions are currently not supported.
+Initially, make sure you have [Python](https://www.python.org/downloads/) installed on your computer. The Python version
+should be either [3.8](https://www.python.org/downloads/release/python-3810/) or
+[3.9](https://www.python.org/downloads/release/python-3913/), other versions are currently not supported.
 
 You can check your Python version with the command `python --version`(Windows)/`python3 --version`(Unix).
 
-Subsequently, open a terminal inside the folder containing the notebooks and execute the following commands. This will
-create a Python virtual environment and require the qgym package and its requirements in it.
+Subsequently, open a terminal inside the folder containing the notebooks and this README and execute the following
+commands. This will create a Python virtual environment and require the qgym package and its requirements in it.
 
 Windows:
 ```commandline
