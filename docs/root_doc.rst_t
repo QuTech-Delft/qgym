@@ -1,0 +1,26 @@
+.. {{ project }} documentation master file, created by
+   sphinx-quickstart on {{ now }}.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+OpenQL Gym
+===========
+This reinforcement learning gym can be used to train agents on problems specific to the compilation of gate-based quantum software. It uses the concepts of OpenQL as basis for the provided environments.
+
+.. _introduction:
+
+{{ project }}'s documentation
+==================={{ project_underline }}=================
+
+.. toctree::
+   :maxdepth: {{ mastertocmaxdepth }}
+   :caption: Contents:
+
+{{ mastertoctree }}
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

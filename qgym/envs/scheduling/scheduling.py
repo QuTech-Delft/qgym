@@ -1,41 +1,49 @@
-"""Environment for training an RL agent on the scheduling problem of OpenQL."""
+"""
+Environment for training an RL agent on the scheduling problem of OpenQL.
+"""
 from copy import deepcopy
-from numbers import Integral
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym._custom_types import Gate
+from qgym.custom_types import Gate
 from qgym.environment import Environment
-from qgym.envs.scheduling.rulebook import CommutionRulebook
+from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.utils import GateEncoder, RandomCircuitGenerator
 
 
 class Scheduling(Environment):
-    """RL environment for the scheduling problem."""
+    """
+    RL environment for the scheduling problem.
+    """
 
     def __init__(
         self,
         machine_properties: Union[Mapping[str, Any], str],
         *,
-        max_gates: Integral = 200,
-        dependency_depth: Integral = 1,
-        rulebook: Optional[CommutionRulebook] = None,
+        max_gates: int = 200,
+        dependency_depth: int = 1,
+        random_circuit_mode: str = "default",
+        rulebook: Optional[CommutationRulebook] = None,
     ) -> None:
-        """Initialize the scheduling environment.
+        """
+        Initialize the scheduling environment.
 
         :param machine_properties: mapping of machine properties.
         :param max_gates: maximum number of gates allowed in a circuit.
         :param dependency_depth: number of dependencies given in the observation.
-            Detemines the shape of the "dependencies" observation, which has the shape
+            Determines the shape of the "dependencies" observation, which has the shape
             (dependency_depth, max_gates)
+        :random_circuit_mode: Mode for the random circuit is generator. The mode can be
+            'default' or 'workshop'.
         :param rulebook: rulebook describing the commutation rules. If None is given,
             the default CommutationRulebook will be used. (See CommutationRulebook for
-            more info on the default rules.)"""
+            more info on the default rules.)
+        """
 
         self._reward_range = (-float("inf"), float("inf"))
 
@@ -47,16 +55,19 @@ class Scheduling(Environment):
         n_qubits = machine_properties["qubit_number"]
         self._dependency_depth = dependency_depth
         self._gate_encoder = GateEncoder().learn_gates(machine_properties["gates"])
+        self._random_circuit_mode = random_circuit_mode
         self._random_circuit_generator = RandomCircuitGenerator(
             n_qubits, max_gates, rng=self.rng
         )
 
         if rulebook is None:
-            self._commutation_rulebook = CommutionRulebook()
-        elif isinstance(rulebook, CommutionRulebook):
+            self._commutation_rulebook = CommutationRulebook()
+        elif isinstance(rulebook, CommutationRulebook):
             self._commutation_rulebook = rulebook
         else:
-            msg = "Rulebook must be None or of type CommutionRulebook, but was of type "
+            msg = (
+                "Rulebook must be None or of type CommutationRulebook, but was of type "
+            )
             msg += f"{type(rulebook)}."
             raise TypeError(msg)
 
@@ -105,13 +116,15 @@ class Scheduling(Environment):
         self._visualiser = SchedulingVisualiser(
             gate_encoder=self._gate_encoder,
             gate_cycle_length=gate_cycle_length,
-            n_qubits=n_qubits,
+            n_qubits=n_qubits
         )
 
-        self.metadata = {"render.modes": ["human"]}
+        self.metadata = {"render.modes": ["human", "rgb_array"]}
 
     def _obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
-        """:return: Observation based on the current state."""
+        """
+        :return: Observation based on the current state.
+        """
         return {
             "gate_names": self._state["gate_names"],
             "acts_on": self._state["acts_on"].flatten(),
@@ -120,10 +133,12 @@ class Scheduling(Environment):
         }
 
     def _update_state(self, action: NDArray[np.int_]) -> None:
-        """Update the state of this environment using the given action.
+        """
+        Update the state of this environment using the given action.
 
         :param action: First entry determines a gate to schedule, the second entry
-            increases the cycle if nonzero."""
+            increases the cycle if nonzero.
+        """
         # Increase the step number
         self._state["steps_done"] += 1
 
@@ -137,7 +152,9 @@ class Scheduling(Environment):
             self._schedule_gate(gate_to_schedule)
 
     def _increment_cycle(self) -> None:
-        """Increment the cycle and update the state accordingly"""
+        """
+        Increment the cycle and update the state accordingly.
+        """
 
         self._state["cycle"] += 1
 
@@ -145,25 +162,27 @@ class Scheduling(Environment):
         self._state["busy"][self._state["busy"] > 0] -= 1
 
         # Exclude gates that should start at the same time
-        while len(self._state["exclude_in_next_cycle"]) != 0:
-            gate_to_exlude = self._state["exclude_in_next_cycle"].pop()
-            self._exclude_gate(gate_to_exlude)
+        while len(self._exclude_in_next_cycle) != 0:
+            gate_to_exclude = self._exclude_in_next_cycle.pop()
+            self._exclude_gate(gate_to_exclude)
 
-        # Decrease the number of cycles to exclude a gate and skip gates where the
+        # Decrease the amount of cycles to exclude a gate and skip gates where the
         # cycle becomes 0 (as it no longer should be excluded)
         updated_excluded_gates = {}
-        while len(self._state["excluded_gates"]) != 0:
-            gate_name, cycles = self._state["excluded_gates"].popitem()
+        while len(self._excluded_gates) != 0:
+            gate_name, cycles = self._excluded_gates.popitem()
             if cycles > 1:
                 updated_excluded_gates[gate_name] = cycles - 1
-        self._state["excluded_gates"] = updated_excluded_gates
+        self._excluded_gates = updated_excluded_gates
 
         self._update_legal_actions()
 
-    def _schedule_gate(self, gate_idx: Integral) -> None:
-        """Schedule a gate in the current cycle and update the state accordingly
+    def _schedule_gate(self, gate_idx: int) -> None:
+        """
+        Schedule a gate in the current cycle and update the state accordingly
 
-        :param gate_idx: Index of the gate to schedule"""
+        :param gate_idx: Index of the gate to schedule
+        """
 
         gate = self._state["encoded_circuit"][gate_idx]
 
@@ -174,38 +193,29 @@ class Scheduling(Environment):
         self._state["busy"][gate.q2] = self._state["gate_cycle_length"][gate.name]
 
         if gate.name in self._state["not_in_same_cycle"]:
-            for gate_to_exlude in self._state["not_in_same_cycle"][gate.name]:
-                self._exclude_gate(gate_to_exlude)
+            for gate_to_exclude in self._state["not_in_same_cycle"][gate.name]:
+                self._exclude_gate(gate_to_exclude)
 
         if gate.name in self._state["same_start"]:
-            self._state["exclude_in_next_cycle"].add(gate.name)
+            self._exclude_in_next_cycle.add(gate.name)
 
         # Update "dependencies" observation
-        self._state["blocking_matrix"][:, gate_idx] = False
+        self._blocking_matrix[:, gate_idx] = False
         self._state["dependencies"] = self._get_dependencies()
 
         self._update_legal_actions()
 
-    def _compute_reward(
-        self,
-        old_state: Dict[Any, Any],
-        action: NDArray[np.int_],
-        *_args: Any,
-        **_kwargs: Any,
-    ) -> float:
-        """Asks the rewarder to compute a reward, given the current state."""
-
-        return super()._compute_reward(
-            old_state=old_state, action=action, new_state=self._state
-        )
-
     def _is_done(self) -> bool:
-        """:return: Boolean value stating whether we are in a final state."""
+        """
+        :return: Whether we are in a valid final state.
+        """
 
         return bool((self._state["schedule"] != -1).all())
 
-    def _obtain_info(self) -> Dict[Any, Any]:
-        """:return: Optional debugging info for the current state."""
+    def _obtain_info(self) -> Dict[str, Any]:
+        """
+        :return: Optional debugging info for the current state.
+        """
 
         return {
             "Steps done": self._state["steps_done"],
@@ -217,41 +227,42 @@ class Scheduling(Environment):
         self,
         *,
         circuit: Optional[List[Gate]] = None,
-        seed: Optional[Integral] = None,
+        seed: Optional[int] = None,
         return_info: bool = False,
     ) -> Union[
         Tuple[NDArray[np.int_], NDArray[np.int_]],
         Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[Any, Any]],
     ]:
-        """Reset state, action space and step number and load a new (random) initial
+        """
+        Reset state, action space and step number and load a new (random) initial
         state. To be used after an episode is finished.
 
         :param circuit: Optional list of a circuit for the next episode, each entry in
             the list must contain the name, qubit 1 and qubit 2. If the gate acts on a
             single qubit, then these entries should be the same.
         :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e. before any learning is done.
+            (optionally) on the first reset call, i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
-        :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optional debugging info."""
+        :return: Initial observation and optionally debugging info.
+        """
 
         # Reset counters
         self._state["steps_done"] = 0
         self._state["cycle"] = 0
 
-        # Number of cycles that a qubit is still busy (zero if available)
+        # Amount of cycles that a qubit is still busy (zero if available)
         self._state["busy"] = np.zeros(self._state["n_qubits"], dtype=int)
 
         # At the start no gates should be excluded
-        self._state["excluded_gates"] = {}
-        self._state["exclude_in_next_cycle"] = set()
+        self._excluded_gates = {}
+        self._exclude_in_next_cycle = set()
 
         # Generate a circuit if None is given
         if circuit is None:
-            circuit = self._random_circuit_generator.generate_circuit()
-        self._state[
-            "blocking_matrix"
-        ] = self._commutation_rulebook.make_blocking_matrix(circuit)
+            circuit = self._random_circuit_generator.generate_circuit(
+                mode=self._random_circuit_mode
+            )
+        self._blocking_matrix = self._commutation_rulebook.make_blocking_matrix(circuit)
         self._state["dependencies"] = self._get_dependencies()
 
         encoded_circuit = self._gate_encoder.encode_gates(circuit)
@@ -266,12 +277,14 @@ class Scheduling(Environment):
         return super().reset(seed=seed, return_info=return_info)
 
     def _get_dependencies(self) -> NDArray[np.int_]:
-        """:return: array of shape (dependency_depth, max_gates) with the dependencies
-        for each gate."""
+        """
+        :return: array of shape (dependency_depth, max_gates) with the dependencies
+        for each gate.
+        """
         dependencies = np.zeros(
             (self._dependency_depth, self._state["max_gates"]), dtype=int
         )
-        for gate_idx, blocking_row in enumerate(self._state["blocking_matrix"]):
+        for gate_idx, blocking_row in enumerate(self._blocking_matrix):
 
             blocking_gates = blocking_row.nonzero()[0]
             for depth in range(min(self._dependency_depth, blocking_gates.shape[0])):
@@ -280,8 +293,10 @@ class Scheduling(Environment):
         return dependencies
 
     def _update_episode_constant_observations(self) -> None:
-        """Updates episode constant observations "gate_names" and "acts_on" based on
-        the circuit of this episode."""
+        """
+        Updates episode constant observations `gate_names` and `acts_on` based on
+        the circuit of this episode.
+        """
 
         circuit = self._state["encoded_circuit"]
 
@@ -296,23 +311,27 @@ class Scheduling(Environment):
         self._state["gate_names"] = gate_names
         self._state["acts_on"] = acts_on
 
-    def _exclude_gate(self, gate_name: Integral) -> None:
-        """Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.
+    def _exclude_gate(self, gate_name: int) -> None:
+        """
+        Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.
 
-        :param gate_name: integer encoding of the name of the gate."""
+        :param gate_name: integer encoding of the name of the gate.
+        """
 
-        gate_cyle_length = self._state["gate_cycle_length"][gate_name]
-        self._state["excluded_gates"][gate_name] = gate_cyle_length
+        gate_cycle_length = self._state["gate_cycle_length"][gate_name]
+        self._excluded_gates[gate_name] = gate_cycle_length
 
     def _update_legal_actions(self) -> None:
-        """Checks which actions are legal based on the scheduled qubits, depedencies
-        and in the futere also machine restrictions"""
+        """
+        Checks which actions are legal based on the scheduled qubits, dependencies
+        and in the future also machine restrictions.
+        """
 
         legal_actions = np.zeros(self._state["max_gates"], dtype=bool)
         for gate_idx, (gate_name, qubit1, qubit2) in enumerate(
             self._state["encoded_circuit"]
         ):
-            # Set all gates which have not been scheduled to True
+            # Set all gates, which have not been scheduled to True
             if self._state["schedule"][gate_idx] == -1:
                 legal_actions[gate_idx] = True
 
@@ -329,17 +348,20 @@ class Scheduling(Environment):
                 continue
 
             # Check if gates should be excluded
-            if gate_name in self._state["excluded_gates"]:
+            if gate_name in self._excluded_gates:
                 legal_actions[gate_idx] = False
                 continue
 
         self._state["legal_actions"] = legal_actions
 
     def get_circuit(self, mode: str = "human"):
-        """Return the quantum circuit of this episode.
+        """
+        Return the quantum circuit of this episode.
 
         :param mode: Choose from be 'human' or 'encoded'. Default is 'human'.
-        :return: human or encoded quantum circuit."""
+        :raise ValueError: If an unsupported mode is provided.
+        :return: human or encoded quantum circuit.
+        """
 
         if not isinstance(mode, str):
             raise TypeError(f"mode must be of type str, but was {type(mode)}")
@@ -353,17 +375,23 @@ class Scheduling(Environment):
         else:
             raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
 
-    def render(self, mode: str = "human") -> bool:
-        """Render the current state using pygame.
+    def render(self, mode: str = "human") -> Any:
+        """
+        Render the current state using pygame.
 
-        :param mode: The mode to render with (default is 'human')"""
+        :param mode: The mode to render with (supported modes are found in `self.metadata`.).
+        :raise ValueError: If an unsupported mode is provided.
+        :return: Result of rendering.
+        """
 
         if mode not in self.metadata["render.modes"]:
             raise ValueError("The given render mode is not supported.")
 
-        return self._visualiser.render(self._state)
+        return self._visualiser.render(self._state, mode)
 
-    def close(self):
-        """Close the screen used for rendering."""
+    def close(self) -> None:
+        """
+        Close the screen used for rendering.
+        """
 
         self._visualiser.close()

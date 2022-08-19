@@ -1,9 +1,8 @@
 import numpy as np
-import pytest
 from stable_baselines3.common.env_checker import check_env
 
 import qgym.spaces
-from qgym._custom_types import Gate
+from qgym.custom_types import Gate
 from qgym.envs import Scheduling
 from qgym.utils import GateEncoder
 

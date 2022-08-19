@@ -15,6 +15,11 @@
 # Pytest
 **/.pytest_cache/
 
+# Sphinx
+/docs_build/
+/docs_html/
+
 # Data/pictures
 /images/
 /openql_output/
+*.zip

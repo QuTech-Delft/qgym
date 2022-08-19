@@ -25,7 +25,7 @@ def test_validity() -> None:
 
 
 def _episode_generator(
-    adjacency_matrices: Dict[str, csr_matrix]
+    adjacency_matrices: Dict[str, Any]
 ) -> Iterator[Tuple[Dict[str, Any], NDArray[np.int_], Dict[str, Any]]]:
 
     old_state = deepcopy(adjacency_matrices)
@@ -39,14 +39,14 @@ def _episode_generator(
     action = np.array([0, 0])
     _perform_action(new_state, action)
 
-    yield (old_state, action, new_state)
+    yield old_state, action, new_state
 
     for i in range(1, adjacency_matrices["connection_graph_matrix"].shape[0]):
         _perform_action(old_state, action)
         action = np.array([i, i])
         _perform_action(new_state, action)
 
-        yield (old_state, action, new_state)
+        yield old_state, action, new_state
 
 
 def _perform_action(state: Dict[str, Any], action: NDArray[np.int_]) -> None:
@@ -99,7 +99,7 @@ Tests for the basic rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, 10, 30],
+            [0, 5, 15],
         ),
         (
             # connection graph fully connected, interaction graph no edges
@@ -123,7 +123,7 @@ Tests for the basic rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, -2, -6],
+            [0, -1, -3],
         ),
     ],
 )
@@ -171,7 +171,7 @@ Tests for the single step rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, 10, 20],
+            [0, 5, 10],
         ),
         (
             # connection graph fully connected, interaction graph no edges
@@ -195,7 +195,7 @@ Tests for the single step rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, -2, -4],
+            [0, -1, -2],
         ),
     ],
 )
@@ -243,7 +243,7 @@ Tests for the episode rewarder rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, 0, 30],
+            [0, 0, 15],
         ),
         (
             # connection graph fully connected, interaction graph no edges
@@ -267,7 +267,7 @@ Tests for the episode rewarder rewarder
                     [[0, 1, 1], [1, 0, 1], [1, 1, 0]]
                 ),
             },
-            [0, 0, -6],
+            [0, 0, -3],
         ),
     ],
 )
