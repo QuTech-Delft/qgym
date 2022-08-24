@@ -2,8 +2,14 @@
 Below we explain how to prepare your environment for using the notebooks.
 
 ## Setting up the environment
-Initially, make sure you have [Python](https://www.python.org/downloads/) installed on your computer. The Python version
-should be either [3.8](https://www.python.org/downloads/release/python-3810/) or
+Initially, make sure you have [Python](https://www.python.org/downloads/) installed on your computer and that `python` 
+is on your path (can be verified by running `python` in a command window).
+
+If this is not the case for an existing installation one can add `<path to python folder>` and
+`<path to python folder>\Scripts` to the `PATH` environment variable. For a new installation remember to check 
+"Add Python to environment variables" (should be checked by default).
+
+The Python version should be either [3.8](https://www.python.org/downloads/release/python-3810/) or
 [3.9](https://www.python.org/downloads/release/python-3913/), other versions are currently not supported.
 
 You can check your Python version with the command `python --version`(Windows)/`python3 --version`(Unix).
