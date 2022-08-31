@@ -27,7 +27,8 @@ class GateEncoder:
         Learns the gates names from and Iterable and creates a mapping from unique gate
         names to integers and back.
 
-        :param gates: An iterable containing the names of the gates that must be learned.
+        :param gates: An iterable containing the names of the gates that must be
+            learned.
         """
         self.encoding_dct = {}
         self.decoding_dct = {}
@@ -47,7 +48,8 @@ class GateEncoder:
         gates: Union[str, Mapping[str, Any], Sequence[Gate], Iterable[str]],
     ) -> Union[int, Dict[int, Any], List[Gate]]:
         """
-        Encodes gate names in gates to integers, based on the gates seen in `learn_gates`.
+        Encodes gate names in gates to integers, based on the gates seen in
+        `learn_gates`.
 
         :param gates: gate name(s) to encode
         :return: integer encoded version of gates

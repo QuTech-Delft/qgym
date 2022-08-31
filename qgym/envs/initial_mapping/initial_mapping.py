@@ -39,7 +39,8 @@ class InitialMapping(
     ) -> None:
         """
         Initialize the action space, observation space, and initial states. This
-        also defines the connection graph and edge probability for the random interaction graph of each episode.
+        also defines the connection graph and edge probability for the random
+        interaction graph of each episode.
 
         The supported render modes of this environment are "human" and "rgb_array".
 
@@ -50,7 +51,8 @@ class InitialMapping(
         :param connection_graph: networkx graph representation of the QPU topology
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
-        :param connection_grid_size: Size of the connection graph when the connection graph has a grid topology.
+        :param connection_grid_size: Size of the connection graph when the connection
+            graph has a grid topology.
         :param rewarder: Rewarder to use for the environment. If None (default), then
             the BasicRewarder is used.
         """
@@ -135,8 +137,8 @@ class InitialMapping(
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
-        :param interaction_graph: Interaction graph to be used for the next iteration, if `None` a random interaction
-            graph will be created.
+        :param interaction_graph: Interaction graph to be used for the next iteration,
+            if `None` a random interaction graph will be created.
         :param _kwargs: Additional options to configure the reset.
         :return: Initial observation and optionally debugging info.
         """
@@ -170,7 +172,8 @@ class InitialMapping(
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly
         and red edges need at least on swap.
 
-        :param mode: The mode to render with (should be one of the supported `render.modes` in `self.metadata`).
+        :param mode: The mode to render with (should be one of the supported
+            `render.modes` in `self.metadata`).
         :return: The result of rendering the current state..
         """
 
@@ -256,14 +259,15 @@ class InitialMapping(
         connection_grid_size: Any,
     ) -> Tuple[Graph, Graph]:
         """
-        Parse the user input from the initialization. Only one of these variables should be used.
+        Parse the user input from the initialization. Only one of these variables should
+        be used.
 
-        :param connection_graph: networkx graph representation of the QPU topology
-            a quantum circuit
+        :param connection_graph: networkx graph representation of the QPU topology a
+            quantum circuit
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
-        :param connection_grid_size: Size of the connection graph when the topology is a grid.
-
+        :param connection_grid_size: Size of the connection graph when the topology is a
+            grid.
         :return: Tuple containing both the connection graph and interaction graph.
         """
 
@@ -299,7 +303,8 @@ class InitialMapping(
         """
         Parse a given connection graph adjacency matrix to its respective graph
 
-        :param connection_graph_matrix: adjacency matrix representation of the QPU topology.
+        :param connection_graph_matrix: adjacency matrix representation of the QPU
+            topology.
         :raise TypeError: When the provided matrix is not a valid adjacency matrix.
         :return: Graph representation of the adjacency matrix.
         """

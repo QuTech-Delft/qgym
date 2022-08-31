@@ -386,7 +386,8 @@ class Scheduling(Environment):
         """
         Render the current state using pygame.
 
-        :param mode: The mode to render with (supported modes are found in `self.metadata`.).
+        :param mode: The mode to render with (supported modes are found in
+            `self.metadata`.).
         :raise ValueError: If an unsupported mode is provided.
         :return: Result of rendering.
         """

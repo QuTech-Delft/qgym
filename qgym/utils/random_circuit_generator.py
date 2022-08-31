@@ -69,9 +69,9 @@ class RandomCircuitGenerator:
         elif isinstance(n_gates, int):
             n_gates = min(n_gates, self.max_gates)
         else:
-            raise ValueError(
-                f"n_gates should be of tpye int or str, but was of type {type(n_gates)}."
-            )
+            msg = "n_gates should be of tpye int or str, but was of type "
+            msg += f"{type(n_gates)}."
+            raise ValueError(msg)
 
         circuit: List[Gate] = [None] * n_gates
 

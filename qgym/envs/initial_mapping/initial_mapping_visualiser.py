@@ -84,8 +84,9 @@ class InitialMappingVisualiser:
         :param interaction_graph: interaction graph to render
         :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
         :raise ValueError: When an invalid mode is provided.
-        :return: In 'human' mode returns a boolean value encoding whether the pygame screen is open. In `rgb_array` mode
-            returns an RGB array encoding of the rendered image.
+        :return: In 'human' mode returns a boolean value encoding whether the pygame
+            screen is open. In `rgb_array` mode returns an RGB array encoding of the
+            rendered image.
         """
 
         if self.screen is None:
