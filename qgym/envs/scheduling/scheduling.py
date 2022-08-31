@@ -8,6 +8,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
+from qgym import Rewarder
 from qgym.custom_types import Gate
 from qgym.environment import Environment
 from qgym.envs.scheduling.rulebook import CommutationRulebook
@@ -29,6 +30,7 @@ class Scheduling(Environment):
         dependency_depth: int = 1,
         random_circuit_mode: str = "default",
         rulebook: Optional[CommutationRulebook] = None,
+        rewarder: Optional[Rewarder] = None,
     ) -> None:
         """
         Initialize the scheduling environment.
@@ -43,6 +45,8 @@ class Scheduling(Environment):
         :param rulebook: rulebook describing the commutation rules. If None is given,
             the default CommutationRulebook will be used. (See CommutationRulebook for
             more info on the default rules.)
+        :param rewarder: Rewarder to use for the environment. If None (default), then
+            the BasicRewarder is used.
         """
 
         self._reward_range = (-float("inf"), float("inf"))
@@ -65,10 +69,8 @@ class Scheduling(Environment):
         elif isinstance(rulebook, CommutationRulebook):
             self._commutation_rulebook = rulebook
         else:
-            msg = (
-                "Rulebook must be None or of type CommutationRulebook, but was of type "
-            )
-            msg += f"{type(rulebook)}."
+            msg = "rulebook must be an instance of CommutationRulebook, but was of "
+            msg += f"type  {type(rulebook)}."
             raise TypeError(msg)
 
         gate_cycle_length = self._gate_encoder.encode_gates(machine_properties["gates"])
@@ -112,7 +114,13 @@ class Scheduling(Environment):
 
         self.action_space = qgym.spaces.MultiDiscrete([max_gates, 2], rng=self.rng)
 
-        self._rewarder = BasicRewarder()
+        if rewarder is None:
+            self._rewarder = BasicRewarder()
+        elif isinstance(rewarder, Rewarder):
+            self._rewarder = rewarder
+        else:
+            TypeError("The given rewarder was not an instance of Rewarder.")
+
         self._visualiser = SchedulingVisualiser(
             gate_encoder=self._gate_encoder,
             gate_cycle_length=gate_cycle_length,

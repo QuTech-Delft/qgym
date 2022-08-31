@@ -13,6 +13,7 @@ from networkx import Graph, fast_gnp_random_graph, grid_graph, to_scipy_sparse_a
 from numpy.typing import NDArray
 
 import qgym.spaces
+from qgym import Rewarder
 from qgym.environment import Environment
 from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 from qgym.envs.initial_mapping.initial_mapping_visualiser import (
@@ -34,6 +35,7 @@ class InitialMapping(
         connection_graph: Optional[Graph] = None,
         connection_graph_matrix: Optional[NDArray[Any]] = None,
         connection_grid_size: Optional[Tuple[int, int]] = None,
+        rewarder: Optional[Rewarder] = None,
     ) -> None:
         """
         Initialize the action space, observation space, and initial states. This
@@ -49,6 +51,8 @@ class InitialMapping(
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
         :param connection_grid_size: Size of the connection graph when the connection graph has a grid topology.
+        :param rewarder: Rewarder to use for the environment. If None (default), then
+            the BasicRewarder is used.
         """
 
         self._interaction_graph_edge_probability = interaction_graph_edge_probability
@@ -101,7 +105,14 @@ class InitialMapping(
             ],
             rng=self.rng,
         )
-        self._rewarder = BasicRewarder()
+
+        if rewarder is None:
+            self._rewarder = BasicRewarder()
+        elif isinstance(rewarder, Rewarder):
+            self._rewarder = rewarder
+        else:
+            raise TypeError("The given rewarder was not an instance of Rewarder.")
+
         self.metadata = {"render.modes": ["human", "rgb_array"]}
 
         self._visualiser = InitialMappingVisualiser(self._connection_graph)
