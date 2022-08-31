@@ -116,7 +116,7 @@ class Scheduling(Environment):
         self._visualiser = SchedulingVisualiser(
             gate_encoder=self._gate_encoder,
             gate_cycle_length=gate_cycle_length,
-            n_qubits=n_qubits
+            n_qubits=n_qubits,
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
@@ -168,12 +168,12 @@ class Scheduling(Environment):
 
         # Decrease the amount of cycles to exclude a gate and skip gates where the
         # cycle becomes 0 (as it no longer should be excluded)
-        updated_excluded_gates = {}
-        while len(self._excluded_gates) != 0:
-            gate_name, cycles = self._excluded_gates.popitem()
-            if cycles > 1:
-                updated_excluded_gates[gate_name] = cycles - 1
-        self._excluded_gates = updated_excluded_gates
+        gate_names = list(self._excluded_gates.keys())
+        for gate_name in gate_names:
+            if self._excluded_gates[gate_name] > 1:
+                self._excluded_gates[gate_name] -= 1
+            else:
+                self._excluded_gates.pop(gate_name)
 
         self._update_legal_actions()
 
@@ -200,7 +200,7 @@ class Scheduling(Environment):
             self._exclude_in_next_cycle.add(gate.name)
 
         # Update "dependencies" observation
-        self._blocking_matrix[:, gate_idx] = False
+        self._blocking_matrix[:gate_idx, gate_idx] = False
         self._state["dependencies"] = self._get_dependencies()
 
         self._update_legal_actions()
@@ -285,8 +285,7 @@ class Scheduling(Environment):
             (self._dependency_depth, self._state["max_gates"]), dtype=int
         )
         for gate_idx, blocking_row in enumerate(self._blocking_matrix):
-
-            blocking_gates = blocking_row.nonzero()[0]
+            blocking_gates = blocking_row[gate_idx:].nonzero()[0]
             for depth in range(min(self._dependency_depth, blocking_gates.shape[0])):
                 dependencies[depth, gate_idx] = blocking_gates[depth]
 
@@ -338,7 +337,7 @@ class Scheduling(Environment):
             # Check if there is a non-scheduled dependent gate
 
             dependent_gates = self._state["dependencies"][:, gate_idx]
-            if (dependent_gates > 0).any():
+            if np.count_nonzero(dependent_gates) > 0:
                 legal_actions[gate_idx] = False
                 continue
 
