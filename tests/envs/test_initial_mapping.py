@@ -1,6 +1,8 @@
+import warnings
 from copy import deepcopy
 from typing import Any, Dict, Iterator, List, Tuple
 
+import networkx as nx
 import numpy as np
 import pytest
 from numpy.typing import NDArray
@@ -284,3 +286,143 @@ def test_episode_step_rewarder(
         )
 
         assert reward == rewards[i]
+
+
+small_graph = nx.Graph()
+small_graph.add_edge(0, 1)
+
+
+def test_init_custom_connection_graph():
+    env = InitialMapping(0.5, connection_graph=small_graph)
+    assert nx.is_isomorphic(env._connection_graph, small_graph)
+    assert (env._state["connection_graph_matrix"] == np.array([[0, 1], [1, 0]])).all()
+
+
+@pytest.mark.parametrize(
+    "connection_graph_matrix",
+    [np.array([[0, 1], [1, 0]]), [[0, 1], [1, 0]], csr_matrix([[0, 1], [1, 0]])],
+)
+def test_init_custom_connection_graph_matrix(connection_graph_matrix):
+    env = InitialMapping(0.5, connection_graph_matrix=connection_graph_matrix)
+    assert nx.is_isomorphic(env._connection_graph, small_graph)
+    assert (env._state["connection_graph_matrix"] == np.array([[0, 1], [1, 0]])).all()
+
+
+@pytest.mark.parametrize(
+    "connection_grid_size",
+    [(2, 1), [1, 2]],
+)
+def test_init_custom_connection_grid_size(connection_grid_size):
+    env = InitialMapping(0.5, connection_grid_size=connection_grid_size)
+    assert nx.is_isomorphic(env._connection_graph, small_graph)
+    assert (env._state["connection_graph_matrix"] == np.array([[0, 1], [1, 0]])).all()
+
+
+@pytest.mark.parametrize(
+    "rewarder", [BasicRewarder(), EpisodeRewarder(), SingleStepRewarder()]
+)
+def test_init_custom_rewarder(rewarder):
+    env = InitialMapping(1, connection_grid_size=(2, 2), rewarder=rewarder)
+    assert env.rewarder == rewarder
+
+
+@pytest.mark.parametrize(
+    "interaction_graph_edge_probability,connection_graph,connection_graph_matrix,connection_grid_size",
+    [
+        (0.5, small_graph, "test", None),
+        (0.5, small_graph, None, "test"),
+        (0.5, small_graph, "test", "test"),
+        (0.5, None, np.zeros([2, 2]), "test"),
+    ],
+)
+def test_init_warnings(
+    interaction_graph_edge_probability,
+    connection_graph,
+    connection_graph_matrix,
+    connection_grid_size,
+):
+    with pytest.warns(UserWarning):
+        InitialMapping(
+            interaction_graph_edge_probability=interaction_graph_edge_probability,
+            connection_graph=connection_graph,
+            connection_graph_matrix=connection_graph_matrix,
+            connection_grid_size=connection_grid_size,
+        )
+
+
+@pytest.mark.parametrize(
+    "interaction_graph_edge_probability,connection_graph,connection_graph_matrix,connection_grid_size,rewarder,error_type,error_msg",
+    [
+        (
+            "test",
+            None,
+            None,
+            (2, 2),
+            None,
+            TypeError,
+            "interaction_graph_edge_probability should be a real number, but was of type <class 'str'>.",
+        ),
+        (
+            -1,
+            None,
+            None,
+            (2, 2),
+            None,
+            ValueError,
+            "interaction_graph_edge_probability has an inclusive lower bound of 0, but was -1.",
+        ),
+        (
+            2,
+            None,
+            None,
+            (2, 2),
+            None,
+            ValueError,
+            "interaction_graph_edge_probability has an inclusive upper bound of 1, but was 2.",
+        ),
+        (
+            0.5,
+            None,
+            None,
+            None,
+            None,
+            ValueError,
+            "No valid arguments for instantiation of the initial mapping environment were provided.",
+        ),
+        (
+            0.5,
+            None,
+            None,
+            (2, 2),
+            "test",
+            TypeError,
+            "The given rewarder was not an instance of Rewarder.",
+        ),
+        (
+            0.5,
+            nx.Graph(),
+            None,
+            None,
+            None,
+            ValueError,
+            "The given 'connection_graph' has no nodes.",
+        ),
+    ],
+)
+def test_init_exceptions(
+    interaction_graph_edge_probability,
+    connection_graph,
+    connection_graph_matrix,
+    connection_grid_size,
+    rewarder,
+    error_type,
+    error_msg,
+):
+    with pytest.raises(error_type, match=error_msg):
+        InitialMapping(
+            interaction_graph_edge_probability=interaction_graph_edge_probability,
+            connection_graph=connection_graph,
+            connection_graph_matrix=connection_graph_matrix,
+            connection_grid_size=connection_grid_size,
+            rewarder=rewarder,
+        )

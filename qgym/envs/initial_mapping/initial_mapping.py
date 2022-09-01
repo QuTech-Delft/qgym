@@ -4,13 +4,14 @@ Environment for training an RL agent on the initial mapping problem of OpenQL.
 
 from __future__ import annotations
 
+import warnings
 from copy import deepcopy
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np
 from networkx import Graph, fast_gnp_random_graph, grid_graph, to_scipy_sparse_array
-from numpy.typing import NDArray
+from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
 from qgym import Rewarder
@@ -19,7 +20,9 @@ from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
-from qgym.utils import check_adjacency_matrix
+from qgym.utils.input_validation import check_adjacency_matrix, check_real, check_string
+
+Gridspecs = Union[List[Union[int, Iterable]], Tuple[Union[int, Iterable]]]
 
 
 class InitialMapping(
@@ -33,8 +36,8 @@ class InitialMapping(
         self,
         interaction_graph_edge_probability: float,
         connection_graph: Optional[Graph] = None,
-        connection_graph_matrix: Optional[NDArray[Any]] = None,
-        connection_grid_size: Optional[Tuple[int, int]] = None,
+        connection_graph_matrix: Optional[ArrayLike] = None,
+        connection_grid_size: Optional[Gridspecs] = None,
         rewarder: Optional[Rewarder] = None,
     ) -> None:
         """
@@ -47,22 +50,24 @@ class InitialMapping(
         :param interaction_graph_edge_probability: Probability that an edge between any
             pair of qubits in the random interaction graph exists. The interaction
             graph will have the same amount of nodes as the connection graph. Nodes
-            without any interactions can be seen as 'null' nodes.
+            without any interactions can be seen as 'null' nodes. Must be a value in the
+            range [0,1].
         :param connection_graph: networkx graph representation of the QPU topology
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
         :param connection_grid_size: Size of the connection graph when the connection
-            graph has a grid topology.
+            graph has a grid topology. For more information on the allowed values and
+            types, see 'networkx.grid_graph' documentation.
         :param rewarder: Rewarder to use for the environment. If None (default), then
             the BasicRewarder is used.
         """
 
-        self._interaction_graph_edge_probability = interaction_graph_edge_probability
-
-        (self._connection_graph, self._interaction_graph) = self._parse_user_input(
-            connection_graph,
-            connection_graph_matrix,
-            connection_grid_size,
+        self._parse_and_set_user_input(
+            interaction_graph_edge_probability=interaction_graph_edge_probability,
+            connection_graph=connection_graph,
+            connection_graph_matrix=connection_graph_matrix,
+            connection_grid_size=connection_grid_size,
+            rewarder=rewarder,
         )
 
         # Define internal attributes
@@ -84,10 +89,7 @@ class InitialMapping(
 
         # Define attributes defined in parent class
         mapping_space = qgym.spaces.MultiDiscrete(
-            nvec=[
-                self._state["num_nodes"] + 1 for _ in range(self._state["num_nodes"])
-            ],
-            rng=self.rng,
+            nvec=[self._state["num_nodes"] + 1] * self._state["num_nodes"], rng=self.rng
         )
         interaction_matrix_space = qgym.spaces.Box(
             low=0,
@@ -101,19 +103,8 @@ class InitialMapping(
             interaction_matrix=interaction_matrix_space,
         )
         self.action_space = qgym.spaces.MultiDiscrete(
-            nvec=[
-                self._state["num_nodes"],
-                self._state["num_nodes"],
-            ],
-            rng=self.rng,
+            nvec=[self._state["num_nodes"], self._state["num_nodes"]], rng=self.rng
         )
-
-        if rewarder is None:
-            self._rewarder = BasicRewarder()
-        elif isinstance(rewarder, Rewarder):
-            self._rewarder = rewarder
-        else:
-            raise TypeError("The given rewarder was not an instance of Rewarder.")
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
 
@@ -174,9 +165,11 @@ class InitialMapping(
 
         :param mode: The mode to render with (should be one of the supported
             `render.modes` in `self.metadata`).
+        :raise ValueError: If the mode is not supported.
         :return: The result of rendering the current state..
         """
 
+        mode = check_string(mode, "mode", lower=True)
         if mode not in self.metadata["render.modes"]:
             raise ValueError("The given render mode is not supported.")
 
@@ -186,8 +179,8 @@ class InitialMapping(
         """
         Closes the screen used for rendering.
         """
-
-        self._visualiser.close()
+        if hasattr(self, "_visualiser"):
+            self._visualiser.close()
 
     def add_random_edge_weights(self) -> None:
         """
@@ -252,54 +245,92 @@ class InitialMapping(
 
         return {"Steps done": self._state["steps_done"]}
 
-    def _parse_user_input(
+    def _parse_and_set_user_input(
         self,
+        *,
+        interaction_graph_edge_probability: Any,
         connection_graph: Any,
         connection_graph_matrix: Any,
         connection_grid_size: Any,
-    ) -> Tuple[Graph, Graph]:
+        rewarder: Any,
+    ) -> None:
         """
-        Parse the user input from the initialization. Only one of these variables should
-        be used.
+        Parse the user input from the initialization and set them in their respective
+        attributes.
 
+        :param interaction_graph_edge_probability: Probability that an edge between any
+            pair of qubits in the random interaction graph exists. The interaction
+            graph will have the same amount of nodes as the connection graph. Nodes
+            without any interactions can be seen as 'null' nodes.
         :param connection_graph: networkx graph representation of the QPU topology a
             quantum circuit
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
         :param connection_grid_size: Size of the connection graph when the topology is a
             grid.
-        :return: Tuple containing both the connection graph and interaction graph.
+        :param rewarder: Rewarder to use for the environment. If None (default), then
+            the BasicRewarder is used.
+        :raise ValueError: When connection_graph, connection_graph_matrix and
+            connection_grid_size are all None.
+        :raise TypeError: When rewarder is not None or an instance of Rewarder.
         """
 
+        self._interaction_graph_edge_probability = check_real(
+            interaction_graph_edge_probability,
+            "interaction_graph_edge_probability",
+            l_bound=0,
+            u_bound=1,
+        )
+
         if connection_graph is not None:
+            if connection_graph_matrix is not None:
+                msg = "Both 'connection_graph' and 'connection_graph_matrix' were "
+                msg += "given. Using 'connection_graph'."
+                warnings.warn(msg)
+            if connection_grid_size is not None:
+                msg = "Both 'connection_graph' and 'connection_grid_size' were given. "
+                msg += "Using 'connection_graph'."
+                warnings.warn(msg)
+
+            if len(connection_graph) == 0:
+                raise ValueError("The given 'connection_graph' has no nodes.")
+
             # deepcopy the graphs for safety
-            connection_graph = deepcopy(connection_graph)
+            self._connection_graph = deepcopy(connection_graph)
+
         elif connection_graph_matrix is not None:
-            connection_graph = self._parse_adjacency_matrix(
-                connection_graph_matrix,
+            if connection_grid_size is not None:
+                msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
+                msg += "given. Using 'connection_graph_matrix'."
+                warnings.warn(msg)
+            self._connection_graph = self._parse_adjacency_matrix(
+                connection_graph_matrix
             )
         elif connection_grid_size is not None:
             # Generate connection grid graph
-            connection_graph = grid_graph(connection_grid_size)
+            self._connection_graph = grid_graph(connection_grid_size)
         else:
-            raise ValueError(
-                "No valid arguments for instantiation of the initial mapping "
-                "environment were provided."
-            )
+            msg = "No valid arguments for instantiation of the initial mapping "
+            msg += "environment were provided."
+            raise ValueError(msg)
+
+        if rewarder is None:
+            self._rewarder = BasicRewarder()
+        elif isinstance(rewarder, Rewarder):
+            self._rewarder = deepcopy(rewarder)
+        else:
+            raise TypeError("The given rewarder was not an instance of Rewarder.")
 
         # Create a random connection graph with `num_nodes` and with edges existing
         # with probability `interaction_graph_edge_probability` (nodes without
         # connections can be seen as 'null' nodes)
-        interaction_graph = fast_gnp_random_graph(
-            connection_graph.number_of_nodes(),
+        self._interaction_graph = fast_gnp_random_graph(
+            self._connection_graph.number_of_nodes(),
             self._interaction_graph_edge_probability,
         )
-        return connection_graph, interaction_graph
 
     @staticmethod
-    def _parse_adjacency_matrix(
-        connection_graph_matrix: NDArray[Any],
-    ) -> Tuple[Graph, Graph]:
+    def _parse_adjacency_matrix(connection_graph_matrix: ArrayLike) -> Graph:
         """
         Parse a given connection graph adjacency matrix to its respective graph
 
@@ -309,10 +340,6 @@ class InitialMapping(
         :return: Graph representation of the adjacency matrix.
         """
 
-        if not check_adjacency_matrix(connection_graph_matrix):
-            raise TypeError(
-                "Both the connection and interaction graph adjacency matrices should be"
-                " square 2-D Numpy arrays."
-            )
+        connection_graph_matrix = check_adjacency_matrix(connection_graph_matrix)
 
         return nx.from_numpy_array(connection_graph_matrix)
