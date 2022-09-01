@@ -1,3 +1,4 @@
+import warnings
 from numbers import Real
 from typing import Any, Optional
 
@@ -32,31 +33,24 @@ def check_real(
     :return: Floating point representation of x.
     """
     if not isinstance(x, Real):
-        raise TypeError(f"{name} should be a real number, but was of type {type(x)}.")
+        raise TypeError(f"'{name}' should be a real number, but was of type {type(x)}")
 
+    error_msg = "'" + name + "' has an {} {} bound of {}, but was " + str(x)
     if l_bound is not None:
         if l_inclusive:
             if x < l_bound:
-                raise ValueError(
-                    f"{name} has an inclusive lower bound of {l_bound}, but was {x}."
-                )
+                raise ValueError(error_msg.format("inclusive", "lower", l_bound))
         else:
             if x <= l_bound:
-                raise ValueError(
-                    f"{name} has an exclusive lower bound of {l_bound}, but was {x}."
-                )
+                raise ValueError(error_msg.format("exclusive", "lower", l_bound))
 
     if u_bound is not None:
         if u_inclusive:
             if x > u_bound:
-                raise ValueError(
-                    f"{name} has an inclusive upper bound of {u_bound}, but was {x}."
-                )
+                raise ValueError(error_msg.format("inclusive", "upper", u_bound))
         else:
             if x >= u_bound:
-                raise ValueError(
-                    f"{name} has an exclusive upper bound of {u_bound}, but was {x}."
-                )
+                raise ValueError(error_msg.format("exclusive", "upper", u_bound))
 
     return float(x)
 
@@ -75,7 +69,7 @@ def check_string(x: str, name: str, *, lower: bool = False, upper: bool = False)
     :return: input string, optionally in lowercase or uppercase letters.
     """
     if not isinstance(x, str):
-        raise TypeError(f"{name} must be a string, but was of type {type(x)}.")
+        raise TypeError(f"'{name}' must be a string, but was of type {type(x)}")
 
     if lower:
         x = x.lower()
@@ -104,3 +98,25 @@ def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
         raise ValueError("The provided value should be a square 2-D adjacency matrix.")
 
     return adjacency_matrix
+
+
+def warn_if_positive(x: Real, name: str) -> None:
+    """
+    Gives a warning when x is postive.
+
+    :param x: Variable to check.
+    :param name: Name of the variable. This name will be displayed in the warning.
+    """
+    if x > 0:
+        warnings.warn(f"'{name}' was postive")
+
+
+def warn_if_negative(x: Real, name: str) -> None:
+    """
+    Gives a warning when x is negative.
+
+    :param x: Variable to check.
+    :param name: Name of the variable. This name will be displayed in the warning.
+    """
+    if x < 0:
+        warnings.warn(f"'{name}' was negative")

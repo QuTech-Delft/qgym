@@ -2,8 +2,6 @@
 Environment for training an RL agent on the initial mapping problem of OpenQL.
 """
 
-from __future__ import annotations
-
 import warnings
 from copy import deepcopy
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
@@ -171,7 +169,7 @@ class InitialMapping(
 
         mode = check_string(mode, "mode", lower=True)
         if mode not in self.metadata["render.modes"]:
-            raise ValueError("The given render mode is not supported.")
+            raise ValueError("The given render mode is not supported")
 
         return self._visualiser.render(self._state, self._interaction_graph, mode)
 

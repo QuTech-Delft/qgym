@@ -2,15 +2,13 @@
 Environment and rewarder for training an RL agent on the initial mapping problem of
 OpenQL.
 """
-
-from __future__ import annotations
-
 from typing import Any, Dict, Optional
 
 import numpy as np
 from numpy.typing import NDArray
 
 from qgym import Rewarder
+from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
 
 class BasicRewarder(Rewarder):
@@ -32,9 +30,15 @@ class BasicRewarder(Rewarder):
         :param penalty_per_edge: penalty for performing a 'bad' action
         """
         self._reward_range = (-float("inf"), float("inf"))
-        self._illegal_action_penalty = illegal_action_penalty
-        self._reward_per_edge = reward_per_edge
-        self._penalty_per_edge = penalty_per_edge
+        self._illegal_action_penalty = check_real(
+            illegal_action_penalty, "illegal_action_penalty"
+        )
+        self._reward_per_edge = check_real(reward_per_edge, "reward_per_edge")
+        self._penalty_per_edge = check_real(penalty_per_edge, "penalty_per_edge")
+
+        warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
+        warn_if_negative(self._reward_per_edge, "reward_per_edge")
+        warn_if_positive(self._penalty_per_edge, "penalty_per_edge")
 
     def compute_reward(
         self,
