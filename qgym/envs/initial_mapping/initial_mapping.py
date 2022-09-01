@@ -18,7 +18,12 @@ from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
-from qgym.utils.input_validation import check_adjacency_matrix, check_real, check_string
+from qgym.utils.input_validation import (
+    check_adjacency_matrix,
+    check_graph_is_valid_topology,
+    check_real,
+    check_string,
+)
 
 Gridspecs = Union[List[Union[int, Iterable]], Tuple[Union[int, Iterable]]]
 
@@ -290,8 +295,7 @@ class InitialMapping(
                 msg += "Using 'connection_graph'."
                 warnings.warn(msg)
 
-            if len(connection_graph) == 0:
-                raise ValueError("The given 'connection_graph' has no nodes.")
+            check_graph_is_valid_topology(connection_graph, "connection_graph")
 
             # deepcopy the graphs for safety
             self._connection_graph = deepcopy(connection_graph)

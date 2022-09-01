@@ -96,6 +96,10 @@ def test_init_warnings(
         )
 
 
+graph_with_selfloop = nx.Graph()
+graph_with_selfloop.add_edge(1, 1)
+
+
 @pytest.mark.parametrize(
     "interaction_graph_edge_probability,connection_graph,connection_graph_matrix,connection_grid_size,rewarder,error_type,error_msg",
     [
@@ -151,7 +155,25 @@ def test_init_warnings(
             None,
             None,
             ValueError,
-            "The given 'connection_graph' has no nodes.",
+            "'connection_graph' has no nodes",
+        ),
+        (
+            0.5,
+            "test",
+            None,
+            None,
+            None,
+            TypeError,
+            "'connection_graph' is not an instance of networkx.Graph, but was of type <class 'str'>",
+        ),
+        (
+            0.5,
+            graph_with_selfloop,
+            None,
+            None,
+            None,
+            ValueError,
+            "'connection_graph' contains selfloops",
         ),
     ],
 )

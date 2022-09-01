@@ -2,6 +2,7 @@ import warnings
 from numbers import Real
 from typing import Any, Optional
 
+import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
@@ -98,6 +99,30 @@ def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
         raise ValueError("The provided value should be a square 2-D adjacency matrix.")
 
     return adjacency_matrix
+
+
+def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
+    """
+    Checks if the graph with name 'name' is an instance of networkx.Graph and checks
+    if the graph is valid topology graph.
+
+    :param grapg: Graph to check.
+    :param name: Name of the graph. This name will be displayed in possible error
+        messages.
+    :raise TypeError: If graph is not an instance networkx.Graph.
+    :raise ValueError: If graph is not a valid topology graph.
+    """
+
+    if not isinstance(graph, nx.Graph):
+        msg = f"'{name}' is not an instance of networkx.Graph, but was of type "
+        msg += str(type(graph))
+        raise TypeError(msg)
+
+    if nx.number_of_selfloops(graph) > 0:
+        raise ValueError(f"'{name}' contains selfloops")
+
+    if len(graph) == 0:
+        raise ValueError(f"'{name}' has no nodes")
 
 
 def warn_if_positive(x: Real, name: str) -> None:
