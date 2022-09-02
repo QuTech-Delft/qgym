@@ -21,6 +21,7 @@ from qgym.envs.initial_mapping.initial_mapping_visualiser import (
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_graph_is_valid_topology,
+    check_instance,
     check_real,
     check_string,
 )
@@ -65,12 +66,26 @@ class InitialMapping(
             the BasicRewarder is used.
         """
 
-        self._parse_and_set_user_input(
-            interaction_graph_edge_probability=interaction_graph_edge_probability,
+        self._interaction_graph_edge_probability = check_real(
+            interaction_graph_edge_probability,
+            "interaction_graph_edge_probability",
+            l_bound=0,
+            u_bound=1,
+        )
+        self._connection_graph = self._parse_connection_graph(
             connection_graph=connection_graph,
             connection_graph_matrix=connection_graph_matrix,
             connection_grid_size=connection_grid_size,
-            rewarder=rewarder,
+        )
+
+        self._rewarder = self._parse_rewarder(rewarder)
+
+        # Create a random connection graph with `num_nodes` and with edges existing with
+        # probability `interaction_graph_edge_probability` (nodes without connections
+        # can be seen as 'null' nodes)
+        self._interaction_graph = fast_gnp_random_graph(
+            self._connection_graph.number_of_nodes(),
+            self._interaction_graph_edge_probability,
         )
 
         # Define internal attributes
@@ -248,42 +263,25 @@ class InitialMapping(
 
         return {"Steps done": self._state["steps_done"]}
 
-    def _parse_and_set_user_input(
-        self,
+    @staticmethod
+    def _parse_connection_graph(
         *,
-        interaction_graph_edge_probability: Any,
         connection_graph: Any,
         connection_graph_matrix: Any,
         connection_grid_size: Any,
-        rewarder: Any,
-    ) -> None:
+    ) -> Graph:
         """
-        Parse the user input from the initialization and set them in their respective
-        attributes.
+        Parse the user input to create a connection graph
 
-        :param interaction_graph_edge_probability: Probability that an edge between any
-            pair of qubits in the random interaction graph exists. The interaction
-            graph will have the same amount of nodes as the connection graph. Nodes
-            without any interactions can be seen as 'null' nodes.
-        :param connection_graph: networkx graph representation of the QPU topology a
-            quantum circuit
+        :param connection_graph: networkx.Graph representation of the QPU topology.
         :param connection_graph_matrix: adjacency matrix representation of the QPU
             topology
         :param connection_grid_size: Size of the connection graph when the topology is a
             grid.
-        :param rewarder: Rewarder to use for the environment. If None (default), then
-            the BasicRewarder is used.
         :raise ValueError: When connection_graph, connection_graph_matrix and
             connection_grid_size are all None.
-        :raise TypeError: When rewarder is not None or an instance of Rewarder.
+        :return: Connection graph as a netwrokx.Graph.
         """
-
-        self._interaction_graph_edge_probability = check_real(
-            interaction_graph_edge_probability,
-            "interaction_graph_edge_probability",
-            l_bound=0,
-            u_bound=1,
-        )
 
         if connection_graph is not None:
             if connection_graph_matrix is not None:
@@ -298,40 +296,35 @@ class InitialMapping(
             check_graph_is_valid_topology(connection_graph, "connection_graph")
 
             # deepcopy the graphs for safety
-            self._connection_graph = deepcopy(connection_graph)
+            return deepcopy(connection_graph)
 
         elif connection_graph_matrix is not None:
             if connection_grid_size is not None:
                 msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
                 msg += "given. Using 'connection_graph_matrix'."
                 warnings.warn(msg)
-            self._connection_graph = self._parse_adjacency_matrix(
-                connection_graph_matrix
-            )
+            return InitialMapping._parse_adjacency_matrix(connection_graph_matrix)
         elif connection_grid_size is not None:
             # Generate connection grid graph
-            self._connection_graph = grid_graph(connection_grid_size)
-        else:
-            msg = "No valid arguments for instantiation of the initial mapping "
-            msg += "environment were provided."
-            raise ValueError(msg)
+            return grid_graph(connection_grid_size)
 
+        msg = "No valid arguments for instantiation of the initial mapping environment "
+        msg += "were provided."
+        raise ValueError(msg)
+
+    @staticmethod
+    def _parse_rewarder(rewarder: Union[Rewarder, None]) -> Rewarder:
+        """
+        Parse the rewarder given by the user.
+
+        :param rewarder: Rewarder to use for the environment. If None, then the
+            BasicRewarder is used.
+        :return: Rewarder.
+        """
         if rewarder is None:
-            self._rewarder = BasicRewarder()
-        elif isinstance(rewarder, Rewarder):
-            self._rewarder = deepcopy(rewarder)
-        else:
-            msg = "'rewarder' must be an instance of Rewarder, but was of type "
-            msg += str(type(rewarder))
-            raise TypeError(msg)
-
-        # Create a random connection graph with `num_nodes` and with edges existing
-        # with probability `interaction_graph_edge_probability` (nodes without
-        # connections can be seen as 'null' nodes)
-        self._interaction_graph = fast_gnp_random_graph(
-            self._connection_graph.number_of_nodes(),
-            self._interaction_graph_edge_probability,
-        )
+            return BasicRewarder()
+        check_instance(rewarder, "rewarder", Rewarder)
+        return deepcopy(rewarder)
 
     @staticmethod
     def _parse_adjacency_matrix(connection_graph_matrix: ArrayLike) -> Graph:

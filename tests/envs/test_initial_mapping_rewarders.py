@@ -45,10 +45,14 @@ def _perform_action(state: Dict[str, Any], action: NDArray[np.int_]) -> None:
     state["physical_qubits_mapped"].add(action[1])
 
 
-@pytest.mark.parametrize(
-    "rewarder", [BasicRewarder(), SingleStepRewarder(), EpisodeRewarder()]
+@pytest.fixture(
+    name="rewarder", params=(BasicRewarder(), SingleStepRewarder(), EpisodeRewarder())
 )
-def test_illegal_actions(rewarder: Rewarder) -> None:
+def _rewarder(request):
+    return request.param
+
+
+def test_illegal_actions(rewarder):
 
     old_state = {"logical_qubits_mapped": {2}, "physical_qubits_mapped": {1}}
     action = np.array([1, 2])
@@ -60,62 +64,19 @@ def test_illegal_actions(rewarder: Rewarder) -> None:
     assert reward == -100
 
 
-@pytest.mark.parametrize(
-    "rewarder", [BasicRewarder(), SingleStepRewarder(), EpisodeRewarder()]
-)
 def test_inheritance(rewarder):
     assert isinstance(rewarder, Rewarder)
 
 
 @pytest.mark.parametrize(
-    "rewarder", [BasicRewarder, SingleStepRewarder, EpisodeRewarder]
+    "rewarder_class", [BasicRewarder, SingleStepRewarder, EpisodeRewarder]
 )
-def test_init(rewarder):
-    rewarder = rewarder(-3, 3, -2)
+def test_init(rewarder_class):
+    rewarder = rewarder_class(-3, 3, -2)
     assert rewarder._reward_range == (-float("inf"), float("inf"))
     assert rewarder._illegal_action_penalty == -3
     assert rewarder._reward_per_edge == 3
     assert rewarder._penalty_per_edge == -2
-
-
-@pytest.mark.parametrize(
-    "rewarder", [BasicRewarder, SingleStepRewarder, EpisodeRewarder]
-)
-@pytest.mark.parametrize(
-    "illegal_action_penalty,reward_per_edge,penalty_per_edge,name",
-    [
-        ("test", 1, -1, "illegal_action_penalty"),
-        (-1, "test", -1, "reward_per_edge"),
-        (-1, 1, "test", "penalty_per_edge"),
-    ],
-)
-def test_init_exceptions(
-    rewarder, illegal_action_penalty, reward_per_edge, penalty_per_edge, name
-):
-    error_msg = f"'{name}' should be a real number, but was of type <class 'str'>"
-    with pytest.raises(TypeError, match=error_msg):
-        rewarder(illegal_action_penalty, reward_per_edge, penalty_per_edge)
-
-
-@pytest.mark.parametrize(
-    "rewarder", [BasicRewarder, SingleStepRewarder, EpisodeRewarder]
-)
-@pytest.mark.parametrize(
-    "illegal_action_penalty,reward_per_edge,penalty_per_edge,msg",
-    [
-        (100, 1, -1, "'illegal_action_penalty' was postive"),
-        (-1, -100, -1, "'reward_per_edge' was negative"),
-        (-1, 1, 100, "'penalty_per_edge' was postive"),
-    ],
-)
-def test_init_warnings(
-    rewarder, illegal_action_penalty, reward_per_edge, penalty_per_edge, msg
-):
-    with pytest.warns(UserWarning) as record:
-        rewarder(illegal_action_penalty, reward_per_edge, penalty_per_edge)
-
-    assert len(record) == 1
-    assert record[0].message.args[0] == msg
 
 
 """

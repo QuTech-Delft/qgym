@@ -435,8 +435,6 @@ class Scheduling(Environment):
         :param rulebook: rulebook describing the commutation rules. If None is given,
             the default CommutationRulebook will be used. (See CommutationRulebook for
             more info on the default rules.)
-        :raise TypeError: If the rulebook is not None or an not an instance of
-            CommutationRulebook.
         :return: CommutationRulebook.
         """
         if rulebook is None:
@@ -449,9 +447,8 @@ class Scheduling(Environment):
         """
         Parse the rewarder given by the user.
 
-        :param rewarder: Rewarder to use for the environment. If None, then
-            the BasicRewarder is used.
-        :raise TypeError: If the rewarder is not None or an not an instance of Rewarder.
+        :param rewarder: Rewarder to use for the environment. If None, then the
+            BasicRewarder is used.
         :return: Rewarder.
         """
         if rewarder is None:
