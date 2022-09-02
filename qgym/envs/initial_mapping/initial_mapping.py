@@ -321,7 +321,9 @@ class InitialMapping(
         elif isinstance(rewarder, Rewarder):
             self._rewarder = deepcopy(rewarder)
         else:
-            raise TypeError("The given rewarder was not an instance of Rewarder.")
+            msg = "'rewarder' must be an instance of Rewarder, but was of type "
+            msg += str(type(rewarder))
+            raise TypeError(msg)
 
         # Create a random connection graph with `num_nodes` and with edges existing
         # with probability `interaction_graph_edge_probability` (nodes without

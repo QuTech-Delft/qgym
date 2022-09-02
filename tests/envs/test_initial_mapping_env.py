@@ -146,7 +146,7 @@ graph_with_selfloop.add_edge(1, 1)
             (2, 2),
             "test",
             TypeError,
-            "The given rewarder was not an instance of Rewarder.",
+            "'rewarder' must be an instance of Rewarder, but was of type <class 'str'>",
         ),
         (
             0.5,
