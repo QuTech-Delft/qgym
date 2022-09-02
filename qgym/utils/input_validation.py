@@ -148,8 +148,8 @@ def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
         adjacency_matrix = np.array(adjacency_matrix)
 
     if (
-        not adjacency_matrix.ndim == 2
-        and adjacency_matrix.shape[0] == adjacency_matrix.shape[1]
+        adjacency_matrix.ndim != 2
+        or adjacency_matrix.shape[0] != adjacency_matrix.shape[1]
     ):
         raise ValueError("The provided value should be a square 2-D adjacency matrix.")
 
@@ -168,10 +168,7 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
     :raise ValueError: If graph is not a valid topology graph.
     """
 
-    if not isinstance(graph, nx.Graph):
-        msg = f"'{name}' is not an instance of networkx.Graph, but was of type "
-        msg += str(type(graph))
-        raise TypeError(msg)
+    check_instance(graph, name, nx.Graph)
 
     if nx.number_of_selfloops(graph) > 0:
         raise ValueError(f"'{name}' contains selfloops")
