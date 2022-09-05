@@ -10,6 +10,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from qgym import Rewarder
+from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
 
 class BasicRewarder(Rewarder):
@@ -31,10 +32,20 @@ class BasicRewarder(Rewarder):
         :param schedule_gate_bonus: bonus for scheduling a gate.
         """
 
-        self._reward_range = (-float("inf"), float("inf"))
-        self._illegal_action_penalty = illegal_action_penalty
-        self._update_cycle_penalty = update_cycle_penalty
-        self._schedule_gate_bonus = schedule_gate_bonus
+        self._illegal_action_penalty = check_real(
+            illegal_action_penalty, "illegal_action_penalty"
+        )
+        self._update_cycle_penalty = check_real(
+            update_cycle_penalty, "update_cycle_penalty"
+        )
+        self._schedule_gate_bonus = check_real(
+            schedule_gate_bonus, "schedule_gate_bonus"
+        )
+        self._set_reward_range()
+
+        warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
+        warn_if_positive(self._update_cycle_penalty, "update_cycle_penalty")
+        warn_if_negative(self._schedule_gate_bonus, "schedule_gate_bonus")
 
     def compute_reward(
         self,
@@ -52,16 +63,13 @@ class BasicRewarder(Rewarder):
         :return: The reward for this action.
         """
 
-        reward = 0.0
         if action[1] != 0:
-            reward += self._update_cycle_penalty
+            return self._update_cycle_penalty
 
         if self._is_illegal(action, old_state):
-            reward += self._illegal_action_penalty
-        else:
-            reward += self._schedule_gate_bonus
+            return self._illegal_action_penalty
 
-        return reward
+        return self._schedule_gate_bonus
 
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
@@ -77,8 +85,34 @@ class BasicRewarder(Rewarder):
         gate_to_schedule = action[0]
         return not old_state["legal_actions"][gate_to_schedule]
 
+    def _set_reward_range(self) -> None:
+        """
+        Set the reward range.
+        """
+        l_bound = -float("inf")
+        if (
+            self._illegal_action_penalty >= 0
+            and self._update_cycle_penalty >= 0
+            and self._schedule_gate_bonus >= 0
+        ):
+            l_bound = 0
+
+        u_bound = float("inf")
+        if (
+            self._illegal_action_penalty <= 0
+            and self._update_cycle_penalty <= 0
+            and self._schedule_gate_bonus <= 0
+        ):
+            u_bound = 0
+
+        self._reward_range = (l_bound, u_bound)
+
 
 class EpisodeRewarder(Rewarder):
+    """
+    Episode rewarder for the Scheduling environment.
+    """
+
     def __init__(
         self, illegal_action_penalty: float = -5.0, cycle_used_penalty: float = -1.0
     ) -> None:
@@ -89,9 +123,14 @@ class EpisodeRewarder(Rewarder):
         :param cycle_used_penalty: penalty for updating the cycle.
         """
 
-        self._reward_range = (-float("inf"), 0)
-        self._illegal_action_penalty = float(illegal_action_penalty)
-        self._cycle_used_penalty = float(cycle_used_penalty)
+        self._illegal_action_penalty = check_real(
+            illegal_action_penalty, "illegal_action_penalty"
+        )
+        self._cycle_used_penalty = check_real(cycle_used_penalty, "cycle_used_penalty")
+        self._set_reward_range()
+
+        warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
+        warn_if_positive(self._cycle_used_penalty, "cycle_used_penalty")
 
     def compute_reward(
         self,
@@ -108,15 +147,19 @@ class EpisodeRewarder(Rewarder):
         :param new_state: Updated state of the Scheduling.
         :return: The reward for this action.
         """
+
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
-        elif bool((new_state["schedule"] == -1).any()):
+
+        if (new_state["schedule"] == -1).any():
             return 0
+
         reward = 0
         for gate_idx, scheduled_cycle in enumerate(new_state["schedule"]):
             gate = new_state["encoded_circuit"][gate_idx]
             finished = scheduled_cycle + new_state["gate_cycle_length"][gate.name]
             reward = min(reward, self._cycle_used_penalty * finished)
+
         return reward
 
     @staticmethod
@@ -132,3 +175,17 @@ class EpisodeRewarder(Rewarder):
 
         gate_to_schedule = action[0]
         return not old_state["legal_actions"][gate_to_schedule]
+
+    def _set_reward_range(self) -> None:
+        """
+        Set the reward range.
+        """
+        l_bound = -float("inf")
+        if self._illegal_action_penalty >= 0 and self._cycle_used_penalty >= 0:
+            l_bound = 0
+
+        u_bound = float("inf")
+        if self._illegal_action_penalty <= 0 and self._cycle_used_penalty <= 0:
+            u_bound = 0
+
+        self._reward_range = (l_bound, u_bound)

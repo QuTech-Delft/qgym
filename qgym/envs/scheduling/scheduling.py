@@ -132,6 +132,7 @@ class Scheduling(Environment):
         # Increase the cycle if the action is given
         if action[1]:
             self._increment_cycle()
+            return
 
         # Schedule the gate if it is allowed
         gate_to_schedule = action[0]

@@ -52,6 +52,13 @@ def _rewarder(request):
     return request.param
 
 
+@pytest.fixture(
+    name="rewarder_class", params=(BasicRewarder, SingleStepRewarder, EpisodeRewarder)
+)
+def _rewarder_class(request):
+    return request.param
+
+
 def test_illegal_actions(rewarder):
 
     old_state = {"logical_qubits_mapped": {2}, "physical_qubits_mapped": {1}}
@@ -69,8 +76,24 @@ def test_inheritance(rewarder):
 
 
 @pytest.mark.parametrize(
-    "rewarder_class", [BasicRewarder, SingleStepRewarder, EpisodeRewarder]
+    "illegal_action_penalty,reward_per_edge,penalty_per_edge,reward_range",
+    [
+        (-1, 0, 0, (-float("inf"), 0)),
+        (0, 1, 0, (0, float("inf"))),
+        (0, 1, -1, (-float("inf"), float("inf"))),
+    ],
 )
+def test_reward_range(
+    rewarder_class,
+    illegal_action_penalty,
+    reward_per_edge,
+    penalty_per_edge,
+    reward_range,
+):
+    rewarder = rewarder_class(illegal_action_penalty, reward_per_edge, penalty_per_edge)
+    assert rewarder.reward_range == reward_range
+
+
 def test_init(rewarder_class):
     rewarder = rewarder_class(-3, 3, -2)
     assert rewarder._reward_range == (-float("inf"), float("inf"))

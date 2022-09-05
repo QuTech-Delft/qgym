@@ -29,12 +29,12 @@ class BasicRewarder(Rewarder):
         :param reward_per_edge: reward for performing a 'good' action
         :param penalty_per_edge: penalty for performing a 'bad' action
         """
-        self._reward_range = (-float("inf"), float("inf"))
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
         )
         self._reward_per_edge = check_real(reward_per_edge, "reward_per_edge")
         self._penalty_per_edge = check_real(penalty_per_edge, "penalty_per_edge")
+        self._set_reward_range()
 
         warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
         warn_if_negative(self._reward_per_edge, "reward_per_edge")
@@ -103,6 +103,28 @@ class BasicRewarder(Rewarder):
             action[0] in old_state["physical_qubits_mapped"]
             or action[1] in old_state["logical_qubits_mapped"]
         )
+
+    def _set_reward_range(self) -> None:
+        """
+        Set the reward range.
+        """
+        l_bound = -float("inf")
+        if (
+            self._reward_per_edge >= 0
+            and self._penalty_per_edge >= 0
+            and self._illegal_action_penalty >= 0
+        ):
+            l_bound = 0
+
+        u_bound = float("inf")
+        if (
+            self._reward_per_edge <= 0
+            and self._penalty_per_edge <= 0
+            and self._illegal_action_penalty <= 0
+        ):
+            u_bound = 0
+
+        self._reward_range = (l_bound, u_bound)
 
     def __eq__(self, o) -> bool:
         return (
