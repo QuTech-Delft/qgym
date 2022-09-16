@@ -59,10 +59,19 @@ class RandomCircuitGenerator:
         :return: A randomly generated circuit
         """
 
-        if n_gates.lower().strip() == "random":
-            n_gates = self.rng.integers(self.n_qubits, self.max_gates, endpoint=True)
-        else:
+        if isinstance(n_gates, str):
+            if n_gates.lower().strip() == "random":
+                n_gates = self.rng.integers(
+                    self.n_qubits, self.max_gates, endpoint=True
+                )
+            else:
+                raise ValueError(f"Unknown flag {n_gates}, choose from 'random'.")
+        elif isinstance(n_gates, int):
             n_gates = min(n_gates, self.max_gates)
+        else:
+            msg = "n_gates should be of tpye int or str, but was of type "
+            msg += f"{type(n_gates)}."
+            raise ValueError(msg)
 
         circuit: List[Gate] = [None] * n_gates
 
@@ -87,7 +96,7 @@ class RandomCircuitGenerator:
                 q2 = q1
 
             circuit[idx] = Gate(name, q1, q2)
-        
+
         # If mode is default, the circuit should start by initializing the qubits
         if mode.lower() == "default":
             for qubit in range(self.n_qubits):

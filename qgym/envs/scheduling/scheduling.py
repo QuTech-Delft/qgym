@@ -8,12 +8,15 @@ import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
+from qgym import Rewarder
 from qgym.custom_types import Gate
 from qgym.environment import Environment
+from qgym.envs.scheduling.machine_properties import MachineProperties
 from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
-from qgym.utils import GateEncoder, RandomCircuitGenerator
+from qgym.utils import RandomCircuitGenerator
+from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
 class Scheduling(Environment):
@@ -23,17 +26,19 @@ class Scheduling(Environment):
 
     def __init__(
         self,
-        machine_properties: Union[Mapping[str, Any], str],
+        machine_properties: Union[Mapping[str, Any], str, MachineProperties],
         *,
         max_gates: int = 200,
         dependency_depth: int = 1,
         random_circuit_mode: str = "default",
         rulebook: Optional[CommutationRulebook] = None,
+        rewarder: Optional[Rewarder] = None,
     ) -> None:
         """
         Initialize the scheduling environment.
 
-        :param machine_properties: mapping of machine properties.
+        :param machine_properties: A MachineProperties object, a Mapping of machine
+            or a string with a filename for a file containing the machine properties.
         :param max_gates: maximum number of gates allowed in a circuit.
         :param dependency_depth: number of dependencies given in the observation.
             Determines the shape of the "dependencies" observation, which has the shape
@@ -43,60 +48,45 @@ class Scheduling(Environment):
         :param rulebook: rulebook describing the commutation rules. If None is given,
             the default CommutationRulebook will be used. (See CommutationRulebook for
             more info on the default rules.)
+        :param rewarder: Rewarder to use for the environment. If None (default), then
+            the BasicRewarder is used.
         """
 
-        self._reward_range = (-float("inf"), float("inf"))
+        self.metadata = {
+            "render.modes": ["human", "rgb_array"],
+            "random_circuit.mode": ["default", "workshop"],
+        }
 
-        if isinstance(machine_properties, str):
-            raise NotImplementedError(
-                "Loading machine properties from files is not yet implemented."
-            )
-
-        n_qubits = machine_properties["qubit_number"]
-        self._dependency_depth = dependency_depth
-        self._gate_encoder = GateEncoder().learn_gates(machine_properties["gates"])
-        self._random_circuit_mode = random_circuit_mode
-        self._random_circuit_generator = RandomCircuitGenerator(
-            n_qubits, max_gates, rng=self.rng
+        machine_properties = self._parse_machine_properties(machine_properties)
+        max_gates = check_int(max_gates, "max_gates", l_bound=1)
+        self._dependency_depth = check_int(
+            dependency_depth, "dependency_depth", l_bound=1
         )
+        self._random_circuit_mode = self._parse_random_circuit_mode(random_circuit_mode)
+        self._commutation_rulebook = self._parse_rulebook(rulebook)
+        self._rewarder = self._parse_rewarder(rewarder)
 
-        if rulebook is None:
-            self._commutation_rulebook = CommutationRulebook()
-        elif isinstance(rulebook, CommutationRulebook):
-            self._commutation_rulebook = rulebook
-        else:
-            msg = (
-                "Rulebook must be None or of type CommutationRulebook, but was of type "
-            )
-            msg += f"{type(rulebook)}."
-            raise TypeError(msg)
-
-        gate_cycle_length = self._gate_encoder.encode_gates(machine_properties["gates"])
-
-        same_start = machine_properties["machine_restrictions"]["same_start"]
-        same_start = self._gate_encoder.encode_gates(same_start)
-
-        diff_cycle = machine_properties["machine_restrictions"]["not_in_same_cycle"]
-        not_in_same_cycle = self._gate_encoder.encode_gates(diff_cycle)
+        self._gate_encoder = machine_properties.encode()
+        self._random_circuit_generator = RandomCircuitGenerator(
+            machine_properties.n_qubits, max_gates, rng=self.rng
+        )
 
         self._state = {
             "max_gates": max_gates,
-            "n_qubits": n_qubits,
-            "gate_cycle_length": gate_cycle_length,
-            "same_start": same_start,
-            "not_in_same_cycle": not_in_same_cycle,
+            "n_qubits": machine_properties.n_qubits,
+            "gate_cycle_length": machine_properties.gates,
+            "same_start": machine_properties.same_start,
+            "not_in_same_cycle": machine_properties.not_in_same_cycle,
         }
 
         self.reset()
 
-        n_gate_names = self._gate_encoder.n_gates
-
         legal_actions_space = qgym.spaces.MultiBinary(max_gates, rng=self.rng)
         gate_names_space = qgym.spaces.MultiDiscrete(
-            np.full(max_gates, n_gate_names + 1), rng=self.rng
+            np.full(max_gates, machine_properties.n_gates + 1), rng=self.rng
         )
         acts_on_space = qgym.spaces.MultiDiscrete(
-            np.full(2 * max_gates, n_qubits + 1), rng=self.rng
+            np.full(2 * max_gates, machine_properties.n_qubits + 1), rng=self.rng
         )
         dependencies_space = qgym.spaces.MultiDiscrete(
             np.full(dependency_depth * max_gates, max_gates), rng=self.rng
@@ -112,14 +102,11 @@ class Scheduling(Environment):
 
         self.action_space = qgym.spaces.MultiDiscrete([max_gates, 2], rng=self.rng)
 
-        self._rewarder = BasicRewarder()
         self._visualiser = SchedulingVisualiser(
             gate_encoder=self._gate_encoder,
-            gate_cycle_length=gate_cycle_length,
-            n_qubits=n_qubits
+            gate_cycle_length=machine_properties.gates,
+            n_qubits=machine_properties.n_qubits,
         )
-
-        self.metadata = {"render.modes": ["human", "rgb_array"]}
 
     def _obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
         """
@@ -145,6 +132,7 @@ class Scheduling(Environment):
         # Increase the cycle if the action is given
         if action[1]:
             self._increment_cycle()
+            return
 
         # Schedule the gate if it is allowed
         gate_to_schedule = action[0]
@@ -168,12 +156,12 @@ class Scheduling(Environment):
 
         # Decrease the amount of cycles to exclude a gate and skip gates where the
         # cycle becomes 0 (as it no longer should be excluded)
-        updated_excluded_gates = {}
-        while len(self._excluded_gates) != 0:
-            gate_name, cycles = self._excluded_gates.popitem()
-            if cycles > 1:
-                updated_excluded_gates[gate_name] = cycles - 1
-        self._excluded_gates = updated_excluded_gates
+        gate_names = list(self._excluded_gates.keys())
+        for gate_name in gate_names:
+            if self._excluded_gates[gate_name] > 1:
+                self._excluded_gates[gate_name] -= 1
+            else:
+                self._excluded_gates.pop(gate_name)
 
         self._update_legal_actions()
 
@@ -200,7 +188,7 @@ class Scheduling(Environment):
             self._exclude_in_next_cycle.add(gate.name)
 
         # Update "dependencies" observation
-        self._blocking_matrix[:, gate_idx] = False
+        self._blocking_matrix[:gate_idx, gate_idx] = False
         self._state["dependencies"] = self._get_dependencies()
 
         self._update_legal_actions()
@@ -285,8 +273,7 @@ class Scheduling(Environment):
             (self._dependency_depth, self._state["max_gates"]), dtype=int
         )
         for gate_idx, blocking_row in enumerate(self._blocking_matrix):
-
-            blocking_gates = blocking_row.nonzero()[0]
+            blocking_gates = blocking_row[gate_idx:].nonzero()[0]
             for depth in range(min(self._dependency_depth, blocking_gates.shape[0])):
                 dependencies[depth, gate_idx] = blocking_gates[depth]
 
@@ -338,7 +325,7 @@ class Scheduling(Environment):
             # Check if there is a non-scheduled dependent gate
 
             dependent_gates = self._state["dependencies"][:, gate_idx]
-            if (dependent_gates > 0).any():
+            if np.count_nonzero(dependent_gates) > 0:
                 legal_actions[gate_idx] = False
                 continue
 
@@ -354,7 +341,7 @@ class Scheduling(Environment):
 
         self._state["legal_actions"] = legal_actions
 
-    def get_circuit(self, mode: str = "human"):
+    def get_circuit(self, mode: str = "human") -> List[Gate]:
         """
         Return the quantum circuit of this episode.
 
@@ -379,7 +366,8 @@ class Scheduling(Environment):
         """
         Render the current state using pygame.
 
-        :param mode: The mode to render with (supported modes are found in `self.metadata`.).
+        :param mode: The mode to render with (supported modes are found in
+            `self.metadata`.).
         :raise ValueError: If an unsupported mode is provided.
         :return: Result of rendering.
         """
@@ -393,5 +381,78 @@ class Scheduling(Environment):
         """
         Close the screen used for rendering.
         """
+        if hasattr(self, "_visualiser"):
+            self._visualiser.close()
 
-        self._visualiser.close()
+    @staticmethod
+    def _parse_machine_properties(
+        machine_properties: Union[Mapping[str, Any], str, MachineProperties]
+    ) -> MachineProperties:
+        """
+        Parse the machine_properties given by the user and return a MachineProperties
+        object.
+
+        :param machine_properties: A MachineProperties object, a Mapping of machine
+            or a string with a filename for a file containing the machine properties.
+        :raise TypeError: If the given type is not supported.
+        :return: A MachineProperties object with the given machine properties.
+        """
+        if isinstance(machine_properties, str):
+            return MachineProperties.from_file(machine_properties)
+        elif isinstance(machine_properties, MachineProperties):
+            return deepcopy(machine_properties)
+        elif isinstance(machine_properties, Mapping):
+            return MachineProperties.from_mapping(machine_properties)
+        else:
+            msg = f"{type(machine_properties)} is not a supported type for "
+            msg += "'machine_properties'"
+            raise TypeError(msg)
+
+    @staticmethod
+    def _parse_random_circuit_mode(random_circuit_mode: str) -> str:
+        """
+        Parse the random_circuit_mode given by the user.
+
+        :param random_circuit_mode: Mode for the random circuit is generator. The mode
+            can be 'default' or 'workshop'.
+        :raise ValueError: If the given mode is not supported.
+        :return: A valid random circuit mode.
+        """
+        random_circuit_mode = check_string(
+            random_circuit_mode, "random_circuit_mode", lower=True
+        )
+        if random_circuit_mode not in ["default", "workshop"]:
+            msg = f"'{random_circuit_mode}' is not a supported random circuit mode"
+            raise ValueError(msg)
+        return random_circuit_mode
+
+    @staticmethod
+    def _parse_rulebook(
+        rulebook: Union[CommutationRulebook, None]
+    ) -> CommutationRulebook:
+        """
+        Parse the rulebook given by the user.
+
+        :param rulebook: rulebook describing the commutation rules. If None is given,
+            the default CommutationRulebook will be used. (See CommutationRulebook for
+            more info on the default rules.)
+        :return: CommutationRulebook.
+        """
+        if rulebook is None:
+            return CommutationRulebook()
+        check_instance(rulebook, "rulebook", CommutationRulebook)
+        return deepcopy(rulebook)
+
+    @staticmethod
+    def _parse_rewarder(rewarder: Union[Rewarder, None]) -> Rewarder:
+        """
+        Parse the rewarder given by the user.
+
+        :param rewarder: Rewarder to use for the environment. If None, then the
+            BasicRewarder is used.
+        :return: Rewarder.
+        """
+        if rewarder is None:
+            return BasicRewarder()
+        check_instance(rewarder, "rewarder", Rewarder)
+        return deepcopy(rewarder)

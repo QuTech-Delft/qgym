@@ -1,5 +1,6 @@
 """
-A dictionary of spaces, i.e., a dictionary with fixed strings as keys and spaces as values.
+A dictionary of spaces, i.e., a dictionary with fixed strings as keys and spaces as
+values.
 """
 
 import typing
