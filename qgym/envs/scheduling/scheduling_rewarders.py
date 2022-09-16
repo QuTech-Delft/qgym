@@ -114,23 +114,23 @@ class EpisodeRewarder(Rewarder):
     """
 
     def __init__(
-        self, illegal_action_penalty: float = -5.0, cycle_used_penalty: float = -1.0
+        self, illegal_action_penalty: float = -5.0, update_cycle_penalty: float = -1.0
     ) -> None:
         """
         Initialize the reward range and set the rewards and penalties.
 
         :param illegal_action_penalty: penalty for performing an illegal action.
-        :param cycle_used_penalty: penalty for updating the cycle.
+        :param update_cycle_penalty: penalty for updating the cycle.
         """
 
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
         )
-        self._cycle_used_penalty = check_real(cycle_used_penalty, "cycle_used_penalty")
+        self._update_cycle_penalty = check_real(update_cycle_penalty, "update_cycle_penalty")
         self._set_reward_range()
 
         warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
-        warn_if_positive(self._cycle_used_penalty, "cycle_used_penalty")
+        warn_if_positive(self._update_cycle_penalty, "update_cycle_penalty")
 
     def compute_reward(
         self,
@@ -158,7 +158,7 @@ class EpisodeRewarder(Rewarder):
         for gate_idx, scheduled_cycle in enumerate(new_state["schedule"]):
             gate = new_state["encoded_circuit"][gate_idx]
             finished = scheduled_cycle + new_state["gate_cycle_length"][gate.name]
-            reward = min(reward, self._cycle_used_penalty * finished)
+            reward = min(reward, self._update_cycle_penalty * finished)
 
         return reward
 
@@ -181,11 +181,11 @@ class EpisodeRewarder(Rewarder):
         Set the reward range.
         """
         l_bound = -float("inf")
-        if self._illegal_action_penalty >= 0 and self._cycle_used_penalty >= 0:
+        if self._illegal_action_penalty >= 0 and self._update_cycle_penalty >= 0:
             l_bound = 0
 
         u_bound = float("inf")
-        if self._illegal_action_penalty <= 0 and self._cycle_used_penalty <= 0:
+        if self._illegal_action_penalty <= 0 and self._update_cycle_penalty <= 0:
             u_bound = 0
 
         self._reward_range = (l_bound, u_bound)
