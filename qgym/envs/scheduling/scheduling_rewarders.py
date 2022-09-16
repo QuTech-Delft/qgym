@@ -126,7 +126,9 @@ class EpisodeRewarder(Rewarder):
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
         )
-        self._update_cycle_penalty = check_real(update_cycle_penalty, "update_cycle_penalty")
+        self._update_cycle_penalty = check_real(
+            update_cycle_penalty, "update_cycle_penalty"
+        )
         self._set_reward_range()
 
         warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
