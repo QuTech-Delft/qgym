@@ -23,17 +23,11 @@ def trained_encoder(empty_encoder):
     ],
 )
 def test_learn_gates(empty_encoder, gates):
-
-    assert empty_encoder.encoding_dct == None
-    assert empty_encoder.decoding_dct == None
-    assert empty_encoder.longest_name == None
-    assert empty_encoder.n_gates == None
-
     assert type(empty_encoder.learn_gates(gates)) == GateEncoder
 
-    assert empty_encoder.encoding_dct == {"x": 1, "y": 2, "z": 3, "cnot": 4, "h": 5}
-    assert empty_encoder.decoding_dct == {1: "x", 2: "y", 3: "z", 4: "cnot", 5: "h"}
-    assert empty_encoder.longest_name == 4
+    assert empty_encoder._encoding_dct == {"x": 1, "y": 2, "z": 3, "cnot": 4, "h": 5}
+    assert empty_encoder._decoding_dct == {1: "x", 2: "y", 3: "z", 4: "cnot", 5: "h"}
+    assert empty_encoder._longest_name == 4
     assert empty_encoder.n_gates == 5
 
 
@@ -41,9 +35,9 @@ def test_duplicate_gates_warning(empty_encoder):
     with pytest.warns(UserWarning):
         empty_encoder.learn_gates(["x", "y", "z", "cnot", "h", "h", "z"])
 
-    assert empty_encoder.encoding_dct == {"x": 1, "y": 2, "z": 3, "cnot": 4, "h": 5}
-    assert empty_encoder.decoding_dct == {1: "x", 2: "y", 3: "z", 4: "cnot", 5: "h"}
-    assert empty_encoder.longest_name == 4
+    assert empty_encoder._encoding_dct == {"x": 1, "y": 2, "z": 3, "cnot": 4, "h": 5}
+    assert empty_encoder._decoding_dct == {1: "x", 2: "y", 3: "z", 4: "cnot", 5: "h"}
+    assert empty_encoder._longest_name == 4
     assert empty_encoder.n_gates == 5
 
 

@@ -18,10 +18,7 @@ class GateEncoder:
         """
         Initialize the `GateEncoder`.
         """
-        self.encoding_dct = None
-        self.decoding_dct = None
-        self.longest_name = None
-        self.n_gates = None
+        self.n_gates = 0
 
     def learn_gates(self, gates: Iterable) -> GateEncoder:
         """
@@ -31,19 +28,19 @@ class GateEncoder:
         :param gates: An iterable containing the names of the gates that must be
             learned.
         """
-        self.encoding_dct = {}
-        self.decoding_dct = {}
-        self.longest_name = 0
+        self._encoding_dct = {}
+        self._decoding_dct = {}
+        self._longest_name = 0
 
         idx = 0  # in case gates is empty
         self.n_gates = 0
         for idx, gate_name in enumerate(gates, 1):
-            if gate_name in self.encoding_dct:
+            if gate_name in self._encoding_dct:
                 warnings.warn(f"'gates' contains multiple entries of {gate_name}")
             else:
-                self.encoding_dct[gate_name] = idx
-                self.decoding_dct[idx] = gate_name
-                self.longest_name = max(self.longest_name, len(gate_name))
+                self._encoding_dct[gate_name] = idx
+                self._decoding_dct[idx] = gate_name
+                self._longest_name = max(self._longest_name, len(gate_name))
                 self.n_gates += 1
 
         return self
@@ -61,18 +58,18 @@ class GateEncoder:
         :raise TypeError: When an unsupported type is given
         """
         if isinstance(gates, str):
-            encoded_gates = self.encoding_dct[gates]
+            encoded_gates = self._encoding_dct[gates]
 
         elif isinstance(gates, Mapping):
             encoded_gates = {}
             for gate_name, item in gates.items():
-                gate_encoding = self.encoding_dct[gate_name]
+                gate_encoding = self._encoding_dct[gate_name]
                 if isinstance(item, int):
                     encoded_gates[gate_encoding] = item
                 elif isinstance(item, Iterable):
                     item_encoded = []
                     for i in item:
-                        item_encoded.append(self.encoding_dct[i])
+                        item_encoded.append(self._encoding_dct[i])
                     encoded_gates[gate_encoding] = item_encoded
                 else:
                     raise ValueError("Unknown mapping")
@@ -80,13 +77,13 @@ class GateEncoder:
         elif isinstance(gates, Sequence) and isinstance(gates[0], Gate):
             encoded_gates = []
             for gate in gates:
-                encoded_name = self.encoding_dct[gate.name]
+                encoded_name = self._encoding_dct[gate.name]
                 encoded_gates.append(Gate(encoded_name, gate.q1, gate.q2))
 
         elif isinstance(gates, Iterable):
             encoded_gates = []
             for gate_name in gates:
-                gate_encoding = self.encoding_dct[gate_name]
+                gate_encoding = self._encoding_dct[gate_name]
                 encoded_gates.append(gate_encoding)
 
         else:
@@ -109,24 +106,24 @@ class GateEncoder:
         :raise TypeError: When an unsupported type is given
         """
         if isinstance(encoded_gates, int):
-            decoded_gates = self.decoding_dct[encoded_gates]
+            decoded_gates = self._decoding_dct[encoded_gates]
 
         elif isinstance(encoded_gates, Mapping):
             decoded_gates = {}
             for gate_int in encoded_gates:
-                gate_name = self.decoding_dct[gate_int]
+                gate_name = self._decoding_dct[gate_int]
                 decoded_gates[gate_name] = encoded_gates[gate_int]
 
         elif isinstance(encoded_gates, Sequence) and isinstance(encoded_gates[0], Gate):
             decoded_gates = []
             for gate in encoded_gates:
-                decoded_gate_name = self.decoding_dct[gate.name]
+                decoded_gate_name = self._decoding_dct[gate.name]
                 decoded_gates.append(Gate(decoded_gate_name, gate.q1, gate.q2))
 
         elif isinstance(encoded_gates, Iterable):
             decoded_gates = []
             for gate_int in encoded_gates:
-                decoded_gate = self.decoding_dct[gate_int]
+                decoded_gate = self._decoding_dct[gate_int]
                 decoded_gates.append(decoded_gate)
 
         else:
