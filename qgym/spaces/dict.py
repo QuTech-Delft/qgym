@@ -4,9 +4,10 @@ values.
 """
 
 import typing
-from typing import Generator, Optional
+from typing import List, Optional
 
 import gym.spaces
+from numpy.random import Generator, default_rng
 
 
 class Dict(gym.spaces.Dict):
@@ -32,6 +33,16 @@ class Dict(gym.spaces.Dict):
 
         super(Dict, self).__init__(spaces, **spaces_kwargs)
         for space in self.spaces.values():
-            space._np_random = (
-                rng  # this overrides the default behaviour of the gym space
-            )
+            # override the default behaviour of the gym space
+            space._np_random = rng
+
+    def seed(self, seed: Optional[int] = None) -> List[int]:
+        """
+        Seed the rng of this space.
+
+        :param seed: Seed for the rng
+        :return: The used seeds.
+        """
+        for space in self.spaces.values():
+            space._np_random = default_rng(seed)
+        return [seed]
