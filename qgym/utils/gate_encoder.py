@@ -6,7 +6,7 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Union
 
 from qgym.custom_types import Gate
-
+import warnings
 
 class GateEncoder:
     """
@@ -35,11 +35,15 @@ class GateEncoder:
         self.longest_name = 0
 
         idx = 0  # in case gates is empty
+        self.n_gates = 0
         for idx, gate_name in enumerate(gates, 1):
-            self.encoding_dct[gate_name] = idx
-            self.decoding_dct[idx] = gate_name
-            self.longest_name = max(self.longest_name, len(gate_name))
-        self.n_gates = idx
+            if gate_name in self.encoding_dct:
+                warnings.warn(f"'gates' contains multiple entries of {gate_name}")
+            else:
+                self.encoding_dct[gate_name] = idx
+                self.decoding_dct[idx] = gate_name
+                self.longest_name = max(self.longest_name, len(gate_name))
+                self.n_gates += 1
 
         return self
 
@@ -72,7 +76,7 @@ class GateEncoder:
                 else:
                     raise ValueError("Unknown mapping")
 
-        elif isinstance(gates, Sequence):
+        elif isinstance(gates, Sequence) and isinstance(gates[0], Gate):
             encoded_gates = []
             for gate in gates:
                 encoded_name = self.encoding_dct[gate.name]
@@ -112,7 +116,7 @@ class GateEncoder:
                 gate_name = self.decoding_dct[gate_int]
                 decoded_gates[gate_name] = encoded_gates[gate_int]
 
-        elif isinstance(encoded_gates, Sequence):
+        elif isinstance(encoded_gates, Sequence) and isinstance(encoded_gates[0], Gate):
             decoded_gates = []
             for gate in encoded_gates:
                 decoded_gate_name = self.decoding_dct[gate.name]
