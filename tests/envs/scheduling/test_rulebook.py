@@ -15,7 +15,7 @@ from qgym.envs.scheduling.rulebook import (
 )
 def test_init(default_rules, rules):
     rulebook = CommutationRulebook(default_rules=default_rules)
-    assert rulebook.rulebook == rules
+    assert rulebook._rules == rules
 
 
 @pytest.fixture
@@ -66,5 +66,5 @@ def test_add_rule(default_rulebook):
         return True
 
     default_rulebook.add_rule(always_commute)
-    assert default_rulebook.rulebook[-1] == always_commute
+    assert default_rulebook._rules[-1] == always_commute
     assert default_rulebook.commutes(Gate("x", 1, 1), Gate("y", 1, 1))
