@@ -28,7 +28,7 @@ class RandomCircuitGenerator:
         """
         self.n_qubits = n_qubits
         self.max_gates = max_gates
-        self._rng = rng
+        self.rng = rng
 
     @property
     def rng(self) -> Generator:
