@@ -3,10 +3,11 @@ This module contains the GateEncoder class encoding gate to integers and back.
 """
 from __future__ import annotations
 
+import warnings
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Union
 
 from qgym.custom_types import Gate
-import warnings
+
 
 class GateEncoder:
     """
