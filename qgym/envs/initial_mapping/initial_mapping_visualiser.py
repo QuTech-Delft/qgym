@@ -69,9 +69,9 @@ class InitialMappingVisualiser:
         screen2_pos = (0, header_spacing + self.screen_height / 2)
         screen3_pos = (small_screen_width + padding, header_spacing)
 
-        self.subscreen1 = pygame.Rect(*screen1_pos, *small_screen_shape)
-        self.subscreen2 = pygame.Rect(*screen2_pos, *small_screen_shape)
-        self.subscreen3 = pygame.Rect(*screen3_pos, *large_screen_shape)
+        self.subscreen1 = pygame.Rect(screen1_pos, small_screen_shape)
+        self.subscreen2 = pygame.Rect(screen2_pos, small_screen_shape)
+        self.subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
 
     def render(
         self, state: Dict[str, Any], interaction_graph: nx.Graph, mode: str
@@ -248,6 +248,7 @@ class InitialMappingVisualiser:
         :param x: x coordinate of the point.
         :param y: y coordinate of the point.
         """
+        gfxdraw.aacircle(self.screen, x, y, 10, BLUE)
         gfxdraw.filled_circle(self.screen, x, y, 10, BLUE)
 
     def _draw_wide_line(
