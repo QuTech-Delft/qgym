@@ -39,6 +39,16 @@ class InitialMappingVisualiser:
         self.font_size = 30
         self.header_spacing = self.font_size / 3 * 2
 
+        self.colors = {
+            "nodes": BLUE,
+            "basic_edge": BLACK,
+            "unused_edge": GRAY,
+            "used_edge": GREEN,
+            "missing_edge": RED,
+            "text": BLACK,
+            "background": WHITE,
+        }
+
         # initialize rectangles
         self.init_subscreen_rectangles()
 
@@ -96,7 +106,7 @@ class InitialMappingVisualiser:
 
         pygame.time.delay(10)
 
-        self.screen.fill(WHITE)
+        self.screen.fill(self.colors["background"])
 
         mapped_graph = self._get_mapped_graph(state)
 
@@ -189,7 +199,7 @@ class InitialMappingVisualiser:
         for (u, v) in self.connection_graph.edges():
             pos_u = self.node_positions_connection_graph[u]
             pos_v = self.node_positions_connection_graph[v]
-            self._draw_wide_line(BLACK, pos_u, pos_v)
+            self._draw_wide_line(self.colors["basic_edge"], pos_u, pos_v)
 
         for x, y in self.node_positions_connection_graph.values():
             self._draw_point(int(x), int(y))
@@ -214,7 +224,7 @@ class InitialMappingVisualiser:
         for (u, v) in interaction_graph.edges():
             pos_u = self.node_positions_interaction_graph[u]
             pos_v = self.node_positions_interaction_graph[v]
-            self._draw_wide_line(BLACK, pos_u, pos_v)
+            self._draw_wide_line(self.colors["basic_edge"], pos_u, pos_v)
 
         for x, y in self.node_positions_interaction_graph.values():
             self._draw_point(int(x), int(y))
@@ -231,11 +241,11 @@ class InitialMappingVisualiser:
             pos_u = self.node_positions_mapped_graph[u]
             pos_v = self.node_positions_mapped_graph[v]
             if mapped_graph.edges[u, v]["color"] == "red":
-                color = RED
+                color = self.colors["missing_edge"]
             if mapped_graph.edges[u, v]["color"] == "green":
-                color = GREEN
+                color = self.colors["used_edge"]
             if mapped_graph.edges[u, v]["color"] == "gray":
-                color = GRAY
+                color = self.colors["unused_edge"]
             self._draw_wide_line(color, pos_u, pos_v)
 
         for x, y in self.node_positions_mapped_graph.values():
@@ -248,8 +258,8 @@ class InitialMappingVisualiser:
         :param x: x coordinate of the point.
         :param y: y coordinate of the point.
         """
-        gfxdraw.aacircle(self.screen, x, y, 10, BLUE)
-        gfxdraw.filled_circle(self.screen, x, y, 10, BLUE)
+        gfxdraw.aacircle(self.screen, x, y, 10, self.colors["nodes"])
+        gfxdraw.filled_circle(self.screen, x, y, 10, self.colors["nodes"])
 
     def _draw_wide_line(
         self, color: Tuple[int, int, int], p1: NDArray, p2: NDArray, width: int = 2
@@ -282,7 +292,7 @@ class InitialMappingVisualiser:
         :param text: Text of the header.
         :param subscreen: Subscreen to draw the header above.
         """
-        text = self.font.render(text, True, BLACK)
+        text = self.font.render(text, True, self.colors["text"])
         text_center = (subscreen.center[0], subscreen.y - self.header_spacing)
         text_position = text.get_rect(center=text_center)
         self.screen.blit(text, text_position)
