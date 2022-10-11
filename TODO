@@ -1,0 +1,2 @@
+- MERGE setup.cfg and setup.py
+- rename all rl_ql occurences
