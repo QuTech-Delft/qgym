@@ -4,6 +4,18 @@ Currently, we are not looking for any new contributors. We are happy to receive 
 # Developer notes
 Below is a list of useful information for developers.
 
+### TODO: IMPROVE THIS FOR BUILD WITH CPP CODE, BUT THIS WORKS FOR LINUX
+But basically you need `wheel` and `plumbum` installed and can then run either of the following:
+```commandline
+pip install -v .
+pip install -e -v .
+```
+We advise the editable install (second line) when developing.
+
+You might also require certain Linux packages when building, at least `gcc`, `flex >2.6`, `bison > 3.0`, `cmake >= 3.0`,
+and `swig >=3.0.12` can be required. See also [the OpenQL dev docs](https://openql.readthedocs.io/en/latest/developer/build.html)
+for more info.
+
 ### Installing requirements
 Make sure to install all requirements in your (preferably virtual) environment as follows.
 The first command installs the latest versions of `pip`, `setuptools`, and `wheel`.
