@@ -39,6 +39,14 @@ def read(fname):
     with open(os.path.join(os.path.dirname(__file__), fname)) as f:
         return f.read()
 
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
+
 class clean(_clean):
     def run(self):
         _clean.run(self)
@@ -237,10 +245,10 @@ class egg_info(_egg_info):
         self.egg_base = os.path.relpath(target_dir)
 
 
-import qgym
+
 setup(
     name='qgym',
-    version=qgym.__version__,
+    version=get_version('python/qgym/__init__.py'),
     description='Reinforcement Learning Gym for OpenQL',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',

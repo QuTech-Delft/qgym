@@ -399,7 +399,7 @@ endif()
 # Python module                                                               #
 #=============================================================================#
 
-# Include the tests directory if requested.
+# Include the python directory
 if(OPENQL_BUILD_PYTHON)
     add_subdirectory(python)
 endif()
