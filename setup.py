@@ -236,43 +236,64 @@ class egg_info(_egg_info):
         _egg_info.initialize_options(self)
         self.egg_base = os.path.relpath(target_dir)
 
+
+import qgym
 setup(
     name='qgym',
-    version='dev',
-    description='OpenQL Python Package',
+    version=qgym.__version__,
+    description='Reinforcement Learning Gym for OpenQL',
     long_description=read('README.md'),
-    long_description_content_type = 'text/markdown',
-    author='QuTech, TU Delft',
-    url='https://github.com/QuTech-Delft/OpenQL',
+    long_description_content_type='text/markdown',
+    author='QuTech (TNO, TU Delft)',
+    maintainer='QuTech (TNO, TU Delft)',
+    license='Apache License, Version 2.0',
 
     classifiers = [
         'License :: OSI Approved :: Apache Software License',
+        'Private :: Do Not Upload to pypi server',
 
         'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS',
         'Operating System :: Microsoft :: Windows',
 
-        'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3 ',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
 
-        'Topic :: Scientific/Engineering'
-    ],
+        'Intended Audience:: Developers',
+        'Intended Audience:: Information Technology',
+        'Intended Audience:: Science / Research',
 
-    packages = ['qgym'],
-    package_dir = {'': 'pybuild'},
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    ],
+    keywords=[
+        'Reinforcement Learning',
+        'QuTech',
+        'TNO',
+        'TU Delft',
+        'Quantum',
+        'Gym',
+        'Quantum Compilation',
+    ],
+    packages=[
+        'qgym',
+        'qgym.envs',
+        'qgym.envs.initial_mapping',
+        'qgym.envs.scheduling',
+        'qgym.spaces',
+        'qgym.utils'
+    ],
+    package_dir={'': 'pybuild'},
 
     # NOTE: the library build process is completely overridden to let CMake
     # handle it; setuptools' implementation is horribly broken. This is here
     # just to have the rest of setuptools understand that this is a Python
     # module with an extension in it.
-    ext_modules = [
+    ext_modules=[
         Extension('qgym._qgym', [])
     ],
 
-    cmdclass = {
+    cmdclass={
         'bdist': bdist,
         'bdist_wheel': bdist_wheel,
         'build_ext': build_ext,
@@ -283,15 +304,18 @@ setup(
         'sdist': sdist,
     },
 
-    setup_requires = [
+    setup_requires=[
         'plumbum',
         'delocate; platform_system == "Darwin"',
     ],
-    install_requires = [
+    install_requires=[
         'msvc-runtime; platform_system == "Windows"',
+        'gym~=0.19.0',
+        'networkx[default]~=2.7.1',
+        'numpy~=1.22.3',
+        'pygame~=2.1.2',
+        'scipy~=1.8.0',
     ],
-    tests_require = [
-        'pytest', 'numpy'
-    ],
-    zip_safe=False
+    tests_require=['pytest'],
+    zip_safe=False,
 )

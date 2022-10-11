@@ -1,2 +1,3 @@
-- MERGE setup.cfg and setup.py
+- MERGE old_setup.cfg and setup.py (am currently missing a couple in .py)
 - rename all rl_ql occurences
+- remove private classifier when open sourcing
