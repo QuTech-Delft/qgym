@@ -37,11 +37,9 @@ void map_program(std::string input_program, std::string output_program, std::vec
     auto old_ir = ql::ir::convert_new_to_old(ir); // ir sandwich start
     for (auto &kernel: old_ir->kernels) {
         for (auto &gate: kernel->gates) {
-            std::cout << gate->operands << std::endl;
             for (auto &vqubit: gate->operands) {
                 vqubit = (ql::utils::UInt)mapping[vqubit];
             }
-            std::cout << gate->operands << std::endl;
         }
     }
     auto new_ir = ql::ir::convert_old_to_new(old_ir); // ir sandwich end
