@@ -21,9 +21,4 @@ namespace rl_ql {
  */
 void map_program(std::string input_program, std::string output_program, std::vector<int> mapping);
 
-/**
- * Returns the compiler's version string.
- */
-std::string get_version(std::string input_program, std::string output_program, std::vector<int> mapping);
-
 } // namespace ql
