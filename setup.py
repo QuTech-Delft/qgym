@@ -322,6 +322,7 @@ setup(
         'networkx[default]~=2.7.1',
         'numpy~=1.22.3',
         'pygame~=2.1.2',
+        'qutechopenql~=0.10.0',
         'scipy~=1.8.0',
     ],
     tests_require=['pytest'],

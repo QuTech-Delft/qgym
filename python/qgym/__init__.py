@@ -41,5 +41,5 @@ del PY3
 # List of all the relevant SWIG-generated stuff, to avoid outputting docs for
 # all the other garbage SWIG generates for internal use.
 __all__ = [
-    'get_version',
+    'map_program',
 ]

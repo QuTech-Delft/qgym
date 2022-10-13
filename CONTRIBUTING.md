@@ -8,7 +8,7 @@ Below is a list of useful information for developers.
 But basically you need `wheel` and `plumbum` installed and can then run either of the following:
 ```commandline
 pip install -v .
-pip install -e -v .
+pip install -v -e .
 ```
 We advise the editable install (second line) when developing.
 
