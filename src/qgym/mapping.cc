@@ -11,7 +11,7 @@
 #include <ql/utils/num.h>
 #include <ql/utils/filesystem.h>
 
-#include "rl_ql/mapping.h"
+#include "qgym/mapping.h"
 
 
 //============================================================================//
@@ -21,7 +21,7 @@
 //     mapping.i! This should be automated at some point, but isn't yet.      //
 //============================================================================//
 
-namespace rl_ql {
+namespace qgym {
 
 
 void map_program(std::string input_program, std::string output_program, std::vector<int> mapping) {
@@ -51,4 +51,4 @@ void map_program(std::string input_program, std::string output_program, std::vec
     ql::ir::cqasm::write(new_ir, write_options, file.unwrap());
 }
 
-} // namespace rl_ql
+} // namespace qgym

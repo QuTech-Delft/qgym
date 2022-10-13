@@ -1,3 +1,6 @@
 - MERGE old_setup.cfg and setup.py (am currently missing a couple in .py)
 - rename all rl_ql occurences
 - remove private classifier when open sourcing
+- do we also need to fixup docstrings in qgym\__init__.py
+- rename all openql occurences
+- try and simplify build files

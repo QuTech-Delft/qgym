@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "rl_ql/api.h"
+#include "qgym/api.h"
 
-namespace rl_ql {
+namespace qgym {
 
-} // namespace ql
+} // namespace qgym

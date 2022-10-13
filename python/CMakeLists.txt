@@ -106,7 +106,7 @@ set(SWIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/qgym.i")
 
 set_source_files_properties("${SWIG_FILE}" PROPERTIES
     CPLUSPLUS ON
-    INCLUDE_DIRECTORIES "$<TARGET_PROPERTY:rl_ql,INTERFACE_INCLUDE_DIRECTORIES>;${PYTHON_INCLUDE_DIRS};${CMAKE_CURRENT_SOURCE_DIR}/../src"
+    INCLUDE_DIRECTORIES "$<TARGET_PROPERTY:qgym,INTERFACE_INCLUDE_DIRECTORIES>;${PYTHON_INCLUDE_DIRS};${CMAKE_CURRENT_SOURCE_DIR}/../src"
     SWIG_FLAGS "-castmode"
 )
 
@@ -126,9 +126,9 @@ endif()
 
 # Compile the C++ source file and link it against the OpenQL library.
 if(WIN32)
-    swig_link_libraries(qgym "${PYTHON_LIBRARIES}" rl_ql)
+    swig_link_libraries(qgym "${PYTHON_LIBRARIES}" qgym)
 else()
-    swig_link_libraries(qgym rl_ql)
+    swig_link_libraries(qgym qgym)
 endif()
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set_target_properties(_qgym PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")

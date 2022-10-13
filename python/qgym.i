@@ -4,7 +4,7 @@
  * @brief  swig interface file
  */
 %define DOCSTRING
-"`OpenQL` is a C++/Python framework for high-level quantum programming. The framework provides a compiler for compiling and optimizing quantum code. The compiler produces the intermediate quantum assembly language in cQASM (Common QASM) and the compiled eQASM (executable QASM) for various target platforms. While the eQASM is platform-specific, the quantum assembly code (QASM) is hardware-agnostic and can be simulated on the QX simulator."
+"`QGym` is a C++/Python framework for Reinforcement Learning in Quantum Compilation with a specific focus on OpenQL."
 %enddef
 
 %module(docstring=DOCSTRING) qgym
@@ -18,8 +18,8 @@ namespace std {
 }
 
 %{
-#include "rl_ql/api.h"
+#include "qgym/api.h"
 %}
 
 // Include API features.
-%include "rl_ql/mapping.i"
+%include "qgym/mapping.i"

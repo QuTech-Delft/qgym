@@ -1,7 +1,0 @@
-/** \file
- * Main OpenQL header, C++ style.
- */
-
-#pragma once
-
-#include "qgym.h"

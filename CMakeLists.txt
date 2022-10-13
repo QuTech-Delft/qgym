@@ -4,7 +4,7 @@ project(QGym C CXX)
 
 # If OpenQL was already included elsewhere in the project, don't include it
 # again. There should be only one place for it and one version per project.
-if(NOT TARGET rl_ql)
+if(NOT TARGET qgym)
 
 # Loads up the appropriate directories for installing stuff.
 include(GNUInstallDirs)
@@ -16,7 +16,7 @@ include(GNUInstallDirs)
 
 # Library type option. Default is a shared object, because for CMake it doesn't
 # matter, but outside of CMake dependency information is lost for static
-# libraries. That requires the user to link all of rl_ql's direct and transitive
+# libraries. That requires the user to link all of qgym's direct and transitive
 # dependencies as well, which is terribly ugly. setup.py *has* to do this
 # however, because "pip install ." builds this in a temporary directory, so the
 # shared objects that get built and installed and are then depended on by the
@@ -135,7 +135,7 @@ function(create_resource fname)
         ${target_name}
         DEPENDS "${outfile}"
     )
-    add_dependencies(rl_ql ${target_name})
+    add_dependencies(qgym ${target_name})
 endfunction()
 
 # # Add tree-gen. We need to do this *only* to get access to the generate_tree
@@ -145,31 +145,24 @@ endfunction()
 
 
 # #=============================================================================#
-# # OpenQL library target                                                       #
+# # QGym library target                                                       #
 # #=============================================================================#
 
-# # Build the IR tree using tree-gen.
-# generate_tree(
-#     "${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql/ir/ir.tree"
-#     "${CMAKE_CURRENT_BINARY_DIR}/include/rl_ql/ir/ir.gen.h"
-#     "${CMAKE_CURRENT_BINARY_DIR}/src/rl_ql/ir/ir.gen.cc"
-# )
-
-# Create the OpenQL library. This will be built either as a shared object/DLL
+# Create the QGym library. This will be built either as a shared object/DLL
 # or as a static library based on BUILD_SHARED_LIBS; add_library switches
 # automatically.
-add_library(rl_ql
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql/mapping.cc"
+add_library(qgym
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/mapping.cc"
 )
 
 # This definition is used to define OPENQL_DECLSPEC for __declspec. More info:
 # https://docs.microsoft.com/en-us/cpp/cpp/declspec?view=vs-2019
-target_compile_definitions(rl_ql PRIVATE BUILDING_OPENQL)
+target_compile_definitions(qgym PRIVATE BUILDING_OPENQL)
 
 # There is no distinction between public and private header files right now,
-# and they'r all in the source directory. Note the / at the end of the path;
+# and they're all in the source directory. Note the / at the end of the path;
 # this is necessary for the header files to be installed in the right location.
-target_include_directories(rl_ql
+target_include_directories(qgym
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/"
     PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/src/"
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/"
@@ -177,31 +170,31 @@ target_include_directories(rl_ql
 )
 
 # Configure compilation.
-set_property(TARGET rl_ql PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET qgym PROPERTY POSITION_INDEPENDENT_CODE ON)
 if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(rl_ql PRIVATE -Wall -Wfatal-errors -ggdb)
+    target_compile_options(qgym PRIVATE -Wall -Wfatal-errors -ggdb)
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    target_compile_options(rl_ql PRIVATE -Wall -Wfatal-errors -ggdb -Wno-unused-local-typedef)
+    target_compile_options(qgym PRIVATE -Wall -Wfatal-errors -ggdb -Wno-unused-local-typedef)
 elseif(MSVC)
-    target_compile_options(rl_ql PRIVATE /MP /D_USE_MATH_DEFINES /EHsc /bigobj)
+    target_compile_options(qgym PRIVATE /MP /D_USE_MATH_DEFINES /EHsc /bigobj)
 else()
     message(SEND_ERROR "Unknown compiler!")
 endif()
 
 # Enable optimizations only for release builds.
 if(NOT MSVC AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-    target_compile_options(rl_ql PRIVATE -O3)
+    target_compile_options(qgym PRIVATE -O3)
 endif()
 
 # Use a mock version of unitary.cc if WITH_UNITARY_DECOMPOSITION is false.
 # This speeds up the build, but of course breaks unitary decomposition.
 if(NOT WITH_UNITARY_DECOMPOSITION)
-    target_compile_definitions(rl_ql PRIVATE WITHOUT_UNITARY_DECOMPOSITION)
+    target_compile_definitions(qgym PRIVATE WITHOUT_UNITARY_DECOMPOSITION)
 endif()
 
 # Enable GPL-based initial placement code if requested.
 if(WITH_INITIAL_PLACEMENT)
-    target_compile_definitions(rl_ql PRIVATE INITIALPLACE)
+    target_compile_definitions(qgym PRIVATE INITIALPLACE)
 endif()
 
 
@@ -213,110 +206,22 @@ endif()
 
 # Look for thread support library (pthreads)
 find_package(Threads REQUIRED)
-target_link_libraries(rl_ql PUBLIC ${CMAKE_THREAD_LIBS_INIT})
-
-
-# # LEMON -----------------------------------------------------------------------
-
-# # Configure LEMON. LEMON by itself exposes the "lemon" target to link against,
-# # but it doesn't use target_include_directories(), so we have to do that here.
-# add_subdirectory(deps/lemon)
-# target_include_directories(lemon INTERFACE
-#     "${CMAKE_CURRENT_SOURCE_DIR}/deps/lemon"
-#     "${CMAKE_CURRENT_BINARY_DIR}/deps/lemon"
-# )
-# target_link_libraries(rl_ql PUBLIC lemon)
-
-# # Initial places uses lemon's Mip; ensure that LEMON's configuration supports
-# # it. Annoyingly, LEMON's build just silently removes it when it's missing the
-# # necessary dependencies. Also annoying: the variable LEMON_HAVE_MIP is a
-# # local variable, so we can't use it... and have to resort to checking this
-# # cache variable instead.
-# if(WITH_INITIAL_PLACEMENT AND NOT LEMON_DEFAULT_MIP)
-#     message(SEND_ERROR "Missing ilog/coin/glpk (-dev/-devel) library for lemon (one of the three is needed for initial placement support)")
-# endif()
-
-# # Even more annoying stuff: LEMON doesn't install itself in the right place on
-# # multilib systems (i.e. ones where the libdir is lib64 instead of just lib).
-# # So to make sure it is found in the install tree, we have to install it in the
-# # proper place ourselves. That would go something like this,
-# #
-# #     install(
-# #         TARGETS lemon
-# #         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-# #         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-# #         COMPONENT library
-# #     )
-# #
-# # but until CMake 3.13 the install directive MUST be in the directory where the
-# # target is created, so we have to insert that piece of code into LEMON's own
-# # CMakeLists.txt.
-
-
-# # Eigen -----------------------------------------------------------------------
-
-# # Wrap Eigen in an interface library to link against. Note that Eigen is only
-# # used internally; its headers need not be installed or exposed to programs
-# # linking against OpenQL.
-# add_library(eigen INTERFACE)
-# target_include_directories(eigen INTERFACE
-#     "${CMAKE_CURRENT_SOURCE_DIR}/deps/eigen/Eigen"
-#     "${CMAKE_CURRENT_SOURCE_DIR}/deps/eigen/unsupported"
-# )
-# target_link_libraries(rl_ql PRIVATE eigen)
-
-
-# # nlohmann::json --------------------------------------------------------------
-
-# set(JSON_BuildTests OFF CACHE INTERNAL "")
-# add_subdirectory(deps/json)
-# target_link_libraries(rl_ql PUBLIC nlohmann_json::nlohmann_json)
-
-
-# # libqasm ---------------------------------------------------------------------
-
-# # Load libqasm. libqasm's CMakeLists expose the "cqasm" target to link against.
-# add_subdirectory(deps/libqasm)
-# target_link_libraries(rl_ql PUBLIC cqasm)
-
-
-# # X11/CImg ---------------------------------------------------------------------
-
-# # Only enable the visualizer if building on Windows or the X11 library is found when building on Linux or Mac.
-# if(WIN32)
-#     set(QL_VISUALIZER yes)
-# else()
-#     find_package(X11)
-#     if(X11_FOUND)
-#         set(QL_VISUALIZER yes)
-#         message("X11 libraries: ${X11_LIBRARIES}")
-#         target_link_libraries(rl_ql PUBLIC ${X11_LIBRARIES})
-#         message("X11 include path: ${X11_INCLUDE_DIR}")
-#         target_include_directories(rl_ql PRIVATE "${X11_INCLUDE_DIR}")
-#     else()
-#         set(QL_VISUALIZER no)
-#     endif()
-# endif()
-
-# if(QL_VISUALIZER)
-#     target_compile_definitions(rl_ql PRIVATE WITH_VISUALIZER)
-#     target_include_directories(rl_ql PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/deps/cimg/include/")
-# endif()
+target_link_libraries(qgym PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 # # backward-cpp ----------------------------------------------------------------
 
 # # Stack trace helper library, nothing functional here.
 # add_subdirectory(deps/backward-cpp)
-# add_backward(rl_ql)
+# add_backward(qgym)
 
 # # add_backward doesn't set INTERFACE_LINK_LIBRARIES, only LINK_LIBRARIES. That
 # # goes wrong when we're compiling statically, because said libraries are shared
 # # and need to be included in the final link.
-# set_property(TARGET rl_ql APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${BACKWARD_LIBRARIES})
+# set_property(TARGET qgym APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${BACKWARD_LIBRARIES})
 
 # openql -----------
 add_subdirectory(deps/openql)
-target_link_libraries(rl_ql PUBLIC ql)
+target_link_libraries(qgym PUBLIC ql)
 
 #=============================================================================#
 # Testing                                                                     #
@@ -329,7 +234,7 @@ if(OPENQL_BUILD_TESTS)
     # Convenience function to add an integration test.
     function(add_openql_test name source workdir)
         add_executable("${name}" "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-        target_link_libraries("${name}" rl_ql)
+        target_link_libraries("${name}" qgym)
         add_test(
             NAME "${name}"
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${workdir}"
@@ -347,8 +252,8 @@ if(OPENQL_BUILD_TESTS)
         string(REPLACE "_tests_" "_" name ${name})
         string(REPLACE ".cc" "" name ${name})
         set(name test_${name})
-        add_executable("${name}" "${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql/${source}")
-        target_link_libraries("${name}" rl_ql)
+        add_executable("${name}" "${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/${source}")
+        target_link_libraries("${name}" qgym)
         add_test(
             NAME "${name}"
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tests"
@@ -359,8 +264,8 @@ if(OPENQL_BUILD_TESTS)
     # Register unit tests.
     file(
         GLOB_RECURSE unit_tests
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql/*/tests/*.cc
+        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/*/tests/*.cc
     )
     foreach(unit_test ${unit_tests})
         add_openql_unit_test(${unit_test})
@@ -369,24 +274,24 @@ if(OPENQL_BUILD_TESTS)
     # I hate CMake.
     file(
         GLOB_RECURSE unit_tests
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql/*/*/tests/*.cc
+        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/*/*/tests/*.cc
     )
     foreach(unit_test ${unit_tests})
         add_openql_unit_test(${unit_test})
     endforeach()
     file(
         GLOB_RECURSE unit_tests
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql/*/*/*/tests/*.cc
+        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/*/*/*/tests/*.cc
     )
     foreach(unit_test ${unit_tests})
         add_openql_unit_test(${unit_test})
     endforeach()
     file(
         GLOB_RECURSE unit_tests
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/rl_ql/*/*/*/*/tests/*.cc
+        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/*/*/*/*/tests/*.cc
     )
     foreach(unit_test ${unit_tests})
         add_openql_unit_test(${unit_test})
@@ -411,12 +316,12 @@ endif()
 
 # Install targets for the OpenQL library.
 install(
-    TARGETS rl_ql
+    TARGETS qgym
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 )
 install(
-    DIRECTORY "$<TARGET_PROPERTY:rl_ql,INTERFACE_INCLUDE_DIRECTORIES>"
+    DIRECTORY "$<TARGET_PROPERTY:qgym,INTERFACE_INCLUDE_DIRECTORIES>"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
 )
@@ -430,4 +335,4 @@ if(GLPK_RUNTIME_LIBRARY)
 endif()
 
 
-endif() # NOT TARGET rl_ql
+endif() # NOT TARGET qgym
