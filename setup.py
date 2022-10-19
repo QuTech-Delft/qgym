@@ -91,7 +91,7 @@ class build_ext(_build_ext):
             build_type = os.environ.get('QGYM_BUILD_TYPE', 'Release')
 
             cmd = (local['cmake'][root_dir]
-                ['-DOPENQL_BUILD_PYTHON=YES']
+                ['-DQGYM_BUILD_PYTHON=YES']
                 ['-DCMAKE_INSTALL_PREFIX=' + prefix_dir]
                 ['-DQGYM_PYTHON_DIR=' + os.path.dirname(target)]
                 ['-DQGYM_PYTHON_EXT=' + os.path.basename(target)]
@@ -155,21 +155,6 @@ class build_ext(_build_ext):
                     else:
                         cmd = cmd['-A']['win32']
 
-            # Unitary decomposition can be disabled using an environment
-            # variable.
-            if 'OPENQL_DISABLE_UNITARY' in os.environ:
-                cmd = cmd['-DWITH_UNITARY_DECOMPOSITION=OFF']
-
-            # Initial placement support can be enabled using an environment
-            # variable.
-            if 'OPENQL_ENABLE_INITIAL_PLACEMENT' in os.environ:
-                cmd = cmd['-DWITH_INITIAL_PLACEMENT=ON']
-
-            # C++ tests can be enabled using an environment variable. They'll
-            # be run before the install.
-            if 'OPENQL_BUILD_TESTS' in os.environ:
-                cmd = cmd['-DOPENQL_BUILD_TESTS=ON']
-
             # Run cmake configuration.
             cmd & FG
 
@@ -186,10 +171,6 @@ class build_ext(_build_ext):
                 elif not sys.platform.startswith('win'):
                     cmd = cmd['--']['-j'][nprocs]
             cmd & FG
-
-            # Run the C++ tests if requested.
-            if 'OPENQL_BUILD_TESTS' in os.environ:
-                cmd = build_cmd['--target']['test'] & FG
 
             # Do the install.
             try:

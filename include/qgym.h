@@ -1,5 +1,5 @@
 /** \file
- * Main OpenQL header.
+ * Main QGym header.
  */
 
 #pragma once

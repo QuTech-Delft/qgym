@@ -124,7 +124,7 @@ else()
     )
 endif()
 
-# Compile the C++ source file and link it against the OpenQL library.
+# Compile the C++ source file and link it against the QGym library.
 if(WIN32)
     swig_link_libraries(qgym "${PYTHON_LIBRARIES}" qgym)
 else()
@@ -152,16 +152,6 @@ else()
         FILES "$<TARGET_FILE:_qgym>"
         DESTINATION "${QGYM_PYTHON_DIR}"
         RENAME "${QGYM_PYTHON_EXT}"
-    )
-endif()
-
-# On Windows, ship GLPK along with the wheel. On Mac this is handled by
-# delocate, and on manylinux by auditwheel, and in a local Linux install it's
-# not necessary.
-if(WIN32 AND GLPK_RUNTIME_LIBRARY)
-    install(
-        FILES "${GLPK_RUNTIME_LIBRARY}"
-        DESTINATION "${QGYM_PYTHON_DIR}"
     )
 endif()
 

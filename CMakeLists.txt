@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 project(QGym C CXX)
 
-# If OpenQL was already included elsewhere in the project, don't include it
+# If QGym was already included elsewhere in the project, don't include it
 # again. There should be only one place for it and one version per project.
 if(NOT TARGET qgym)
 
@@ -39,25 +39,18 @@ if(NOT CMAKE_BUILD_TYPE)
     )
 endif()
 
-# Whether tests should be built.
-option(
-    OPENQL_BUILD_TESTS
-    "Whether the tests should be built and added to `make test`"
-    OFF
-)
-
 # Whether the Python module should be built. This should only be enabled for
 # setup.py's builds.
 option(
-    OPENQL_BUILD_PYTHON
+    QGYM_BUILD_PYTHON
     "Whether the Python module should be built"
     OFF
 )
-mark_as_advanced(OPENQL_BUILD_PYTHON)
+mark_as_advanced(QGYM_BUILD_PYTHON)
 
 # Where the Python module should be built.
 set(
-    QGYM_PYTHON_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/python/openql"
+    QGYM_PYTHON_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/python/qgym"
     CACHE STRING "Where to install the Python library"
 )
 mark_as_advanced(QGYM_PYTHON_DIR)
@@ -117,7 +110,7 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 #=============================================================================#
 
 # Simple program that generates resource include files, to include the contents
-# of a file as a constant inside the OpenQL library.
+# of a file as a constant inside the QGym library.
 # add_executable(resource src/resource/main.cpp)
 function(create_resource fname)
     set(infile "${CMAKE_CURRENT_SOURCE_DIR}/${fname}")
@@ -138,11 +131,6 @@ function(create_resource fname)
     add_dependencies(qgym ${target_name})
 endfunction()
 
-# # Add tree-gen. We need to do this *only* to get access to the generate_tree
-# # CMake function; everything else is handled implicitly because tree-gen is a
-# # transitive dependency of libqasm.
-# add_subdirectory(deps/libqasm/src/cqasm/tree-gen deps/tree-gen)
-
 
 # #=============================================================================#
 # # QGym library target                                                       #
@@ -154,10 +142,6 @@ endfunction()
 add_library(qgym
     "${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/mapping.cc"
 )
-
-# This definition is used to define OPENQL_DECLSPEC for __declspec. More info:
-# https://docs.microsoft.com/en-us/cpp/cpp/declspec?view=vs-2019
-target_compile_definitions(qgym PRIVATE BUILDING_OPENQL)
 
 # There is no distinction between public and private header files right now,
 # and they're all in the source directory. Note the / at the end of the path;
@@ -186,18 +170,6 @@ if(NOT MSVC AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
     target_compile_options(qgym PRIVATE -O3)
 endif()
 
-# Use a mock version of unitary.cc if WITH_UNITARY_DECOMPOSITION is false.
-# This speeds up the build, but of course breaks unitary decomposition.
-if(NOT WITH_UNITARY_DECOMPOSITION)
-    target_compile_definitions(qgym PRIVATE WITHOUT_UNITARY_DECOMPOSITION)
-endif()
-
-# Enable GPL-based initial placement code if requested.
-if(WITH_INITIAL_PLACEMENT)
-    target_compile_definitions(qgym PRIVATE INITIALPLACE)
-endif()
-
-
 #=============================================================================#
 # Configure, build, and link dependencies                                     #
 #=============================================================================#
@@ -208,104 +180,27 @@ endif()
 find_package(Threads REQUIRED)
 target_link_libraries(qgym PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
-# # backward-cpp ----------------------------------------------------------------
-
-# # Stack trace helper library, nothing functional here.
-# add_subdirectory(deps/backward-cpp)
-# add_backward(qgym)
-
-# # add_backward doesn't set INTERFACE_LINK_LIBRARIES, only LINK_LIBRARIES. That
-# # goes wrong when we're compiling statically, because said libraries are shared
-# # and need to be included in the final link.
-# set_property(TARGET qgym APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${BACKWARD_LIBRARIES})
-
 # openql -----------
 add_subdirectory(deps/openql)
 target_link_libraries(qgym PUBLIC ql)
 
-#=============================================================================#
-# Testing                                                                     #
-#=============================================================================#
+# backward-cpp ----------------------------------------------------------------
 
-# Include the tests directory if requested.
-if(OPENQL_BUILD_TESTS)
-    enable_testing()
+# Stack trace helper library, nothing functional here.
+# We don't need to add again since openql already added this.
+add_backward(qgym)
 
-    # Convenience function to add an integration test.
-    function(add_openql_test name source workdir)
-        add_executable("${name}" "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-        target_link_libraries("${name}" qgym)
-        add_test(
-            NAME "${name}"
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${workdir}"
-            COMMAND "${name}"
-        )
-    endfunction()
-
-    # Include the directories containing integration tests.
-    add_subdirectory(tests)
-    add_subdirectory(examples)
-
-    # Convenience function to add a unit test.
-    function(add_openql_unit_test source)
-        string(REPLACE "/" "_" name ${source})
-        string(REPLACE "_tests_" "_" name ${name})
-        string(REPLACE ".cc" "" name ${name})
-        set(name test_${name})
-        add_executable("${name}" "${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/${source}")
-        target_link_libraries("${name}" qgym)
-        add_test(
-            NAME "${name}"
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tests"
-            COMMAND "${name}"
-        )
-    endfunction()
-
-    # Register unit tests.
-    file(
-        GLOB_RECURSE unit_tests
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/*/tests/*.cc
-    )
-    foreach(unit_test ${unit_tests})
-        add_openql_unit_test(${unit_test})
-    endforeach()
-
-    # I hate CMake.
-    file(
-        GLOB_RECURSE unit_tests
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/*/*/tests/*.cc
-    )
-    foreach(unit_test ${unit_tests})
-        add_openql_unit_test(${unit_test})
-    endforeach()
-    file(
-        GLOB_RECURSE unit_tests
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/*/*/*/tests/*.cc
-    )
-    foreach(unit_test ${unit_tests})
-        add_openql_unit_test(${unit_test})
-    endforeach()
-    file(
-        GLOB_RECURSE unit_tests
-        RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/qgym/*/*/*/*/tests/*.cc
-    )
-    foreach(unit_test ${unit_tests})
-        add_openql_unit_test(${unit_test})
-    endforeach()
-
-endif()
-
+# add_backward doesn't set INTERFACE_LINK_LIBRARIES, only LINK_LIBRARIES. That
+# goes wrong when we're compiling statically, because said libraries are shared
+# and need to be included in the final link.
+set_property(TARGET qgym APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${BACKWARD_LIBRARIES})
 
 #=============================================================================#
 # Python module                                                               #
 #=============================================================================#
 
 # Include the python directory
-if(OPENQL_BUILD_PYTHON)
+if(QGYM_BUILD_PYTHON)
     add_subdirectory(python)
 endif()
 
@@ -314,7 +209,7 @@ endif()
 # Installation                                                                #
 #=============================================================================#
 
-# Install targets for the OpenQL library.
+# Install targets for the QGym library.
 install(
     TARGETS qgym
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
@@ -325,14 +220,6 @@ install(
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
 )
-
-# On Windows + MSVC, install the GLPK runtime library if one was found.
-if(GLPK_RUNTIME_LIBRARY)
-    install(
-        FILES "${GLPK_RUNTIME_LIBRARY}"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-    )
-endif()
 
 
 endif() # NOT TARGET qgym

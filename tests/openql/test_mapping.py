@@ -2,13 +2,13 @@ import openql as ql
 from qgym import map_program
 
 
-def test_map_program_one_kernel():
-    # some init
-    ql.initialize()
+def init():
+    ql.initialize()  # init openql
+    ql.set_option('output_dir', 'openql_output')  # set output directory for many (but not all stuff)
+    ql.set_option('log_level', 'LOG_INFO')  # set log level
 
-    ql.set_option('output_dir', 'openql_output')
-    ql.set_option('log_level', 'LOG_INFO')
 
+def make_one_kernel_program() -> ql.Program:
     # define the program and such
     platform = ql.Platform('my_platform', 'none')
 
@@ -26,6 +26,13 @@ def test_map_program_one_kernel():
     kernel.measure(1)
 
     program.add_kernel(kernel)
+
+    return program
+
+
+def test_map_program_one_kernel():
+    init()
+    program = make_one_kernel_program()
 
     # set the compiler correctly
     compiler = program.get_compiler()
