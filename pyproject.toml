@@ -1,0 +1,2 @@
+[tool.black]
+    force-exclude="(deps|docs|docs_build|docs_html|images|openql_output|pybuild|qgym.egg-info|venv|wsl_venv)"

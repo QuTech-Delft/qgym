@@ -4,17 +4,19 @@ from qgym import map_program
 
 def init():
     ql.initialize()  # init openql
-    ql.set_option('output_dir', 'openql_output')  # set output directory for many (but not all stuff)
-    ql.set_option('log_level', 'LOG_INFO')  # set log level
+    ql.set_option(
+        "output_dir", "openql_output"
+    )  # set output directory for many (but not all stuff)
+    ql.set_option("log_level", "LOG_INFO")  # set log level
 
 
 def make_one_kernel_program() -> ql.Program:
     # define the program and such
-    platform = ql.Platform('my_platform', 'none')
+    platform = ql.Platform("my_platform", "none")
 
     n_qubits = 3
-    program = ql.Program('my_program', platform, n_qubits)
-    kernel = ql.Kernel('my_kernel', platform, n_qubits)
+    program = ql.Program("my_program", platform, n_qubits)
+    kernel = ql.Kernel("my_kernel", platform, n_qubits)
 
     for qubit_idx in range(n_qubits):
         kernel.prepz(qubit_idx)
@@ -46,4 +48,8 @@ def test_map_program_one_kernel():
     program.compile()
 
     # map the program
-    map_program("openql_output/my_program.qasm", "openql_output/my_program_mapped.qasm", [1, 2, 0])
+    map_program(
+        "openql_output/my_program.qasm",
+        "openql_output/my_program_mapped.qasm",
+        [1, 2, 0],
+    )
