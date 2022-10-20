@@ -5,10 +5,8 @@ from copy import deepcopy
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 import numpy as np
-from numpy.typing import NDArray
-
 import qgym.spaces
-from qgym import Rewarder
+from numpy.typing import NDArray
 from qgym.custom_types import Gate
 from qgym.environment import Environment
 from qgym.envs.scheduling.machine_properties import MachineProperties
@@ -17,6 +15,8 @@ from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.utils import RandomCircuitGenerator
 from qgym.utils.input_validation import check_instance, check_int, check_string
+
+from qgym import Rewarder
 
 
 class Scheduling(Environment):

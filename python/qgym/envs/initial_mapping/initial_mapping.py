@@ -8,11 +8,9 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np
+import qgym.spaces
 from networkx import Graph, fast_gnp_random_graph, grid_graph, to_scipy_sparse_array
 from numpy.typing import ArrayLike, NDArray
-
-import qgym.spaces
-from qgym import Rewarder
 from qgym.environment import Environment
 from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 from qgym.envs.initial_mapping.initial_mapping_visualiser import (
@@ -25,6 +23,8 @@ from qgym.utils.input_validation import (
     check_real,
     check_string,
 )
+
+from qgym import Rewarder
 
 Gridspecs = Union[List[Union[int, Iterable]], Tuple[Union[int, Iterable]]]
 

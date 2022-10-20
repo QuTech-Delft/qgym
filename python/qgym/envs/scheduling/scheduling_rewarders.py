@@ -8,9 +8,9 @@ from typing import Any, Dict
 
 import numpy as np
 from numpy.typing import NDArray
+from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
 from qgym import Rewarder
-from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
 
 class BasicRewarder(Rewarder):

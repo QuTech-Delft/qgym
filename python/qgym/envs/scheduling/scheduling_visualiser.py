@@ -5,7 +5,6 @@ from typing import Any, Mapping
 
 import numpy as np
 import pygame
-
 from qgym.utils import GateEncoder
 
 # Define some colors used during rendering

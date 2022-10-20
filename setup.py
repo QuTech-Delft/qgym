@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 
-import os, platform, shutil, sys
-from setuptools import setup, Extension
-from distutils.dir_util import copy_tree
+import os
+import platform
+import shutil
+import sys
 from distutils import log
-
-from distutils.command.clean import clean as _clean
-from setuptools.command.build_ext import build_ext as _build_ext
-from distutils.command.build import build as _build
-from setuptools.command.install import install as _install
 from distutils.command.bdist import bdist as _bdist
-from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+from distutils.command.build import build as _build
+from distutils.command.clean import clean as _clean
 from distutils.command.sdist import sdist as _sdist
+from distutils.dir_util import copy_tree
+
+from setuptools import Extension, setup
+from setuptools.command.build_ext import build_ext as _build_ext
 from setuptools.command.egg_info import egg_info as _egg_info
+from setuptools.command.install import install as _install
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
 root_dir = os.getcwd()  # root of the repository
 src_dir = root_dir + os.sep + "src"  # C++ source directory
@@ -65,7 +68,7 @@ class clean(_clean):
 
 class build_ext(_build_ext):
     def run(self):
-        from plumbum import local, FG, ProcessExecutionError
+        from plumbum import FG, ProcessExecutionError, local
 
         # If we were previously built in a different directory, nuke the cbuild
         # dir to prevent inane CMake errors. This happens when the user does

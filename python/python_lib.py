@@ -1,4 +1,6 @@
-import sysconfig, sys, os
+import os
+import sys
+import sysconfig
 
 name = "python" + "".join(map(str, sys.version_info[0:2]))
 debug = sys.argv[1].lower() == "debug"
