@@ -182,7 +182,7 @@ target_link_libraries(qgym PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 # openql -----------
 add_subdirectory(deps/openql)
-target_link_libraries(qgym PUBLIC ql)
+target_link_libraries(qgym PRIVATE ql)
 
 # backward-cpp ----------------------------------------------------------------
 

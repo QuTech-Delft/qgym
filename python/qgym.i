@@ -4,7 +4,7 @@
  * @brief  swig interface file
  */
 %define DOCSTRING
-"`QGym` is a C++/Python framework for Reinforcement Learning in Quantum Compilation with a specific focus on OpenQL."
+"`QGym` internals for building a connection with OpenQL."
 %enddef
 
 %module(docstring=DOCSTRING) qgym

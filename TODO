@@ -1,5 +1,0 @@
-- remove private classifier when open sourcing
-- do we also need to fixup docstrings in qgym\__init__.py?
-- remove all authors and proper reference this
-- don't forget auditwheel when looking at github actions
-- how are we gonna build docs?

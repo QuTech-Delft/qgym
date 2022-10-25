@@ -1,5 +1,5 @@
 /** \file
- * Main header for the external API to OpenQL.
+ * Main header for the external API to QGym.
  */
 
 #pragma once
@@ -18,10 +18,6 @@
 //  STL template expansion types that the API uses must be kept in sync with  //
 //    the C++ to Python typemap in the docstring monkey-patching logic of     //
 //                          python/qgym/__init__.py                           //
-//----------------------------------------------------------------------------//
-//  After changing anything, make sure to check if documentation generation   //
-//                     still works ("make html" in docs)                      //
 //============================================================================//
 
 #include "qgym/mapping.h"
-
