@@ -1,0 +1,65 @@
+name: Assets
+
+on:
+  push:
+    branches:
+      - ci
+
+jobs:
+  manylinux:
+    name: PyPI wheels for Manylinux
+    runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux${{ matrix.manylinux }}_x86_64:latest
+    env:
+      FLEX_VERSION: '2.6.4'
+      BISON_VERSION: ${{ matrix.bison_version }}
+      SWIG_VERSION: ${{ matrix.swig_version }}
+      CMAKE_VERSION: '3.1.3'
+    strategy:
+      fail-fast: false
+      matrix:
+        manylinux:
+        - 2014
+        - _2_28
+        cpython_version:
+        - 'cp38-cp38'
+        include:
+          - manylinux: 2014
+            bison_version: 'bison-3.0.4-2.el7'
+            swig_version: 'swig3-3.0.12-17.el7'
+          - manylinux: _2_28
+            bison_version: 'bison-3.0.4-10.el8'
+            swig_version: 'swig-3.0.12-19.module_el8.3.0+6167+838326ab'
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      run: |
+        yum install -y $BISON_VERSION $SWIG_VERSION
+        /opt/python/${{ matrix.cpython_version }}/bin/python -m pip install auditwheel
+    - name: Install flex
+      run: |
+        mkdir -p $HOME/flex
+        curl -L https://github.com/westes/flex/releases/download/v$FLEX_VERSION/flex-$FLEX_VERSION.tar.gz | tar xz --strip-components=1 -C $HOME/flex
+        cd $HOME/flex
+        ./configure
+        make -j
+        make install
+    - name: Install cmake
+      run: curl -L https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION-Linux-x86_64.tar.gz | tar xz --strip-components=1 -C /usr
+    - name: Build wheel
+      env:
+        NPROCS: 5
+      run: |
+        /opt/python/${{ matrix.cpython_version }}/bin/python setup.py bdist_wheel
+        /opt/python/${{ matrix.cpython_version }}/bin/python -m auditwheel repair pybuild/dist/*.whl
+    - name: Wheel path
+      id: wheel
+      working-directory: wheelhouse
+      run: echo "##[set-output name=wheel;]$(ls *.whl)"
+    - uses: actions/upload-artifact@v2
+      with:
+        name: pypi-linux-${{ matrix.cpython_version }}
+        path: wheelhouse/${{ steps.wheel.outputs.wheel }}
