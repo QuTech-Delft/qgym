@@ -55,13 +55,13 @@ def test_state(diamond_env, diamond_mp_dict) -> None:
 
     assert isinstance(diamond_env._gate_encoder, GateEncoder)
     gate_encoder = diamond_env._gate_encoder
-    assert hasattr(gate_encoder, "encoding_dct")
-    assert hasattr(gate_encoder, "decoding_dct")
-    assert hasattr(gate_encoder, "longest_name")
+    assert hasattr(gate_encoder, "_encoding_dct")
+    assert hasattr(gate_encoder, "_decoding_dct")
+    assert hasattr(gate_encoder, "_longest_name")
     assert hasattr(gate_encoder, "n_gates")
     assert gate_encoder.n_gates == len(diamond_mp_dict["gates"])
-    assert len(gate_encoder.encoding_dct) == len(diamond_mp_dict["gates"])
-    assert len(gate_encoder.encoding_dct) == len(diamond_mp_dict["gates"])
+    assert len(gate_encoder._encoding_dct) == len(diamond_mp_dict["gates"])
+    assert len(gate_encoder._decoding_dct) == len(diamond_mp_dict["gates"])
 
 
 def test_observation_space(diamond_env) -> None:

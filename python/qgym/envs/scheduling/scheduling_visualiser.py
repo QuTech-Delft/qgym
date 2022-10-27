@@ -1,16 +1,17 @@
 """This module contains a class used for rendering the scheduling environment."""
 
 
-from typing import Any, Mapping
+from typing import Any, Mapping, Tuple
 
 import numpy as np
 import pygame
 from qgym.utils import GateEncoder
 
 # Define some colors used during rendering
-BACKGROUND_COLOR = (150, 150, 150)  # Gray
-TEXT_COLOR = (225, 225, 225)  # White
-GATE_COLOR = (0, 0, 0)  # Black
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+DARK_BLUE = (71, 115, 147)
+BLUE = (113, 164, 195)
 
 
 class SchedulingVisualiser:
@@ -39,11 +40,32 @@ class SchedulingVisualiser:
         self.is_open = False
         self.screen_width = 1500
         self.screen_height = 800
+        self.x_axis_offset = 100
+        self.y_axis_offset = 0
+
+        self.colors = {
+            "gate_fill": BLUE,
+            "gate_outline": DARK_BLUE,
+            "gate_text": WHITE,
+            "background": WHITE,
+            "qubits": BLACK,
+        }
+
+        subscreen_pos = (self.x_axis_offset, 0)
+        subscreen_size = (
+            self.screen_width - self.x_axis_offset,
+            self.screen_height - self.y_axis_offset,
+        )
+        self.subscreen = pygame.Rect(subscreen_pos, subscreen_size)
 
         self._gate_encoder = gate_encoder
         self._gate_cycle_length = gate_cycle_length
         self._n_qubits = n_qubits
-        self._gate_height = self.screen_height / self._n_qubits
+        self._gate_height = self.subscreen.height / self._n_qubits
+
+        self._longest_gate = 0
+        for n_cycles in gate_cycle_length.values():
+            self._longest_gate = max(self._longest_gate, n_cycles)
 
         # define attributes that are set later
         self.font = None
@@ -65,11 +87,12 @@ class SchedulingVisualiser:
 
         self._encoded_circuit = state["encoded_circuit"]
 
-        self.screen.fill(BACKGROUND_COLOR)
+        pygame.time.delay(50)
 
-        pygame.time.delay(10)
+        self.screen.fill(self.colors["background"])
+        self._draw_y_axis(self.colors["qubits"])
 
-        self._cycle_width = self.screen_width / (state["cycle"] + 10)
+        self._cycle_width = self.subscreen.width / (state["cycle"] + self._longest_gate)
 
         for gate_idx, scheduled_cycle in enumerate(state["schedule"]):
             if scheduled_cycle != -1:
@@ -88,6 +111,21 @@ class SchedulingVisualiser:
                 f"You provided an invalid mode '{mode}',"
                 f" the only supported modes are 'human' and 'rgb_array'."
             )
+
+    def _draw_y_axis(self, color: Tuple[int, int, int]) -> None:
+        """
+        Draw the y axis of the display.
+
+        :param color: Color of the y-axis.
+        """
+        for i in range(self._n_qubits):
+            text = self.axis_font.render(f"Q{i}", True, color)
+            text_center = (
+                self.x_axis_offset / 2,
+                self._gate_height * (self._n_qubits - i - 0.5),
+            )
+            text_position = text.get_rect(center=text_center)
+            self.screen.blit(text, text_position)
 
     def _draw_scheduled_gate(self, gate_idx: int, scheduled_cycle: int) -> None:
         """
@@ -115,16 +153,26 @@ class SchedulingVisualiser:
         """
 
         gate_width = self._cycle_width * self._gate_cycle_length[gate_int_name]
+        gate_box_size = (0.98 * gate_width, 0.98 * self._gate_height)
 
-        gate_box = pygame.Rect(0, 0, gate_width, self._gate_height)
-        box_x = self.screen_width - scheduled_cycle * self._cycle_width
-        box_y = self.screen_height - qubit * self._gate_height
-        gate_box.bottomright = (box_x, box_y)
+        box_pos = (
+            self.screen_width - scheduled_cycle * self._cycle_width - gate_width,
+            self.screen_height
+            - qubit * self._gate_height
+            - self.y_axis_offset
+            - self._gate_height,
+        )
+        gate_box = pygame.Rect(box_pos, gate_box_size)
 
-        pygame.draw.rect(self.screen, GATE_COLOR, gate_box)
+        pygame.draw.rect(
+            self.screen, self.colors["gate_fill"], gate_box, border_radius=5
+        )
+        pygame.draw.rect(
+            self.screen, self.colors["gate_outline"], gate_box, width=2, border_radius=5
+        )
 
         gate_name = self._gate_encoder.decode_gates(gate_int_name)
-        text = self.font.render(gate_name.upper(), True, TEXT_COLOR)
+        text = self.font.render(gate_name.upper(), True, self.colors["gate_text"])
         text_position = text.get_rect(center=gate_box.center)
         self.screen.blit(text, text_position)
 
@@ -153,6 +201,7 @@ class SchedulingVisualiser:
 
         pygame.font.init()
         self.font = pygame.font.SysFont("Arial", 12)
+        self.axis_font = pygame.font.SysFont("Arial", 30)
 
         self.is_open = True
 

@@ -126,15 +126,13 @@ def test_from_mapping(diamond_mp_dict):
     )
 
     diamond_mp_dict["machine_restrictions"].pop("same_start")
-    with pytest.raises(
-        ValueError,
-        match="'machine_restrictions' must have the keys 'same_start' and 'not_in_same_cycle'",
-    ):
+    error_msg = "'machine_restrictions' must have the keys 'same_start' and "
+    error_msg += "'not_in_same_cycle'"
+    with pytest.raises(ValueError, match=error_msg):
         MachineProperties.from_mapping(diamond_mp_dict)
 
     diamond_mp_dict.pop("machine_restrictions")
-    with pytest.raises(
-        ValueError,
-        match="'machine_properties' must have the keys 'n_qubits', 'gates' and 'machine_restrictions'",
-    ):
+    error_msg = "'machine_properties' must have the keys 'n_qubits', 'gates' and "
+    error_msg += "'machine_restrictions'"
+    with pytest.raises(ValueError, match=error_msg):
         MachineProperties.from_mapping(diamond_mp_dict)

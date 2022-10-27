@@ -49,4 +49,4 @@ class MultiBinary(gym.spaces.MultiBinary):
         :return: Random sampled element of this space.
         """
 
-        return self.np_random.randint(2, size=self.n, dtype=self.dtype)
+        return self.np_random.integers(2, size=self.n, dtype=self.dtype)
