@@ -19,7 +19,7 @@ Example::
 
 """
 
-from typing import Callable, List, Tuple
+from typing import Callable, List
 
 import numpy as np
 from numpy.typing import NDArray
@@ -40,11 +40,10 @@ class CommutationRulebook:
             that gates with disjoint qubits commute and that gates that are the
             same commute. If False, then no rules will be initialized.
         """
-
         if default_rules:
-            self.rulebook = [disjoint_qubits, same_gate]
+            self._rules = [disjoint_qubits, same_gate]
         else:
-            self.rulebook = []
+            self._rules = []
 
     def make_blocking_matrix(self, circuit: List[Gate]) -> NDArray[np.int_]:
         """
@@ -76,25 +75,19 @@ class CommutationRulebook:
         :param gate2: gate to check gate1 against.
         :return: Whether gate1 commutes with gate2.
         """
-        for rule in self.rulebook:
+        for rule in self._rules:
             if rule(gate1, gate2):
                 return True
         return False
 
-    def add_rule(
-        self,
-        rule: Callable[
-            [Gate, Gate],
-            bool,
-        ],
-    ) -> None:
+    def add_rule(self, rule: Callable[[Gate, Gate], bool]) -> None:
         """
         Add a commutation rule to the rulebook
 
         :param rule: Rule to add to the rulebook. A rule takes as input two gates and
         :return: Whether the two gates commute according to the given rule.
         """
-        self.rulebook.append(rule)
+        self._rules.append(rule)
 
 
 def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
@@ -113,7 +106,7 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     )
 
 
-def same_gate(gate1: Tuple[str, int, int], gate2: Tuple[str, int, int]) -> bool:
+def same_gate(gate1: Gate, gate2: Gate) -> bool:
     """
     Gates that are equal commute.
 
