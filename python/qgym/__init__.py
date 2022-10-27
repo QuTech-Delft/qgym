@@ -5,7 +5,7 @@ Gym for RL environments in the Quantum domain.
 from qgym.environment import Environment as Environment
 from qgym.rewarder import Rewarder as Rewarder
 
-__version__ = "0.1.0-alpha"
+__version__ = "0.1.0a0"
 
 # Everything below here is largely based on OpenQL (Apache 2.0 License, Copyright [2016] [Nader Khammassi & Imran Ashraf, QuTech, TU Delft]): https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
 # For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/python/openql/__init__.py
