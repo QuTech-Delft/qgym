@@ -1,4 +1,4 @@
-name: Assets
+name: Build
 
 on:
   push:
@@ -59,7 +59,7 @@ jobs:
     - name: Wheel path
       id: wheel
       working-directory: wheelhouse
-      run: echo "##[set-output name=wheel;]$(ls *.whl)"
+      run: echo "wheel=$(ls *.whl)" >> $GITHUB_OUTPUT
     - uses: actions/upload-artifact@v3
       with:
         name: pypi-linux-${{ matrix.cpython_version }}
