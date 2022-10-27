@@ -23,6 +23,7 @@ jobs:
         - _2_28
         cpython_version:
         - 'cp38-cp38'
+        - 'cp39-cp39'
         include:
           - manylinux: 2014
             bison_version: 'bison-3.0.4-2.el7'
@@ -32,7 +33,7 @@ jobs:
             swig_version: 'swig-3.0.12-19.module_el8.3.0+6167+838326ab'
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Install dependencies
@@ -59,7 +60,7 @@ jobs:
       id: wheel
       working-directory: wheelhouse
       run: echo "##[set-output name=wheel;]$(ls *.whl)"
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: pypi-linux-${{ matrix.cpython_version }}
         path: wheelhouse/${{ steps.wheel.outputs.wheel }}
