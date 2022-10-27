@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+# This file is largely based on OpenQL (Apache 2.0 License, Copyright [2016] [Nader Khammassi & Imran Ashraf, QuTech, TU Delft]): https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
+# For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/setup.py
+# Changes were made by adding the get_version function, replacing openql (and the like) by qgym, and correctly
+# configuring the arguments to setup. Also the file was formatted following the black code style.
+
 import os
 import platform
 import shutil
@@ -50,6 +55,7 @@ def read(fname):
         return f.read()
 
 
+# this method was added specifically for qgym to read the version from the __init__ file.
 def get_version(rel_path):
     for line in read(rel_path).splitlines():
         if line.startswith("__version__"):

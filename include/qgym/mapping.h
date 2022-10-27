@@ -1,5 +1,5 @@
 /** \file
- * Defines miscellaneous API functions.
+ * Defines C++ functions for use with the mapping environment.
  */
 
 #pragma once
@@ -10,8 +10,7 @@
 //============================================================================//
 //                               W A R N I N G                                //
 //----------------------------------------------------------------------------//
-//         Docstrings in this file must manually be kept in sync with         //
-//      mapping.i! This should be automated at some point, but isn't yet.     //
+//   Docstrings in this file must manually be kept in sync with mapping.i!    //
 //============================================================================//
 
 namespace qgym {

@@ -1,3 +1,7 @@
+# This file is largely based on OpenQL (Apache 2.0 License, Copyright [2016] [Nader Khammassi & Imran Ashraf, QuTech, TU Delft]): https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
+# For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/python/CMakeLists.txt
+# Changes were made by renaming openql (and similar) to qgym and removing unused statements.
+
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 if(POLICY CMP0078)
     cmake_policy(SET CMP0078 OLD)

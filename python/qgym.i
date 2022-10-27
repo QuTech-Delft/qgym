@@ -1,8 +1,7 @@
-/**
- * @file   qgym.i
- * @author Imran Ashraf
- * @brief  swig interface file
- */
+// This file is largely based on OpenQL (Apache 2.0 License, Copyright [2016] [Nader Khammassi & Imran Ashraf, QuTech, TU Delft]): https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
+// For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/python/openql.i
+// Changes were made by renaming openql (and similar) to qgym, updating the docstring and removing unused statements.
+
 %define DOCSTRING
 "`QGym` internals for building a connection with OpenQL."
 %enddef
