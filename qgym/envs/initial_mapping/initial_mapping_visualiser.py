@@ -1,7 +1,4 @@
-"""
-This module contains a class used for rendering the initial mapping environment.
-"""
-
+"""This module contains a class used for rendering the initial mapping environment."""
 from typing import Any, Dict, Tuple
 
 import networkx as nx
@@ -21,12 +18,14 @@ BLUE = (113, 164, 195)
 
 
 class InitialMappingVisualiser:
-    """
-    Visualiser class for the initial mapping environment
-    """
+    """Visualiser class for the initial mapping environment"""
 
     def __init__(self, connection_graph: Graph) -> None:
+        """Init of the ``InitialMappingVisualiser``.
 
+        :param connection_graph: ``networkx.Graph`` representation of the connection
+            graph.
+        """
         self.connection_graph = connection_graph
         self.connection_graph_nodes = connection_graph.nodes
         self.connection_graph_matrix = nx.to_scipy_sparse_array(connection_graph)
@@ -50,7 +49,7 @@ class InitialMappingVisualiser:
         }
 
         # initialize rectangles
-        self.init_subscreen_rectangles()
+        self._init_subscreen_rectangles()
 
         self.node_positions_connection_graph = self._get_render_positions(
             connection_graph, self.subscreen1
@@ -59,9 +58,8 @@ class InitialMappingVisualiser:
             connection_graph, self.subscreen3
         )
 
-    def init_subscreen_rectangles(self, padding: int = 20) -> None:
-        """
-        Initialize the pygame `Rect` objects used for drawing the subscreens.
+    def _init_subscreen_rectangles(self, padding: int = 20) -> None:
+        """Initialize the ``pygame.Rect`` objects used for drawing the subscreens.
 
         :param padding: The padding to be used inbetween the subscreens.
         """
@@ -86,21 +84,19 @@ class InitialMappingVisualiser:
     def render(
         self, state: Dict[str, Any], interaction_graph: nx.Graph, mode: str
     ) -> Any:
-        """
-        Render the current state using pygame. The upper left screen shows the
-        connection graph. The lower left screen the interaction graph. The
-        right screen shows the mapped graph. Gray edges are unused, green edges
-        are mapped correctly and red edges need at least on swap.
+        """Render the current state using ``pygame``. The upper left screen shows the
+        connection graph. The lower left screen the interaction graph. The right screen
+        shows the mapped graph. Gray edges are unused, green edges are mapped correctly
+        and red edges need at least on swap.
 
-        :param state: state to render
-        :param interaction_graph: interaction graph to render
+        :param state: State to render.
+        :param interaction_graph: Interaction graph to render.
         :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
         :raise ValueError: When an invalid mode is provided.
-        :return: In 'human' mode returns a boolean value encoding whether the pygame
-            screen is open. In `rgb_array` mode returns an RGB array encoding of the
+        :return: In 'human' mode returns a boolean value encoding whether the ``pygame``
+            screen is open. In 'rgb_array' mode returns an RGB array encoding of the
             rendered image.
         """
-
         if self.screen is None:
             self.start(mode)
 
@@ -133,15 +129,13 @@ class InitialMappingVisualiser:
             )
 
     def _get_mapped_graph(self, state: Dict[str, Any]) -> nx.Graph:
-        """
-        Constructs a mapped graph. In this graph gray edges are unused, green
-        edges are mapped correctly and red edges need at least on swap. This
-        function is used during rendering.
+        """Construct a mapped graph. In this graph gray edges are unused, green edges
+        are mapped correctly and red edges need at least on swap. This function is used
+        during rendering.
 
-        :param state: state to render
-        :return: Mapped graph
+        :param state: State to render.
+        :return: Mapped graph.
         """
-
         mapping = state["mapping_dict"]
 
         # Make the adjacency matrix of the mapped graph
@@ -173,16 +167,13 @@ class InitialMappingVisualiser:
         mapped_adjacency_matrix: NDArray,
         edge: Tuple[int, int],
     ) -> None:
-        """
-        Utility function for making the mapped graph. Gives and edge of the
-        graph a certain color. Gray edges are unused, green edges are mapped
-        correctly and red edges need at least on swap.
+        """Give an edge of the graph a color based on the mapping. Gray edges are
+        unused, green edges are mapped correctly and red edges need at least on swap.
 
-        :param graph: The graph of which the edges must be colored.
-        :param mapped_adjacency_matrix: the adjacency matrix of the mapped graph.
-        :param edge: The edge to color.
+        :param graph: Graph of which the edges must be colored.
+        :param mapped_adjacency_matrix: Adjacency matrix of the mapped graph.
+        :param edge: Edge to color.
         """
-
         is_connected = self.connection_graph_matrix[edge] != 0
         is_mapped = mapped_adjacency_matrix[edge] != 0
         if not is_connected and is_mapped:
@@ -193,9 +184,7 @@ class InitialMappingVisualiser:
             graph.add_edge(*edge, color="gray")
 
     def _draw_connection_graph(self) -> None:
-        """
-        Draw the connection graph on subscreen1.
-        """
+        """Draw the connection graph on subscreen1."""
         for (u, v) in self.connection_graph.edges():
             pos_u = self.node_positions_connection_graph[u]
             pos_v = self.node_positions_connection_graph[v]
@@ -205,14 +194,12 @@ class InitialMappingVisualiser:
             self._draw_point(int(x), int(y))
 
     def _draw_interaction_graph(self, step: int, interaction_graph: nx.Graph) -> None:
-        """
-        Draw the interaction graph on subscreen2.
+        """Draw the interaction graph on subscreen2.
 
         :param step: Current step number.
-        :param interaction_graph: networkx.Graph representation of the interaction graph
-            to draw.
+        :param interaction_graph: ``networkx.Graph`` representation of the interaction
+            graph to draw.
         """
-
         # If we don' have node positions for the interaction graph for some reason,
         # compute them. If we are at step 0 we should have a new interaction graph and
         # we should also compute new postitions.
@@ -230,13 +217,11 @@ class InitialMappingVisualiser:
             self._draw_point(int(x), int(y))
 
     def _draw_mapped_graph(self, mapped_graph: nx.Graph) -> None:
-        """
-        Draw the mapped graph on subscreen3.
+        """Draw the mapped graph on subscreen3.
 
-        :param mapped_graph: networkx.Graph representation of the mapped graph. Each
+        :param mapped_graph: ``networkx.Graph`` representation of the mapped graph. Each
             edge should have a color attached to it.
         """
-
         for (u, v) in mapped_graph.edges():
             pos_u = self.node_positions_mapped_graph[u]
             pos_v = self.node_positions_mapped_graph[v]
@@ -252,8 +237,7 @@ class InitialMappingVisualiser:
             self._draw_point(int(x), int(y))
 
     def _draw_point(self, x: int, y: int) -> None:
-        """
-        Draw a point on the screen.
+        """Draw a point on the screen.
 
         :param x: x coordinate of the point.
         :param y: y coordinate of the point.
@@ -264,8 +248,7 @@ class InitialMappingVisualiser:
     def _draw_wide_line(
         self, color: Tuple[int, int, int], p1: NDArray, p2: NDArray, width: int = 2
     ) -> None:
-        """
-        Draw a wide line on the screen.
+        """Draw a wide line on the screen.
 
         :param color: Color of the line.
         :param p1: Coordinates of the starting point of the line.
@@ -286,8 +269,7 @@ class InitialMappingVisualiser:
         pygame.gfxdraw.filled_polygon(self.screen, points, color)
 
     def _draw_header(self, text: str, subscreen: pygame.Rect) -> None:
-        """
-        Draw a header above a subscreen.
+        """Draw a header above a subscreen.
 
         :param text: Text of the header.
         :param subscreen: Subscreen to draw the header above.
@@ -301,11 +283,9 @@ class InitialMappingVisualiser:
     def _get_render_positions(
         graph: nx.Graph, subscreen: pygame.Rect
     ) -> Dict[Any, NDArray]:
-        """
-        Utility function used during render. Give the positions of the nodes
-        of a graph on a given subscreen.
+        """Give the positions of the nodes of a graph on a given subscreen.
 
-        :param graph: the graph of which the node positions must be determined.
+        :param graph: Graph of which the node positions must be determined.
         :param subscreen: the subscreen on which the graph will be drawn.
         :return: a dictionary where the keys are the names of the nodes, and the
             values are the coordinates of these nodes.
@@ -319,13 +299,12 @@ class InitialMappingVisualiser:
         return node_positions
 
     def start(self, mode: str) -> None:
-        """
-        Start pygame in the given mode.
+        """Start ``pygame`` in the given mode.
 
-        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
+        :param mode: Mode to start ``pygame`` for ("human" and "rgb_array" are
+            supported).
         :raise ValueError: When an invalid mode is provided.
         """
-
         pygame.display.init()
 
         if mode == "human":
@@ -347,10 +326,7 @@ class InitialMappingVisualiser:
         self.is_open = True
 
     def close(self) -> None:
-        """
-        Closed the screen used for rendering.
-        """
-
+        """Close the screen used for rendering."""
         if self.screen is not None:
             pygame.display.quit()
             pygame.font.quit()
