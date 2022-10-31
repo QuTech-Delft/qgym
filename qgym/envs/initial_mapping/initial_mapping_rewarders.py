@@ -156,8 +156,7 @@ class BasicRewarder(Rewarder):
             type(self) == type(o)
             and self._reward_range == o._reward_range
             and self._illegal_action_penalty == o._illegal_action_penalty
-            and self._reward_per_edge
-            and o._reward_per_edge
+            and self._reward_per_edge == o._reward_per_edge
             and self._penalty_per_edge == o._penalty_per_edge
         )
 

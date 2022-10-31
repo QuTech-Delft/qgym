@@ -39,7 +39,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     _rng: Optional[Generator] = None
 
     def step(
-        self, action: ActionT, *, return_info: bool = False
+        self, action: ActionT, *, return_info: bool = True
     ) -> Union[
         Tuple[ObservationT, float, bool],
         Tuple[ObservationT, float, bool, Dict[Any, Any]],
