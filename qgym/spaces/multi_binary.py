@@ -1,8 +1,11 @@
-"""
-A multi-binary space, i.e., an array of binary values. A sample gives a random binary
-array.
-"""
+"""This module contains the ``MultiBinary`` space, i.e., an array of binary values.
 
+Usage:
+    >>> from qgym.spaces import MultiBinary
+    >>> MultiBinary(10)
+    MultiBinary(10)
+
+"""
 from typing import List, Optional, Sequence, Union
 
 import gym.spaces
@@ -12,41 +15,35 @@ from numpy.typing import NDArray
 
 
 class MultiBinary(gym.spaces.MultiBinary):
-    """
-    Multi-binary action/observation space for use in RL environments.
-    """
+    """Multi-binary action/observation space for use in RL environments."""
 
     def __init__(
         self,
         n: Union[NDArray[np.int_], Sequence[int], int],
         rng: Optional[Generator] = None,
     ) -> None:
-        """
-        Initialize a multi-discrete space, i.e., multiple discrete intervals of given
+        """Initialize a multi-discrete space, i.e., multiple discrete intervals of given
         sizes.
 
-        :param n: Number of elements in the space
-        :param rng: Random number generator to be used in this space, if `None` a new
-            one will be constructed.
+        :param n: Number of elements in the space.
+        :param rng: Random number generator to be used in this space. If ``None``, a new
+            random number generator will be constructed.
         """
-
         super(MultiBinary, self).__init__(n)
         self._np_random = rng  # this overrides the default behaviour of the gym space
 
     def seed(self, seed: Optional[int] = None) -> List[int]:
-        """
-        Seed the rng of this space.
+        """Seed the rng of this space, using ``numpy.random.default_rng``.
 
-        :param seed: Seed for the rng
+        :param seed: Seed for the rng. Defaults to ``None``
         :return: The used seeds.
         """
-
         self._np_random = default_rng(seed)
         return [seed]
 
     def sample(self) -> NDArray[np.int_]:
-        """
-        :return: Random sampled element of this space.
-        """
+        """Sample a random element from this space.
 
+        :return: ``NDArray`` of shape (n,) containing random binary values.
+        """
         return self.np_random.integers(2, size=self.n, dtype=self.dtype)
