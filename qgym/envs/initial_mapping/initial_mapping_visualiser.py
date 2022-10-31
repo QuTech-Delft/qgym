@@ -1,4 +1,4 @@
-"""This module contains a class used for rendering the initial mapping environment."""
+"""This module contains a class used for rendering a ``InitialMapping`` environment."""
 from typing import Any, Dict, Tuple
 
 import networkx as nx
@@ -18,7 +18,7 @@ BLUE = (113, 164, 195)
 
 
 class InitialMappingVisualiser:
-    """Visualiser class for the initial mapping environment"""
+    """Visualiser class for the ``InitialMapping`` environment."""
 
     def __init__(self, connection_graph: Graph) -> None:
         """Init of the ``InitialMappingVisualiser``.

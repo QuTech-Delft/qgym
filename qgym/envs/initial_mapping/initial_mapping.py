@@ -1,27 +1,27 @@
-r"""Environment for training an RL agent on the initial mapping problem of OpenQL. The
-initial mapping problem is aimed at mapping virtual qubits of a circuit to physical
-qubits that have a certain connection topology. The quantum circuit is represented as an
-**interaction graph**, where each node represent a qubit and each edge represent an
-interaction between two qubits as defined by the circuit (See the example below). The
-QPU structure is called the **connection graph**. In the connection graph each node
-represents a physical qubit and each edge represent a connection between two qubits in
-the QPU.
+r"""This module contains an environment for training an RL agent on the initial mapping
+problem of OpenQL. The initial mapping problem is aimed at mapping virtual qubits of a
+circuit to physical qubits that have a certain connection topology. The quantum circuit
+is represented as an **interaction graph**, where each node represent a qubit and each
+edge represent an interaction between two qubits as defined by the circuit (See the
+example below). The QPU structure is called the **connection graph**. In the connection
+graph each node represents a physical qubit and each edge represent a connection between
+two qubits in the QPU.
 
 
 .. code-block:: console
 
               QUANTUM CIRCUIT                        INTERACTION GRAPH
            ┌───┐               ┌───┐
-    |q1>───┤ R ├───┬───────────┤ M ╞══                 q1 ────── q2
+    |q3>───┤ R ├───┬───────────┤ M ╞══                 q1 ────── q2
            └───┘   │           └───┘                            ╱
            ┌───┐ ┌─┴─┐         ┌───┐                           ╱
     |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        ╱
            └───┘ └───┘   │     └───┘                         ╱
            ┌───┐       ┌─┴─┐   ┌───┐                        ╱
-    |q3>───┤ R ├───┬───┤ X ├───┤ M ╞══                     ╱
+    |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     ╱
            └───┘   │   └───┘   └───┘                      ╱
            ┌───┐ ┌─┴─┐         ┌───┐                     ╱
-    |q4>───┤ R ├─┤ X ├─────────┤ M ╞══                q3 ─────── q4
+    |q0>───┤ R ├─┤ X ├─────────┤ M ╞══                q3 ─────── q4
            └───┘ └───┘         └───┘
 
 
