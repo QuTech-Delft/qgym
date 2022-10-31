@@ -24,7 +24,6 @@ Example:
         model.learn(int(1e5))
 
 """
-
 from qgym.environment import Environment as Environment
 from qgym.rewarder import Rewarder as Rewarder
 

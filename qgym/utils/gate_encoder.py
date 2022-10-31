@@ -1,5 +1,14 @@
-"""
-This module contains the GateEncoder class encoding gate to integers and back.
+"""This module contains the ``GateEncoder`` class whcih can be used for encoding gates
+to integers and back.
+
+Usage:
+    >>> from qgym.utils import GateEncoder
+    >>> encoder = GateEncoder().learn_gates(["x", "y", "z", "cnot", "measure"])
+    >>> encoded_list = encoder.encode_gates(["x", "x", "measure", "z"])
+    >>> print(encoded_list)
+    [1, 1, 5, 3]
+    >>> encoder.decode_gates(encoded_list)
+    ['x', 'x', 'measure', 'z']
 """
 from __future__ import annotations
 
@@ -10,23 +19,19 @@ from qgym.custom_types import Gate
 
 
 class GateEncoder:
-    """
-    Learns a set of gates and creates a mapping to integers and back.
-    """
+    """Learns a set of gates and creates a mapping to integers and back."""
 
     def __init__(self) -> None:
-        """
-        Initialize the `GateEncoder`.
-        """
+        """Initialize the ``GateEncoder``."""
         self.n_gates = 0
 
     def learn_gates(self, gates: Iterable) -> GateEncoder:
-        """
-        Learns the gates names from and Iterable and creates a mapping from unique gate
-        names to integers and back.
+        """Learns the gates names from an ``Iterable`` and creates a mapping from unique
+        gate names to integers and back.
 
-        :param gates: An iterable containing the names of the gates that must be
-            learned.
+        :param gates: An ``Iterable`` containing the names of the gates that should be
+            learned. The ``Iterable`` can contain duplicate names.
+        :returns: Self.
         """
         self._encoding_dct = {}
         self._decoding_dct = {}
@@ -49,13 +54,14 @@ class GateEncoder:
         self,
         gates: Union[str, Mapping[str, Any], Sequence[Gate], Iterable[str]],
     ) -> Union[int, Dict[int, Any], List[Gate]]:
-        """
-        Encodes gate names in gates to integers, based on the gates seen in
-        `learn_gates`.
+        """Encode the gate names (of type ``str``) in `gates` to integers, based on the
+        gates seen in ``learn_gates``.
 
-        :param gates: gate name(s) to encode
-        :return: integer encoded version of gates
-        :raise TypeError: When an unsupported type is given
+        :param gates: Gates to encode. The input type determines the return type.
+        :return: Integer encoded version of gates. The output structure should resemble
+            the input structure. So a ``Mapping`` will return a ``Dict``, while a single
+            ``str`` will return an ``int``.
+        :raise TypeError: When an unsupported type is given.
         """
         if isinstance(gates, str):
             encoded_gates = self._encoding_dct[gates]
@@ -97,12 +103,14 @@ class GateEncoder:
         self,
         encoded_gates: Union[int, Mapping[int, Any], Sequence[Gate], Iterable[int]],
     ) -> Union[str, Dict[str, Any], List[Gate]]:
-        """
-        Decodes integer encoded gate names to the original gate names based on the gates
-        seen in the learn_gates function.
+        """Decode integer encoded gate names to the original gate names based on the
+        gates seen in ``learn_gates``.
 
-        :param encoded_gates: Encoded gates that are to be decoded.
-        :return: Decoded version of encoded_gates.
+        :param encoded_gates: Encoded gates that are to be decoded. The input type
+            determines the return type.
+        :return: Decoded version of encoded_gates. The output structure should resemble
+            the input structure. So a ``Mapping`` will return a ``Dict``, while a single
+            ``int`` will return a ``str``.
         :raise TypeError: When an unsupported type is given
         """
         if isinstance(encoded_gates, int):
