@@ -18,7 +18,8 @@ name: Build
 on:
   push:
     branches:
-      - ci
+      - 'release**'
+      - 'ci**'
 
 jobs:
   macos:
