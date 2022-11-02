@@ -8,18 +8,18 @@ Example:
 
     .. code-block:: python
 
-    from qgym.env.scheduling.rulebook import CommutationRulebook
+        from qgym.env.scheduling.rulebook import CommutationRulebook
 
-    # cnot gates with the same control qubit commute
-    def cnot_commutation(gate1, gate2):
-        if gate1[0] == "cnot" and gate2[0] == "cnot":
-            if gate1[1] ==  gate2[1]:
-                return True
-        return False
+        # cnot gates with the same control qubit commute
+        def cnot_commutation(gate1, gate2):
+            if gate1[0] == "cnot" and gate2[0] == "cnot":
+                if gate1[1] == gate2[1]:
+                    return True
+            return False
 
-    # init the rulebook and add the commutation rule
-    rulebook = CommutationRulebook()
-    rulebook.add_rule(rulebook)
+        # init the rulebook and add the commutation rule
+        rulebook = CommutationRulebook()
+        rulebook.add_rule(rulebook)
 
 """
 from typing import Callable, List
