@@ -108,7 +108,7 @@ jobs:
       run: echo "wheel=$(ls *.whl)" >> $GITHUB_OUTPUT
     - uses: actions/upload-artifact@v3
       with:
-        name: pypi-linux-${{ matrix.cpython_version }}
+        name: pypi-manylinux${{ matrix.manylinux }}-${{ matrix.cpython_version }}
         path: wheelhouse/${{ steps.wheel.outputs.wheel }}
 
 
