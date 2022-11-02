@@ -1,4 +1,4 @@
-"""Specific environments of this RL Gym in the Quantum domain. Currently this package 
+"""Specific environments of this RL Gym in the Quantum domain. This package
 contains the ``InitialMapping`` and ``Scheduling`` environments, which model their
 respective OpenQL passes.
 """

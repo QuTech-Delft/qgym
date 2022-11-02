@@ -13,7 +13,7 @@ Usage:
 
     .. code-block:: python
 
-        from qgym.envs.scheduling import  MachineProperties
+        from qgym.envs.scheduling import MachineProperties
 
         hardware_spec = MachineProperties(n_qubits=2)
         hardware_spec.add_gates({"x": 2, "y": 2, "cnot": 4, "measure": 10})
@@ -67,7 +67,7 @@ class MachineProperties:
 
     @classmethod
     def from_file(cls, filename: str) -> MachineProperties:
-        """Load MachineProperties from a JSON file. Currently not implemented."""
+        """Load MachineProperties from a JSON file. Not implemented."""
         raise NotImplementedError(
             "Loading machine properties from files is not yet implemented."
         )
@@ -75,7 +75,7 @@ class MachineProperties:
     def add_gates(self, gates: Mapping[str, int]) -> MachineProperties:
         """Add gates to the machine properties that should be supported.
 
-        :param gates: ``Mapping`` of gates that the machine can perform as keys and the
+        :param gates: ``Mapping`` of gates that the machine can perform as keys, and the
             number of machine cycles (time) as values.
         :return: The ``MachineProperties`` with the added gates.
         """
@@ -159,7 +159,7 @@ class MachineProperties:
 
     @property
     def gates(self) -> Dict[str, int]:
-        """Return a``Dict`` with the gate names the machine can perform as keys and the
+        """Return a``Dict`` with the gate names the machine can perform as keys, and the
         number of machine cycles (time) as values.
         """
         return self._gates
@@ -178,7 +178,7 @@ class MachineProperties:
 
     @property
     def not_in_same_cycle(self) -> Dict[str, List[str]]:
-        """Gates that cannote start in the same cycle."""
+        """Gates that can not start in the same cycle."""
         return self._not_in_same_cycle
 
     @staticmethod

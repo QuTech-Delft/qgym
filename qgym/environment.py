@@ -114,7 +114,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
 
     @property
     def rewarder(self) -> Rewarder:
-        """Return the rewarder that is set for this environment. Used to computerewards
+        """Return the rewarder that is set for this environment. Used to compute rewards
         after each step.
 
         :returns: Rewarder of this ``Environment``.

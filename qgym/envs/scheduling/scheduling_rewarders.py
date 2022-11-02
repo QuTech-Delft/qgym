@@ -9,7 +9,7 @@ Usage:
         from qgym.envs.scheduling import BasicRewarder
 
         rewarder = BasicRewarder(
-            illegal_action_penalty =  -1,
+            illegal_action_penalty = -1,
             update_cycle_penalty = -2,
             schedule_gate_bonus: = 3,
             )
@@ -47,7 +47,7 @@ class BasicRewarder(Rewarder):
         """Initialize the reward range and set the rewards and penalties.
 
         :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.This
+            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
             value should be negative (but is not required) and defaults to -5.
         :param update_cycle_penalty: Penalty given for incrementing a cycle. Since the
             ``Scheduling`` environment wats to create the shortest schedules,
@@ -78,7 +78,7 @@ class BasicRewarder(Rewarder):
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
     ) -> float:
-        """Compute a reward, based on the new state and the given action. Specifically
+        """Compute a reward, based on the new state, and the given action. Specifically
         the 'legal_actions' actions array.
 
         :param old_state: State of the ``Scheduling`` environment before the current
@@ -142,7 +142,7 @@ class EpisodeRewarder(Rewarder):
         """Initialize the reward range and set the rewards and penalties.
 
         :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.This
+            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
             value should be negative (but is not required) and defaults to -5.
         :param update_cycle_penalty: Penalty given for incrementing a cycle. Since the
             ``Scheduling`` environment wats to create the shortest schedules,
@@ -167,7 +167,7 @@ class EpisodeRewarder(Rewarder):
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
     ) -> float:
-        """Compute a reward, based on the new state and the given action.
+        """Compute a reward, based on the new state, and the given action.
 
         :param old_state: State of the ``Scheduling`` environment before the current
             action.

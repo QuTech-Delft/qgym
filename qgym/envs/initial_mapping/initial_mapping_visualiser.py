@@ -200,9 +200,9 @@ class InitialMappingVisualiser:
         :param interaction_graph: ``networkx.Graph`` representation of the interaction
             graph to draw.
         """
-        # If we don' have node positions for the interaction graph for some reason,
-        # compute them. If we are at step 0 we should have a new interaction graph and
-        # we should also compute new postitions.
+        # If we don't have node positions for the interaction graph for some reason,
+        # compute them. If we are at step 0 we should have a new interaction graph, and
+        # we should also compute new positions.
         if step == 0 or not hasattr(self, "node_positions_interaction_graph"):
             self.node_positions_interaction_graph = self._get_render_positions(
                 interaction_graph, self.subscreen2

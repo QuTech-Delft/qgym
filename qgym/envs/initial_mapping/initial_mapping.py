@@ -28,7 +28,7 @@ two qubits in the QPU.
 
 The goal is to create a mapping between the nodes of the interaction and connection
 graph, such that for every edge in the interaction graph, there is an edge in the
-connection graph. If this is not possible, then the number of mismatches should be
+connection graph. If this is impossible, then the number of mismatches should be
 penalized.
 
 
@@ -40,7 +40,7 @@ State Space:
     * ``interaction_graph_matrix``: Sparse adjacency matrix of the interaction graph.
       (Should have the same number of nodes as the connection graph.)
     * ``steps_done``: Number of steps done since the last reset.
-    * ``mapping``: Array of which the index represents a physical qubit and the value a
+    * ``mapping``: Array of which the index represents a physical qubit, and the value a
       virtual qubit (is set to ``num_nodes + 1`` when nothing is mapped to the physical
       qubit yet).
     * ``mapping_dict``: Dictionary that maps logical qubits to physical qubit.
@@ -88,8 +88,8 @@ Example 2:
                 q3
 
 
-    The graph has a non gridlike structure.
-    Such connection graphs can be given to the environment by giving a adjacency matrix
+    The graph has a non-gridlike structure.
+    Such connection graphs can be given to the environment by giving an adjacency matrix
     representation of the graph, or a ``networkx`` representation of the graph. We will
     show the latter option in this example.
 
@@ -161,7 +161,7 @@ class InitialMapping(
             without any interactions can be seen as 'null' nodes. Must be a value in the
             range [0,1].
         :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each nodes represents a physical qubit and each node represents a connection
+            Each node represents a physical qubit and each node represents a connection
             in the QPU topology.
         :param connection_graph_matrix: Adjacency matrix representation of the QPU
             topology.
@@ -368,7 +368,7 @@ class InitialMapping(
             grid.
         :raise ValueError: When `connection_graph`, `connection_graph_matrix` and
             `connection_grid_size` are all None.
-        :return: Connection graph as a ``netwrokx.Graph``.
+        :return: Connection graph as a ``networkx.Graph``.
         """
         if connection_graph is not None:
             if connection_graph_matrix is not None:

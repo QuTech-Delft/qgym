@@ -9,7 +9,7 @@ Circuits:
     described by a quantum circuit. For the ``Scheduling`` environment in this module, a
     quantum circuit is defined as a list of gates, where a gate is a ``namedtuple`` with
     a 'name', 'q1' and 'q2'. For example, a c-not with control qubit 2 and target qubit
-    5 would be ``Gate("cnot", 2, 5)`` and a X gate acting on qubit 4 would be
+    5 would be ``Gate("cnot", 2, 5)`` and an X gate acting on qubit 4 would be
     ``Gate("x", 4, 4)``. In this representation, the circuit below can be created by:
 
     >>> from qgym.custom_types import Gate
@@ -28,7 +28,7 @@ Circuits:
 
 Hardware specifications:
     Different operations defined by a quantum circuit have different operation times.
-    These operation times are defined in the unit of machine cycles. For example, a X
+    These operation times are defined in the unit of machine cycles. For example, an X
     gate could take 2 machine cycles, whereas a measurement could take 15 cycles. These
     different operation times must be taken into account, because the hardware (the
     quantum computers) cannot perform multiple operations on the same qubit at the same
@@ -36,7 +36,7 @@ Hardware specifications:
 
     Finding an optimal schedule with these restriction is already a difficult task.
     However, to complicate matters there can be more limitations defined by the
-    hardware. To be more concrete, the ``Schdeuling`` environment  can take two more
+    hardware. To be more concrete, the ``Schdeuling`` environment can take two more
     types of limitations into account:
 
     #. Some gates must start at the same time, or must wait till the previous one is
@@ -55,7 +55,7 @@ State space:
     * ``n_qubits``: Number of physical qubits of the hardware.
     * ``gate_cycle_length``: Mapping of integer encoded gates and their respective cycle
       length.
-    *  ``same_start``: Set of integer encoded gates that should start in the same cycle.
+    * ``same_start``: Set of integer encoded gates that should start in the same cycle.
     * ``not_in_same_cycle``: Mapping of integer encoded gates that can't start in the
       same cycle.
     * ``steps_done``: Number of steps done since the last reset.
@@ -82,16 +82,16 @@ Observation space:
 
 Action Space:
     Performing a quantum operation takes a certain amount of time, which is measured in
-    (machine) cycles. Therefore, this environment aims to produces a schedule in terms
+    (machine) cycles. Therefore, this environment aims to produce a schedule in terms
     of cycles. To do this, the environment schedules the circuit from right to left,
     so cycle zero in the schedule is the last operation to be performed in that
     schedule. Based on this idea, a valid action is then a tuple of an integer
     $i\in\{0,1,\ldots,max\_gates\}$ and a binary value $j$. The integer value $i$
-    schedules gate $i$ in the current cycle and the binary value $j$ increment the
+    schedules gate $i$ in the current cycle, and the binary value $j$ increment the
     cycle number.
 
     If the action is illegal (for example when we try to schedule a gate that has been
-    scheduled already), then the environment will do nothing and the rewarder should
+    scheduled already), then the environment will do nothing, and the rewarder should
     give a penalty for this.
 
 Example 1:
@@ -111,7 +111,7 @@ Example 1:
 
         from qgym.envs.scheduling import Scheduling, MachineProperties
 
-        # Setup the hardware specifications
+        # Set up the hardware specifications
         hardware_spec = MachineProperties(n_qubits=2)
         hardware_spec.add_gates({"x": 2, "y": 2, "cnot": 4, "measure": 10})
         hardware_spec.add_same_start(["measure"])
@@ -133,7 +133,7 @@ Example 2:
         from qgym.envs.scheduling import Scheduling, MachineProperties
         from qgym.envs.scheduling.rulebook import CommutationRulebook
 
-        # Setup the hardware specifications
+        # Set up the hardware specifications
         hardware_spec = MachineProperties(n_qubits=2)
         hardware_spec.add_gates({"x": 2, "y": 2, "cnot": 4, "measure": 10})
         hardware_spec.add_same_start(["measure"])
@@ -398,7 +398,7 @@ class Scheduling(Environment):
         return super().reset(seed=seed, return_info=return_info)
 
     def _get_dependencies(self) -> NDArray[np.int_]:
-        """Compute the dependencies array of the currebt state.
+        """Compute the dependencies array of the current state.
 
         :return: array of shape (dependency_depth, max_gates) with the dependencies
             for each gate.
@@ -440,7 +440,7 @@ class Scheduling(Environment):
 
     def _update_legal_actions(self) -> None:
         """Check which actions are legal based on the scheduled qubits. An action is
-        legal if the gate could be scheduled based on the machine propertes and
+        legal if the gate could be scheduled based on the machine properties and
         commutation rules.
         """
         legal_actions = np.zeros(self._state["max_gates"], dtype=bool)

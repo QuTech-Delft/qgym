@@ -24,13 +24,13 @@ class MultiDiscrete(gym.spaces.MultiDiscrete):
         dtype: Optional[Union[Type, str]] = np.int64,
         rng: Optional[Generator] = None,
     ) -> None:
-        """Initialize a multi-discrete space, i.e. multiple discrete intervals of given
+        """Initialize a multi-discrete space, i.e., multiple discrete intervals of given
         sizes.
 
         :param nvec: Vector containing the upper bound of each discrete interval. The
             lower bound is always set to 0.
         :param dtype: Type of the values in each interval (default np.int64)
-        :param rng: Random number generator to be used in this space. If ``None`` a new
+        :param rng: Random number generator to be used in this space, if ``None`` a new
             random number generator will be constructed.
         """
         super(MultiDiscrete, self).__init__(nvec, dtype=dtype)

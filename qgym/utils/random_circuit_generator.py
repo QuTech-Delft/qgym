@@ -53,7 +53,7 @@ class RandomCircuitGenerator:
         :param n_gates: If "random", then a circuit of random length will be made. If
             an ``int`` is given, a circuit of length ``min(n_gates, max_gates)`` will
             be made.
-        :param mode: If mode is "default", a curcuit will be generated containing the
+        :param mode: If mode is "default", a circuit will be generated containing the
             'prep', 'x', 'y', 'z', 'cnot' and 'measure' gates. If mode is "workshop",
             a simpler circuit containing just 'h', 'cnot' and `measure` gates will be
             generated.
@@ -69,7 +69,7 @@ class RandomCircuitGenerator:
         elif isinstance(n_gates, int):
             n_gates = min(n_gates, self.max_gates)
         else:
-            msg = "n_gates should be of tpye int or str, but was of type "
+            msg = "n_gates should be of type int or str, but was of type "
             msg += f"{type(n_gates)}."
             raise ValueError(msg)
 
@@ -82,7 +82,7 @@ class RandomCircuitGenerator:
             gate_names = ["x", "y", "cnot", "measure"]
             p = [0.2, 0.2, 0.5, 0.1]
         else:
-            raise ValueError("Unkown mode, choose 'default' or 'workshop'.")
+            raise ValueError("Unknown mode, choose 'default' or 'workshop'.")
 
         for idx in range(n_gates):
             name = self.rng.choice(gate_names, p=p)

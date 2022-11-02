@@ -9,7 +9,7 @@ Usage:
         from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 
         rewarder = BasicRewarder(
-            illegal_action_penalty =  -1,
+            illegal_action_penalty = -1,
             reward_per_edge = 5,
             penalty_per_edge: = -2,
             )
@@ -75,7 +75,7 @@ class BasicRewarder(Rewarder):
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
     ) -> float:
-        """Compute a reward, based on the new state and the given action. Specifically
+        """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
 
         :param old_state: State of the ``InitialMapping`` before the current action.
@@ -173,7 +173,7 @@ class SingleStepRewarder(BasicRewarder):
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
     ) -> float:
-        """Compute a reward, based on the new state and the given action. Specifically
+        """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
 
         :param old_state: State of the ``InitialMapping`` before the current action.
@@ -204,7 +204,7 @@ class EpisodeRewarder(BasicRewarder):
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
     ) -> float:
-        """Compute a reward, based on the new state and the given action. Specifically
+        """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
 
         :param old_state: State of the ``InitialMapping`` before the current action.
@@ -212,7 +212,7 @@ class EpisodeRewarder(BasicRewarder):
         :param new_state: Updated state of the ``InitialMapping``.
         :return reward: The reward for this action. If the action is illegal, then the
             reward is `illegal_action_penalty`. If the action is legal, but the mapping
-            is not yet finished, then the reward is 0. If the action is legal and the
+            is not yet finished, then the reward is 0. If the action is legal, and the
             mapping is finished, then the reward is the number of 'good' edges times
             `reward_per_edge` plus the number of 'bad' edges times `penalty_per_edge`.
         """

@@ -2,8 +2,8 @@
 commutation rules used in the ``Scheduling`` environment.
 
 Example:
-    The code block below show how to setup a ``CommutationRulebook``, with the
-    additional commutation  rule that two C-NOT gates with the some control qubit
+    The code block below shows how to set up a ``CommutationRulebook``, with the
+    additional commutation rule that two C-NOT gates with the same control qubit
     commute.
 
     .. code-block:: python
@@ -46,7 +46,7 @@ class CommutationRulebook:
             self._rules = []
 
     def make_blocking_matrix(self, circuit: List[Gate]) -> NDArray[np.int_]:
-        """Make an square array of shape (len(circuit), len(circuit)), with dependencies
+        """Make a square array of shape (len(circuit), len(circuit)), with dependencies
         based on the given commutation rules.
 
         :param circuit: Circuit to check dependencies for.

@@ -25,12 +25,12 @@ def check_real(
         messages.
     :param l_bound: Lower bound of `x`.
     :param u_bound: Upper bound of `x`.
-    :param l_inclusive: If ``True`` the lower bound is inclusive. Otherwise the lower
+    :param l_inclusive: If ``True`` the lower bound is inclusive, otherwise the lower
         bound is exclusive.
-    :param u_inclusive: If ``True`` the upper bound is inclusive. Otherwise the upper
+    :param u_inclusive: If ``True`` the upper bound is inclusive, otherwise the upper
         bound is exclusive.
     :raise TypeError: If `x` is not a real number.
-    :raise ValueError: If `x` is outside of the give bounds.
+    :raise ValueError: If `x` is outside the give bounds.
     :return: Floating point representation of `x`.
     """
     if not isinstance(x, Real):
@@ -73,12 +73,12 @@ def check_int(
         messages.
     :param l_bound: Lower bound of `x`.
     :param u_bound: Upper bound of `x`.
-    :param l_inclusive: If ``True`` the lower bound is inclusive. Otherwise the lower
+    :param l_inclusive: If ``True`` the lower bound is inclusive, otherwise the lower
         bound is exclusive.
-    :param u_inclusive: If ``True`` the upper bound is inclusive. Otherwise the upper
+    :param u_inclusive: If ``True`` the upper bound is inclusive, otherwise the upper
         bound is exclusive.
     :raise TypeError: If `x` is not a real number.
-    :raise ValueError: If `x` is outside of the give bounds.
+    :raise ValueError: If `x` is outside the give bounds.
     :return: Floating point representation of `x`.
     """
     if not isinstance(x, Real):
@@ -159,7 +159,7 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
     """Check if `graph` with name 'name' is an instance of ``networkx.Graph`` and check
     if the graph is valid topology graph.
 
-    :param grapg: Graph to check.
+    :param graph: Graph to check.
     :param name: Name of the graph. This name will be displayed in possible error
         messages.
     :raise TypeError: If `graph` is not an instance of ``networkx.Graph``.
@@ -168,7 +168,7 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
     check_instance(graph, name, nx.Graph)
 
     if nx.number_of_selfloops(graph) > 0:
-        raise ValueError(f"'{name}' contains selfloops")
+        raise ValueError(f"'{name}' contains self-loops")
 
     if len(graph) == 0:
         raise ValueError(f"'{name}' has no nodes")
@@ -188,13 +188,13 @@ def check_instance(x: Any, name: str, dtype: Type) -> None:
 
 
 def warn_if_positive(x: Real, name: str) -> None:
-    """Give a warning when `x` is postive.
+    """Give a warning when `x` is positive.
 
     :param x: Variable to check.
     :param name: Name of the variable. This name will be displayed in the warning.
     """
     if x > 0:
-        warnings.warn(f"'{name}' was postive")
+        warnings.warn(f"'{name}' was positive")
 
 
 def warn_if_negative(x: Real, name: str) -> None:
