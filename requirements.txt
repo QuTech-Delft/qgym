@@ -1,0 +1,24 @@
+# minimum
+gym~=0.19.0
+networkx[default]~=2.7.1
+numpy~=1.22.3
+pygame~=2.1.2
+qutechopenql==0.10.0  # keep this in sync with the submodule
+scipy~=1.8.0
+
+# tutorial
+matplotlib~=3.5.3
+notebook
+stable-baselines3~=1.4.0
+
+# dev
+black[jupyter]
+isort
+matplotlib
+notebook
+pytest
+sphinx
+sphinx-autodoc-typehints
+sphinx-math-dollar
+sphinx-rtd-theme~=1.0
+stable-baselines3~=1.4.0

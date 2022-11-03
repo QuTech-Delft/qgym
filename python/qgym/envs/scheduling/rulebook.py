@@ -26,7 +26,6 @@ from typing import Callable, List
 
 import numpy as np
 from numpy.typing import NDArray
-
 from qgym.custom_types import Gate
 
 

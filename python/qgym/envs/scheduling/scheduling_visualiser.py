@@ -3,7 +3,6 @@ from typing import Any, Mapping, Tuple
 
 import numpy as np
 import pygame
-
 from qgym.utils import GateEncoder
 
 # Define some colors used during rendering

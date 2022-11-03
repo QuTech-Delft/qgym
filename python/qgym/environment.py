@@ -8,7 +8,6 @@ from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union
 import gym
 from gym import Space
 from numpy.random import Generator, default_rng
-
 from qgym.rewarder import Rewarder
 
 ObservationT = TypeVar("ObservationT")
