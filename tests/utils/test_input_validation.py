@@ -132,7 +132,7 @@ def test_check_graph_is_valid_topology():
     check_graph_is_valid_topology(graph, "test")
 
     graph.add_edge(1, 1)
-    msg = "'test' contains selfloops"
+    msg = "'test' contains self-loops"
     with pytest.raises(ValueError, match=msg):
         check_graph_is_valid_topology(graph, "test")
 
@@ -154,7 +154,7 @@ def test_warn_if_positive():
         warn_if_positive(1, "test")
 
     assert len(record) == 1
-    assert record[0].message.args[0] == "'test' was postive"
+    assert record[0].message.args[0] == "'test' was positive"
 
 
 def test_warn_if_negative():

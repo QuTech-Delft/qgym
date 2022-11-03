@@ -1,6 +1,4 @@
-"""
-Custom type definitions to ease type hinting.
-"""
+"""This module contains custom type definitions to ease type hinting."""
 
 from collections import namedtuple
 
