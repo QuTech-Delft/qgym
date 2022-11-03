@@ -47,8 +47,8 @@ class BasicRewarder(Rewarder):
         """Initialize the reward range and set the rewards and penalties.
 
         :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
-            value should be negative (but is not required) and defaults to -5.
+            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
+            This value should be negative (but is not required) and defaults to -5.
         :param update_cycle_penalty: Penalty given for incrementing a cycle. Since the
             ``Scheduling`` environment wats to create the shortest schedules,
             incrementing the cycle should be penalized. This value should
@@ -142,8 +142,8 @@ class EpisodeRewarder(Rewarder):
         """Initialize the reward range and set the rewards and penalties.
 
         :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
-            value should be negative (but is not required) and defaults to -5.
+            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
+            This value should be negative (but is not required) and defaults to -5.
         :param update_cycle_penalty: Penalty given for incrementing a cycle. Since the
             ``Scheduling`` environment wats to create the shortest schedules,
             incrementing the cycle should be penalized. This value should

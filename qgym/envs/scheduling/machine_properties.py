@@ -114,7 +114,9 @@ class MachineProperties:
 
         :param gates: ``Iterable`` of tuples of gate names that should not start in the
             same cycle.
-        :return: The MachineProperties with the not in same start gates.
+        :return: The ``MachineProperties`` with an updated ``not_in_same_cycle``
+            property. The ``not_in_same_cycle`` property is updated according to the
+            input `gates`.
         """
         check_instance(gates, "gates", Iterable)
         for (gate1, gate2) in gates:
