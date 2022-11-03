@@ -1,6 +1,4 @@
-"""This module contains a class used for rendering the scheduling environment."""
-
-
+"""This module contains a class used for rendering the ``Scheduling`` environment."""
 from typing import Any, Mapping, Tuple
 
 import numpy as np
@@ -16,9 +14,7 @@ BLUE = (113, 164, 195)
 
 
 class SchedulingVisualiser:
-    """
-    Visualiser class for the scheduling environment
-    """
+    """Visualiser class for the ``Scheduling`` environment."""
 
     def __init__(
         self,
@@ -27,15 +23,13 @@ class SchedulingVisualiser:
         gate_cycle_length: Mapping[int, int],
         n_qubits: int,
     ) -> None:
-        """
-        Initialize the visualiser.
+        """Init of the ``SchedulingVisualiser``.
 
-        :param gate_encoder: GateEncoder object of the scheduling environment.
-        :param gate_cycle_length: Mapping of cycle lengths for the gates of the
+        :param gate_encoder: ``GateEncoder`` object of a ``Scheduling`` environment.
+        :param gate_cycle_length: ``Mapping`` of cycle lengths for the gates of the
             scheduling environment.
-        :param n_qubits: number of qubits of the scheduling environment.
+        :param n_qubits: Number of qubits of the scheduling environment.
         """
-
         # Rendering data
         self.screen = None
         self.is_open = False
@@ -74,15 +68,13 @@ class SchedulingVisualiser:
         self._encoded_circuit = None
 
     def render(self, state: Mapping[str, Any], mode: str) -> Any:
-        """
-        Render the current state using pygame.
+        """Render the current state using pygame.
 
-        :param state: Current state of the schedule.
-        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
-        :raise ValueError: When an invalid mode is provided.
-        :return: The rendered state.
+        :param mode: The mode to render with (supported modes are found in
+            `self.metadata`.).
+        :raise ValueError: If an unsupported mode is provided.
+        :return: Result of rendering.
         """
-
         if self.screen is None:
             self.start(mode)
 
@@ -114,8 +106,7 @@ class SchedulingVisualiser:
             )
 
     def _draw_y_axis(self, color: Tuple[int, int, int]) -> None:
-        """
-        Draw the y axis of the display.
+        """Draw the y-axis of the display.
 
         :param color: Color of the y-axis.
         """
@@ -129,13 +120,11 @@ class SchedulingVisualiser:
             self.screen.blit(text, text_position)
 
     def _draw_scheduled_gate(self, gate_idx: int, scheduled_cycle: int) -> None:
-        """
-        Draw a gate on the screen.
+        """Draw a gate on the screen.
 
-        :param gate_idx: index of the gate to draw.
-        :param scheduled_cycle: cycle the gate is scheduled.
+        :param gate_idx: Index of the gate to draw.
+        :param scheduled_cycle: Cycle the gate is scheduled.
         """
-
         gate = self._encoded_circuit[gate_idx]
 
         self._draw_gate_block(gate.name, gate.q1, scheduled_cycle)
@@ -145,14 +134,12 @@ class SchedulingVisualiser:
     def _draw_gate_block(
         self, gate_int_name: int, qubit: int, scheduled_cycle: int
     ) -> None:
-        """
-        Draw a single block of a gate (gates can consist of 1 or 2 blocks).
+        """Draw a single block of a gate (gates can consist of 1 or 2 blocks).
 
-        :param gate_int_name: integer encoding of the gate name.
-        :param qubit: qubit in which the gate acts.
-        :param scheduled_cycle: cycle in which the gate is scheduled.
+        :param gate_int_name: Integer encoding of the gate name.
+        :param qubit: Qubit in which the gate acts.
+        :param scheduled_cycle: Cycle in which the gate is scheduled.
         """
-
         gate_width = self._cycle_width * self._gate_cycle_length[gate_int_name]
         gate_box_size = (0.98 * gate_width, 0.98 * self._gate_height)
 
@@ -178,13 +165,11 @@ class SchedulingVisualiser:
         self.screen.blit(text, text_position)
 
     def start(self, mode: str) -> None:
-        """
-        Start pygame in the given mode.
+        """Start pygame in the given mode.
 
         :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
         :raise ValueError: When an invalid mode is provided.
         """
-
         pygame.display.init()
         if mode == "human":
             self.screen = pygame.display.set_mode(
@@ -207,10 +192,7 @@ class SchedulingVisualiser:
         self.is_open = True
 
     def close(self) -> None:
-        """
-        Close the screen used for rendering.
-        """
-
+        """Close the screen used for rendering."""
         if self.screen is not None:
             pygame.display.quit()
             pygame.font.quit()

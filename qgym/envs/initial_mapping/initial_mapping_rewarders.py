@@ -1,6 +1,29 @@
-"""
-Environment and rewarder for training an RL agent on the initial mapping problem of
-OpenQL.
+"""This module contains some vanilla Rewarders for the ``InitialMapping`` environment.
+
+Usage:
+    The rewarders in this module can be customized by initializing the rewarders with
+    different values.
+
+    .. code-block:: python
+
+        from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
+
+        rewarder = BasicRewarder(
+            illegal_action_penalty = -1,
+            reward_per_edge = 5,
+            penalty_per_edge: = -2,
+            )
+
+    After initialization, the rewarders can be given to the ``InitialMapping``
+    environment.
+
+.. note::
+    When implementing custom rewarders, they should inherit from ``qgym.Rewarder``.
+    Furthermore, they must implement the ``compute_reward`` method. Which takes as input
+    the old state, the new state and the given action. See the documentation of the
+    ``qgym.envs.initial_mapping.initial_mapping`` module for more information on
+    the state and action space.
+
 """
 from typing import Any, Dict, Optional
 
@@ -12,9 +35,7 @@ from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_po
 
 
 class BasicRewarder(Rewarder):
-    """
-    Basic rewarder for the InitialMapping environment.
-    """
+    """Basic rewarder for the ``InitialMapping`` environment."""
 
     def __init__(
         self,
@@ -22,12 +43,19 @@ class BasicRewarder(Rewarder):
         reward_per_edge: Optional[float] = 5,
         penalty_per_edge: Optional[float] = -1,
     ) -> None:
-        """
-        Initialize the reward range and set the rewards and penalties
+        """Initialize the reward range and set the rewards and penalties.
 
-        :param illegal_action_penalty: penalty for performing an illegal action.
-        :param reward_per_edge: reward for performing a 'good' action
-        :param penalty_per_edge: penalty for performing a 'bad' action
+        :param illegal_action_penalty: Penalty for performing an illegal action. An
+            action is illegal if the action contains a virtual or physical qubit that
+            has already been mapped. This value should be negative (but is not required)
+            and defaults to -100.
+        :param reward_per_edge: Reward gained per 'good' edge in the interaction graph.
+            An edge is 'good' if the mapped edge overlaps with an edge of the
+            connection graph. This value should be positive (but is not required) and
+            defaults to 5.
+        :param penalty_per_edge: Penalty given per 'bad' edge in the interaction graph.
+            An edge is 'bad' if the edge is mapped and is not 'good'. This value should
+            be negative (but is not required) and defaults to -1.
         """
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
@@ -47,27 +75,27 @@ class BasicRewarder(Rewarder):
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
     ) -> float:
-        """
-        Compute a reward, based on the current state, and the connection and
-        interaction graphs.
+        """Compute a reward, based on the new state, and the given action. Specifically
+        the connection graph, interaction graphs and mapping are used.
 
-        :param old_state: State of the InitialMapping before the current action.
-        :param action: Action that has just been taken
-        :param new_state: Updated state of the InitialMapping
-        :return reward: The reward for this action.
+        :param old_state: State of the ``InitialMapping`` before the current action.
+        :param action: Action that has just been taken.
+        :param new_state: Updated state of the ``InitialMapping``.
+        :return reward: The reward for this action. If the action is illegal, then the
+            reward is `illegal_action_penalty`. If the action is legal, then the reward
+            is the *total* number of 'good' edges times `reward_per_edge` plus the
+            *total* number of 'bad' edges times `penalty_per_edge`.
         """
-
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
         return self._compute_state_reward(new_state)
 
     def _compute_state_reward(self, state: Dict[Any, Any]) -> float:
-        """
-        Compute the value of the mapping defined by the input state.
+        """Compute the value of the mapping defined by the input state.
 
         :param state: The state to compute the value of.
-        :return: Value of this state.
+        :return: The reward value of this state.
         """
         reward = 0.0
         for interaction_i, interaction_j in zip(
@@ -91,12 +119,11 @@ class BasicRewarder(Rewarder):
 
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
-        """
-        Checks if the given action is illegal i.e., checks if qubits are mapped
+        """Check if the given action is illegal i.e., checks if qubits are mapped
         multiple times.
 
-        :param action: Action that has just been taken
-        :param old_state: State of the InitialMapping before the current action.
+        :param action: Action that has just been taken.
+        :param old_state: State of the ``InitialMapping`` before the current action.
         :return: Whether this action is valid for the given state.
         """
         return (
@@ -105,9 +132,7 @@ class BasicRewarder(Rewarder):
         )
 
     def _set_reward_range(self) -> None:
-        """
-        Set the reward range.
-        """
+        """Set the reward range."""
         l_bound = -float("inf")
         if (
             self._reward_per_edge >= 0
@@ -131,15 +156,13 @@ class BasicRewarder(Rewarder):
             type(self) == type(o)
             and self._reward_range == o._reward_range
             and self._illegal_action_penalty == o._illegal_action_penalty
-            and self._reward_per_edge
-            and o._reward_per_edge
+            and self._reward_per_edge == o._reward_per_edge
             and self._penalty_per_edge == o._penalty_per_edge
         )
 
 
 class SingleStepRewarder(BasicRewarder):
-    """
-    Rewarder for the InitialMapping environment, which gives a reward based on
+    """Rewarder for the ``InitialMapping`` environment, which gives a reward based on
     the improvement in the current step.
     """
 
@@ -150,16 +173,17 @@ class SingleStepRewarder(BasicRewarder):
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
     ) -> float:
-        """
-        Compute a reward, based on the current state, and the connection and
-        interaction graphs.
+        """Compute a reward, based on the new state, and the given action. Specifically
+        the connection graph, interaction graphs and mapping are used.
 
-        :param old_state: State of the InitialMapping before the current action.
-        :param action: Action that has just been taken
-        :param new_state: Updated state of the InitialMapping
-        :return reward: The reward for this action.
+        :param old_state: State of the ``InitialMapping`` before the current action.
+        :param action: Action that has just been taken.
+        :param new_state: Updated state of the ``InitialMapping``.
+        :return reward: The reward for this action. If the action is illegal, then the
+            reward is `illegal_action_penalty`. If the action is legal, then the reward
+            is the number of 'good' edges times `reward_per_edge` plus the number of
+            'bad' edges times `penalty_per_edge` created by the *this* action.
         """
-
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
@@ -169,8 +193,7 @@ class SingleStepRewarder(BasicRewarder):
 
 
 class EpisodeRewarder(BasicRewarder):
-    """
-    Rewarder for the InitialMapping environment, which only gives a reward at
+    """Rewarder for the ``InitialMapping`` environment, which only gives a reward at
     the end of the episode or when an illegal action is taken.
     """
 
@@ -181,16 +204,18 @@ class EpisodeRewarder(BasicRewarder):
         action: NDArray[np.int_],
         new_state: Dict[Any, Any],
     ) -> float:
-        """
-        Compute a reward, based on the current state, and the connection and
-        interaction graphs.
+        """Compute a reward, based on the new state, and the given action. Specifically
+        the connection graph, interaction graphs and mapping are used.
 
-        :param old_state: State of the InitialMapping before the current action.
-        :param action: Action that has just been taken
-        :param new_state: Updated state of the InitialMapping
-        :return reward: The reward for this action.
+        :param old_state: State of the ``InitialMapping`` before the current action.
+        :param action: Action that has just been taken.
+        :param new_state: Updated state of the ``InitialMapping``.
+        :return reward: The reward for this action. If the action is illegal, then the
+            reward is `illegal_action_penalty`. If the action is legal, but the mapping
+            is not yet finished, then the reward is 0. If the action is legal, and the
+            mapping is finished, then the reward is the number of 'good' edges times
+            `reward_per_edge` plus the number of 'bad' edges times `penalty_per_edge`.
         """
-
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 

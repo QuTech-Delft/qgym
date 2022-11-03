@@ -1,6 +1,7 @@
+"""This module contains generic input validation methods."""
 import warnings
 from numbers import Integral, Real
-from typing import Any, Optional
+from typing import Any, Optional, Type
 
 import networkx as nx
 import numpy as np
@@ -16,22 +17,21 @@ def check_real(
     l_inclusive=True,
     u_inclusive=True,
 ) -> float:
-    """
-    Checks if the variable x with name 'name' is a real number. Optionally lower and
-    upper bounds can also be checked.
+    """Check if the variable `x` with name 'name' is a real number. Optionally, lower
+    and upper bounds can also be checked.
 
     :param x: Variable to check.
     :param name: Name of the variable. This name will be displayed in possible error
         messages.
-    :param l_bound: Lower bound of x.
-    :param u_bound: Upper bound of x.
-    :param l_inclusive: If true the lower bound is inclusive. Otherwise the lower bound
-        is exclusive.
-    :param u_inclusive: If true the upper bound is inclusive. Otherwise the upper bound
-        is exclusive.
-    :raise TypeError: If x is not a real number.
-    :raise ValueError: If x is outside of the give bounds.
-    :return: Floating point representation of x.
+    :param l_bound: Lower bound of `x`.
+    :param u_bound: Upper bound of `x`.
+    :param l_inclusive: If ``True`` the lower bound is inclusive, otherwise the lower
+        bound is exclusive.
+    :param u_inclusive: If ``True`` the upper bound is inclusive, otherwise the upper
+        bound is exclusive.
+    :raise TypeError: If `x` is not a real number.
+    :raise ValueError: If `x` is outside the give bounds.
+    :return: Floating point representation of `x`.
     """
     if not isinstance(x, Real):
         raise TypeError(f"'{name}' should be a real number, but was of type {type(x)}")
@@ -65,22 +65,21 @@ def check_int(
     l_inclusive=True,
     u_inclusive=True,
 ) -> int:
-    """
-    Checks if the variable x with name 'name' is a real number. Optionally lower and
-    upper bounds can also be checked.
+    """Check if the variable `x` with name 'name' is a real number. Optionally, lower
+    and upper bounds can also be checked.
 
     :param x: Variable to check.
     :param name: Name of the variable. This name will be displayed in possible error
         messages.
-    :param l_bound: Lower bound of x.
-    :param u_bound: Upper bound of x.
-    :param l_inclusive: If true the lower bound is inclusive. Otherwise the lower bound
-        is exclusive.
-    :param u_inclusive: If true the upper bound is inclusive. Otherwise the upper bound
-        is exclusive.
-    :raise TypeError: If x is not a real number.
-    :raise ValueError: If x is outside of the give bounds.
-    :return: Floating point representation of x.
+    :param l_bound: Lower bound of `x`.
+    :param u_bound: Upper bound of `x`.
+    :param l_inclusive: If ``True`` the lower bound is inclusive, otherwise the lower
+        bound is exclusive.
+    :param u_inclusive: If ``True`` the upper bound is inclusive, otherwise the upper
+        bound is exclusive.
+    :raise TypeError: If `x` is not a real number.
+    :raise ValueError: If `x` is outside the give bounds.
+    :return: Floating point representation of `x`.
     """
     if not isinstance(x, Real):
         raise TypeError(f"'{name}' should be an integer, but was of type {type(x)}")
@@ -112,17 +111,18 @@ def check_int(
 
 
 def check_string(x: str, name: str, *, lower: bool = False, upper: bool = False) -> str:
-    """
-    Checks if the variable x with name 'name' is a string. Optionally the string can
-    be converted to all lowercase or all uppercase letters.
+    """Check if the variable `x` with name 'name' is a string. Optionally, the string
+    can be converted to all lowercase or all uppercase letters.
 
     :param x: Variable to check.
     :param name: Name of the variable. This name will be displayed in possible error
         messages.
-    :param lower: If True, x will be returned with lowercase letters. Default is False.
-    :param upper: If True, x will be returned with uppercase letters. Default is False.
-    :raise TypeError: If x is not of type str.
-    :return: input string, optionally in lowercase or uppercase letters.
+    :param lower: If ``True``, `x` will be returned with lowercase letters. Defaults to
+        ``False``.
+    :param upper: If ``True``, `x` will be returned with uppercase letters. Default to
+        ``False``.
+    :raise TypeError: If `x` is not an instance of ``str``.
+    :return: Input string. Optionally, in lowercase or uppercase letters.
     """
     if not isinstance(x, str):
         raise TypeError(f"'{name}' must be a string, but was of type {type(x)}")
@@ -135,13 +135,12 @@ def check_string(x: str, name: str, *, lower: bool = False, upper: bool = False)
 
 
 def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
-    """
-    Checks if a matrix is an adjacency matrix, i.e., a square matrix.
+    """Check if a matrix is an adjacency matrix, i.e., a square matrix.
 
     :param adjacency_matrix: Matrix to check.
-    :raise ValueError: When the provided input is not a valid matrix.
+    :raise ValueError: When the provided input is not a square matrix.
+    :return: Square NDArray representation of ``adjacency_matrix``.
     """
-
     if hasattr(adjacency_matrix, "toarray"):
         adjacency_matrix = adjacency_matrix.toarray()
     else:
@@ -157,34 +156,31 @@ def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
 
 
 def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
-    """
-    Checks if the graph with name 'name' is an instance of networkx.Graph and checks
+    """Check if `graph` with name 'name' is an instance of ``networkx.Graph`` and check
     if the graph is valid topology graph.
 
-    :param grapg: Graph to check.
+    :param graph: Graph to check.
     :param name: Name of the graph. This name will be displayed in possible error
         messages.
-    :raise TypeError: If graph is not an instance networkx.Graph.
-    :raise ValueError: If graph is not a valid topology graph.
+    :raise TypeError: If `graph` is not an instance of ``networkx.Graph``.
+    :raise ValueError: If `graph` is not a valid topology graph.
     """
-
     check_instance(graph, name, nx.Graph)
 
     if nx.number_of_selfloops(graph) > 0:
-        raise ValueError(f"'{name}' contains selfloops")
+        raise ValueError(f"'{name}' contains self-loops")
 
     if len(graph) == 0:
         raise ValueError(f"'{name}' has no nodes")
 
 
-def check_instance(x: Any, name: str, dtype: type) -> None:
-    """
-    Checks if x with name 'name' is an instance of dtype.
+def check_instance(x: Any, name: str, dtype: Type) -> None:
+    """Check if `x` with name 'name' is an instance of dtype.
 
     :param x: Variable to check.
     :param name: Name of the variable. This name will be displayed in possible error
         messages.
-    :raise TypeError: If x is not an instance dtype.
+    :raise TypeError: If `x` is not an instance of `dtype`.
     """
     if not isinstance(x, dtype):
         msg = f"'{name}' must an instance of {dtype}, but was of type {type(x)}"
@@ -192,19 +188,17 @@ def check_instance(x: Any, name: str, dtype: type) -> None:
 
 
 def warn_if_positive(x: Real, name: str) -> None:
-    """
-    Gives a warning when x is postive.
+    """Give a warning when `x` is positive.
 
     :param x: Variable to check.
     :param name: Name of the variable. This name will be displayed in the warning.
     """
     if x > 0:
-        warnings.warn(f"'{name}' was postive")
+        warnings.warn(f"'{name}' was positive")
 
 
 def warn_if_negative(x: Real, name: str) -> None:
-    """
-    Gives a warning when x is negative.
+    """Give a warning when `x` is negative.
 
     :param x: Variable to check.
     :param name: Name of the variable. This name will be displayed in the warning.

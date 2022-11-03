@@ -1,24 +1,27 @@
+"""This module contains the ``CommutationRulebook`` class together with basic
+commutation rules used in the ``Scheduling`` environment.
+
+Example:
+    The code block below shows how to set up a ``CommutationRulebook``, with the
+    additional commutation rule that two C-NOT gates with the same control qubit
+    commute.
+
+    .. code-block:: python
+
+        from qgym.env.scheduling.rulebook import CommutationRulebook
+
+        # cnot gates with the same control qubit commute
+        def cnot_commutation(gate1, gate2):
+            if gate1[0] == "cnot" and gate2[0] == "cnot":
+                if gate1[1] == gate2[1]:
+                    return True
+            return False
+
+        # init the rulebook and add the commutation rule
+        rulebook = CommutationRulebook()
+        rulebook.add_rule(rulebook)
+
 """
-This module contains the CommutationRulebook class together with basic commutation
-rules used in the scheduling environment.
-
-Example::
-
-    from qgym.env.scheduling.rulebook import CommutationRulebook
-
-    # cnot gates with the same control qubit commute
-    def cnot_commutation(gate1, gate2):
-        if gate1[0] == "cnot" and gate2[0] == "cnot":
-            if gate1[1] ==  gate2[1]:
-                return True
-        return False
-
-    # init the rulebook and add the commutation rule
-    rulebook = CommutationRulebook()
-    rulebook.add_rule(rulebook)
-
-"""
-
 from typing import Callable, List
 
 import numpy as np
@@ -28,17 +31,14 @@ from qgym.custom_types import Gate
 
 
 class CommutationRulebook:
-    """
-    Based on nearest blocking neighbour
-    """
+    """Commutation rulebook used in the ``Scheduling`` environment."""
 
     def __init__(self, default_rules: bool = True) -> None:
-        """
-        Init of the CommutationRulebook.
+        """Init of the ``CommutationRulebook``.
 
-        :param default_rules: If True, default rules are used. Default rules dictate
-            that gates with disjoint qubits commute and that gates that are the
-            same commute. If False, then no rules will be initialized.
+        :param default_rules: If ``True``, default rules are used. Default rules dictate
+            that gates with disjoint qubits commute and that gates that are exactly the
+            same commute. If ``False``, then no rules will be initialized.
         """
         if default_rules:
             self._rules = [disjoint_qubits, same_gate]
@@ -46,15 +46,13 @@ class CommutationRulebook:
             self._rules = []
 
     def make_blocking_matrix(self, circuit: List[Gate]) -> NDArray[np.int_]:
-        """
-        Makes a len(circuit) x len(circuit) array with dependencies based on the given
-        commutation rules.
+        """Make a square array of shape (len(circuit), len(circuit)), with dependencies
+        based on the given commutation rules.
 
-        :param circuit: circuit to check dependencies.
-        :return: dependencies of the circuit bases on the rules and scheduling from
-            right to left.
+        :param circuit: Circuit to check dependencies for.
+        :return: Dependencies matrix of the circuit bases on the rules and scheduling
+            from right to left.
         """
-
         blocking_matrix = np.zeros((len(circuit), len(circuit)), dtype=bool)
 
         for idx, gate in enumerate(circuit):
@@ -68,12 +66,11 @@ class CommutationRulebook:
         return blocking_matrix
 
     def commutes(self, gate1: Gate, gate2: Gate) -> bool:
-        """
-        Checks if gate1 and gate2 commute according to the rules in the rulebook.
+        """Check if `gate1` and `gate2` commute according to the rules in the rulebook.
 
-        :param gate1: gate to check the commutation.
-        :param gate2: gate to check gate1 against.
-        :return: Whether gate1 commutes with gate2.
+        :param gate1: Gate to check the commutation.
+        :param gate2: Gate to check gate1 against.
+        :return: Boolean value whether gate1 commutes with gate2.
         """
         for rule in self._rules:
             if rule(gate1, gate2):
@@ -81,22 +78,21 @@ class CommutationRulebook:
         return False
 
     def add_rule(self, rule: Callable[[Gate, Gate], bool]) -> None:
-        """
-        Add a commutation rule to the rulebook
+        """Add a new commutation rule to the rulebook.
 
-        :param rule: Rule to add to the rulebook. A rule takes as input two gates and
-        :return: Whether the two gates commute according to the given rule.
+        :param rule: Rule to add to the rulebook. A rule is a ``Callable`` which takes
+            as input two gates and returns a Boolean value that should be ``True`` if
+            two gates commute and ``False`` otherwise.
         """
         self._rules.append(rule)
 
 
 def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
-    """
-    Gates that have disjoint qubits commute.
+    """Gates that have disjoint qubits commute.
 
-    :param gate1: gate to check disjointness.
-    :param gate2: gate to check disjointness against.
-    :return: Whether the gates are disjoint.
+    :param gate1: Gate to check disjointness.
+    :param gate2: Gate to check disjointness against.
+    :return: Boolean value stating whether the gates are disjoint.
     """
     return (
         gate1.q1 != gate2.q1
@@ -107,11 +103,10 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
 
 
 def same_gate(gate1: Gate, gate2: Gate) -> bool:
-    """
-    Gates that are equal commute.
+    """Gates that are equal commute.
 
-    :param gate1: gate to check equality.
-    :param gate2: gate to check equality against.
-    :return: Whether the gates are equal.
+    :param gate1: Gate to check equality.
+    :param gate2: Gate to check equality against.
+    :return: Boolean value stating whether the gates are equal.
     """
     return gate1 == gate2
