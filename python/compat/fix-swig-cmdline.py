@@ -2,9 +2,9 @@
 # For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/python/compat/fix-swig-cmdline.py
 # No changes were made (apart from formatting according to the black code style).
 
-import sys
 import os
 import subprocess
+import sys
 
 swig = sys.argv[1]
 args = []

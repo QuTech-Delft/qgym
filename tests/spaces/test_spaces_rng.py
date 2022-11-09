@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import numpy as np
 import pytest
-
 from qgym.spaces import Box, Dict, MultiBinary, MultiDiscrete
 
 
