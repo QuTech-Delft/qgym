@@ -3,7 +3,7 @@ import sys
 
 package_name = "qgym"
 sys.path.insert(
-    0, os.path.abspath(f"pybuild/{package_name}")
+    0, os.path.abspath(f"python/{package_name}")
 )
 # -- Project information -----------------------------------------------------
 
@@ -15,6 +15,7 @@ project = package_name
 copyright = "2022, QuTech & TNO"
 author = "QuTech & TNO"
 version = importlib.import_module(package_name).__version__
+
 
 # -- Extensions --------------------------------------------------------------
 extensions = [

@@ -9,8 +9,12 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - name: Install dependencies
+        - uses: actions/download-artifact@master
+          with:
+            name: pypi-manylinux_2_28-cp38-cp38
+            path: wheelhouse
         run: |
-          pip install sphinx sphinx_autodoc_typehints sphinx_math_dollar sphinx_rtd_theme
+          pip install wheelhouse/qgym-0.1.0a0-cp38-cp38-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl sphinx sphinx_autodoc_typehints sphinx_math_dollar sphinx_rtd_theme
       - name: Sphinx build
         run: |
           sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces python/qgym
