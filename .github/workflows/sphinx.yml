@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+    - uses: ammaraskar/sphinx-action@master
       pre-build-command: "sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces pybuild/qgym"
       build-command: "sphinx-build docs_build docs_html"
       docs-folder: "docs/"
