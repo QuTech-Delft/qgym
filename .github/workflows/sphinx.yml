@@ -13,7 +13,7 @@ jobs:
           pip install sphinx sphinx_autodoc_typehints sphinx_math_dollar sphinx_rtd_theme
       - name: Sphinx build
         run: |
-          sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces pybuild/qgym
+          sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces python/qgym
           sphinx-build docs_build docs_html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
