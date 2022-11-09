@@ -3,18 +3,23 @@ name: sphinx
 on: push
 
 jobs:
-  build:
-
+  docs:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
-    - uses: ammaraskar/sphinx-action@master
-      with:
-        pre-build-command: "sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces pybuild/qgym"
-        build-command: "sphinx-build docs_build docs_html"
-        docs-folder: "docs/"
-    - uses: actions/upload-artifact@v1
-      with:
-        name: DocumentationHTML
-        path: docs_html
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - name: Install dependencies
+        run: |
+          pip install sphinx sphinx_autodoc_typehints sphinx_math_dollar sphinx_rtd_theme
+      - name: Sphinx build
+        run: |
+          sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces pybuild/qgym
+          sphinx-build docs_build docs_html
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs_html/
+          force_orphan: true
