@@ -1,6 +1,6 @@
-name: "Sphinx"
-on: 
-  - push
+name: "sphinx"
+
+on:  push
 
 jobs:
   docs:
