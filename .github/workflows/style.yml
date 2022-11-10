@@ -6,5 +6,4 @@ jobs:
   call-black:
     uses: ./.github/workflows/black.yml
   call-isort:
-    needs: call-build
     uses: ./.github/workflows/isort.yml
