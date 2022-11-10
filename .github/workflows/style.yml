@@ -3,8 +3,8 @@ name: style
 on: push
 
 jobs:
-  call-build:
-    uses: ./.github/workflows/build.yml
-  call-sphinx:
+  call-black:
+    uses: ./.github/workflows/black.yml
+  call-isort:
     needs: call-build
-    uses: ./.github/workflows/sphinx.yml
+    uses: ./.github/workflows/isort.yml
