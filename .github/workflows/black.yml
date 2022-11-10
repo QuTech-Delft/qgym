@@ -1,6 +1,6 @@
 name: black
 
-on: push
+on: workflow_call
 
 jobs:
   lint:
