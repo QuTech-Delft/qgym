@@ -11,5 +11,3 @@ jobs:
     uses: ./.github/workflows/black.yml
   call-isort:
     uses: ./.github/workflows/isort.yml
-
-release
