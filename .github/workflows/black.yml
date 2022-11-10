@@ -3,7 +3,7 @@ name: black
 on: workflow_call
 
 jobs:
-  lint:
+  black:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

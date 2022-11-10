@@ -3,7 +3,7 @@ name: isort
 on: workflow_call
 
 jobs:
-  build:
+  isort:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
