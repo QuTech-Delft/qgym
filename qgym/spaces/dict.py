@@ -44,7 +44,7 @@ class Dict(gym.spaces.Dict):
             # override the default behaviour of the gym space
             space._np_random = rng
 
-    def seed(self, seed: Optional[int] = None) -> List[int]:
+    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
         """Seed the rng of this space, using ``numpy.random.default_rng``. The seed will
         be applied to all spaces in the ``Dict`` space.
 

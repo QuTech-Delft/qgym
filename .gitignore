@@ -23,3 +23,6 @@
 /images/
 /openql_output/
 *.zip
+
+#vscode
+.vscode/

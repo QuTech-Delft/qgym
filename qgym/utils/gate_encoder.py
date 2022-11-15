@@ -1,4 +1,4 @@
-"""This module contains the ``GateEncoder`` class whcih can be used for encoding gates
+"""This module contains the ``GateEncoder`` class which can be used for encoding gates
 to integers and back.
 
 Usage:
@@ -24,8 +24,11 @@ class GateEncoder:
     def __init__(self) -> None:
         """Initialize the ``GateEncoder``."""
         self.n_gates = 0
+        self._encoding_dct: Dict[str, int] = {}
+        self._decoding_dct: Dict[int, str] = {}
+        self._longest_name = 0
 
-    def learn_gates(self, gates: Iterable) -> GateEncoder:
+    def learn_gates(self, gates: Iterable[str]) -> GateEncoder:
         """Learns the gates names from an ``Iterable`` and creates a mapping from unique
         gate names to integers and back.
 
@@ -33,10 +36,6 @@ class GateEncoder:
             learned. The ``Iterable`` can contain duplicate names.
         :returns: Self.
         """
-        self._encoding_dct = {}
-        self._decoding_dct = {}
-        self._longest_name = 0
-
         idx = 0  # in case gates is empty
         self.n_gates = 0
         for idx, gate_name in enumerate(gates, 1):
@@ -53,7 +52,7 @@ class GateEncoder:
     def encode_gates(
         self,
         gates: Union[str, Mapping[str, Any], Sequence[Gate], Iterable[str]],
-    ) -> Union[int, Dict[int, Any], List[Gate]]:
+    ) -> Union[int, Dict[int, Any], List[Gate], List[int]]:
         """Encode the gate names (of type ``str``) in `gates` to integers, based on the
         gates seen in ``learn_gates``.
 
@@ -64,45 +63,48 @@ class GateEncoder:
         :raise TypeError: When an unsupported type is given.
         """
         if isinstance(gates, str):
-            encoded_gates = self._encoding_dct[gates]
+            encoded_str = self._encoding_dct[gates]
+            return encoded_str
 
-        elif isinstance(gates, Mapping):
-            encoded_gates = {}
+        if isinstance(gates, Mapping):
+            encoded_dict: Dict[int, Any] = {}
+            gate_name: str
             for gate_name, item in gates.items():
                 gate_encoding = self._encoding_dct[gate_name]
                 if isinstance(item, int):
-                    encoded_gates[gate_encoding] = item
+                    encoded_dict[gate_encoding] = item
                 elif isinstance(item, Iterable):
                     item_encoded = []
                     for i in item:
                         item_encoded.append(self._encoding_dct[i])
-                    encoded_gates[gate_encoding] = item_encoded
+                    encoded_dict[gate_encoding] = item_encoded
                 else:
                     raise ValueError("Unknown mapping")
+            return encoded_dict
 
-        elif isinstance(gates, Sequence) and isinstance(gates[0], Gate):
-            encoded_gates = []
-            for gate in gates:
+        if isinstance(gates, Sequence) and isinstance(gates[0], Gate):
+            encoded_gates_list: List[Gate] = []
+            gate: Gate
+            for gate in gates:  # type: ignore # Gates is a Sequence of Gate
                 encoded_name = self._encoding_dct[gate.name]
-                encoded_gates.append(Gate(encoded_name, gate.q1, gate.q2))
+                encoded_gates_list.append(Gate(encoded_name, gate.q1, gate.q2))
+            return encoded_gates_list
 
-        elif isinstance(gates, Iterable):
-            encoded_gates = []
-            for gate_name in gates:
+        if isinstance(gates, Iterable):
+            encoded_names_list: List[int] = []
+            for gate_name in gates:  # type: ignore # Gates is an Iterable of str
                 gate_encoding = self._encoding_dct[gate_name]
-                encoded_gates.append(gate_encoding)
+                encoded_names_list.append(gate_encoding)
+            return encoded_names_list
 
-        else:
-            raise TypeError(
-                f"gates type must be str, Mapping or Sequence, got {type(gates)}."
-            )
-
-        return encoded_gates
+        raise TypeError(
+            f"gates type must be str, Mapping or Sequence, got {type(gates)}."
+        )
 
     def decode_gates(
         self,
         encoded_gates: Union[int, Mapping[int, Any], Sequence[Gate], Iterable[int]],
-    ) -> Union[str, Dict[str, Any], List[Gate]]:
+    ) -> Union[str, Dict[str, Any], List[Gate], List[str]]:
         """Decode integer encoded gate names to the original gate names based on the
         gates seen in ``learn_gates``.
 
@@ -114,30 +116,32 @@ class GateEncoder:
         :raise TypeError: When an unsupported type is given
         """
         if isinstance(encoded_gates, int):
-            decoded_gates = self._decoding_dct[encoded_gates]
+            decoded_int = self._decoding_dct[encoded_gates]
+            return decoded_int
 
-        elif isinstance(encoded_gates, Mapping):
-            decoded_gates = {}
+        if isinstance(encoded_gates, Mapping):
+            decoded_dict: Dict[str, Any] = {}
+            gate_int: int
             for gate_int in encoded_gates:
                 gate_name = self._decoding_dct[gate_int]
-                decoded_gates[gate_name] = encoded_gates[gate_int]
+                decoded_dict[gate_name] = encoded_gates[gate_int]
+            return decoded_dict
 
-        elif isinstance(encoded_gates, Sequence) and isinstance(encoded_gates[0], Gate):
-            decoded_gates = []
+        if isinstance(encoded_gates, Sequence) and isinstance(encoded_gates[0], Gate):
+            decoded_gate_list: List[Gate] = []
             for gate in encoded_gates:
                 decoded_gate_name = self._decoding_dct[gate.name]
-                decoded_gates.append(Gate(decoded_gate_name, gate.q1, gate.q2))
+                decoded_gate_list.append(Gate(decoded_gate_name, gate.q1, gate.q2))
+            return decoded_gate_list
 
-        elif isinstance(encoded_gates, Iterable):
-            decoded_gates = []
-            for gate_int in encoded_gates:
+        if isinstance(encoded_gates, Iterable):
+            decoded_name_list: List[str] = []
+            for gate_int in encoded_gates: # type: ignore # Gates is an Iterable of int
                 decoded_gate = self._decoding_dct[gate_int]
-                decoded_gates.append(decoded_gate)
+                decoded_name_list.append(decoded_gate)
+            return decoded_name_list
 
-        else:
-            raise TypeError(
-                "encoded_gates must be int, Mapping or Sequence, got "
-                f"{type(encoded_gates)}."
-            )
-
-        return decoded_gates
+        raise TypeError(
+            "encoded_gates must be int, Mapping or Sequence, got "
+            f"{type(encoded_gates)}."
+        )

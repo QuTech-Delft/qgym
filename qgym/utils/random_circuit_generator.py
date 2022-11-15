@@ -27,7 +27,7 @@ class RandomCircuitGenerator:
         """
         self.n_qubits = n_qubits
         self.max_gates = max_gates
-        self.rng = rng
+        self._rng = rng
 
     @property
     def rng(self) -> Generator:
@@ -73,7 +73,7 @@ class RandomCircuitGenerator:
             msg += f"{type(n_gates)}."
             raise ValueError(msg)
 
-        circuit: List[Gate] = [None] * n_gates
+        circuit: List[Gate] = [Gate("", -1, -1)] * n_gates
 
         if mode.lower() == "default":
             gate_names = ["x", "y", "z", "cnot", "measure"]
