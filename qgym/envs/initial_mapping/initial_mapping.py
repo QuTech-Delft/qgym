@@ -133,7 +133,7 @@ from qgym.utils.input_validation import (
     check_string,
 )
 
-Gridspecs = Union[List[Union[int, Iterable]], Tuple[Union[int, Iterable]]]
+Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
 
 class InitialMapping(
@@ -241,7 +241,7 @@ class InitialMapping(
         *,
         seed: Optional[int] = None,
         return_info: bool = False,
-        interaction_graph=None,
+        interaction_graph: Optional[Graph] = None,
         **_kwargs: Any,
     ) -> Union[
         Tuple[NDArray[np.int_], NDArray[np.int_]],
@@ -346,7 +346,7 @@ class InitialMapping(
 
     def _is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
-        return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]
+        return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]  # type: ignore # this always gives a bool
 
     def _obtain_info(self) -> Dict[str, Any]:
         """:return: Optional debugging info for the current state."""

@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import networkx as nx
 import numpy as np
@@ -7,6 +7,7 @@ import pygame
 from networkx import Graph
 from numpy.typing import NDArray
 from pygame import gfxdraw
+from pygame.surface import Surface
 
 # Define some colors used during rendering
 WHITE = (255, 255, 255)
@@ -31,7 +32,7 @@ class InitialMappingVisualiser:
         self.connection_graph_matrix = nx.to_scipy_sparse_array(connection_graph)
 
         # Rendering data
-        self.screen = None
+        self.screen: Optional[Surface] = None
         self.is_open = False
         self.screen_width = 1300
         self.screen_height = 730
@@ -98,7 +99,7 @@ class InitialMappingVisualiser:
             rendered image.
         """
         if self.screen is None:
-            self.start(mode)
+            self.screen = self.start(mode)
 
         pygame.time.delay(10)
 
@@ -106,13 +107,15 @@ class InitialMappingVisualiser:
 
         mapped_graph = self._get_mapped_graph(state)
 
-        self._draw_connection_graph()
-        self._draw_interaction_graph(state["steps_done"], interaction_graph)
-        self._draw_mapped_graph(mapped_graph)
+        self._draw_connection_graph(self.screen)
+        self._draw_interaction_graph(
+            self.screen, state["steps_done"], interaction_graph
+        )
+        self._draw_mapped_graph(self.screen, mapped_graph)
 
-        self._draw_header("Connection Graph", self.subscreen1)
-        self._draw_header("Interaction Graph", self.subscreen2)
-        self._draw_header("Mapped Graph", self.subscreen3)
+        self._draw_header("Connection Graph", self.subscreen1, self.screen)
+        self._draw_header("Interaction Graph", self.subscreen2, self.screen)
+        self._draw_header("Mapped Graph", self.subscreen3, self.screen)
 
         if mode == "human":
             pygame.event.pump()
@@ -164,7 +167,7 @@ class InitialMappingVisualiser:
     def _add_colored_edge(
         self,
         graph: nx.Graph,
-        mapped_adjacency_matrix: NDArray,
+        mapped_adjacency_matrix: NDArray[np.float_],
         edge: Tuple[int, int],
     ) -> None:
         """Give an edge of the graph a color based on the mapping. Gray edges are
@@ -183,19 +186,25 @@ class InitialMappingVisualiser:
         if is_connected and not is_mapped:
             graph.add_edge(*edge, color="gray")
 
-    def _draw_connection_graph(self) -> None:
-        """Draw the connection graph on subscreen1."""
+    def _draw_connection_graph(self, screen: Surface) -> None:
+        """Draw the connection graph on subscreen1.
+
+        :param screen: Screen to draw the connection graph on.
+        """
         for (u, v) in self.connection_graph.edges():
             pos_u = self.node_positions_connection_graph[u]
             pos_v = self.node_positions_connection_graph[v]
-            self._draw_wide_line(self.colors["basic_edge"], pos_u, pos_v)
+            self._draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
 
         for x, y in self.node_positions_connection_graph.values():
-            self._draw_point(int(x), int(y))
+            self._draw_point(int(x), int(y), screen)
 
-    def _draw_interaction_graph(self, step: int, interaction_graph: nx.Graph) -> None:
+    def _draw_interaction_graph(
+        self, screen: Surface, step: int, interaction_graph: nx.Graph
+    ) -> None:
         """Draw the interaction graph on subscreen2.
 
+        :param screen: Screen to draw the interaction graph on.
         :param step: Current step number.
         :param interaction_graph: ``networkx.Graph`` representation of the interaction
             graph to draw.
@@ -211,14 +220,17 @@ class InitialMappingVisualiser:
         for (u, v) in interaction_graph.edges():
             pos_u = self.node_positions_interaction_graph[u]
             pos_v = self.node_positions_interaction_graph[v]
-            self._draw_wide_line(self.colors["basic_edge"], pos_u, pos_v)
+            self._draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
 
         for x, y in self.node_positions_interaction_graph.values():
-            self._draw_point(int(x), int(y))
+            self._draw_point(int(x), int(y), screen)
 
-    def _draw_mapped_graph(self, mapped_graph: nx.Graph) -> None:
+    def _draw_mapped_graph(
+        self, screen: Surface, mapped_graph: nx.Graph
+    ) -> None:
         """Draw the mapped graph on subscreen3.
 
+        :param screen: Screen to draw the graph on.
         :param mapped_graph: ``networkx.Graph`` representation of the mapped graph. Each
             edge should have a color attached to it.
         """
@@ -231,25 +243,32 @@ class InitialMappingVisualiser:
                 color = self.colors["used_edge"]
             if mapped_graph.edges[u, v]["color"] == "gray":
                 color = self.colors["unused_edge"]
-            self._draw_wide_line(color, pos_u, pos_v)
+            self._draw_wide_line(screen, color, pos_u, pos_v)
 
         for x, y in self.node_positions_mapped_graph.values():
-            self._draw_point(int(x), int(y))
+            self._draw_point(int(x), int(y), screen)
 
-    def _draw_point(self, x: int, y: int) -> None:
+    def _draw_point(self, x: int, y: int, screen: Surface) -> None:
         """Draw a point on the screen.
 
         :param x: x coordinate of the point.
         :param y: y coordinate of the point.
+        :param screen: Screen to add the point to.
         """
-        gfxdraw.aacircle(self.screen, x, y, 10, self.colors["nodes"])
-        gfxdraw.filled_circle(self.screen, x, y, 10, self.colors["nodes"])
+        gfxdraw.aacircle(screen, x, y, 10, self.colors["nodes"])
+        gfxdraw.filled_circle(screen, x, y, 10, self.colors["nodes"])
 
     def _draw_wide_line(
-        self, color: Tuple[int, int, int], p1: NDArray, p2: NDArray, width: int = 2
+        self,
+        screen: Surface,
+        color: Tuple[int, int, int],
+        p1: NDArray[np.float_],
+        p2: NDArray[np.float_],
+        width: int = 2,
     ) -> None:
         """Draw a wide line on the screen.
 
+        :param screen: Screen to draw the line on.
         :param color: Color of the line.
         :param p1: Coordinates of the starting point of the line.
         :param p2: Coordinates of the end point of the line.
@@ -265,24 +284,27 @@ class InitialMappingVisualiser:
         points = (p1 - sp, p1 + sp, p2 + sp, p2 - sp)
 
         # draw the polygon
-        pygame.gfxdraw.aapolygon(self.screen, points, color)
-        pygame.gfxdraw.filled_polygon(self.screen, points, color)
+        pygame.gfxdraw.aapolygon(screen, points, color)
+        pygame.gfxdraw.filled_polygon(screen, points, color)
 
-    def _draw_header(self, text: str, subscreen: pygame.Rect) -> None:
+    def _draw_header(
+        self, text: str, subscreen: pygame.Rect, screen: Surface
+    ) -> None:
         """Draw a header above a subscreen.
 
         :param text: Text of the header.
         :param subscreen: Subscreen to draw the header above.
+        :param screen: Main screen to draw on.
         """
-        text = self.font.render(text, True, self.colors["text"])
+        pygame_text = self.font.render(text, True, self.colors["text"])
         text_center = (subscreen.center[0], subscreen.y - self.header_spacing)
-        text_position = text.get_rect(center=text_center)
-        self.screen.blit(text, text_position)
+        text_position = pygame_text.get_rect(center=text_center)
+        screen.blit(pygame_text, text_position)
 
     @staticmethod
     def _get_render_positions(
         graph: nx.Graph, subscreen: pygame.Rect
-    ) -> Dict[Any, NDArray]:
+    ) -> Dict[Any, NDArray[np.float_]]:
         """Give the positions of the nodes of a graph on a given subscreen.
 
         :param graph: Graph of which the node positions must be determined.
@@ -290,6 +312,7 @@ class InitialMappingVisualiser:
         :return: a dictionary where the keys are the names of the nodes, and the
             values are the coordinates of these nodes.
         """
+        node_positions: Dict[Any, NDArray[np.float_]]
         node_positions = nx.spring_layout(graph, threshold=1e-6)
 
         # Scale and move the node positions to be centered on the subscreen
@@ -298,7 +321,7 @@ class InitialMappingVisualiser:
 
         return node_positions
 
-    def start(self, mode: str) -> None:
+    def start(self, mode: str) -> Surface:
         """Start ``pygame`` in the given mode.
 
         :param mode: Mode to start ``pygame`` for ("human" and "rgb_array" are
@@ -308,11 +331,9 @@ class InitialMappingVisualiser:
         pygame.display.init()
 
         if mode == "human":
-            self.screen = pygame.display.set_mode(
-                (self.screen_width, self.screen_height)
-            )
+            screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         elif mode == "rgb_array":
-            self.screen = pygame.Surface((self.screen_width, self.screen_height))
+            screen = pygame.Surface((self.screen_width, self.screen_height))
         else:
             raise ValueError(
                 f"You provided an invalid mode '{mode}',"
@@ -324,6 +345,7 @@ class InitialMappingVisualiser:
         pygame.font.init()
         self.font = pygame.font.SysFont("Arial", self.font_size)
         self.is_open = True
+        return screen
 
     def close(self) -> None:
         """Close the screen used for rendering."""

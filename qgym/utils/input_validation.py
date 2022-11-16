@@ -197,7 +197,7 @@ def warn_if_positive(x: float, name: str) -> None:
         warnings.warn(f"'{name}' was positive")
 
 
-def warn_if_negative(x: Real, name: str) -> None:
+def warn_if_negative(x: float, name: str) -> None:
     """Give a warning when `x` is negative.
 
     :param x: Variable to check.

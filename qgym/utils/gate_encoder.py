@@ -136,7 +136,7 @@ class GateEncoder:
 
         if isinstance(encoded_gates, Iterable):
             decoded_name_list: List[str] = []
-            for gate_int in encoded_gates: # type: ignore # Gates is an Iterable of int
+            for gate_int in encoded_gates:  # type: ignore # Gates is an Iterable of int
                 decoded_gate = self._decoding_dct[gate_int]
                 decoded_name_list.append(decoded_gate)
             return decoded_name_list
