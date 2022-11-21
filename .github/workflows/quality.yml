@@ -1,0 +1,7 @@
+name: quality
+
+on: push
+
+jobs:
+  call-mypy:
+    uses: ./.github/workflows/mymy.yml
