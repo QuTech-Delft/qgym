@@ -282,8 +282,8 @@ class InitialMappingVisualiser:
         points = (p1 - sp, p1 + sp, p2 + sp, p2 - sp)
 
         # draw the polygon
-        pygame.gfxdraw.aapolygon(screen, points, color)
-        pygame.gfxdraw.filled_polygon(screen, points, color)
+        pygame.gfxdraw.aapolygon(screen, points, color)  # type: ignore # aapolygon also allows NDArrays.
+        pygame.gfxdraw.filled_polygon(screen, points, color)  # type: ignore # filled_polygon also allows NDArrays.
 
     def _draw_header(self, text: str, subscreen: pygame.Rect, screen: Surface) -> None:
         """Draw a header above a subscreen.
