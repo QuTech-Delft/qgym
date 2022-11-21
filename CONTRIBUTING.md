@@ -40,7 +40,7 @@ in a browser to view the documentation.
 
 To successfully build the documentation, one has to have the `qgym` package compiled and installed in the environment.
 ```commandline
-sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces python/qgym
+sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces pybuild/qgym
 sphinx-build docs_build docs_html
 ```
 
