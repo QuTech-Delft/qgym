@@ -225,9 +225,7 @@ class InitialMappingVisualiser:
         for x, y in self.node_positions_interaction_graph.values():
             self._draw_point(int(x), int(y), screen)
 
-    def _draw_mapped_graph(
-        self, screen: Surface, mapped_graph: nx.Graph
-    ) -> None:
+    def _draw_mapped_graph(self, screen: Surface, mapped_graph: nx.Graph) -> None:
         """Draw the mapped graph on subscreen3.
 
         :param screen: Screen to draw the graph on.
@@ -287,9 +285,7 @@ class InitialMappingVisualiser:
         pygame.gfxdraw.aapolygon(screen, points, color)
         pygame.gfxdraw.filled_polygon(screen, points, color)
 
-    def _draw_header(
-        self, text: str, subscreen: pygame.Rect, screen: Surface
-    ) -> None:
+    def _draw_header(self, text: str, subscreen: pygame.Rect, screen: Surface) -> None:
         """Draw a header above a subscreen.
 
         :param text: Text of the header.
