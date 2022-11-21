@@ -153,7 +153,7 @@ Example 2:
 
 """
 from copy import deepcopy
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
+from typing import Any, Dict, List, Mapping, Optional, Set, Tuple, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -170,7 +170,7 @@ from qgym.utils import RandomCircuitGenerator
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
-class Scheduling(Environment):
+class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """RL environment for the scheduling problem."""
 
     def __init__(
@@ -253,7 +253,7 @@ class Scheduling(Environment):
 
         self._visualiser = SchedulingVisualiser(
             gate_encoder=self._gate_encoder,
-            gate_cycle_length=machine_properties.gates,
+            gate_cycle_length=machine_properties.gates,  # type: ignore # machine_properties is encoded, hence gates is Dict[int ,int]
             n_qubits=machine_properties.n_qubits,
         )
 
@@ -349,23 +349,26 @@ class Scheduling(Environment):
     def reset(
         self,
         *,
-        circuit: Optional[List[Gate]] = None,
         seed: Optional[int] = None,
         return_info: bool = False,
+        circuit: Optional[List[Gate]] = None,
+        **_kwargs: Any,
     ) -> Union[
-        Tuple[NDArray[np.int_], NDArray[np.int_]],
-        Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[Any, Any]],
+        Dict[str, NDArray[np.int_]],
+        Tuple[Dict[str, NDArray[np.int_]], Dict[Any, Any]],
     ]:
         """Reset the state, action space and step number and load a new (random) initial
         state. To be used after an episode is finished.
 
-        :param circuit: Optional list of a circuit for the next episode, each entry in
-            the list should be a ``Gate``. When a circuit is give, no random circuit
-            will be generated.
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call, i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
         :return: Initial observation and optionally debugging info.
+        :param circuit: Optional list of a circuit for the next episode, each entry in
+            the list should be a ``Gate``. When a circuit is give, no random circuit
+            will be generated.
+        :param _kwargs: Additional options to configure the reset.
+        :return: Initial observation and optionally also debugging info.
         """
         # Reset counters
         self._state["steps_done"] = 0
@@ -375,8 +378,8 @@ class Scheduling(Environment):
         self._state["busy"] = np.zeros(self._state["n_qubits"], dtype=int)
 
         # At the start no gates should be excluded
-        self._excluded_gates = {}
-        self._exclude_in_next_cycle = set()
+        self._excluded_gates: Dict[int, int] = {}
+        self._exclude_in_next_cycle: Set[int] = set()
 
         # Generate a circuit if None is given
         if circuit is None:
@@ -480,11 +483,12 @@ class Scheduling(Environment):
         if not isinstance(mode, str):
             raise TypeError(f"mode must be of type str, but was {type(mode)}")
 
+        encoded_circuit: List[Gate] = self._state["encoded_circuit"]
         if mode.lower() == "encoded":
-            return deepcopy(self._state["encoded_circuit"])
+            return deepcopy(encoded_circuit)
 
         elif mode.lower() == "human":
-            return self._gate_encoder.decode_gates(self._state["encoded_circuit"])
+            return self._gate_encoder.decode_gates(encoded_circuit)
 
         else:
             raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")

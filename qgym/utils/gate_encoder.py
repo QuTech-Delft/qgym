@@ -13,7 +13,18 @@ Usage:
 from __future__ import annotations
 
 import warnings
-from typing import Any, Dict, Iterable, List, Mapping, Sequence, Union
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+    overload,
+)
 
 from qgym.custom_types import Gate
 
@@ -49,9 +60,32 @@ class GateEncoder:
 
         return self
 
+    @overload
+    def encode_gates(self, gates: str) -> int:
+        ...
+
+    @overload
+    def encode_gates(self, gates: Mapping[str, Any]) -> Dict[int, Any]:
+        ...
+
+    @overload
+    def encode_gates(self, gates: Sequence[Gate]) -> List[Gate]:
+        ...
+
+    @overload
+    def encode_gates(
+        self, gates: Union[List[str], Set[str], Tuple[str, ...]]
+    ) -> List[int]:
+        ...
+
     def encode_gates(
         self,
-        gates: Union[str, Mapping[str, Any], Sequence[Gate], Iterable[str]],
+        gates: Union[
+            str,
+            Mapping[str, Any],
+            Sequence[Gate],
+            Union[List[str], Set[str], Tuple[str, ...]],
+        ],
     ) -> Union[int, Dict[int, Any], List[Gate], List[int]]:
         """Encode the gate names (of type ``str``) in `gates` to integers, based on the
         gates seen in ``learn_gates``.
@@ -83,16 +117,22 @@ class GateEncoder:
             return encoded_dict
 
         if isinstance(gates, Sequence) and isinstance(gates[0], Gate):
+            # We assume that if the first element of gates is a Gate, then the whole
+            # Sequence contains Gate objects.
             encoded_gates_list: List[Gate] = []
             gate: Gate
-            for gate in gates:  # type: ignore # Gates is a Sequence of Gate
+            for gate in gates:  # type: ignore
                 encoded_name = self._encoding_dct[gate.name]
                 encoded_gates_list.append(Gate(encoded_name, gate.q1, gate.q2))
             return encoded_gates_list
 
-        if isinstance(gates, Iterable):
+        if (
+            isinstance(gates, list)
+            or isinstance(gates, set)
+            or isinstance(gates, tuple)
+        ):
             encoded_names_list: List[int] = []
-            for gate_name in gates:  # type: ignore # Gates is an Iterable of str
+            for gate_name in gates:
                 gate_encoding = self._encoding_dct[gate_name]
                 encoded_names_list.append(gate_encoding)
             return encoded_names_list
@@ -101,9 +141,32 @@ class GateEncoder:
             f"gates type must be str, Mapping or Sequence, got {type(gates)}."
         )
 
+    @overload
+    def decode_gates(self, encoded_gates: int) -> str:
+        ...
+
+    @overload
+    def decode_gates(self, encoded_gates: Mapping[int, Any]) -> Dict[str, Any]:
+        ...
+
+    @overload
+    def decode_gates(self, encoded_gates: Sequence[Gate]) -> List[Gate]:
+        ...
+
+    @overload
+    def decode_gates(
+        self, encoded_gates: Union[List[int], Set[int], Tuple[int, ...]]
+    ) -> List[str]:
+        ...
+
     def decode_gates(
         self,
-        encoded_gates: Union[int, Mapping[int, Any], Sequence[Gate], Iterable[int]],
+        encoded_gates: Union[
+            int,
+            Mapping[int, Any],
+            Sequence[Gate],
+            Union[List[int], Set[int], Tuple[int, ...]],
+        ],
     ) -> Union[str, Dict[str, Any], List[Gate], List[str]]:
         """Decode integer encoded gate names to the original gate names based on the
         gates seen in ``learn_gates``.
@@ -128,15 +191,22 @@ class GateEncoder:
             return decoded_dict
 
         if isinstance(encoded_gates, Sequence) and isinstance(encoded_gates[0], Gate):
+            # We assume that if the first element of encoded_gates is a Gate, then the
+            # whole Sequence contains Gate objects.
             decoded_gate_list: List[Gate] = []
-            for gate in encoded_gates:
+            gate: Gate
+            for gate in encoded_gates:  # type:ignore
                 decoded_gate_name = self._decoding_dct[gate.name]
                 decoded_gate_list.append(Gate(decoded_gate_name, gate.q1, gate.q2))
             return decoded_gate_list
 
-        if isinstance(encoded_gates, Iterable):
+        if (
+            isinstance(encoded_gates, list)
+            or isinstance(encoded_gates, set)
+            or isinstance(encoded_gates, tuple)
+        ):
             decoded_name_list: List[str] = []
-            for gate_int in encoded_gates:  # type: ignore # Gates is an Iterable of int
+            for gate_int in encoded_gates:
                 decoded_gate = self._decoding_dct[gate_int]
                 decoded_name_list.append(decoded_gate)
             return decoded_name_list

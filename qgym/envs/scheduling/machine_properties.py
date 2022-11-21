@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import warnings
 from copy import deepcopy
-from typing import Any, Dict, Iterable, List, Mapping, Set, Tuple
+from typing import Any, Dict, Iterable, List, Mapping, Set, Tuple, Union
 
 from qgym.utils import GateEncoder
 from qgym.utils.input_validation import check_instance, check_int, check_string
@@ -44,9 +44,9 @@ class MachineProperties:
         :param n_qubits: Number of qubits of the machine.
         """
         self._n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
-        self._gates = {}
-        self._same_start = set()
-        self._not_in_same_cycle = {}
+        self._gates: Dict[Union[str, int], int] = {}
+        self._same_start: Set[Union[str, int]] = set()
+        self._not_in_same_cycle: Dict[Union[str, int], List[Union[str, int]]] = {}
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
@@ -140,6 +140,7 @@ class MachineProperties:
                     self.not_in_same_cycle[gate2].append(gate1)
             else:
                 self.not_in_same_cycle[gate2] = [gate1]
+        return self
 
     def encode(self) -> GateEncoder:
         """Encode the gates in the machine properties to integer values.
@@ -148,10 +149,16 @@ class MachineProperties:
             to decode the gates or encode quantum circuits containing the same gate
             names as in this ``MachineProperties`` object.
         """
-        gate_encoder = GateEncoder().learn_gates(self.gates)
-        self._gates = gate_encoder.encode_gates(self.gates)
-        self._same_start = gate_encoder.encode_gates(self.same_start)
-        self._not_in_same_cycle = gate_encoder.encode_gates(self.not_in_same_cycle)
+        if any(isinstance(gate, int) for gate in self.gates):
+            raise ValueError("Machine properties are already encoded")
+
+        gate_encoder = GateEncoder().learn_gates(self.gates)  # type: ignore # Type of self.gates is Dict[str, int]
+
+        # We ignore the typing in the case below, because ``encode_gates`` will give the
+        # right type based on the input. Mypy doesn't see this.
+        self._gates = gate_encoder.encode_gates(self.gates)  # type: ignore
+        self._same_start = gate_encoder.encode_gates(self.same_start)  # type: ignore
+        self._not_in_same_cycle = gate_encoder.encode_gates(self.not_in_same_cycle)  # type: ignore
         return gate_encoder
 
     @property
@@ -160,7 +167,7 @@ class MachineProperties:
         return self._n_qubits
 
     @property
-    def gates(self) -> Dict[str, int]:
+    def gates(self) -> Dict[Union[str, int], int]:
         """Return a``Dict`` with the gate names the machine can perform as keys, and the
         number of machine cycles (time) as values.
         """
@@ -172,14 +179,14 @@ class MachineProperties:
         return len(self._gates)
 
     @property
-    def same_start(self) -> Set:
+    def same_start(self) -> Set[Union[str, int]]:
         """Set of gate names that should start in the same cycle, or wait till the
         previous gate is done.
         """
         return self._same_start
 
     @property
-    def not_in_same_cycle(self) -> Dict[str, List[str]]:
+    def not_in_same_cycle(self) -> Dict[Union[str, int], List[Union[str, int]]]:
         """Gates that can not start in the same cycle."""
         return self._not_in_same_cycle
 
