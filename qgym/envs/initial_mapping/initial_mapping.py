@@ -344,7 +344,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
     def _is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
-        return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]  # type: ignore # this always gives a bool
+        return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]  # type: ignore[no-any-return] # this always gives a bool
 
     def _obtain_info(self) -> Dict[str, Any]:
         """:return: Optional debugging info for the current state."""

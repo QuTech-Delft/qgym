@@ -253,7 +253,7 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         self._visualiser = SchedulingVisualiser(
             gate_encoder=self._gate_encoder,
-            gate_cycle_length=machine_properties.gates,  # type: ignore # machine_properties is encoded, hence gates is Dict[int ,int]
+            gate_cycle_length=machine_properties.gates,  # type: ignore[arg-type] # machine_properties is encoded, hence gates is Dict[int ,int]
             n_qubits=machine_properties.n_qubits,
         )
 

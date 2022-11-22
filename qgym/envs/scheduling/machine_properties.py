@@ -44,9 +44,9 @@ class MachineProperties:
         :param n_qubits: Number of qubits of the machine.
         """
         self._n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
-        self._gates: Dict[Union[str, int], int] = {}
-        self._same_start: Set[Union[str, int]] = set()
-        self._not_in_same_cycle: Dict[Union[str, int], List[Union[str, int]]] = {}
+        self._gates: Dict[Any, int] = {}
+        self._same_start: Set[Any] = set()
+        self._not_in_same_cycle: Dict[Any, List[Any]] = {}
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
@@ -149,16 +149,20 @@ class MachineProperties:
             to decode the gates or encode quantum circuits containing the same gate
             names as in this ``MachineProperties`` object.
         """
-        if any(isinstance(gate, int) for gate in self.gates):
-            raise ValueError("Machine properties are already encoded")
+        if (
+            any(not isinstance(gate, str) for gate in self._gates)
+            or any(not isinstance(gate, str) for gate in self._same_start)
+            or any(not isinstance(gate, str) for gate in self._not_in_same_cycle)
+        ):
+            msg = "Gate names of machine properties are not of type str, perhaps they "
+            msg = "are already encoded?"
+            raise ValueError(msg)
 
-        gate_encoder = GateEncoder().learn_gates(self.gates)  # type: ignore # Type of self.gates is Dict[str, int]
+        gate_encoder = GateEncoder().learn_gates(self._gates)
 
-        # We ignore the typing in the case below, because ``encode_gates`` will give the
-        # right type based on the input. Mypy doesn't see this.
-        self._gates = gate_encoder.encode_gates(self.gates)  # type: ignore
-        self._same_start = gate_encoder.encode_gates(self.same_start)  # type: ignore
-        self._not_in_same_cycle = gate_encoder.encode_gates(self.not_in_same_cycle)  # type: ignore
+        self._gates = gate_encoder.encode_gates(self._gates)
+        self._same_start = gate_encoder.encode_gates(self._same_start)
+        self._not_in_same_cycle = gate_encoder.encode_gates(self._not_in_same_cycle)
         return gate_encoder
 
     @property

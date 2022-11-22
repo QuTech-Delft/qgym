@@ -22,11 +22,14 @@ from typing import (
     Sequence,
     Set,
     Tuple,
+    TypeVar,
     Union,
     overload,
 )
 
 from qgym.custom_types import Gate
+
+T = TypeVar("T")
 
 
 class GateEncoder:
@@ -65,7 +68,7 @@ class GateEncoder:
         ...
 
     @overload
-    def encode_gates(self, gates: Mapping[str, Any]) -> Dict[int, Any]:
+    def encode_gates(self, gates: Mapping[str, T]) -> Dict[int, T]:
         ...
 
     @overload
@@ -73,9 +76,11 @@ class GateEncoder:
         ...
 
     @overload
-    def encode_gates(
-        self, gates: Union[List[str], Set[str], Tuple[str, ...]]
-    ) -> List[int]:
+    def encode_gates(self, gates: Set[str]) -> Set[int]:
+        ...
+
+    @overload
+    def encode_gates(self, gates: Union[List[str], Tuple[str, ...]]) -> List[int]:
         ...
 
     def encode_gates(
@@ -84,9 +89,10 @@ class GateEncoder:
             str,
             Mapping[str, Any],
             Sequence[Gate],
-            Union[List[str], Set[str], Tuple[str, ...]],
+            Set[str],
+            Union[List[str], Tuple[str, ...]],
         ],
-    ) -> Union[int, Dict[int, Any], List[Gate], List[int]]:
+    ) -> Union[int, Dict[int, Any], List[Gate], Set[int], List[int]]:
         """Encode the gate names (of type ``str``) in `gates` to integers, based on the
         gates seen in ``learn_gates``.
 
@@ -126,11 +132,14 @@ class GateEncoder:
                 encoded_gates_list.append(Gate(encoded_name, gate.q1, gate.q2))
             return encoded_gates_list
 
-        if (
-            isinstance(gates, list)
-            or isinstance(gates, set)
-            or isinstance(gates, tuple)
-        ):
+        if isinstance(gates, set):
+            encoded_names_set: Set[int] = set()
+            for gate_name in gates:
+                gate_encoding = self._encoding_dct[gate_name]
+                encoded_names_set.add(gate_encoding)
+            return encoded_names_set
+
+        if isinstance(gates, list) or isinstance(gates, tuple):
             encoded_names_list: List[int] = []
             for gate_name in gates:
                 gate_encoding = self._encoding_dct[gate_name]
@@ -154,8 +163,12 @@ class GateEncoder:
         ...
 
     @overload
+    def decode_gates(self, encoded_gates: Set[int]) -> Set[str]:
+        ...
+
+    @overload
     def decode_gates(
-        self, encoded_gates: Union[List[int], Set[int], Tuple[int, ...]]
+        self, encoded_gates: Union[List[int], Tuple[int, ...]]
     ) -> List[str]:
         ...
 
@@ -165,9 +178,10 @@ class GateEncoder:
             int,
             Mapping[int, Any],
             Sequence[Gate],
-            Union[List[int], Set[int], Tuple[int, ...]],
+            Set[int],
+            Union[List[int], Tuple[int, ...]],
         ],
-    ) -> Union[str, Dict[str, Any], List[Gate], List[str]]:
+    ) -> Union[str, Dict[str, Any], List[Gate], Set[str], List[str]]:
         """Decode integer encoded gate names to the original gate names based on the
         gates seen in ``learn_gates``.
 
@@ -200,9 +214,15 @@ class GateEncoder:
                 decoded_gate_list.append(Gate(decoded_gate_name, gate.q1, gate.q2))
             return decoded_gate_list
 
+        if isinstance(encoded_gates, set):
+            decoded_name_set: Set[str] = set()
+            for gate_int in encoded_gates:
+                decoded_gate = self._decoding_dct[gate_int]
+                decoded_name_set.add(decoded_gate)
+            return decoded_name_set
+
         if (
             isinstance(encoded_gates, list)
-            or isinstance(encoded_gates, set)
             or isinstance(encoded_gates, tuple)
         ):
             decoded_name_list: List[str] = []
