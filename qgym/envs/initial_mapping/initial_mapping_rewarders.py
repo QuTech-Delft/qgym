@@ -151,7 +151,7 @@ class BasicRewarder(Rewarder):
 
         self._reward_range = (l_bound, u_bound)
 
-    def __eq__(self, o) -> bool:
+    def __eq__(self, o: Any) -> bool:
         return (
             type(self) == type(o)
             and self._reward_range == o._reward_range

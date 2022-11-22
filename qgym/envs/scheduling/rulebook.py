@@ -40,6 +40,8 @@ class CommutationRulebook:
             that gates with disjoint qubits commute and that gates that are exactly the
             same commute. If ``False``, then no rules will be initialized.
         """
+
+        self._rules: List[Callable[[Gate, Gate], bool]]
         if default_rules:
             self._rules = [disjoint_qubits, same_gate]
         else:
@@ -94,7 +96,7 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     :param gate2: Gate to check disjointness against.
     :return: Boolean value stating whether the gates are disjoint.
     """
-    return (
+    return bool(
         gate1.q1 != gate2.q1
         and gate1.q1 != gate2.q2
         and gate1.q2 != gate2.q1

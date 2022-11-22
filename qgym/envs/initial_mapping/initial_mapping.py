@@ -133,12 +133,10 @@ from qgym.utils.input_validation import (
     check_string,
 )
 
-Gridspecs = Union[List[Union[int, Iterable]], Tuple[Union[int, Iterable]]]
+Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
 
-class InitialMapping(
-    Environment[Tuple[NDArray[np.int_], NDArray[np.int_]], NDArray[np.int_]]
-):
+class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """RL environment for the initial mapping problem of OpenQL."""
 
     def __init__(
@@ -241,11 +239,11 @@ class InitialMapping(
         *,
         seed: Optional[int] = None,
         return_info: bool = False,
-        interaction_graph=None,
+        interaction_graph: Optional[Graph] = None,
         **_kwargs: Any,
     ) -> Union[
-        Tuple[NDArray[np.int_], NDArray[np.int_]],
-        Tuple[Tuple[NDArray[np.int_], NDArray[np.int_]], Dict[str, Any]],
+        Dict[str, NDArray[np.int_]],
+        Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]],
     ]:
         """Reset the state and set a new interaction graph. To be used after an episode
         is finished.
@@ -346,7 +344,7 @@ class InitialMapping(
 
     def _is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
-        return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]
+        return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]  # type: ignore[no-any-return] # this always gives a bool
 
     def _obtain_info(self) -> Dict[str, Any]:
         """:return: Optional debugging info for the current state."""

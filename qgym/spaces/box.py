@@ -9,12 +9,12 @@ Usage:
      [20 20 20]], (2, 3), int32)
 
 """
-from typing import Generator, List, Optional, Sequence, SupportsFloat, Type, Union
+from typing import List, Optional, Sequence, SupportsFloat, Union
 
 import gym.spaces
 import numpy as np
-from numpy.random import default_rng
-from numpy.typing import NDArray
+from numpy.random import Generator, default_rng
+from numpy.typing import DTypeLike, NDArray
 
 
 class Box(gym.spaces.Box):
@@ -24,10 +24,10 @@ class Box(gym.spaces.Box):
 
     def __init__(
         self,
-        low: Union[SupportsFloat, NDArray],
-        high: Union[SupportsFloat, NDArray],
+        low: Union[SupportsFloat, NDArray[np.float_]],
+        high: Union[SupportsFloat, NDArray[np.float_]],
         shape: Optional[Sequence[int]] = None,
-        dtype: Type = np.float32,
+        dtype: DTypeLike = np.float32,
         rng: Optional[Generator] = None,
     ) -> None:
         """Initialize a ``Box`` space, i.e., a possibly open-ended interval in $n$
@@ -45,7 +45,7 @@ class Box(gym.spaces.Box):
         super(Box, self).__init__(low, high, shape=shape, dtype=dtype)
         self._np_random = rng  # this overrides the default behaviour of the gym space
 
-    def seed(self, seed: Optional[int] = None) -> List[int]:
+    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
         """Seed the rng of this space, using ``numpy.random.default_rng``.
 
         :param seed: Seed for the rng. Defaults to ``None``

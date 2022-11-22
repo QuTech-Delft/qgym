@@ -95,7 +95,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
             return self._obtain_observation(), self._obtain_info()
         return self._obtain_observation()
 
-    def seed(self, seed: Optional[int] = None) -> List[int]:
+    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
         """Seed the rng of this space, using ``numpy.random.default_rng``.
 
         :param seed: Seed for the rng. Defaults to ``None``

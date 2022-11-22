@@ -32,7 +32,7 @@ class MultiBinary(gym.spaces.MultiBinary):
         super(MultiBinary, self).__init__(n)
         self._np_random = rng  # this overrides the default behaviour of the gym space
 
-    def seed(self, seed: Optional[int] = None) -> List[int]:
+    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
         """Seed the rng of this space, using ``numpy.random.default_rng``.
 
         :param seed: Seed for the rng. Defaults to ``None``
@@ -46,4 +46,6 @@ class MultiBinary(gym.spaces.MultiBinary):
 
         :return: ``NDArray`` of shape (n,) containing random binary values.
         """
-        return self.np_random.integers(2, size=self.n, dtype=self.dtype)
+        sample: NDArray[np.int_]
+        sample = self.np_random.integers(2, size=self.n, dtype=self.dtype)
+        return sample
