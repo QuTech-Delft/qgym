@@ -1,0 +1,3 @@
+[submodule "deps/openql"]
+	path = deps/openql
+	url = https://github.com/QuTech-Delft/OpenQL

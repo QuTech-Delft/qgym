@@ -5,7 +5,6 @@ import numpy as np
 import pygame
 from pygame.font import Font
 from pygame.surface import Surface
-
 from qgym.custom_types import Gate
 from qgym.utils import GateEncoder
 

@@ -1,15 +1,14 @@
 import networkx as nx
 import numpy as np
 import pytest
-from scipy.sparse import csr_matrix
-from stable_baselines3.common.env_checker import check_env
-
 from qgym.envs import InitialMapping
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
     SingleStepRewarder,
 )
+from scipy.sparse import csr_matrix
+from stable_baselines3.common.env_checker import check_env
 
 
 @pytest.fixture
