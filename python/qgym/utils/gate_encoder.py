@@ -221,10 +221,7 @@ class GateEncoder:
                 decoded_name_set.add(decoded_gate)
             return decoded_name_set
 
-        if (
-            isinstance(encoded_gates, list)
-            or isinstance(encoded_gates, tuple)
-        ):
+        if isinstance(encoded_gates, list) or isinstance(encoded_gates, tuple):
             decoded_name_list: List[str] = []
             for gate_int in encoded_gates:
                 decoded_gate = self._decoding_dct[gate_int]
