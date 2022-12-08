@@ -123,6 +123,7 @@ from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
+from qgym.rewarder import Rewarder
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_graph_is_valid_topology,

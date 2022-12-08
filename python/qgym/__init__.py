@@ -2,6 +2,8 @@
 Gym for RL environments in the Quantum domain.
 """
 
+from typing import Any, List
+
 from qgym.environment import Environment as Environment
 from qgym.rewarder import Rewarder as Rewarder
 
@@ -59,7 +61,7 @@ __all__ = [
 # C++-style types rather than even trying to convert the types to Python.
 # Python's object model to the rescue: we can just monkey-patch the docstrings
 # after the fact.
-def _fixup_swig_autodoc_type(typ):
+def _fixup_swig_autodoc_type(typ: str) -> str:
     typ = typ.split()[0].split("::")[-1]
     typ = {
         "string": "str",
@@ -74,7 +76,7 @@ def _fixup_swig_autodoc_type(typ):
     return typ
 
 
-def _fixup_swig_autodoc_signature(sig):
+def _fixup_swig_autodoc_signature(sig: str) -> str:
     try:
 
         # Parse the incoming SWIG autodoc signature.
@@ -88,23 +90,22 @@ def _fixup_swig_autodoc_signature(sig):
         spacing = " " * (len(begin) - len(name))
 
         # Fix argument type names and use Python syntax for signature.
-        args = args.split(",")
-        for i, arg in enumerate(args):
+        args_list = args.split(",")
+        for i, arg in enumerate(args_list):
             if not arg:
                 continue
             toks = arg.split()
             if toks[-1] == "self":
-                args[i] = "self"
+                args_list[i] = "self"
                 continue
             arg_name = toks[-1].split("=")
             if len(arg_name) > 1:
                 default_val = " = " + arg_name[1]
             else:
                 default_val = ""
-            arg_name = arg_name[0]
-            args[i] = arg_name + ": " + _fixup_swig_autodoc_type(toks[0]) + default_val
+            args_list[i] = arg_name[0] + ": " + _fixup_swig_autodoc_type(toks[0]) + default_val
 
-        args = ", ".join(args)
+        args = ", ".join(args_list)
 
         # Fix return type name.
         if return_type:
@@ -120,9 +121,9 @@ def _fixup_swig_autodoc_signature(sig):
     return sig
 
 
-def _fixup_swig_autodoc(ob, keep_sig, keep_docs):
+def _fixup_swig_autodoc(ob: Any, keep_sig: bool, keep_docs: bool) -> None:
     try:
-        lines = ob.__doc__.split("\n")
+        lines: List[str] = ob.__doc__.split("\n")
         new_lines = []
         state = 0
         for line in lines:
@@ -148,7 +149,7 @@ def _fixup_swig_autodoc(ob, keep_sig, keep_docs):
 
 for ob in __all__:
     ob = globals()[ob]
-    if type(ob) == type:
+    if type(ob) == type: # type: ignore[comparison-overlap]
         for mem in dir(ob):
             if mem == "__init__":
                 _fixup_swig_autodoc(getattr(ob, mem), True, False)
