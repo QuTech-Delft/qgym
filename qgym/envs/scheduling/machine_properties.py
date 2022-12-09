@@ -59,11 +59,11 @@ class MachineProperties:
         """
         checked_mp = cls._check_machine_properties_mapping(machine_properties)
 
-        mp = cls(checked_mp["n_qubits"])
-        mp.add_gates(checked_mp["gates"])
-        mp.add_same_start(checked_mp["same_start"])
-        mp.add_not_in_same_cycle(checked_mp["not_in_same_cycle"])
-        return mp
+        _machine_properties = cls(checked_mp["n_qubits"])
+        _machine_properties.add_gates(checked_mp["gates"])
+        _machine_properties.add_same_start(checked_mp["same_start"])
+        _machine_properties.add_not_in_same_cycle(checked_mp["not_in_same_cycle"])
+        return _machine_properties
 
     @classmethod
     def from_file(cls, filename: str) -> MachineProperties:

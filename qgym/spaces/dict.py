@@ -39,7 +39,7 @@ class Dict(gym.spaces.Dict):
             one will be constructed.
         :param spaces_kwargs: Spaces that are to form this ``Dict`` space.
         """
-        super(Dict, self).__init__(spaces, **spaces_kwargs)
+        super().__init__(spaces, **spaces_kwargs)
         for space in self.spaces.values():
             # override the default behaviour of the gym space
             space._np_random = rng

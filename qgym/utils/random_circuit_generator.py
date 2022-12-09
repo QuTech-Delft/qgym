@@ -77,25 +77,25 @@ class RandomCircuitGenerator:
 
         if mode.lower() == "default":
             gate_names = ["x", "y", "z", "cnot", "measure"]
-            p = [0.16, 0.16, 0.16, 0.5, 0.02]
+            probabilities = [0.16, 0.16, 0.16, 0.5, 0.02]
         elif mode.lower() == "workshop":
             gate_names = ["x", "y", "cnot", "measure"]
-            p = [0.2, 0.2, 0.5, 0.1]
+            probabilities = [0.2, 0.2, 0.5, 0.1]
         else:
             raise ValueError("Unknown mode, choose 'default' or 'workshop'.")
 
         for idx in range(n_gates):
-            name = self.rng.choice(gate_names, p=p)
+            name = self.rng.choice(gate_names, p=probabilities)
 
             if name == "cnot":
-                q1, q2 = self.rng.choice(
+                qubit1, qubit2 = self.rng.choice(
                     np.arange(self.n_qubits), size=2, replace=False
                 )
             else:
-                q1 = self.rng.integers(self.n_qubits)
-                q2 = q1
+                qubit1 = self.rng.integers(self.n_qubits)
+                qubit2 = qubit1
 
-            circuit[idx] = Gate(name, q1, q2)
+            circuit[idx] = Gate(name, qubit1, qubit2)
 
         # If mode is default, the circuit should start by initializing the qubits
         if mode.lower() == "default":

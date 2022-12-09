@@ -24,6 +24,7 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
+    cast,
     overload,
 )
 
@@ -126,8 +127,7 @@ class GateEncoder:
             # We assume that if the first element of gates is a Gate, then the whole
             # Sequence contains Gate objects.
             encoded_gates_list: List[Gate] = []
-            gate: Gate
-            for gate in gates:  # type: ignore
+            for gate in cast(Sequence[Gate], gates):
                 encoded_name = self._encoding_dct[gate.name]
                 encoded_gates_list.append(Gate(encoded_name, gate.q1, gate.q2))
             return encoded_gates_list
@@ -139,7 +139,7 @@ class GateEncoder:
                 encoded_names_set.add(gate_encoding)
             return encoded_names_set
 
-        if isinstance(gates, list) or isinstance(gates, tuple):
+        if isinstance(gates, (list, tuple)):
             encoded_names_list: List[int] = []
             for gate_name in gates:
                 gate_encoding = self._encoding_dct[gate_name]
@@ -208,8 +208,7 @@ class GateEncoder:
             # We assume that if the first element of encoded_gates is a Gate, then the
             # whole Sequence contains Gate objects.
             decoded_gate_list: List[Gate] = []
-            gate: Gate
-            for gate in encoded_gates:  # type:ignore
+            for gate in cast(Sequence[Gate], encoded_gates):
                 decoded_gate_name = self._decoding_dct[gate.name]
                 decoded_gate_list.append(Gate(decoded_gate_name, gate.q1, gate.q2))
             return decoded_gate_list
@@ -221,10 +220,7 @@ class GateEncoder:
                 decoded_name_set.add(decoded_gate)
             return decoded_name_set
 
-        if (
-            isinstance(encoded_gates, list)
-            or isinstance(encoded_gates, tuple)
-        ):
+        if isinstance(encoded_gates, (list, tuple)):
             decoded_name_list: List[str] = []
             for gate_int in encoded_gates:
                 decoded_gate = self._decoding_dct[gate_int]

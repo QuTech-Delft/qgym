@@ -12,3 +12,9 @@ ignore_missing_imports = true
 show_error_context = true
 install_types = true
 disallow_subclassing_any = false
+
+[tool.pylint.format]
+max-line-length = "88"
+
+[tool.pylint."TYPECHECK"]
+generated-members = ["torch.*", "numpy.*", "pygame.*"]

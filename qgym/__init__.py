@@ -8,23 +8,25 @@ RL agents to improve the OpenQL framework, without requiring prior knowledge of 
 Example:
     We want to create an environment for the OpenQL pass of initial mapping for a system
     with a QPU topology of 3x3. Using the ``qgym`` package this becomes:
-    
+
     .. code-block:: python
-    
+
         from qgym.envs import InitialMapping
         env = InitialMapping(0.5, connection_grid_size=(3,3))
-    
-    We can then use the environment in the code block above to train a stable baseline RL 
-    agent using the following code:
-    
+
+    We can then use the environment in the code block above to train a stable baseline
+    RL agent using the following code:
+
     .. code-block:: python
-    
+
         from stable_baselines3 import PPO
         model = PPO("MultiInputPolicy", env, verbose=1)
         model.learn(int(1e5))
 
 """
-from qgym.environment import Environment as Environment
-from qgym.rewarder import Rewarder as Rewarder
+from qgym.environment import Environment
+from qgym.rewarder import Rewarder
+
+__all__ = ["Environment", "Rewarder"]
 
 __version__ = "0.1.0-alpha"

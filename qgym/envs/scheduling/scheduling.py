@@ -153,7 +153,7 @@ Example 2:
 
 """
 from copy import deepcopy
-from typing import Any, Dict, List, Mapping, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Mapping, Optional, Set, Tuple, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -253,7 +253,7 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         self._visualiser = SchedulingVisualiser(
             gate_encoder=self._gate_encoder,
-            gate_cycle_length=machine_properties.gates,  # type: ignore[arg-type] # machine_properties is encoded, hence gates is Dict[int ,int]
+            gate_cycle_length=cast(Dict[int, int], machine_properties.gates),
             n_qubits=machine_properties.n_qubits,
         )
 
@@ -487,11 +487,10 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         if mode.lower() == "encoded":
             return deepcopy(encoded_circuit)
 
-        elif mode.lower() == "human":
+        if mode.lower() == "human":
             return self._gate_encoder.decode_gates(encoded_circuit)
 
-        else:
-            raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
+        raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
 
     def render(self, mode: str = "human") -> Any:
         """Render the current state using pygame.
@@ -527,14 +526,14 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """
         if isinstance(machine_properties, str):
             return MachineProperties.from_file(machine_properties)
-        elif isinstance(machine_properties, MachineProperties):
+        if isinstance(machine_properties, MachineProperties):
             return deepcopy(machine_properties)
-        elif isinstance(machine_properties, Mapping):
+        if isinstance(machine_properties, Mapping):
             return MachineProperties.from_mapping(machine_properties)
-        else:
-            msg = f"{type(machine_properties)} is not a supported type for "
-            msg += "'machine_properties'"
-            raise TypeError(msg)
+
+        msg = f"{type(machine_properties)} is not a supported type for "
+        msg += "'machine_properties'"
+        raise TypeError(msg)
 
     @staticmethod
     def _parse_random_circuit_mode(random_circuit_mode: str) -> str:
