@@ -74,9 +74,9 @@ class BasicRewarder(Rewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: Dict[str, Any],
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: Dict[str, Any],
     ) -> float:
         """Compute a reward, based on the new state, and the given action. Specifically
         the 'legal_actions' actions array.
@@ -99,7 +99,7 @@ class BasicRewarder(Rewarder):
         return self._schedule_gate_bonus
 
     @staticmethod
-    def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+    def _is_illegal(action: NDArray[np.int_], old_state: Dict[str, Any]) -> bool:
         """Check if the given action is illegal. An action is illegal if ``action[0]``
         is not in ``old_state["legal_actions"]``.
 
@@ -163,9 +163,9 @@ class EpisodeRewarder(Rewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: Dict[str, Any],
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: Dict[str, Any],
     ) -> float:
         """Compute a reward, based on the new state, and the given action.
 
@@ -193,7 +193,7 @@ class EpisodeRewarder(Rewarder):
         return reward
 
     @staticmethod
-    def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+    def _is_illegal(action: NDArray[np.int_], old_state: Dict[str, Any]) -> bool:
         """Check if the given action is illegal. An action is illegal if ``action[0]``
         is not in ``old_state["legal_actions"]``.
 

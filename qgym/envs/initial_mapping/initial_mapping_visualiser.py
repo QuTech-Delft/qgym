@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple, cast
 
 import networkx as nx
 import numpy as np
@@ -30,17 +30,12 @@ class InitialMappingVisualiser(Visualiser):
         :param connection_graph: ``networkx.Graph`` representation of the connection
             graph.
         """
-        self.connection_graph = connection_graph
-        self.connection_graph_nodes = connection_graph.nodes
-        self.connection_graph_matrix = nx.to_scipy_sparse_array(connection_graph)
-
         # Rendering data
         self.screen = None
-        self.is_open = False
-        self.screen_width = 1300
-        self.screen_height = 730
+        self.subscreens = self._init_subscreen_rectangles()
+        self.font: Optional[pygame.font.Font] = None
+        self.screen_dimensions = (1300, 730)
         self.font_size = 30
-        self.header_spacing = self.font_size / 3 * 2
 
         self.colors = {
             "nodes": BLUE,
@@ -52,38 +47,47 @@ class InitialMappingVisualiser(Visualiser):
             "background": WHITE,
         }
 
-        # initialize rectangles
-        self._init_subscreen_rectangles()
+        # Save evrything we need to know about the graphs
+        self.graphs = {
+            "connection": {
+                "render_positions": self._get_render_positions(
+                    connection_graph, self.subscreens[0]
+                ),
+                "nodes": connection_graph.nodes,
+                "edges": connection_graph.edges,
+                "matrix": nx.to_scipy_sparse_array(connection_graph),
+            },
+            "interaction": {"render_positions": {}},
+            "mapped": {
+                "render_positions": self._get_render_positions(
+                    connection_graph, self.subscreens[2]
+                ),
+            },
+        }
 
-        self.node_positions_connection_graph = self._get_render_positions(
-            connection_graph, self.subscreen1
-        )
-        self.node_positions_mapped_graph = self._get_render_positions(
-            connection_graph, self.subscreen3
-        )
-
-    def _init_subscreen_rectangles(self, padding: int = 20) -> None:
+    def _init_subscreen_rectangles(
+        self, padding: int = 20
+    ) -> Tuple[pygame.Rect, pygame.Rect, pygame.Rect]:
         """Initialize the ``pygame.Rect`` objects used for drawing the subscreens.
 
         :param padding: The padding to be used inbetween the subscreens.
         """
-        header_spacing = self.font_size / 3 * 4
-
         small_screen_width = self.screen_width / 2 - 0.5 * padding
-        small_screen_height = self.screen_height / 2 - header_spacing
+        small_screen_height = self.screen_height / 2 - self.header_spacing
         small_screen_shape = (small_screen_width, small_screen_height)
 
         large_screen_width = self.screen_width / 2 - 0.5 * padding
-        large_screen_height = self.screen_height - header_spacing
+        large_screen_height = self.screen_height - self.header_spacing
         large_screen_shape = (large_screen_width, large_screen_height)
 
-        screen1_pos = (0, header_spacing)
-        screen2_pos = (0, header_spacing + self.screen_height / 2)
-        screen3_pos = (small_screen_width + padding, header_spacing)
+        screen1_pos = (0, self.header_spacing)
+        screen2_pos = (0, self.header_spacing + self.screen_height / 2)
+        screen3_pos = (small_screen_width + padding, self.header_spacing)
 
-        self.subscreen1 = pygame.Rect(screen1_pos, small_screen_shape)
-        self.subscreen2 = pygame.Rect(screen2_pos, small_screen_shape)
-        self.subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
+        subscreen1 = pygame.Rect(screen1_pos, small_screen_shape)
+        subscreen2 = pygame.Rect(screen2_pos, small_screen_shape)
+        subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
+        return subscreen1, subscreen2, subscreen3
 
     def render(
         self, state: Dict[str, Any], interaction_graph: nx.Graph, mode: str
@@ -118,9 +122,9 @@ class InitialMappingVisualiser(Visualiser):
         )
         self._draw_mapped_graph(self.screen, mapped_graph)
 
-        self._draw_header("Connection Graph", self.subscreen1, self.screen)
-        self._draw_header("Interaction Graph", self.subscreen2, self.screen)
-        self._draw_header("Mapped Graph", self.subscreen3, self.screen)
+        self._draw_header("Connection Graph", self.subscreens[0], self.screen)
+        self._draw_header("Interaction Graph", self.subscreens[1], self.screen)
+        self._draw_header("Mapped Graph", self.subscreens[2], self.screen)
 
         return self._display(mode)
 
@@ -135,7 +139,7 @@ class InitialMappingVisualiser(Visualiser):
         mapping = state["mapping_dict"]
 
         # Make the adjacency matrix of the mapped graph
-        mapped_matrix = np.zeros(self.connection_graph_matrix.shape)
+        mapped_matrix = np.zeros(self.graphs["connection"]["matrix"].shape)
         for map_i, i in mapping.items():
             for map_j, j in mapping.items():
                 mapped_matrix[i, j] = state["interaction_graph_matrix"][map_i, map_j]
@@ -150,7 +154,7 @@ class InitialMappingVisualiser(Visualiser):
                 self._add_colored_edge(graph, mapped_matrix, (i, j))
 
         # Relabel nodes for drawing
-        nodes_mapping = dict(list(enumerate(self.connection_graph_nodes)))
+        nodes_mapping = dict(list(enumerate(self.graphs["connection"]["nodes"])))
         graph = nx.relabel_nodes(graph, nodes_mapping)
 
         return graph
@@ -168,7 +172,7 @@ class InitialMappingVisualiser(Visualiser):
         :param mapped_adjacency_matrix: Adjacency matrix of the mapped graph.
         :param edge: Edge to color.
         """
-        is_connected = self.connection_graph_matrix[edge] != 0
+        is_connected = self.graphs["connection"]["matrix"][edge] != 0
         is_mapped = mapped_adjacency_matrix[edge] != 0
         if not is_connected and is_mapped:
             graph.add_edge(*edge, color="red")
@@ -182,12 +186,12 @@ class InitialMappingVisualiser(Visualiser):
 
         :param screen: Screen to draw the connection graph on.
         """
-        for (u, v) in self.connection_graph.edges():
-            pos_u = self.node_positions_connection_graph[u]
-            pos_v = self.node_positions_connection_graph[v]
+        for (u, v) in self.graphs["connection"]["edges"]:
+            pos_u = self.graphs["connection"]["render_positions"][u]
+            pos_v = self.graphs["connection"]["render_positions"][v]
             self._draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
 
-        for x, y in self.node_positions_connection_graph.values():
+        for x, y in self.graphs["connection"]["render_positions"].values():
             self._draw_point(int(x), int(y), screen)
 
     def _draw_interaction_graph(
@@ -203,17 +207,17 @@ class InitialMappingVisualiser(Visualiser):
         # If we don't have node positions for the interaction graph for some reason,
         # compute them. If we are at step 0 we should have a new interaction graph, and
         # we should also compute new positions.
-        if step == 0 or not hasattr(self, "node_positions_interaction_graph"):
-            self.node_positions_interaction_graph = self._get_render_positions(
-                interaction_graph, self.subscreen2
+        if step == 0 or len(self.graphs["interaction"]["render_positions"]) == 0:
+            self.graphs["interaction"]["render_positions"] = self._get_render_positions(
+                interaction_graph, self.subscreens[1]
             )
 
         for (u, v) in interaction_graph.edges():
-            pos_u = self.node_positions_interaction_graph[u]
-            pos_v = self.node_positions_interaction_graph[v]
+            pos_u = self.graphs["interaction"]["render_positions"][u]
+            pos_v = self.graphs["interaction"]["render_positions"][v]
             self._draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
 
-        for x, y in self.node_positions_interaction_graph.values():
+        for x, y in self.graphs["interaction"]["render_positions"].values():
             self._draw_point(int(x), int(y), screen)
 
     def _draw_mapped_graph(
@@ -226,8 +230,8 @@ class InitialMappingVisualiser(Visualiser):
             edge should have a color attached to it.
         """
         for (u, v) in mapped_graph.edges():
-            pos_u = self.node_positions_mapped_graph[u]
-            pos_v = self.node_positions_mapped_graph[v]
+            pos_u = self.graphs["mapped"]["render_positions"][u]
+            pos_v = self.graphs["mapped"]["render_positions"][v]
             if mapped_graph.edges[u, v]["color"] == "red":
                 color = self.colors["missing_edge"]
             if mapped_graph.edges[u, v]["color"] == "green":
@@ -236,7 +240,7 @@ class InitialMappingVisualiser(Visualiser):
                 color = self.colors["unused_edge"]
             self._draw_wide_line(screen, color, pos_u, pos_v)
 
-        for x, y in self.node_positions_mapped_graph.values():
+        for x, y in self.graphs["mapped"]["render_positions"].values():
             self._draw_point(int(x), int(y), screen)
 
     def _draw_point(self, x: int, y: int, screen: pygame.surface.Surface) -> None:
@@ -255,6 +259,7 @@ class InitialMappingVisualiser(Visualiser):
         color: Tuple[int, int, int],
         p1: NDArray[np.float_],
         p2: NDArray[np.float_],
+        *,
         width: int = 2,
     ) -> None:
         """Draw a wide line on the screen.
@@ -287,8 +292,9 @@ class InitialMappingVisualiser(Visualiser):
         :param subscreen: Subscreen to draw the header above.
         :param screen: Main screen to draw on.
         """
-        pygame_text = self.font.render(text, True, self.colors["text"])
-        text_center = (subscreen.center[0], subscreen.y - self.header_spacing)
+        font = cast(pygame.font.Font, self.font)
+        pygame_text = font.render(text, True, self.colors["text"])
+        text_center = (subscreen.center[0], subscreen.y - self.header_spacing / 2)
         text_position = pygame_text.get_rect(center=text_center)
         screen.blit(pygame_text, text_position)
 
@@ -311,3 +317,8 @@ class InitialMappingVisualiser(Visualiser):
             node_positions[node] = position * 0.45 * subscreen.size + subscreen.center
 
         return node_positions
+
+    @property
+    def header_spacing(self) -> float:
+        """Header spacing."""
+        return self.font_size / 3 * 4

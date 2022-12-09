@@ -2,7 +2,7 @@
 should inherit from ``Visualiser``.
 """
 from abc import abstractmethod
-from typing import Any, Optional, cast
+from typing import Any, Optional, Tuple, cast
 
 import numpy as np
 import pygame
@@ -13,17 +13,13 @@ class Visualiser:
 
     Each subclass should set at least the following attributes:
 
-    :ivar screen: Pygame screen.
-    :ivar is_open: Boolean variable that states if the screen is open.
-    :ivar screen_width: Width of the screen.
-    :ivar screen_height: Height of the screen.
+    :ivar screen: Pygame screen. Can be ``None`` if no screen is open.
+    :ivar screen_dimensions: Tuple containing the width height of the screen.
     """
 
     # --- These attributes should be set in any subclass ---
     screen: Optional[pygame.surface.Surface]
-    is_open: bool
-    screen_width: int
-    screen_height: int
+    screen_dimensions: Tuple[int, int]
 
     @abstractmethod
     def render(self, *args: Any, **kwargs: Any) -> Any:
@@ -77,7 +73,6 @@ class Visualiser:
                 f" the only supported modes are 'human' and 'rgb_array'."
             )
         pygame.display.set_caption(screen_name)
-        self.is_open = True
         return screen
 
     def close(self) -> None:
@@ -85,5 +80,19 @@ class Visualiser:
         if self.screen is not None:
             pygame.display.quit()
             pygame.font.quit()
-            self.is_open = False
             self.screen = None
+
+    @property
+    def screen_width(self) -> int:
+        """Screen width. Alias for ``self.screen_dimensions[0]``."""
+        return self.screen_dimensions[0]
+
+    @property
+    def screen_height(self) -> int:
+        """Screen height. Alias for ``self.screen_dimensions[1]``."""
+        return self.screen_dimensions[1]
+
+    @property
+    def is_open(self) -> bool:
+        """Boolean value stating whether a ``pygame.screen`` is currently open."""
+        return self.screen is not None

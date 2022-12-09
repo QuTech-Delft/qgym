@@ -34,9 +34,7 @@ class SchedulingVisualiser(Visualiser):
         """
         # Rendering data
         self.screen = None
-        self.is_open = False
-        self.screen_width = 1500
-        self.screen_height = 800
+        self.screen_dimensions = (1500, 800)
         self.x_axis_offset = 100
         self.y_axis_offset = 0
 
@@ -186,6 +184,4 @@ class SchedulingVisualiser(Visualiser):
         pygame.font.init()
         font = pygame.font.SysFont("Arial", 12)
         axis_font = pygame.font.SysFont("Arial", 30)
-
-        self.is_open = True
         return font, axis_font

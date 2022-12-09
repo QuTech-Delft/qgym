@@ -25,7 +25,7 @@ Usage:
     the state and action space.
 
 """
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import numpy as np
 from numpy.typing import NDArray
@@ -39,9 +39,9 @@ class BasicRewarder(Rewarder):
 
     def __init__(
         self,
-        illegal_action_penalty: Optional[float] = -100,
-        reward_per_edge: Optional[float] = 5,
-        penalty_per_edge: Optional[float] = -1,
+        illegal_action_penalty: float = -100,
+        reward_per_edge: float = 5,
+        penalty_per_edge: float = -1,
     ) -> None:
         """Initialize the reward range and set the rewards and penalties.
 
@@ -71,9 +71,9 @@ class BasicRewarder(Rewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: Dict[str, Any],
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: Dict[str, Any],
     ) -> float:
         """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
@@ -91,7 +91,7 @@ class BasicRewarder(Rewarder):
 
         return self._compute_state_reward(new_state)
 
-    def _compute_state_reward(self, state: Dict[Any, Any]) -> float:
+    def _compute_state_reward(self, state: Dict[str, Any]) -> float:
         """Compute the value of the mapping defined by the input state.
 
         :param state: The state to compute the value of.
@@ -118,7 +118,7 @@ class BasicRewarder(Rewarder):
         return reward / 2  # divide by two due to double counting of edges
 
     @staticmethod
-    def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+    def _is_illegal(action: NDArray[np.int_], old_state: Dict[str, Any]) -> bool:
         """Check if the given action is illegal i.e., checks if qubits are mapped
         multiple times.
 
@@ -153,7 +153,7 @@ class BasicRewarder(Rewarder):
 
     def __eq__(self, other: Any) -> bool:
         return (
-            type(self) == type(other)
+            type(self) is type(other)
             and self._reward_range == other._reward_range
             and self._illegal_action_penalty == other._illegal_action_penalty
             and self._reward_per_edge == other._reward_per_edge
@@ -169,9 +169,9 @@ class SingleStepRewarder(BasicRewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: Dict[str, Any],
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: Dict[str, Any],
     ) -> float:
         """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
@@ -200,9 +200,9 @@ class EpisodeRewarder(BasicRewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: Dict[str, Any],
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: Dict[str, Any],
     ) -> float:
         """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
