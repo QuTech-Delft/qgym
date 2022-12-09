@@ -5,3 +5,5 @@ on: push
 jobs:
   call-mypy:
     uses: ./.github/workflows/mypy.yml
+  call-pylint:
+    uses: ./.github/workflows/pylint.yml
