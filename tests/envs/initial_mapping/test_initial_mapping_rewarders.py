@@ -4,13 +4,14 @@ from typing import Any, Dict, Iterator, List, Tuple
 import numpy as np
 import pytest
 from numpy.typing import NDArray
+from scipy.sparse import csr_matrix
+
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
     SingleStepRewarder,
 )
 from qgym.rewarder import Rewarder
-from scipy.sparse import csr_matrix
 
 
 def _episode_generator(

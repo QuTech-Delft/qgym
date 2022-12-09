@@ -3,6 +3,7 @@ from typing import Any, Mapping, Optional, Tuple
 
 import pygame
 from pygame.font import Font
+
 from qgym._visualiser import Visualiser
 from qgym.custom_types import Gate
 from qgym.utils import GateEncoder

@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from qgym.custom_types import Gate
 from qgym.envs.scheduling.rulebook import (
     CommutationRulebook,

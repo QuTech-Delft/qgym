@@ -1,4 +1,5 @@
 import pytest
+
 from qgym.envs.scheduling import MachineProperties
 
 

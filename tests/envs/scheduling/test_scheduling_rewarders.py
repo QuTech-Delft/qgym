@@ -2,6 +2,7 @@ from typing import Iterator, List
 
 import numpy as np
 import pytest
+
 from qgym.custom_types import Gate
 from qgym.envs.scheduling import BasicRewarder, EpisodeRewarder
 

@@ -1,4 +1,5 @@
 import pytest
+
 from qgym.custom_types import Gate
 from qgym.utils import GateEncoder
 

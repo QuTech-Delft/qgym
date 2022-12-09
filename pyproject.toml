@@ -4,6 +4,7 @@
 [tool.isort]
 profile="black"
 extend_skip_glob = ["deps", "docs", "docs_build", "docs_html", "images", "openql_output", "pybuild", "qgym.egg-info", "venv", "wsl_venv"]
+known_qgym= "qgym"
 sections= ["FUTURE", "STDLIB", "THIRDPARTY", "QGYM", "FIRSTPARTY", "LOCALFOLDER"]
 no_lines_before="LOCALFOLDER"
 
