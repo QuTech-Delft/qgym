@@ -141,6 +141,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
     def __init__(
         self,
         interaction_graph_edge_probability: float,
+        *,
         connection_graph: Optional[Graph] = None,
         connection_graph_matrix: Optional[ArrayLike] = None,
         connection_grid_size: Optional[Gridspecs] = None,
@@ -302,14 +303,16 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
     def add_random_edge_weights(self) -> None:
         """Add random weights to the connection graph and interaction graph."""
-        for (u, v) in self._connection_graph.edges():
-            self._connection_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
+        for (node1, node2) in self._connection_graph.edges():
+            weight = self.rng.gamma(2, 2) / 4
+            self._connection_graph.edges[node1, node2]["weight"] = weight
         self._state["connection_graph_matrix"] = to_scipy_sparse_array(
             self._connection_graph
         )
 
-        for (u, v) in self._interaction_graph.edges():
-            self._interaction_graph.edges[u, v]["weight"] = self.rng.gamma(2, 2) / 4
+        for (node1, node2) in self._interaction_graph.edges():
+            weight = self.rng.gamma(2, 2) / 4
+            self._interaction_graph.edges[node1, node2]["weight"] = weight
         self._state["interaction_graph_matrix"] = to_scipy_sparse_array(
             self._interaction_graph
         )
@@ -343,7 +346,9 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
     def _is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
-        return len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]  # type: ignore[no-any-return] # this always gives a bool
+        return bool(
+            len(self._state["physical_qubits_mapped"]) == self._state["num_nodes"]
+        )
 
     def _obtain_info(self) -> Dict[str, Any]:
         """:return: Optional debugging info for the current state."""
@@ -382,13 +387,13 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             # deepcopy the graphs for safety
             return deepcopy(connection_graph)
 
-        elif connection_graph_matrix is not None:
+        if connection_graph_matrix is not None:
             if connection_grid_size is not None:
                 msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
                 msg += "given. Using 'connection_graph_matrix'."
                 warnings.warn(msg)
             return InitialMapping._parse_adjacency_matrix(connection_graph_matrix)
-        elif connection_grid_size is not None:
+        if connection_grid_size is not None:
             # Generate connection grid graph
             return grid_graph(connection_grid_size)
 

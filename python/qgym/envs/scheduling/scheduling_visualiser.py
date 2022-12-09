@@ -1,10 +1,9 @@
 """This module contains a class used for rendering the ``Scheduling`` environment."""
 from typing import Any, Mapping, Optional, Tuple
 
-import numpy as np
 import pygame
 from pygame.font import Font
-from pygame.surface import Surface
+from qgym._visualiser import Visualiser
 from qgym.custom_types import Gate
 from qgym.utils import GateEncoder
 
@@ -15,7 +14,7 @@ DARK_BLUE = (71, 115, 147)
 BLUE = (113, 164, 195)
 
 
-class SchedulingVisualiser:
+class SchedulingVisualiser(Visualiser):
     """Visualiser class for the ``Scheduling`` environment."""
 
     def __init__(
@@ -33,7 +32,7 @@ class SchedulingVisualiser:
         :param n_qubits: Number of qubits of the scheduling environment.
         """
         # Rendering data
-        self.screen: Optional[Surface] = None
+        self.screen = None
         self.is_open = False
         self.screen_width = 1500
         self.screen_height = 800
@@ -78,7 +77,7 @@ class SchedulingVisualiser:
         :return: Result of rendering.
         """
         if self.screen is None:
-            self.screen = self._start_screen(mode)
+            self.screen = self._start_screen("Scheduling Environment", mode)
 
         if self.font is None or self.axis_font is None:
             self.font, self.axis_font = self._start_font()
@@ -98,22 +97,13 @@ class SchedulingVisualiser:
                     encoded_circuit[gate_idx], scheduled_cycle, self.screen, self.font
                 )
 
-        if mode == "human":
-            pygame.event.pump()
-            pygame.display.flip()
-            return self.is_open
-        elif mode == "rgb_array":
-            return np.transpose(
-                np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
-            )
-        else:
-            raise ValueError(
-                f"You provided an invalid mode '{mode}',"
-                f" the only supported modes are 'human' and 'rgb_array'."
-            )
+        return self._display(mode)
 
     def _draw_y_axis(
-        self, color: Tuple[int, int, int], screen: Surface, axis_font: Font
+        self,
+        color: Tuple[int, int, int],
+        screen: pygame.surface.Surface,
+        axis_font: Font,
     ) -> None:
         """Draw the y-axis of the display.
 
@@ -131,7 +121,11 @@ class SchedulingVisualiser:
             screen.blit(text, text_position)
 
     def _draw_scheduled_gate(
-        self, gate: Gate, scheduled_cycle: int, screen: Surface, font: Font
+        self,
+        gate: Gate,
+        scheduled_cycle: int,
+        screen: pygame.surface.Surface,
+        font: Font,
     ) -> None:
         """Draw a gate on the screen.
 
@@ -149,7 +143,7 @@ class SchedulingVisualiser:
         gate_int_name: int,
         qubit: int,
         scheduled_cycle: int,
-        screen: Surface,
+        screen: pygame.surface.Surface,
         font: Font,
     ) -> None:
         """Draw a single block of a gate (gates can consist of 1 or 2 blocks).
@@ -183,27 +177,6 @@ class SchedulingVisualiser:
         text_position = text.get_rect(center=gate_box.center)
         screen.blit(text, text_position)
 
-    def _start_screen(self, mode: str) -> Surface:
-        """Start a pygame screen in the given mode.
-
-        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
-        :raise ValueError: When an invalid mode is provided.
-        :return: The initialized screen.
-        """
-        pygame.display.init()
-        if mode == "human":
-            screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        elif mode == "rgb_array":
-            screen = pygame.Surface((self.screen_width, self.screen_height))
-        else:
-            raise ValueError(
-                f"You provided an invalid mode '{mode}',"
-                f" the only supported modes are 'human' and 'rgb_array'."
-            )
-        pygame.display.set_caption("Scheduling Environment")
-        self.is_open = True
-        return screen
-
     def _start_font(self) -> Tuple[Font, Font]:
         """Start the pygame fonts for the header and axis font.
 
@@ -215,11 +188,3 @@ class SchedulingVisualiser:
 
         self.is_open = True
         return font, axis_font
-
-    def close(self) -> None:
-        """Close the screen used for rendering."""
-        if self.screen is not None:
-            pygame.display.quit()
-            pygame.font.quit()
-            self.is_open = False
-            self.screen = None

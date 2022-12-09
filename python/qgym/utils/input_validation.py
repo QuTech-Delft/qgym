@@ -1,11 +1,13 @@
 """This module contains generic input validation methods."""
 import warnings
 from numbers import Integral, Real
-from typing import Any, Optional, TypeVar
+from typing import Any, Optional
 
 import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
+
+# pylint: disable=invalid-name
 
 
 def check_real(

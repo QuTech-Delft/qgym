@@ -42,7 +42,7 @@ class Box(gym.spaces.Box):
         :param rng: Random number generator to be used in this space, if ``None`` a new
             one will be constructed.
         """
-        super(Box, self).__init__(low, high, shape=shape, dtype=dtype)
+        super().__init__(low, high, shape=shape, dtype=dtype)
         self._np_random = rng  # this overrides the default behaviour of the gym space
 
     def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:

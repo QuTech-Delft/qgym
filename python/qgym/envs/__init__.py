@@ -3,5 +3,7 @@ contains the ``InitialMapping`` and ``Scheduling`` environments, which model the
 respective OpenQL passes.
 """
 
-from qgym.envs.initial_mapping.initial_mapping import InitialMapping as InitialMapping
-from qgym.envs.scheduling.scheduling import Scheduling as Scheduling
+from qgym.envs.initial_mapping.initial_mapping import InitialMapping
+from qgym.envs.scheduling.scheduling import Scheduling
+
+__all__ = ["InitialMapping", "Scheduling"]

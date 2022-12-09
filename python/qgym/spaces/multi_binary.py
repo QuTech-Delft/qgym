@@ -29,7 +29,7 @@ class MultiBinary(gym.spaces.MultiBinary):
         :param rng: Random number generator to be used in this space. If ``None``, a new
             random number generator will be constructed.
         """
-        super(MultiBinary, self).__init__(n)
+        super().__init__(n)
         self._np_random = rng  # this overrides the default behaviour of the gym space
 
     def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:

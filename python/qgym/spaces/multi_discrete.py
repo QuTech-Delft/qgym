@@ -33,7 +33,7 @@ class MultiDiscrete(gym.spaces.MultiDiscrete):
         :param rng: Random number generator to be used in this space, if ``None`` a new
             random number generator will be constructed.
         """
-        super(MultiDiscrete, self).__init__(nvec, dtype=dtype)
+        super().__init__(nvec, dtype=dtype)
         self._np_random = rng  # this overrides the default behaviour of the gym space
 
     def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:

@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple
 
 import networkx as nx
 import numpy as np
@@ -7,7 +7,8 @@ import pygame
 from networkx import Graph
 from numpy.typing import NDArray
 from pygame import gfxdraw
-from pygame.surface import Surface
+
+from qgym._visualiser import Visualiser
 
 # Define some colors used during rendering
 WHITE = (255, 255, 255)
@@ -17,8 +18,10 @@ RED = (189, 18, 33)
 GREEN = (174, 168, 0)
 BLUE = (113, 164, 195)
 
+# pylint: disable=invalid-name
 
-class InitialMappingVisualiser:
+
+class InitialMappingVisualiser(Visualiser):
     """Visualiser class for the ``InitialMapping`` environment."""
 
     def __init__(self, connection_graph: Graph) -> None:
@@ -32,7 +35,7 @@ class InitialMappingVisualiser:
         self.connection_graph_matrix = nx.to_scipy_sparse_array(connection_graph)
 
         # Rendering data
-        self.screen: Optional[Surface] = None
+        self.screen = None
         self.is_open = False
         self.screen_width = 1300
         self.screen_height = 730
@@ -99,7 +102,9 @@ class InitialMappingVisualiser:
             rendered image.
         """
         if self.screen is None:
-            self.screen = self.start(mode)
+            self.screen = self._start_screen("Mapping Environment", mode)
+            pygame.font.init()
+            self.font = pygame.font.SysFont("Arial", self.font_size)
 
         pygame.time.delay(10)
 
@@ -117,19 +122,7 @@ class InitialMappingVisualiser:
         self._draw_header("Interaction Graph", self.subscreen2, self.screen)
         self._draw_header("Mapped Graph", self.subscreen3, self.screen)
 
-        if mode == "human":
-            pygame.event.pump()
-            pygame.display.flip()
-            return self.is_open
-        elif mode == "rgb_array":
-            return np.transpose(
-                np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
-            )
-        else:
-            raise ValueError(
-                f"You provided an invalid mode '{mode}',"
-                f" the only supported modes are 'human' and 'rgb_array'."
-            )
+        return self._display(mode)
 
     def _get_mapped_graph(self, state: Dict[str, Any]) -> nx.Graph:
         """Construct a mapped graph. In this graph gray edges are unused, green edges
@@ -157,9 +150,7 @@ class InitialMappingVisualiser:
                 self._add_colored_edge(graph, mapped_matrix, (i, j))
 
         # Relabel nodes for drawing
-        nodes_mapping = dict(
-            [(i, node) for i, node in enumerate(self.connection_graph_nodes)]
-        )
+        nodes_mapping = dict(list(enumerate(self.connection_graph_nodes)))
         graph = nx.relabel_nodes(graph, nodes_mapping)
 
         return graph
@@ -186,7 +177,7 @@ class InitialMappingVisualiser:
         if is_connected and not is_mapped:
             graph.add_edge(*edge, color="gray")
 
-    def _draw_connection_graph(self, screen: Surface) -> None:
+    def _draw_connection_graph(self, screen: pygame.surface.Surface) -> None:
         """Draw the connection graph on subscreen1.
 
         :param screen: Screen to draw the connection graph on.
@@ -200,7 +191,7 @@ class InitialMappingVisualiser:
             self._draw_point(int(x), int(y), screen)
 
     def _draw_interaction_graph(
-        self, screen: Surface, step: int, interaction_graph: nx.Graph
+        self, screen: pygame.surface.Surface, step: int, interaction_graph: nx.Graph
     ) -> None:
         """Draw the interaction graph on subscreen2.
 
@@ -225,7 +216,9 @@ class InitialMappingVisualiser:
         for x, y in self.node_positions_interaction_graph.values():
             self._draw_point(int(x), int(y), screen)
 
-    def _draw_mapped_graph(self, screen: Surface, mapped_graph: nx.Graph) -> None:
+    def _draw_mapped_graph(
+        self, screen: pygame.surface.Surface, mapped_graph: nx.Graph
+    ) -> None:
         """Draw the mapped graph on subscreen3.
 
         :param screen: Screen to draw the graph on.
@@ -246,7 +239,7 @@ class InitialMappingVisualiser:
         for x, y in self.node_positions_mapped_graph.values():
             self._draw_point(int(x), int(y), screen)
 
-    def _draw_point(self, x: int, y: int, screen: Surface) -> None:
+    def _draw_point(self, x: int, y: int, screen: pygame.surface.Surface) -> None:
         """Draw a point on the screen.
 
         :param x: x coordinate of the point.
@@ -258,7 +251,7 @@ class InitialMappingVisualiser:
 
     def _draw_wide_line(
         self,
-        screen: Surface,
+        screen: pygame.surface.Surface,
         color: Tuple[int, int, int],
         p1: NDArray[np.float_],
         p2: NDArray[np.float_],
@@ -282,10 +275,12 @@ class InitialMappingVisualiser:
         points = (p1 - sp, p1 + sp, p2 + sp, p2 - sp)
 
         # draw the polygon
-        pygame.gfxdraw.aapolygon(screen, points, color)  # type: ignore[arg-type] # aapolygon also allows NDArrays.
-        pygame.gfxdraw.filled_polygon(screen, points, color)  # type: ignore[arg-type] # filled_polygon also allows NDArrays.
+        pygame.gfxdraw.aapolygon(screen, points, color)  # type: ignore[arg-type]
+        pygame.gfxdraw.filled_polygon(screen, points, color)  # type: ignore[arg-type]
 
-    def _draw_header(self, text: str, subscreen: pygame.Rect, screen: Surface) -> None:
+    def _draw_header(
+        self, text: str, subscreen: pygame.Rect, screen: pygame.surface.Surface
+    ) -> None:
         """Draw a header above a subscreen.
 
         :param text: Text of the header.
@@ -316,37 +311,3 @@ class InitialMappingVisualiser:
             node_positions[node] = position * 0.45 * subscreen.size + subscreen.center
 
         return node_positions
-
-    def start(self, mode: str) -> Surface:
-        """Start ``pygame`` in the given mode.
-
-        :param mode: Mode to start ``pygame`` for ("human" and "rgb_array" are
-            supported).
-        :raise ValueError: When an invalid mode is provided.
-        """
-        pygame.display.init()
-
-        if mode == "human":
-            screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        elif mode == "rgb_array":
-            screen = pygame.Surface((self.screen_width, self.screen_height))
-        else:
-            raise ValueError(
-                f"You provided an invalid mode '{mode}',"
-                f" the only supported modes are 'human' and 'rgb_array'."
-            )
-
-        pygame.display.set_caption("Mapping Environment")
-
-        pygame.font.init()
-        self.font = pygame.font.SysFont("Arial", self.font_size)
-        self.is_open = True
-        return screen
-
-    def close(self) -> None:
-        """Close the screen used for rendering."""
-        if self.screen is not None:
-            pygame.display.quit()
-            pygame.font.quit()
-            self.is_open = False
-            self.screen = None
