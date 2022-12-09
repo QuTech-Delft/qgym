@@ -1,3 +1,5 @@
+# pylint: skip-file
+#
 # This file is copied from OpenQL (Apache 2.0 License, Copyright [2016] [Nader Khammassi & Imran Ashraf, QuTech, TU Delft]): https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
 # For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/python/python_lib.py
 # No changes were made (apart from formatting according to the black code style).

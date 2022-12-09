@@ -7,7 +7,6 @@ import pygame
 from networkx import Graph
 from numpy.typing import NDArray
 from pygame import gfxdraw
-
 from qgym._visualiser import Visualiser
 
 # Define some colors used during rendering
