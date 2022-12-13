@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, Optional, Tuple, cast
+from typing import Any, Dict, Optional, Tuple, Union, cast
 
 import networkx as nx
 import numpy as np
@@ -91,7 +91,9 @@ class InitialMappingVisualiser(Visualiser):
         subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
         return subscreen1, subscreen2, subscreen3
 
-    def render(self, state: InitialMappingState, mode: str) -> Any:
+    def render(
+        self, state: InitialMappingState, mode: str
+    ) -> Union[bool, NDArray[np.int_]]:
         """Render the current state using ``pygame``. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The right screen
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly

@@ -111,7 +111,7 @@ Example 2:
 """
 import warnings
 from copy import deepcopy
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 import networkx as nx
 import numpy as np
@@ -231,7 +231,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
     def add_random_edge_weights(self) -> None:
         """Add random weights to the connection graph and interaction graph."""
-        self._state.add_random_edge_weights()
+        cast(InitialMappingState, self._state).add_random_edge_weights()
 
     @staticmethod
     def _parse_connection_graph(

@@ -2,10 +2,11 @@
 should inherit from ``Visualiser``.
 """
 from abc import abstractmethod
-from typing import Any, Optional, Tuple, cast
+from typing import Any, Optional, Tuple, Union, cast
 
 import numpy as np
 import pygame
+from numpy.typing import NDArray
 
 
 class Visualiser:
@@ -22,11 +23,11 @@ class Visualiser:
     screen_dimensions: Tuple[int, int]
 
     @abstractmethod
-    def render(self, *args: Any, **kwargs: Any) -> Any:
+    def render(self, *args: Any, **kwargs: Any) -> Union[bool, NDArray[np.int_]]:
         """Render the current state using ``pygame``."""
         raise NotImplementedError
 
-    def _display(self, mode: str) -> Any:
+    def _display(self, mode: str) -> Union[bool, NDArray[np.int_]]:
         """Display the current state using ``pygame``.
 
         The render function should call this method at the end.

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Set
 
 import networkx as nx
 import numpy as np
@@ -37,8 +37,8 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             },
         }
         self.mapping = np.full(self.num_nodes, self.num_nodes)
-        self.mapping_dict = {}
-        self.mapped_qubits = {"physical": set(), "logical": set()}
+        self.mapping_dict: Dict[int, int] = {}
+        self.mapped_qubits: Dict[str, Set[int]] = {"physical": set(), "logical": set()}
 
     def create_observation_space(self) -> qgym.spaces.Dict:
         mapping_space = qgym.spaces.MultiDiscrete(
@@ -103,7 +103,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             self.graphs["interaction"]["graph"]
         )
 
-    def update_state(self, action: NDArray[np.int_]) -> None:
+    def update_state(self, action: NDArray[np.int_]) -> InitialMappingState:
         """Update the state of this environment using the given action.
 
         :param action: Mapping action to be executed.
@@ -114,14 +114,18 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # update state based on the given action
         physical_qubit_index = action[0]
         logical_qubit_index = action[1]
+
         if (
-            physical_qubit_index not in self.mapped_qubits["physical"]
-            and logical_qubit_index not in self.mapped_qubits["logical"]
+            physical_qubit_index in self.mapped_qubits["physical"]
+            or logical_qubit_index in self.mapped_qubits["logical"]
         ):
-            self.mapping[physical_qubit_index] = logical_qubit_index
-            self.mapping_dict[logical_qubit_index] = physical_qubit_index
-            self.mapped_qubits["physical"].add(physical_qubit_index)
-            self.mapped_qubits["logical"].add(logical_qubit_index)
+            return self
+
+        self.mapping[physical_qubit_index] = logical_qubit_index
+        self.mapping_dict[logical_qubit_index] = physical_qubit_index
+        self.mapped_qubits["physical"].add(physical_qubit_index)
+        self.mapped_qubits["logical"].add(logical_qubit_index)
+        return self
 
     def obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""

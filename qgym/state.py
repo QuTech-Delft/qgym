@@ -13,14 +13,15 @@ from numpy.random import Generator, default_rng
 ActionT = TypeVar("ActionT")
 ObservationT = TypeVar("ObservationT")
 
-
 class State(Generic[ObservationT, ActionT]):
 
     steps_done: int
     _rng: Optional[Generator] = None
 
     @abstractmethod
-    def reset(self, *, seed: Optional[int] = None, **_kwargs: Any) -> State:
+    def reset(
+        self, *, seed: Optional[int] = None, **_kwargs: Any
+    ) -> State[ObservationT, ActionT]:
         raise NotImplementedError
 
     def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
@@ -48,7 +49,7 @@ class State(Generic[ObservationT, ActionT]):
         self._rng = rng
 
     @abstractmethod
-    def update_state(self, action: ActionT) -> State:
+    def update_state(self, action: ActionT) -> State[ObservationT, ActionT]:
         """Update the state of this ``Environment`` using the given action.
 
         :param action: Action to be executed.

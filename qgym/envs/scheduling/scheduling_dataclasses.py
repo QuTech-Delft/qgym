@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional, Set
 
 import numpy as np
 from numpy.typing import NDArray
@@ -23,7 +23,7 @@ class SchedulingUtils:
 @dataclass
 class GateInfo:
     cycle_length: int
-    not_in_same_cycle: List[Union[int, str]]
+    not_in_same_cycle: Set[int]
     exclude: int = 0
     exclude_next_cycle: bool = False
 
@@ -54,3 +54,4 @@ class CircuitInfo:
         self.blocking_matrix = utils.rulebook.make_blocking_matrix(circuit)
         self.encoded = utils.gate_encoder.encode_gates(circuit)
         self.schedule = np.full(len(circuit), -1, dtype=int)
+        return self

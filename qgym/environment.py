@@ -3,19 +3,18 @@ from ``Environment``.
 """
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Tuple, Union
 
 import gym
+import numpy as np
 from gym import Space
 from numpy.random import Generator, default_rng
+from numpy.typing import NDArray
 
 from qgym.rewarder import Rewarder
-from qgym.state import State
+from qgym.state import ActionT, ObservationT, State
 from qgym.utils.input_validation import check_string
 from qgym.visualiser import Visualiser
-
-ObservationT = TypeVar("ObservationT")
-ActionT = TypeVar("ActionT")
 
 
 class Environment(Generic[ObservationT, ActionT], gym.Env):
@@ -35,7 +34,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     action_space: Space
     observation_space: Space
     metadata: Dict[str, Any]
-    _state: State
+    _state: State[ObservationT, ActionT]
     _rewarder: Rewarder
     _visualiser: Visualiser
 
@@ -108,7 +107,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         self._rng = default_rng(seed)
         return [seed]
 
-    def render(self, mode: str = "human") -> Any:
+    def render(self, mode: str = "human") -> Union[bool, NDArray[np.int_]]:
         """Render the current state using pygame.
 
         :param mode: The mode to render with (supported modes are found in
@@ -160,7 +159,11 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         self.close()
 
     def _compute_reward(
-        self, old_state: Dict[str, Any], action: ActionT, *args: Any, **kwargs: Any
+        self,
+        old_state: State[ObservationT, ActionT],
+        action: ActionT,
+        *args: Any,
+        **kwargs: Any
     ) -> float:
         """Ask the ``Rewarder`` to compute a reward, based on the given old state, the
         given action and the updated state.

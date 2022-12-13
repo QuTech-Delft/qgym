@@ -4,8 +4,6 @@
 from abc import abstractmethod
 from typing import Any, Tuple
 
-from qgym.state import State
-
 
 class Rewarder:
     """RL Rewarder, for computing rewards on a state."""
@@ -13,9 +11,7 @@ class Rewarder:
     _reward_range: Tuple[float, float]
 
     @abstractmethod
-    def compute_reward(
-        self, *, old_state: State, action: Any, new_state: State
-    ) -> float:
+    def compute_reward(self, *, old_state: Any, action: Any, new_state: Any) -> float:
         """Compute a reward, based on the old state, new state, and the given action.
 
         :param old_state: State of the ``Environment`` before the current action.

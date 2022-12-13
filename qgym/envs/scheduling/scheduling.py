@@ -170,7 +170,9 @@ from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
-class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class Scheduling(
+    Environment[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
+):
     """RL environment for the scheduling problem."""
 
     def __init__(
@@ -233,8 +235,8 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         circuit: Optional[List[Gate]] = None,
         **_kwargs: Any,
     ) -> Union[
-        Dict[str, NDArray[np.int_]],
-        Tuple[Dict[str, NDArray[np.int_]], Dict[Any, Any]],
+        Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]],
+        Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], Dict[Any, Any]],
     ]:
         """Reset the state, action space and step number and load a new (random) initial
         state. To be used after an episode is finished.
@@ -261,13 +263,14 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         :return: Human or encoded quantum circuit.
         """
         mode = check_string(mode, "mode", lower=True)
-
-        encoded_circuit: List[Gate] = self._state.encoded_circuit
+        state = cast(SchedulingState, self._state)
+        encoded_circuit = state.circuit_info.encoded
         if mode == "encoded":
             return deepcopy(encoded_circuit)
 
         if mode == "human":
-            return self._state.gate_encoder.decode_gates(encoded_circuit)
+            gate_encoder = state.utils.gate_encoder
+            return gate_encoder.decode_gates(encoded_circuit)
 
         raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
 

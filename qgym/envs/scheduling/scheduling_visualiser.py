@@ -1,7 +1,9 @@
 """This module contains a class used for rendering the ``Scheduling`` environment."""
-from typing import Any, Mapping, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union, cast
 
+import numpy as np
 import pygame
+from numpy.typing import NDArray
 from pygame.font import Font
 
 from qgym.custom_types import Gate
@@ -47,7 +49,9 @@ class SchedulingVisualiser(Visualiser):
         self.subscreen = pygame.Rect(subscreen_pos, subscreen_size)
 
         self._gate_encoder = initial_state.utils.gate_encoder
-        self._gate_cycle_length = initial_state.machine_properties.gates
+        self._gate_cycle_length = cast(
+            Dict[int, int], initial_state.machine_properties.gates
+        )
         self._n_qubits = initial_state.machine_properties.n_qubits
         self._gate_height = self.subscreen.height / self._n_qubits
 
@@ -58,9 +62,11 @@ class SchedulingVisualiser(Visualiser):
         # define attributes that are set later
         self.font: Optional[Font] = None
         self.axis_font: Optional[Font] = None
-        self._cycle_width = 0
+        self._cycle_width = 0.0
 
-    def render(self, state: SchedulingState, mode: str) -> Any:
+    def render(
+        self, state: SchedulingState, mode: str
+    ) -> Union[bool, NDArray[np.int_]]:
         """Render the current state using pygame.
 
         :param mode: The mode to render with (supported modes are found in

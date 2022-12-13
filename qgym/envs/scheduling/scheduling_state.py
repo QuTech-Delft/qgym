@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -18,7 +18,9 @@ from qgym.state import State
 from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
 
-class SchedulingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class SchedulingState(
+    State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
+):
     def __init__(
         self,
         *,
@@ -40,12 +42,16 @@ class SchedulingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
 
         # At the start no gates should be excluded
+        gate_cycle_lengths = cast(Dict[int, int], machine_properties.gates)
+        not_in_same_cycle = cast(
+            Dict[int, Set[int]], machine_properties.not_in_same_cycle
+        )
         self.gates = {
             gate_name: GateInfo(
-                cycle_length=cycle_length,
-                not_in_same_cycle=machine_properties.not_in_same_cycle[gate_name],
+                cycle_length=gate_cycle_lengths[gate_name],
+                not_in_same_cycle=not_in_same_cycle[gate_name],
             )
-            for gate_name, cycle_length in machine_properties.gates.items()
+            for gate_name in gate_cycle_lengths
         }
 
         self.steps_done = 0
@@ -73,12 +79,8 @@ class SchedulingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self._update_episode_constant_observations()
         self._update_legal_actions()
 
-    def _update_dependencies(self) -> NDArray[np.int_]:
-        """Compute the dependencies array of the current state.
-
-        :return: array of shape (dependency_depth, max_gates) with the dependencies
-            for each gate.
-        """
+    def _update_dependencies(self) -> None:
+        """Compute and update the dependencies array of the current state."""
         self.circuit_info.dependencies = np.zeros_like(self.circuit_info.dependencies)
 
         for gate_idx, blocking_row in enumerate(self.circuit_info.blocking_matrix):
@@ -156,7 +158,9 @@ class SchedulingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
         return observation_space
 
-    def obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
+    def obtain_observation(
+        self,
+    ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]:
         """:return: Observation based on the current state."""
         return {
             "gate_names": self.circuit_info.names,
@@ -169,7 +173,7 @@ class SchedulingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """:return: Boolean value stating whether we are in a final state."""
         return all(self.circuit_info.schedule != -1)
 
-    def obtain_info(self) -> Dict[str, Any]:
+    def obtain_info(self) -> Dict[str, Union[int, NDArray[np.int_]]]:
         """:return: Optional debugging info for the current state."""
         return {
             "Steps done": self.steps_done,
