@@ -153,7 +153,7 @@ Example 2:
 
 """
 from copy import deepcopy
-from typing import Any, Dict, List, Mapping, Optional, Set, Tuple, Union, cast
+from typing import Any, Dict, List, Mapping, Optional, Tuple, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -165,8 +165,8 @@ from qgym.environment import Environment
 from qgym.envs.scheduling.machine_properties import MachineProperties
 from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
+from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
-from qgym.utils import RandomCircuitGenerator
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
@@ -208,143 +208,22 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         machine_properties = self._parse_machine_properties(machine_properties)
         max_gates = check_int(max_gates, "max_gates", l_bound=1)
-        self._dependency_depth = check_int(
-            dependency_depth, "dependency_depth", l_bound=1
-        )
-        self._random_circuit_mode = self._parse_random_circuit_mode(random_circuit_mode)
-        self._commutation_rulebook = self._parse_rulebook(rulebook)
+        dependency_depth = check_int(dependency_depth, "dependency_depth", l_bound=1)
+        random_circuit_mode = self._parse_random_circuit_mode(random_circuit_mode)
+        rulebook = self._parse_rulebook(rulebook)
         self._rewarder = self._parse_rewarder(rewarder)
 
-        self._gate_encoder = machine_properties.encode()
-        self._random_circuit_generator = RandomCircuitGenerator(
-            machine_properties.n_qubits, max_gates, rng=self.rng
+        self._state = SchedulingState(
+            machine_properties=machine_properties,
+            max_gates=max_gates,
+            dependency_depth=dependency_depth,
+            random_circuit_mode=random_circuit_mode,
+            rulebook=rulebook,
         )
-
-        self._state = {
-            "max_gates": max_gates,
-            "n_qubits": machine_properties.n_qubits,
-            "gate_cycle_length": machine_properties.gates,
-            "same_start": machine_properties.same_start,
-            "not_in_same_cycle": machine_properties.not_in_same_cycle,
-        }
-
-        self.reset()
-
-        legal_actions_space = qgym.spaces.MultiBinary(max_gates, rng=self.rng)
-        gate_names_space = qgym.spaces.MultiDiscrete(
-            np.full(max_gates, machine_properties.n_gates + 1), rng=self.rng
-        )
-        acts_on_space = qgym.spaces.MultiDiscrete(
-            np.full(2 * max_gates, machine_properties.n_qubits + 1), rng=self.rng
-        )
-        dependencies_space = qgym.spaces.MultiDiscrete(
-            np.full(dependency_depth * max_gates, max_gates), rng=self.rng
-        )
-
-        self.observation_space = qgym.spaces.Dict(
-            rng=self.rng,
-            legal_actions=legal_actions_space,
-            gate_names=gate_names_space,
-            acts_on=acts_on_space,
-            dependencies=dependencies_space,
-        )
-
+        self.observation_space = self._state.create_observation_space()
         self.action_space = qgym.spaces.MultiDiscrete([max_gates, 2], rng=self.rng)
 
-        self._visualiser = SchedulingVisualiser(
-            gate_encoder=self._gate_encoder,
-            gate_cycle_length=cast(Dict[int, int], machine_properties.gates),
-            n_qubits=machine_properties.n_qubits,
-        )
-
-    def _obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
-        """:return: Observation based on the current state."""
-        return {
-            "gate_names": self._state["gate_names"],
-            "acts_on": self._state["acts_on"].flatten(),
-            "dependencies": self._state["dependencies"].flatten(),
-            "legal_actions": self._state["legal_actions"],
-        }
-
-    def _update_state(self, action: NDArray[np.int_]) -> None:
-        """Update the state of this environment using the given action.
-
-        :param action: First entry determines a gate to schedule, the second entry
-            increases the cycle if nonzero.
-        """
-        # Increase the step number
-        self._state["steps_done"] += 1
-
-        # Increase the cycle if the action is given
-        if action[1]:
-            self._increment_cycle()
-            return
-
-        # Schedule the gate if it is allowed
-        gate_to_schedule = action[0]
-        if self._state["legal_actions"][gate_to_schedule]:
-            self._schedule_gate(gate_to_schedule)
-
-    def _increment_cycle(self) -> None:
-        """Increment the cycle and update the state accordingly."""
-        self._state["cycle"] += 1
-
-        # Reduce the amount of cycles each qubit is busy
-        self._state["busy"][self._state["busy"] > 0] -= 1
-
-        # Exclude gates that should start at the same time
-        while len(self._exclude_in_next_cycle) != 0:
-            gate_to_exclude = self._exclude_in_next_cycle.pop()
-            self._exclude_gate(gate_to_exclude)
-
-        # Decrease the amount of cycles to exclude a gate and skip gates where the
-        # cycle becomes 0 (as it no longer should be excluded)
-        gate_names = list(self._excluded_gates.keys())
-        for gate_name in gate_names:
-            if self._excluded_gates[gate_name] > 1:
-                self._excluded_gates[gate_name] -= 1
-            else:
-                self._excluded_gates.pop(gate_name)
-
-        self._update_legal_actions()
-
-    def _schedule_gate(self, gate_idx: int) -> None:
-        """Schedule a gate in the current cycle and update the state accordingly.
-
-        :param gate_idx: Index of the gate to schedule.
-        """
-        gate = self._state["encoded_circuit"][gate_idx]
-
-        # add the gate to the schedule
-        self._state["schedule"][gate_idx] = self._state["cycle"]
-
-        self._state["busy"][gate.q1] = self._state["gate_cycle_length"][gate.name]
-        self._state["busy"][gate.q2] = self._state["gate_cycle_length"][gate.name]
-
-        if gate.name in self._state["not_in_same_cycle"]:
-            for gate_to_exclude in self._state["not_in_same_cycle"][gate.name]:
-                self._exclude_gate(gate_to_exclude)
-
-        if gate.name in self._state["same_start"]:
-            self._exclude_in_next_cycle.add(gate.name)
-
-        # Update "dependencies" observation
-        self._blocking_matrix[:gate_idx, gate_idx] = False
-        self._state["dependencies"] = self._get_dependencies()
-
-        self._update_legal_actions()
-
-    def _is_done(self) -> bool:
-        """:return: Boolean value stating whether we are in a final state."""
-        return bool((self._state["schedule"] != -1).all())
-
-    def _obtain_info(self) -> Dict[str, Any]:
-        """:return: Optional debugging info for the current state."""
-        return {
-            "Steps done": self._state["steps_done"],
-            "Cycle": self._state["cycle"],
-            "Schedule": self._state["schedule"],
-        }
+        self._visualiser = SchedulingVisualiser(self._state)
 
     def reset(
         self,
@@ -370,108 +249,9 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         :param _kwargs: Additional options to configure the reset.
         :return: Initial observation and optionally also debugging info.
         """
-        # Reset counters
-        self._state["steps_done"] = 0
-        self._state["cycle"] = 0
-
-        # Amount of cycles that a qubit is still busy (zero if available)
-        self._state["busy"] = np.zeros(self._state["n_qubits"], dtype=int)
-
-        # At the start no gates should be excluded
-        self._excluded_gates: Dict[int, int] = {}
-        self._exclude_in_next_cycle: Set[int] = set()
-
-        # Generate a circuit if None is given
-        if circuit is None:
-            circuit = self._random_circuit_generator.generate_circuit(
-                mode=self._random_circuit_mode
-            )
-        self._blocking_matrix = self._commutation_rulebook.make_blocking_matrix(circuit)
-        self._state["dependencies"] = self._get_dependencies()
-
-        encoded_circuit = self._gate_encoder.encode_gates(circuit)
-        self._state["encoded_circuit"] = encoded_circuit
-
-        self._state["schedule"] = np.full(len(circuit), -1, dtype=int)
-
-        self._update_episode_constant_observations()
-        self._update_legal_actions()
-
+        self._state.reset(seed=seed, circuit=circuit)
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, return_info=return_info)
-
-    def _get_dependencies(self) -> NDArray[np.int_]:
-        """Compute the dependencies array of the current state.
-
-        :return: array of shape (dependency_depth, max_gates) with the dependencies
-            for each gate.
-        """
-        dependencies = np.zeros(
-            (self._dependency_depth, self._state["max_gates"]), dtype=int
-        )
-        for gate_idx, blocking_row in enumerate(self._blocking_matrix):
-            blocking_gates = blocking_row[gate_idx:].nonzero()[0]
-            for depth in range(min(self._dependency_depth, blocking_gates.shape[0])):
-                dependencies[depth, gate_idx] = blocking_gates[depth]
-
-        return dependencies
-
-    def _update_episode_constant_observations(self) -> None:
-        """Update episode constant observations `gate_names` and `acts_on` based on
-        the circuit of the current episode.
-        """
-        circuit = self._state["encoded_circuit"]
-
-        gate_names = np.zeros(self._state["max_gates"], dtype=int)
-        acts_on = np.zeros((2, self._state["max_gates"]), dtype=int)
-
-        for gate_idx, gate in enumerate(circuit):
-            gate_names[gate_idx] = gate.name
-            acts_on[0, gate_idx] = gate.q1
-            acts_on[1, gate_idx] = gate.q2
-
-        self._state["gate_names"] = gate_names
-        self._state["acts_on"] = acts_on
-
-    def _exclude_gate(self, gate_name: int) -> None:
-        """Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.
-
-        :param gate_name: integer encoding of the name of the gate.
-        """
-        gate_cycle_length = self._state["gate_cycle_length"][gate_name]
-        self._excluded_gates[gate_name] = gate_cycle_length
-
-    def _update_legal_actions(self) -> None:
-        """Check which actions are legal based on the scheduled qubits. An action is
-        legal if the gate could be scheduled based on the machine properties and
-        commutation rules.
-        """
-        legal_actions = np.zeros(self._state["max_gates"], dtype=bool)
-        for gate_idx, (gate_name, qubit1, qubit2) in enumerate(
-            self._state["encoded_circuit"]
-        ):
-            # Set all gates, which have not been scheduled to True
-            if self._state["schedule"][gate_idx] == -1:
-                legal_actions[gate_idx] = True
-
-            # Check if there is a non-scheduled dependent gate
-
-            dependent_gates = self._state["dependencies"][:, gate_idx]
-            if np.count_nonzero(dependent_gates) > 0:
-                legal_actions[gate_idx] = False
-                continue
-
-            # Check if the qubits are busy
-            if self._state["busy"][qubit1] > 0 or self._state["busy"][qubit2] > 0:
-                legal_actions[gate_idx] = False
-                continue
-
-            # Check if gates should be excluded
-            if gate_name in self._excluded_gates:
-                legal_actions[gate_idx] = False
-                continue
-
-        self._state["legal_actions"] = legal_actions
 
     def get_circuit(self, mode: str = "human") -> List[Gate]:
         """Return the quantum circuit of this episode.
@@ -480,35 +260,16 @@ class Scheduling(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         :raise ValueError: If an unsupported mode is provided.
         :return: Human or encoded quantum circuit.
         """
-        if not isinstance(mode, str):
-            raise TypeError(f"mode must be of type str, but was {type(mode)}")
+        mode = check_string(mode, "mode", lower=True)
 
-        encoded_circuit: List[Gate] = self._state["encoded_circuit"]
-        if mode.lower() == "encoded":
+        encoded_circuit: List[Gate] = self._state.encoded_circuit
+        if mode == "encoded":
             return deepcopy(encoded_circuit)
 
-        if mode.lower() == "human":
-            return self._gate_encoder.decode_gates(encoded_circuit)
+        if mode == "human":
+            return self._state.gate_encoder.decode_gates(encoded_circuit)
 
         raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
-
-    def render(self, mode: str = "human") -> Any:
-        """Render the current state using pygame.
-
-        :param mode: The mode to render with (supported modes are found in
-            `self.metadata`.).
-        :raise ValueError: If an unsupported mode is provided.
-        :return: Result of rendering.
-        """
-        if mode not in self.metadata["render.modes"]:
-            raise ValueError("The given render mode is not supported.")
-
-        return self._visualiser.render(self._state, mode)
-
-    def close(self) -> None:
-        """Close the screen used for rendering."""
-        if hasattr(self, "_visualiser"):
-            self._visualiser.close()
 
     @staticmethod
     def _parse_machine_properties(

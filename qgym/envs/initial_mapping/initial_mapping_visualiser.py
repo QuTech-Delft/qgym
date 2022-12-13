@@ -8,7 +8,8 @@ from networkx import Graph
 from numpy.typing import NDArray
 from pygame import gfxdraw
 
-from qgym._visualiser import Visualiser
+from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
+from qgym.visualiser import Visualiser
 
 # Define some colors used during rendering
 WHITE = (255, 255, 255)
@@ -31,11 +32,12 @@ class InitialMappingVisualiser(Visualiser):
             graph.
         """
         # Rendering data
+        self.screen_dimensions = (1300, 730)
+        self.font_size = 30
+
         self.screen = None
         self.subscreens = self._init_subscreen_rectangles()
         self.font: Optional[pygame.font.Font] = None
-        self.screen_dimensions = (1300, 730)
-        self.font_size = 30
 
         self.colors = {
             "nodes": BLUE,
@@ -89,16 +91,13 @@ class InitialMappingVisualiser(Visualiser):
         subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
         return subscreen1, subscreen2, subscreen3
 
-    def render(
-        self, state: Dict[str, Any], interaction_graph: nx.Graph, mode: str
-    ) -> Any:
+    def render(self, state: InitialMappingState, mode: str) -> Any:
         """Render the current state using ``pygame``. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The right screen
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly
         and red edges need at least on swap.
 
         :param state: State to render.
-        :param interaction_graph: Interaction graph to render.
         :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
         :raise ValueError: When an invalid mode is provided.
         :return: In 'human' mode returns a boolean value encoding whether the ``pygame``
@@ -114,11 +113,12 @@ class InitialMappingVisualiser(Visualiser):
 
         self.screen.fill(self.colors["background"])
 
-        mapped_graph = self._get_mapped_graph(state)
-
+        mapped_graph = self._get_mapped_graph(
+            state.mapping_dict, state.graphs["interaction"]["matrix"]
+        )
         self._draw_connection_graph(self.screen)
         self._draw_interaction_graph(
-            self.screen, state["steps_done"], interaction_graph
+            self.screen, state.steps_done, state.graphs["interaction"]["graph"]
         )
         self._draw_mapped_graph(self.screen, mapped_graph)
 
@@ -128,21 +128,23 @@ class InitialMappingVisualiser(Visualiser):
 
         return self._display(mode)
 
-    def _get_mapped_graph(self, state: Dict[str, Any]) -> nx.Graph:
+    def _get_mapped_graph(
+        self, mapping: Dict[int, int], interaction_graph_matrix: NDArray[np.float_]
+    ) -> nx.Graph:
         """Construct a mapped graph. In this graph gray edges are unused, green edges
         are mapped correctly and red edges need at least on swap. This function is used
         during rendering.
 
-        :param state: State to render.
+        :param mapping: Mapping dictionary of the state to render.
+        :interaction_graph_matrix: Interaction graph matrix of the current interaction
+            graph.
         :return: Mapped graph.
         """
-        mapping = state["mapping_dict"]
-
         # Make the adjacency matrix of the mapped graph
         mapped_matrix = np.zeros(self.graphs["connection"]["matrix"].shape)
         for map_i, i in mapping.items():
             for map_j, j in mapping.items():
-                mapped_matrix[i, j] = state["interaction_graph_matrix"][map_i, map_j]
+                mapped_matrix[i, j] = interaction_graph_matrix[map_i, map_j]
 
         # Make a networkx graph of the mapped graph
         graph = nx.Graph()

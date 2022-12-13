@@ -2,7 +2,9 @@
 ``Rewarder``.
 """
 from abc import abstractmethod
-from typing import Any, Dict, Tuple
+from typing import Any, Tuple
+
+from qgym.state import State
 
 
 class Rewarder:
@@ -12,11 +14,7 @@ class Rewarder:
 
     @abstractmethod
     def compute_reward(
-        self,
-        *,
-        old_state: Dict[str, Any],
-        action: Any,
-        new_state: Dict[str, Any],
+        self, *, old_state: State, action: Any, new_state: State
     ) -> float:
         """Compute a reward, based on the old state, new state, and the given action.
 

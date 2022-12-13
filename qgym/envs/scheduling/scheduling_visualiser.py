@@ -4,9 +4,10 @@ from typing import Any, Mapping, Optional, Tuple
 import pygame
 from pygame.font import Font
 
-from qgym._visualiser import Visualiser
 from qgym.custom_types import Gate
+from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.utils import GateEncoder
+from qgym.visualiser import Visualiser
 
 # Define some colors used during rendering
 WHITE = (255, 255, 255)
@@ -18,19 +19,11 @@ BLUE = (113, 164, 195)
 class SchedulingVisualiser(Visualiser):
     """Visualiser class for the ``Scheduling`` environment."""
 
-    def __init__(
-        self,
-        *,
-        gate_encoder: GateEncoder,
-        gate_cycle_length: Mapping[int, int],
-        n_qubits: int,
-    ) -> None:
+    def __init__(self, initial_state: SchedulingState) -> None:
         """Init of the ``SchedulingVisualiser``.
 
-        :param gate_encoder: ``GateEncoder`` object of a ``Scheduling`` environment.
-        :param gate_cycle_length: ``Mapping`` of cycle lengths for the gates of the
-            scheduling environment.
-        :param n_qubits: Number of qubits of the scheduling environment.
+        :param initial_state: ``SchedulingState`` object containing the initial state of
+            the environment to visualise.
         """
         # Rendering data
         self.screen = None
@@ -53,13 +46,13 @@ class SchedulingVisualiser(Visualiser):
         )
         self.subscreen = pygame.Rect(subscreen_pos, subscreen_size)
 
-        self._gate_encoder = gate_encoder
-        self._gate_cycle_length = gate_cycle_length
-        self._n_qubits = n_qubits
+        self._gate_encoder = initial_state.utils.gate_encoder
+        self._gate_cycle_length = initial_state.machine_properties.gates
+        self._n_qubits = initial_state.machine_properties.n_qubits
         self._gate_height = self.subscreen.height / self._n_qubits
 
         self._longest_gate = 0
-        for n_cycles in gate_cycle_length.values():
+        for n_cycles in self._gate_cycle_length.values():
             self._longest_gate = max(self._longest_gate, n_cycles)
 
         # define attributes that are set later
@@ -67,7 +60,7 @@ class SchedulingVisualiser(Visualiser):
         self.axis_font: Optional[Font] = None
         self._cycle_width = 0
 
-    def render(self, state: Mapping[str, Any], mode: str) -> Any:
+    def render(self, state: SchedulingState, mode: str) -> Any:
         """Render the current state using pygame.
 
         :param mode: The mode to render with (supported modes are found in
@@ -81,19 +74,20 @@ class SchedulingVisualiser(Visualiser):
         if self.font is None or self.axis_font is None:
             self.font, self.axis_font = self._start_font()
 
-        encoded_circuit = state["encoded_circuit"]
-
         pygame.time.delay(50)
 
         self.screen.fill(self.colors["background"])
         self._draw_y_axis(self.colors["qubits"], self.screen, self.axis_font)
 
-        self._cycle_width = self.subscreen.width / (state["cycle"] + self._longest_gate)
+        self._cycle_width = self.subscreen.width / (state.cycle + self._longest_gate)
 
-        for gate_idx, scheduled_cycle in enumerate(state["schedule"]):
+        for gate_idx, scheduled_cycle in enumerate(state.circuit_info.schedule):
             if scheduled_cycle != -1:
                 self._draw_scheduled_gate(
-                    encoded_circuit[gate_idx], scheduled_cycle, self.screen, self.font
+                    state.circuit_info.encoded[gate_idx],
+                    scheduled_cycle,
+                    self.screen,
+                    self.font,
                 )
 
         return self._display(mode)

@@ -46,7 +46,7 @@ class MachineProperties:
         self._n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
         self._gates: Dict[Any, int] = {}
         self._same_start: Set[Any] = set()
-        self._not_in_same_cycle: Dict[Any, List[Any]] = {}
+        self._not_in_same_cycle: Dict[Any, Set[Any]] = {}
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
@@ -89,6 +89,7 @@ class MachineProperties:
                 msg += "new value."
                 warnings.warn(msg)
             self._gates[gate_name] = n_cycles
+            self._not_in_same_cycle[gate_name] = set()
         return self
 
     def add_same_start(self, gates: Iterable[str]) -> MachineProperties:
@@ -129,17 +130,9 @@ class MachineProperties:
             if gate2 not in self.gates:
                 raise ValueError(f"unknown gate '{gate2}'")
 
-            if gate1 in self.not_in_same_cycle:
-                if gate2 not in self.not_in_same_cycle[gate1]:
-                    self.not_in_same_cycle[gate1].append(gate2)
-            else:
-                self.not_in_same_cycle[gate1] = [gate2]
+            self.not_in_same_cycle[gate1].add(gate2)
+            self.not_in_same_cycle[gate2].add(gate1)
 
-            if gate2 in self.not_in_same_cycle:
-                if gate1 not in self.not_in_same_cycle[gate2]:
-                    self.not_in_same_cycle[gate2].append(gate1)
-            else:
-                self.not_in_same_cycle[gate2] = [gate1]
         return self
 
     def encode(self) -> GateEncoder:
