@@ -14,7 +14,7 @@ from qgym.envs.scheduling.scheduling_dataclasses import (
     GateInfo,
     SchedulingUtils,
 )
-from qgym.state import State
+from qgym.templates.state import State
 from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
 

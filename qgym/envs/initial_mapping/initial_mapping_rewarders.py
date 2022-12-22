@@ -30,8 +30,8 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from qgym import Rewarder
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
+from qgym.templates import Rewarder
 from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
 

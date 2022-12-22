@@ -159,14 +159,13 @@ import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym import Rewarder
 from qgym.custom_types import Gate
-from qgym.environment import Environment
 from qgym.envs.scheduling.machine_properties import MachineProperties
 from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
+from qgym.templates import Environment, Rewarder
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
 

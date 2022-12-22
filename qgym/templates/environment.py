@@ -11,10 +11,10 @@ from gym import Space
 from numpy.random import Generator, default_rng
 from numpy.typing import NDArray
 
-from qgym.rewarder import Rewarder
-from qgym.state import ActionT, ObservationT, State
+from qgym.templates.rewarder import Rewarder
+from qgym.templates.state import ActionT, ObservationT, State
+from qgym.templates.visualiser import Visualiser
 from qgym.utils.input_validation import check_string
-from qgym.visualiser import Visualiser
 
 
 class Environment(Generic[ObservationT, ActionT], gym.Env):

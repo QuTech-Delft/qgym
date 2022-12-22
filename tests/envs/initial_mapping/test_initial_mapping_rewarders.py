@@ -12,7 +12,7 @@ from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     SingleStepRewarder,
 )
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
-from qgym.rewarder import Rewarder
+from qgym.templates.rewarder import Rewarder
 
 
 def _episode_generator(

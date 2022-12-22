@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 from pygame import gfxdraw
 
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
-from qgym.visualiser import Visualiser
+from qgym.templates.visualiser import Visualiser
 
 # Define some colors used during rendering
 WHITE = (255, 255, 255)

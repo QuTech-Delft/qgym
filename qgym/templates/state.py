@@ -13,6 +13,7 @@ from numpy.random import Generator, default_rng
 ActionT = TypeVar("ActionT")
 ObservationT = TypeVar("ObservationT")
 
+
 class State(Generic[ObservationT, ActionT]):
 
     steps_done: int

@@ -8,8 +8,7 @@ from pygame.font import Font
 
 from qgym.custom_types import Gate
 from qgym.envs.scheduling.scheduling_state import SchedulingState
-from qgym.utils import GateEncoder
-from qgym.visualiser import Visualiser
+from qgym.templates.visualiser import Visualiser
 
 # Define some colors used during rendering
 WHITE = (255, 255, 255)

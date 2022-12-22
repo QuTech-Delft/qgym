@@ -29,8 +29,8 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import NDArray
 
-from qgym import Rewarder
 from qgym.envs.scheduling.scheduling_state import SchedulingState
+from qgym.templates import Rewarder
 from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
 

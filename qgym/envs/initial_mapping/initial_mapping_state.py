@@ -8,7 +8,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.state import State
+from qgym.templates.state import State
 
 
 class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):

@@ -119,13 +119,12 @@ from networkx import Graph, grid_graph
 from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
-from qgym import Rewarder
-from qgym.environment import Environment
 from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
+from qgym.templates import Environment, Rewarder
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_graph_is_valid_topology,
