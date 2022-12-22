@@ -1,3 +1,15 @@
+"""This module contains the ``InitialMappingState`` class.
+
+This ``InitialMappingState`` represents the ``State`` of the ``InitialMapping``
+environment.
+
+Usage:
+    >>> from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
+    >>> import networkx as nx
+    >>> connection_graph = nx.grid_graph((3,3))
+    >>> state = InitialMappingState(connection_graph, 0.5)
+
+"""
 from __future__ import annotations
 
 from copy import deepcopy
@@ -12,9 +24,36 @@ from qgym.templates.state import State
 
 
 class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+    """The ``InitialMappingState`` class.
+
+    :ivar steps_done: Number of steps done since the last reset.
+    :ivar num_nodes: Number of nodes in the connection graph. Represent the of physical
+        qubits.
+    :ivar graphs: Dictionary containing the graph and matrix representations of the
+        both the interaction graph and connection graph.
+    :ivar mapping: Array of which the index represents a physical qubit, and the value a
+        virtual qubit. A value of ``num_nodes + 1`` represents the case when nothing is
+        mapped to the physical qubit yet.
+    :ivar mapping_dict: Dictionary that maps logical qubits (keys) to physical qubit
+        (values).
+    :ivar mapped_qubits: Dictionary with a two ``Set``s containing all mapped physical
+        and logical qubits.
+    """
+
     def __init__(
         self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
     ) -> None:
+        """Init of the ``InitialMappingState`` class.
+
+        :param connection_graph: ``networkx`` graph representation of the QPU topology.
+            Each node represents a physical qubit and each node represents a connection
+            in the QPU topology.
+        :param interaction_graph_edge_probability: Probability that an edge between any
+            pair of qubits in the random interaction graph exists. The interaction
+            graph will have the same amount of nodes as the connection graph. Nodes
+            without any interactions can be seen as 'null' nodes. Must be a value in the
+            range $[0,1]$.
+        """
         # Create a random connection graph with `num_nodes` and with edges existing with
         # probability `interaction_graph_edge_probability` (nodes without connections
         # can be seen as 'null' nodes)
@@ -41,6 +80,14 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.mapped_qubits: Dict[str, Set[int]] = {"physical": set(), "logical": set()}
 
     def create_observation_space(self) -> qgym.spaces.Dict:
+        """Create the corresponding observation space.
+
+        :returns: Observation space in the form of a ``qgym.spaces.Dict`` space
+            containing:
+
+            * ``qgym.spaces.MultiDiscrete`` space representing the mapping.
+            * ``qgym.spaces.Box`` representing the interaction matrix.
+        """
         mapping_space = qgym.spaces.MultiDiscrete(
             nvec=[self.num_nodes + 1] * self.num_nodes, rng=self.rng
         )
@@ -64,7 +111,17 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         interaction_graph: Optional[nx.Graph] = None,
         **_kwargs: Any,
     ) -> InitialMappingState:
+        """Reset the state and set a new interaction graph.
 
+        To be used after an episode sis finished.
+
+        :param seed: Seed for the random number generator, should only be provided
+            (optionally) on the first reset call i.e., before any learning is done.
+        :param interaction_graph: Interaction graph to be used for the next iteration,
+            if ``None`` a random interaction graph will be created.
+        :param _kwargs: Additional options to configure the reset.
+        :return: (self) New initial state.
+        """
         if seed is not None:
             self.seed(seed)
 

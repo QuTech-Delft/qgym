@@ -2,7 +2,7 @@
 should inherit from ``Visualiser``.
 """
 from abc import abstractmethod
-from typing import Any, Optional, Tuple, Union, cast
+from typing import Any, Dict, Optional, Tuple, Union, cast
 
 import numpy as np
 import pygame
@@ -16,14 +16,16 @@ class Visualiser:
 
     :ivar screen: Pygame screen. Can be ``None`` if no screen is open.
     :ivar screen_dimensions: Tuple containing the width height of the screen.
+    :ivar font: Dictionary with different pygame fonts.
     """
 
     # --- These attributes should be set in any subclass ---
     screen: Optional[pygame.surface.Surface]
     screen_dimensions: Tuple[int, int]
+    font: Dict[str, pygame.font.Font]
 
     @abstractmethod
-    def render(self, *args: Any, **kwargs: Any) -> Union[bool, NDArray[np.int_]]:
+    def render(self, state: Any, mode: str) -> Union[bool, NDArray[np.int_]]:
         """Render the current state using ``pygame``."""
         raise NotImplementedError
 
@@ -82,6 +84,7 @@ class Visualiser:
             pygame.display.quit()
             pygame.font.quit()
             self.screen = None
+            self.font: Dict[str, pygame.font.Font] = {}
 
     @property
     def screen_width(self) -> int:

@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, Optional, Tuple, Union, cast
+from typing import Any, Dict, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -37,7 +37,7 @@ class InitialMappingVisualiser(Visualiser):
 
         self.screen = None
         self.subscreens = self._init_subscreen_rectangles()
-        self.font: Optional[pygame.font.Font] = None
+        self.font: Dict[str, pygame.font.Font] = {}
 
         self.colors = {
             "nodes": BLUE,
@@ -109,7 +109,9 @@ class InitialMappingVisualiser(Visualiser):
         if self.screen is None:
             self.screen = self._start_screen("Mapping Environment", mode)
             pygame.font.init()
-            self.font = pygame.font.SysFont("Arial", self.font_size)
+
+        if len(self.font) == 0:
+            self.font["header"] = pygame.font.SysFont("Arial", self.font_size)
 
         pygame.time.delay(10)
 
@@ -296,8 +298,7 @@ class InitialMappingVisualiser(Visualiser):
         :param subscreen: Subscreen to draw the header above.
         :param screen: Main screen to draw on.
         """
-        font = cast(pygame.font.Font, self.font)
-        pygame_text = font.render(text, True, self.colors["text"])
+        pygame_text = self.font["header"].render(text, True, self.colors["text"])
         text_center = (subscreen.center[0], subscreen.y - self.header_spacing / 2)
         text_position = pygame_text.get_rect(center=text_center)
         screen.blit(pygame_text, text_position)

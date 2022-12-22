@@ -43,7 +43,7 @@ class Dict(gym.spaces.Dict):
         super().__init__(spaces, **spaces_kwargs)
         for space in self.spaces.values():
             # override the default behaviour of the gym space
-            space._np_random = rng
+            space._np_random = rng  # pylint: disable=protected-access
 
     def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
         """Seed the rng of this space, using ``numpy.random.default_rng``. The seed will
@@ -53,5 +53,5 @@ class Dict(gym.spaces.Dict):
         :return: The used seeds.
         """
         for space in self.spaces.values():
-            space._np_random = default_rng(seed)
+            space._np_random = default_rng(seed)  # pylint: disable=protected-access
         return [seed]

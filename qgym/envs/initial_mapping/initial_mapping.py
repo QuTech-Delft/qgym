@@ -33,25 +33,26 @@ penalized.
 
 
 State Space:
-    The state space is described by a dictionary with the following structure:
+    The state space is described by a ``InitialMappingState`` with the following
+    attributes:
 
-    * ``num_nodes``: Number of *physical* qubits.
-    * ``connection_graph_matrix``: Sparse adjacency matrix of the connection graph.
-    * ``interaction_graph_matrix``: Sparse adjacency matrix of the interaction graph.
-      (Should have the same number of nodes as the connection graph.)
-    * ``steps_done``: Number of steps done since the last reset.
-    * ``mapping``: Array of which the index represents a physical qubit, and the value a
-      virtual qubit (is set to ``num_nodes + 1`` when nothing is mapped to the physical
-      qubit yet).
-    * ``mapping_dict``: Dictionary that maps logical qubits to physical qubit.
-    * ``physical_qubits_mapped``: Set containing all mapped physical qubits.
-    * ``virtual_qubits_mapped``: Set containing all mapped virtual qubits.
+    * `steps_done`: Number of steps done since the last reset.
+    * `num_nodes`: Number of *physical* qubits.
+    * `graphs`: Dictionary containing the graph and matrix representations of the both
+      the interaction graph and connection graph.
+    * `mapping`: Array of which the index represents a physical qubit, and the value a
+      virtual qubit. A value of ``num_nodes + 1`` represents the case when nothing is
+      mapped to the physical qubit yet.
+    * `mapping_dict`: Dictionary that maps logical qubits (keys) to physical qubit
+      (values).
+    * `mapped_qubits`: Dictionary with a two Sets containing all mapped physical and
+      logical qubits.
 
 Observation Space:
     The observation space is a ``qgym.spaces.Dict`` with 2 entries:
 
-    * ``mapping``: The current state of the mapping.
-    * ``interaction_matrix``: The flattened adjacency matrix of the interaction graph.
+    * `mapping`: The current state of the mapping.
+    * `interaction_matrix`: The flattened adjacency matrix of the interaction graph.
 
 Action Space:
     A valid action is a tuple of integers  $(i,j)$, such that  $0 \le i, j < n$, where
@@ -130,7 +131,6 @@ from qgym.utils.input_validation import (
     check_graph_is_valid_topology,
     check_instance,
     check_real,
-    check_string,
 )
 
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
@@ -212,8 +212,9 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         Dict[str, NDArray[np.int_]],
         Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]],
     ]:
-        """Reset the state and set a new interaction graph. To be used after an episode
-        is finished.
+        """Reset the state and set a new interaction graph.
+
+        To be used after an episode is finished.
 
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call i.e., before any learning is done.

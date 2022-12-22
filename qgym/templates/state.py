@@ -15,6 +15,12 @@ ObservationT = TypeVar("ObservationT")
 
 
 class State(Generic[ObservationT, ActionT]):
+    """RL State containing the current state of the problem.
+
+    Each subclass should set at least the following attributes:
+
+    :ivar steps_done: Number of steps done since the last reset.
+    """
 
     steps_done: int
     _rng: Optional[Generator] = None
@@ -23,6 +29,9 @@ class State(Generic[ObservationT, ActionT]):
     def reset(
         self, *, seed: Optional[int] = None, **_kwargs: Any
     ) -> State[ObservationT, ActionT]:
+        """Reset the state.
+
+        :returns: Self"""
         raise NotImplementedError
 
     def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
@@ -74,4 +83,11 @@ class State(Generic[ObservationT, ActionT]):
 
     @abstractmethod
     def create_observation_space(self) -> Space:
+        """Create the corresponding observation space."""
         raise NotImplementedError
+
+    def __str__(self) -> str:
+        text = f"{self.__class__.__name__}:\n"
+        for attribute_name, attribute_value in self.__dict__.items():
+            text += f"{attribute_name}: {attribute_value}\n"
+        return text

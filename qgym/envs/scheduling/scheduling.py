@@ -51,33 +51,26 @@ Hardware specifications:
 State space:
     The state space is described by a dictionary with the following structure:
 
-    * ``max_gates``: Maximum circuit length allowed in the environment.
-    * ``n_qubits``: Number of physical qubits of the hardware.
-    * ``gate_cycle_length``: Mapping of integer encoded gates and their respective cycle
-      length.
-    * ``same_start``: Set of integer encoded gates that should start in the same cycle.
-    * ``not_in_same_cycle``: Mapping of integer encoded gates that can't start in the
-      same cycle.
-    * ``steps_done``: Number of steps done since the last reset.
-    * ``cycle``: Current 'machine' cycle.
-    * ``busy``: Used internally for the hardware limitations.
-    * ``dependencies``: Shows the first $n$ gates that must be scheduled before this
-      gate.
-    * ``encoded_circuit``: Integer encoded representation of the circuit to schedule.
-    * ``gate_names``: Gate names of the encoded circuit.
-    * ``acts_on``: q1 and q2 of each gate.
-    * ``legal_actions``: Array of legal actions. If the value at index $i$ determines if
-      gate number $i$ can be scheduled or not. This array is based on the machine
-      restrictions and commutation rules.
+    * `machine_properties`: MachineProperties object containing machine properties
+      and limitations.
+    * `utils`: ``SchedulingUtils`` dataclass with a random circuit generator,
+      commutation rulebook and a gate encoder.
+    * `gates`: Dictionary with gate names as keys and ``GateInfo`` dataclasses as
+      values.
+    * `steps_done`: Number of steps done since the last reset.
+    * `cycle`: Current 'machine' cycle.
+    * `busy`: Used internally for the hardware limitations.
+    * `circuit_info`: ``CircuitInfo`` dataclass containing the encoded circuit and
+      attributes used to update the state.
 
 Observation space:
     Each element in the observation space is a dictionary with 4 entries:
 
-    * ``gate_names``: Gate names of the encoded circuit.
-    * ``acts_on``: q1 and q2 of each gate.
-    * ``dependencies``: Shows the first $n$ gates that must be scheduled before this
+    * `gate_names`: Gate names of the encoded circuit.
+    * `acts_on`: q1 and q2 of each gate.
+    * `dependencies`: Shows the first $n$ gates that must be scheduled before this
       gate.
-    * ``legal_actions``: List of legal actions. If the value at index $i$ determines if
+    * `legal_actions`: List of legal actions. If the value at index $i$ determines if
       gate number $i$ can be scheduled or not.
 
 Action Space:
@@ -237,7 +230,7 @@ class Scheduling(
         Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]],
         Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], Dict[Any, Any]],
     ]:
-        """Reset the state, action space and step number and load a new (random) initial
+        """Reset the state, action space and step number.and load a new (random) initial
         state. To be used after an episode is finished.
 
         :param seed: Seed for the random number generator, should only be provided

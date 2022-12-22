@@ -108,20 +108,7 @@ class GateEncoder:
             return encoded_str
 
         if isinstance(gates, Mapping):
-            encoded_dict: Dict[int, Any] = {}
-            gate_name: str
-            for gate_name, item in gates.items():
-                gate_encoding = self._encoding_dct[gate_name]
-                if isinstance(item, int):
-                    encoded_dict[gate_encoding] = item
-                elif isinstance(item, Iterable):
-                    item_encoded = []
-                    for i in item:
-                        item_encoded.append(self._encoding_dct[i])
-                    encoded_dict[gate_encoding] = item_encoded
-                else:
-                    raise ValueError("Unknown mapping")
-            return encoded_dict
+            return self._encode_mapping(gates)
 
         if isinstance(gates, Sequence) and isinstance(gates[0], Gate):
             # We assume that if the first element of gates is a Gate, then the whole
@@ -149,6 +136,26 @@ class GateEncoder:
         raise TypeError(
             f"gates type must be str, Mapping or Sequence, got {type(gates)}."
         )
+
+    def _encode_mapping(self, mapping: Mapping[str, Any]) -> Dict[int, Any]:
+        """Encode a mapping with gate names.
+
+        :raise ValueError: For unknown mappings.
+        """
+        encoded_dict: Dict[int, Any] = {}
+        gate_name: str
+        for gate_name, item in mapping.items():
+            gate_encoding = self._encoding_dct[gate_name]
+            if isinstance(item, int):
+                encoded_dict[gate_encoding] = item
+            elif isinstance(item, Iterable):
+                item_encoded = []
+                for i in item:
+                    item_encoded.append(self._encoding_dct[i])
+                encoded_dict[gate_encoding] = item_encoded
+            else:
+                raise ValueError("Unknown mapping")
+        return encoded_dict
 
     @overload
     def decode_gates(self, encoded_gates: int) -> str:

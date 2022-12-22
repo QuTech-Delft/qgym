@@ -1,3 +1,7 @@
+"""This module contains the ``SchedulingState`` class.
+
+This ``SchedulingState``represents the ``State`` of the ``Scheduling`` environment.
+"""
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Set, Union, cast
@@ -21,6 +25,21 @@ from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 class SchedulingState(
     State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
 ):
+    """The ``SchedulingState`` class.
+
+    :ivar machine_properties: ``MachineProperties`` object containing machine properties
+        and limitations.
+    :ivar utils: ``SchedulingUtils`` dataclass with a random circuit generator,
+        commutation rulebook and a gate encoder.
+    :ivar gates: Dictionary with gate names as keys and ``GateInfo`` dataclasses as
+        values.
+    :ivar steps_done: Number of steps done since the last reset.
+    :ivar cycle: Current 'machine' cycle.
+    :ivar busy: Used internally for the hardware limitations.
+    :ivar circuit_info: ``CircuitInfo`` dataclass containing the encoded circuit and
+        attributes used to update the state.
+    """
+
     def __init__(
         self,
         *,
@@ -30,6 +49,10 @@ class SchedulingState(
         random_circuit_mode: str,
         rulebook: CommutationRulebook,
     ) -> None:
+
+        self.steps_done = 0
+        self.cycle = 0
+
         self.machine_properties = machine_properties
 
         self.utils = SchedulingUtils(
@@ -53,9 +76,6 @@ class SchedulingState(
             )
             for gate_name in gate_cycle_lengths
         }
-
-        self.steps_done = 0
-        self.cycle = 0
 
         # Amount of cycles that a qubit is still busy (zero if available)
         self.busy = np.zeros(machine_properties.n_qubits, dtype=int)
@@ -91,8 +111,9 @@ class SchedulingState(
                 self.circuit_info.dependencies[depth, gate_idx] = blocking_gates[depth]
 
     def _update_episode_constant_observations(self) -> None:
-        """Update episode constant observations `gate_names` and `acts_on` based on
-        the circuit of the current episode.
+        """Update episode constant observations `gate_names` and `acts_on`.
+
+        Based on the circuit of the current episode.
         """
         self.circuit_info.names = np.zeros_like(self.circuit_info.names)
         self.circuit_info.acts_on = np.zeros_like(self.circuit_info.acts_on)
@@ -103,9 +124,10 @@ class SchedulingState(
             self.circuit_info.acts_on[1, gate_idx] = gate.q2
 
     def _update_legal_actions(self) -> None:
-        """Check which actions are legal based on the scheduled qubits. An action is
-        legal if the gate could be scheduled based on the machine properties and
-        commutation rules.
+        """Check which actions are legal based on the scheduled qubits.
+
+        An action is legal if the gate could be scheduled based on the machine
+        properties and commutation rules.
         """
         self.circuit_info.legal = np.zeros_like(self.circuit_info.legal)
         for gate_idx, (gate_name, qubit1, qubit2) in enumerate(
@@ -133,6 +155,21 @@ class SchedulingState(
                 continue
 
     def create_observation_space(self) -> qgym.spaces.Dict:
+        """Create the corresponding observation space.
+
+        :returns: Observation space in the form of a ``qgym.spaces.Dict`` space
+            containing:
+
+            * ``qgym.spaces.MultiBinary`` space representing the legal actions. If
+              the value at index $i$ determines if gate number $i$ can be scheduled
+              or not.
+            * ``qgym.spaces.MultiDiscrete`` space representing the integer encoded
+              gate names.
+            * ``qgym.spaces.MultiDiscrete`` space representing the interaction of
+              each gate (q1 and q2).
+            * ``qgym.spaces.MultiDiscrete`` space representing the first $n$ gates
+              that must be scheduled before this gate.
+        """
         max_gates = len(self.circuit_info.legal)
         n_gates = self.machine_properties.n_gates
         n_qubits = self.machine_properties.n_qubits
@@ -209,8 +246,9 @@ class SchedulingState(
         circuit: Optional[List[Gate]] = None,
         **_kwargs: Any,
     ) -> SchedulingState:
-        """Reset the state and load a new (random) initial state. To be used after an
-        episode is finished.
+        """Reset the state and load a new (random) initial state.
+
+        To be used after an episode is finished.
 
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call, i.e., before any learning is done.
