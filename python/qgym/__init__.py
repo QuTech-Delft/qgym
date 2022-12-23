@@ -100,7 +100,9 @@ def _fixup_swig_autodoc_signature(sig: str) -> str:
                 default_val = " = " + arg_name[1]
             else:
                 default_val = ""
-            args_list[i] = arg_name[0] + ": " + _fixup_swig_autodoc_type(toks[0]) + default_val
+            args_list[i] = (
+                arg_name[0] + ": " + _fixup_swig_autodoc_type(toks[0]) + default_val
+            )
 
         args = ", ".join(args_list)
 
@@ -146,7 +148,7 @@ def _fixup_swig_autodoc(ob: Any, keep_sig: bool, keep_docs: bool) -> None:
 
 for ob in __all__:
     ob = globals()[ob]
-    if type(ob) == type: # type: ignore[comparison-overlap]
+    if type(ob) == type:  # type: ignore[comparison-overlap]
         for mem in dir(ob):
             if mem == "__init__":
                 _fixup_swig_autodoc(getattr(ob, mem), True, False)
