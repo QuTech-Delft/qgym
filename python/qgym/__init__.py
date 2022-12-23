@@ -1,11 +1,6 @@
-"""
-Gym for RL environments in the Quantum domain.
-"""
+"""Gym for RL environments in the Quantum domain."""
 
 from typing import Any, List
-
-from qgym.environment import Environment as Environment
-from qgym.rewarder import Rewarder as Rewarder
 
 __version__ = "0.1.0a0"
 

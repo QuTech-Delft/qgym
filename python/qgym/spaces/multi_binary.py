@@ -20,6 +20,7 @@ class MultiBinary(gym.spaces.MultiBinary):
     def __init__(
         self,
         n: Union[NDArray[np.int_], Sequence[int], int],
+        *,
         rng: Optional[Generator] = None,
     ) -> None:
         """Initialize a multi-discrete space, i.e., multiple discrete intervals of given

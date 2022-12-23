@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import warnings
 from copy import deepcopy
-from typing import Any, Dict, Iterable, List, Mapping, Set, Tuple, Union
+from typing import Any, Dict, Iterable, Mapping, Set, Tuple, Union
 
 from qgym.utils import GateEncoder
 from qgym.utils.input_validation import check_instance, check_int, check_string
@@ -46,7 +46,7 @@ class MachineProperties:
         self._n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
         self._gates: Dict[Any, int] = {}
         self._same_start: Set[Any] = set()
-        self._not_in_same_cycle: Dict[Any, List[Any]] = {}
+        self._not_in_same_cycle: Dict[Any, Set[Any]] = {}
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
@@ -89,6 +89,7 @@ class MachineProperties:
                 msg += "new value."
                 warnings.warn(msg)
             self._gates[gate_name] = n_cycles
+            self._not_in_same_cycle[gate_name] = set()
         return self
 
     def add_same_start(self, gates: Iterable[str]) -> MachineProperties:
@@ -129,17 +130,9 @@ class MachineProperties:
             if gate2 not in self.gates:
                 raise ValueError(f"unknown gate '{gate2}'")
 
-            if gate1 in self.not_in_same_cycle:
-                if gate2 not in self.not_in_same_cycle[gate1]:
-                    self.not_in_same_cycle[gate1].append(gate2)
-            else:
-                self.not_in_same_cycle[gate1] = [gate2]
+            self._not_in_same_cycle[gate1].add(gate2)
+            self._not_in_same_cycle[gate2].add(gate1)
 
-            if gate2 in self.not_in_same_cycle:
-                if gate1 not in self.not_in_same_cycle[gate2]:
-                    self.not_in_same_cycle[gate2].append(gate1)
-            else:
-                self.not_in_same_cycle[gate2] = [gate1]
         return self
 
     def encode(self) -> GateEncoder:
@@ -171,7 +164,7 @@ class MachineProperties:
         return self._n_qubits
 
     @property
-    def gates(self) -> Dict[Union[str, int], int]:
+    def gates(self) -> Union[Dict[str, int], Dict[int, int]]:
         """Return a``Dict`` with the gate names the machine can perform as keys, and the
         number of machine cycles (time) as values.
         """
@@ -183,14 +176,14 @@ class MachineProperties:
         return len(self._gates)
 
     @property
-    def same_start(self) -> Set[Union[str, int]]:
+    def same_start(self) -> Union[Set[str], Set[int]]:
         """Set of gate names that should start in the same cycle, or wait till the
         previous gate is done.
         """
         return self._same_start
 
     @property
-    def not_in_same_cycle(self) -> Dict[Union[str, int], List[Union[str, int]]]:
+    def not_in_same_cycle(self) -> Union[Dict[str, Set[str]], Dict[int, Set[int]]]:
         """Gates that can not start in the same cycle."""
         return self._not_in_same_cycle
 
@@ -233,3 +226,21 @@ class MachineProperties:
                 checked_mp["not_in_same_cycle"].append((gate1, gate_other))
 
         return checked_mp
+
+    def __str__(self) -> str:
+        """Make a string representation of the machine properties."""
+        text = f"{self.__class__.__name__}:\n"
+        text += f"n_qubits: {self._n_qubits}\n"
+        text += f"gates: {self._gates}\n"
+        text += f"same_start: {self._same_start}\n"
+        text += f"not_in_same_cycle: {self._not_in_same_cycle}"
+        return text
+
+    def __repr__(self) -> str:
+        """Make a string representation without endline characters."""
+        text = f"{self.__class__.__name__}("
+        text += f"n_qubits={self._n_qubits}, "
+        text += f"gates={self._gates}, "
+        text += f"same_start={self._same_start}, "
+        text += f"not_in_same_cycle={self._not_in_same_cycle})"
+        return text

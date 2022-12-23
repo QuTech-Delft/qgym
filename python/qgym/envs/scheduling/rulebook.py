@@ -88,6 +88,17 @@ class CommutationRulebook:
         """
         self._rules.append(rule)
 
+    def __repr__(self) -> str:
+        """Create a string representation of the CommutationRulebook."""
+        text = f"{self.__class__.__name__}(rules=["
+        for rule in self._rules:
+            if callable(rule) and hasattr(rule, "__name__"):
+                text += f"{rule.__name__}, "
+            else:
+                text += f"{rule}, "
+        text = text[:-2] + "])"
+        return text
+
 
 def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     """Gates that have disjoint qubits commute.

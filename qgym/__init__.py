@@ -24,9 +24,5 @@ Example:
         model.learn(int(1e5))
 
 """
-from qgym.environment import Environment
-from qgym.rewarder import Rewarder
-
-__all__ = ["Environment", "Rewarder"]
 
 __version__ = "0.1.0-alpha"

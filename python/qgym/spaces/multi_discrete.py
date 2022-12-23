@@ -22,6 +22,7 @@ class MultiDiscrete(gym.spaces.MultiDiscrete):
         self,
         nvec: Union[List[int], NDArray[np.int_]],
         dtype: DTypeLike = np.int64,
+        *,
         rng: Optional[Generator] = None,
     ) -> None:
         """Initialize a multi-discrete space, i.e., multiple discrete intervals of given

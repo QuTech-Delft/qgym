@@ -28,6 +28,7 @@ class Box(gym.spaces.Box):
         high: Union[SupportsFloat, NDArray[np.float_]],
         shape: Optional[Sequence[int]] = None,
         dtype: DTypeLike = np.float32,
+        *,
         rng: Optional[Generator] = None,
     ) -> None:
         """Initialize a ``Box`` space, i.e., a possibly open-ended interval in $n$

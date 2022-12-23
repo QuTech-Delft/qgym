@@ -25,12 +25,13 @@ Usage:
     the state and action space.
 
 """
-from typing import Any, Dict, Optional
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
-from qgym import Rewarder
+from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
+from qgym.templates import Rewarder
 from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
 
@@ -39,9 +40,9 @@ class BasicRewarder(Rewarder):
 
     def __init__(
         self,
-        illegal_action_penalty: Optional[float] = -100,
-        reward_per_edge: Optional[float] = 5,
-        penalty_per_edge: Optional[float] = -1,
+        illegal_action_penalty: float = -100,
+        reward_per_edge: float = 5,
+        penalty_per_edge: float = -1,
     ) -> None:
         """Initialize the reward range and set the rewards and penalties.
 
@@ -71,9 +72,9 @@ class BasicRewarder(Rewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: InitialMappingState,
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: InitialMappingState,
     ) -> float:
         """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
@@ -91,7 +92,7 @@ class BasicRewarder(Rewarder):
 
         return self._compute_state_reward(new_state)
 
-    def _compute_state_reward(self, state: Dict[Any, Any]) -> float:
+    def _compute_state_reward(self, state: InitialMappingState) -> float:
         """Compute the value of the mapping defined by the input state.
 
         :param state: The state to compute the value of.
@@ -99,14 +100,14 @@ class BasicRewarder(Rewarder):
         """
         reward = 0.0
         for interaction_i, interaction_j in zip(
-            *state["interaction_graph_matrix"].nonzero()
+            *state.graphs["interaction"]["matrix"].nonzero()
         ):
-            mapped_interaction_i = state["mapping_dict"].get(interaction_i, None)
-            mapped_interaction_j = state["mapping_dict"].get(interaction_j, None)
+            mapped_interaction_i = state.mapping_dict.get(interaction_i, None)
+            mapped_interaction_j = state.mapping_dict.get(interaction_j, None)
             if mapped_interaction_i is None or mapped_interaction_j is None:
                 continue
             if (
-                state["connection_graph_matrix"][
+                state.graphs["connection"]["matrix"][
                     mapped_interaction_i, mapped_interaction_j
                 ]
                 == 0
@@ -118,7 +119,7 @@ class BasicRewarder(Rewarder):
         return reward / 2  # divide by two due to double counting of edges
 
     @staticmethod
-    def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+    def _is_illegal(action: NDArray[np.int_], old_state: InitialMappingState) -> bool:
         """Check if the given action is illegal i.e., checks if qubits are mapped
         multiple times.
 
@@ -127,8 +128,8 @@ class BasicRewarder(Rewarder):
         :return: Whether this action is valid for the given state.
         """
         return (
-            action[0] in old_state["physical_qubits_mapped"]
-            or action[1] in old_state["logical_qubits_mapped"]
+            action[0] in old_state.mapped_qubits["physical"]
+            or action[1] in old_state.mapped_qubits["logical"]
         )
 
     def _set_reward_range(self) -> None:
@@ -153,7 +154,7 @@ class BasicRewarder(Rewarder):
 
     def __eq__(self, other: Any) -> bool:
         return (
-            type(self) == type(other)
+            type(self) is type(other)
             and self._reward_range == other._reward_range
             and self._illegal_action_penalty == other._illegal_action_penalty
             and self._reward_per_edge == other._reward_per_edge
@@ -169,9 +170,9 @@ class SingleStepRewarder(BasicRewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: InitialMappingState,
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: InitialMappingState,
     ) -> float:
         """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
@@ -200,9 +201,9 @@ class EpisodeRewarder(BasicRewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: InitialMappingState,
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: InitialMappingState,
     ) -> float:
         """Compute a reward, based on the new state, and the given action. Specifically
         the connection graph, interaction graphs and mapping are used.
@@ -219,10 +220,7 @@ class EpisodeRewarder(BasicRewarder):
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
-        if (
-            len(new_state["physical_qubits_mapped"])
-            != new_state["connection_graph_matrix"].shape[0]
-        ):
+        if len(new_state.mapped_qubits["physical"]) != new_state.num_nodes:
             return 0
 
         return self._compute_state_reward(new_state)

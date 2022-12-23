@@ -3,13 +3,14 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from qgym.spaces import Box, Dict, MultiBinary, MultiDiscrete
+from qgym.spaces import Box, Dict, Discrete, MultiBinary, MultiDiscrete
 
 
 @pytest.mark.parametrize(
     "space, args",
     [
         (Box, (0, 10, (10, 10))),
+        (Discrete, (10,)),
         (MultiDiscrete, ([10] * 10,)),
         (MultiBinary, (100,)),
     ],
@@ -34,7 +35,7 @@ def test_init_rng_dict():
 
 @pytest.mark.parametrize(
     "space",
-    [Box(0, 10, (10, 10)), MultiDiscrete([10] * 10), MultiBinary(100)],
+    [Box(0, 10, (10, 10)), Discrete(10), MultiDiscrete([10] * 10), MultiBinary(100)],
 )
 def test_seed(space):
     space1 = deepcopy(space)

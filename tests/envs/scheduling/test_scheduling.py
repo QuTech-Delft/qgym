@@ -5,6 +5,7 @@ from stable_baselines3.common.env_checker import check_env
 import qgym.spaces
 from qgym.custom_types import Gate
 from qgym.envs import Scheduling
+from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.utils import GateEncoder
 
 
@@ -47,22 +48,12 @@ def naive_schedule_algorithm(scheduling_env, circuit=None):
         action[1] = 1
         obs, _, done, _ = scheduling_env.step(action)
         action[1] = 0
-    return scheduling_env._state["schedule"]
+    return scheduling_env._state.circuit_info.schedule
 
 
-def test_state(diamond_env, diamond_mp_dict) -> None:
-    assert isinstance(diamond_env._state["n_qubits"], int)
-    assert diamond_env._state["n_qubits"] == diamond_mp_dict["n_qubits"]
-
-    assert isinstance(diamond_env._gate_encoder, GateEncoder)
-    gate_encoder = diamond_env._gate_encoder
-    assert hasattr(gate_encoder, "_encoding_dct")
-    assert hasattr(gate_encoder, "_decoding_dct")
-    assert hasattr(gate_encoder, "_longest_name")
-    assert hasattr(gate_encoder, "n_gates")
-    assert gate_encoder.n_gates == len(diamond_mp_dict["gates"])
-    assert len(gate_encoder._encoding_dct) == len(diamond_mp_dict["gates"])
-    assert len(gate_encoder._decoding_dct) == len(diamond_mp_dict["gates"])
+def test_state(diamond_env) -> None:
+    assert isinstance(diamond_env, Scheduling)
+    assert isinstance(diamond_env._state, SchedulingState)
 
 
 def test_observation_space(diamond_env) -> None:
