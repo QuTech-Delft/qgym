@@ -51,7 +51,6 @@ class GateEncoder:
             learned. The ``Iterable`` can contain duplicate names.
         :returns: Self.
         """
-        idx = 0  # in case gates is empty
         self.n_gates = 0
         for idx, gate_name in enumerate(gates, 1):
             if gate_name in self._encoding_dct:
@@ -238,3 +237,7 @@ class GateEncoder:
             "encoded_gates must be int, Mapping or Sequence, got "
             f"{type(encoded_gates)}."
         )
+
+    def __repr__(self) -> str:
+        """Make a string representation without endline characters."""
+        return f"{self.__class__.__name__}(encoding={self._encoding_dct})"

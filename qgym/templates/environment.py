@@ -94,6 +94,8 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         if seed is not None:
             self.seed(seed)
 
+        self._state.reset(seed=seed, **_kwargs)
+
         if return_info:
             return self._state.obtain_observation(), self._state.obtain_info()
         return self._state.obtain_observation()

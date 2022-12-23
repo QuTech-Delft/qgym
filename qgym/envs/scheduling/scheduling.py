@@ -243,9 +243,8 @@ class Scheduling(
         :param _kwargs: Additional options to configure the reset.
         :return: Initial observation and optionally also debugging info.
         """
-        self._state.reset(seed=seed, circuit=circuit)
         # call super method for dealing with the general stuff
-        return super().reset(seed=seed, return_info=return_info)
+        return super().reset(seed=seed, return_info=return_info, circuit=circuit)
 
     def get_circuit(self, mode: str = "human") -> List[Gate]:
         """Return the quantum circuit of this episode.

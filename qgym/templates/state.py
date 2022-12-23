@@ -89,5 +89,5 @@ class State(Generic[ObservationT, ActionT]):
     def __str__(self) -> str:
         text = f"{self.__class__.__name__}:\n"
         for attribute_name, attribute_value in self.__dict__.items():
-            text += f"{attribute_name}: {attribute_value}\n"
+            text += f"{attribute_name}: {repr(attribute_value)}\n"
         return text

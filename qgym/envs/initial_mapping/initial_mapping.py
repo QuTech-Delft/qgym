@@ -224,10 +224,10 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         :param _kwargs: Additional options to configure the reset.
         :return: Initial observation and optionally debugging info.
         """
-        # Reset the state, action space, and step number
-        self._state.reset(seed=seed, interaction_graph=interaction_graph)
         # call super method for dealing with the general stuff
-        return super().reset(seed=seed, return_info=return_info)
+        return super().reset(
+            seed=seed, return_info=return_info, interaction_graph=interaction_graph
+        )
 
     def add_random_edge_weights(self) -> None:
         """Add random weights to the connection graph and interaction graph."""

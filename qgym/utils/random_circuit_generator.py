@@ -110,3 +110,9 @@ class RandomCircuitGenerator:
 
         msg = f"n_gates should be of type int or str, but was of type {type(n_gates)}."
         raise ValueError(msg)
+
+    def __repr__(self) -> str:
+        """Create a string representation of the RandomCircuitGenerator."""
+        text = f"{self.__class__.__name__}({self.n_qubits}, {self.max_gates}, "
+        text += f"{self.rng})"
+        return text

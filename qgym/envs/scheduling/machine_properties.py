@@ -226,3 +226,21 @@ class MachineProperties:
                 checked_mp["not_in_same_cycle"].append((gate1, gate_other))
 
         return checked_mp
+
+    def __str__(self) -> str:
+        """Make a string representation of the machine properties."""
+        text = f"{self.__class__.__name__}:\n"
+        text += f"n_qubits: {self._n_qubits}\n"
+        text += f"gates: {self._gates}\n"
+        text += f"same_start: {self._same_start}\n"
+        text += f"not_in_same_cycle: {self._not_in_same_cycle}"
+        return text
+
+    def __repr__(self) -> str:
+        """Make a string representation without endline characters."""
+        text = f"{self.__class__.__name__}("
+        text += f"n_qubits={self._n_qubits}, "
+        text += f"gates={self._gates}, "
+        text += f"same_start={self._same_start}, "
+        text += f"not_in_same_cycle={self._not_in_same_cycle})"
+        return text
