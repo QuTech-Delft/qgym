@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
-# This file is largely based on OpenQL (Apache 2.0 License, Copyright [2016] [Nader Khammassi & Imran Ashraf, QuTech, TU Delft]): https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
+# This file is largely based on OpenQL (Apache 2.0 License, Copyright [2016] [Nader 
+# Khammassi & Imran Ashraf, QuTech, TU Delft]): 
+# https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
+#
 # For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/setup.py
-# Changes were made by adding the get_version function, replacing openql (and the like) by qgym, and correctly
-# configuring the arguments to setup. Also the file was formatted following the black code style.
+#
+# Changes were made by adding the get_version function, replacing openql (and the like)
+# by qgym, and correctly configuring the arguments to setup. Furthermore, the code has
+# been modernized (f-strings, pathlib, etc), since qgym only supports Python 3.8 and
+# above. Lastly, the file was formatted following the black code style.
 
 import os
 import platform
