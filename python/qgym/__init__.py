@@ -9,9 +9,9 @@ __version__ = "0.1.0a0"
 # Everything below here is largely based on OpenQL (Apache 2.0 License, Copyright [2016]
 # [Nader Khammassi & Imran Ashraf, QuTech, TU Delft]):
 # https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
-# 
+#
 # For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/python/openql/__init__.py
-# 
+#
 # Changes were made by updating the typemap in the _fixup_swig_autodoc_type function.
 # Next to this, the __all__ dict was made consistent with our work. Also the occurences
 # of openql were renamed to qgym (also similar words)
