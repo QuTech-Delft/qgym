@@ -43,9 +43,9 @@ def test_unsupported_render_mode(small_env, mode, error_type, error_msg):
 
 
 def test_init_custom_connection_graph(small_env, small_graph):
-    assert nx.is_isomorphic(small_env._connection_graph, small_graph)
+    assert nx.is_isomorphic(small_env._state.graphs["connection"]["graph"], small_graph)
     assert (
-        small_env._state["connection_graph_matrix"] == np.array([[0, 1], [1, 0]])
+        small_env._state.graphs["connection"]["matrix"] == np.array([[0, 1], [1, 0]])
     ).all()
 
 
@@ -55,18 +55,22 @@ def test_init_custom_connection_graph(small_env, small_graph):
 )
 def test_init_custom_connection_graph_matrix(small_graph, connection_graph_matrix):
     env = InitialMapping(0.5, connection_graph_matrix=connection_graph_matrix)
-    assert nx.is_isomorphic(env._connection_graph, small_graph)
-    assert (env._state["connection_graph_matrix"] == np.array([[0, 1], [1, 0]])).all()
+    assert nx.is_isomorphic(env._state.graphs["connection"]["graph"], small_graph)
+    assert (
+        env._state.graphs["connection"]["matrix"] == np.array([[0, 1], [1, 0]])
+    ).all()
 
 
 @pytest.mark.parametrize(
     "connection_grid_size",
     [(2, 1), [1, 2]],
 )
-def test_init_custom_connection_grid_size(small_env, small_graph, connection_grid_size):
+def test_init_custom_connection_grid_size(small_graph, connection_grid_size):
     env = InitialMapping(0.5, connection_grid_size=connection_grid_size)
-    assert nx.is_isomorphic(env._connection_graph, small_graph)
-    assert (env._state["connection_graph_matrix"] == np.array([[0, 1], [1, 0]])).all()
+    assert nx.is_isomorphic(env._state.graphs["connection"]["graph"], small_graph)
+    assert (
+        env._state.graphs["connection"]["matrix"] == np.array([[0, 1], [1, 0]])
+    ).all()
 
 
 @pytest.mark.parametrize(

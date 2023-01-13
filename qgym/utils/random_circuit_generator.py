@@ -59,43 +59,31 @@ class RandomCircuitGenerator:
             generated.
         :return: A randomly generated quantum circuit.
         """
-        if isinstance(n_gates, str):
-            if n_gates.lower().strip() == "random":
-                n_gates = self.rng.integers(
-                    self.n_qubits, self.max_gates, endpoint=True
-                )
-            else:
-                raise ValueError(f"Unknown flag {n_gates}, choose from 'random'.")
-        elif isinstance(n_gates, int):
-            n_gates = min(n_gates, self.max_gates)
-        else:
-            msg = "n_gates should be of type int or str, but was of type "
-            msg += f"{type(n_gates)}."
-            raise ValueError(msg)
+        n_gates = self._parse_n_gates(n_gates)
 
         circuit: List[Gate] = [Gate("", -1, -1)] * n_gates
 
         if mode.lower() == "default":
             gate_names = ["x", "y", "z", "cnot", "measure"]
-            p = [0.16, 0.16, 0.16, 0.5, 0.02]
+            probabilities = [0.16, 0.16, 0.16, 0.5, 0.02]
         elif mode.lower() == "workshop":
             gate_names = ["x", "y", "cnot", "measure"]
-            p = [0.2, 0.2, 0.5, 0.1]
+            probabilities = [0.2, 0.2, 0.5, 0.1]
         else:
             raise ValueError("Unknown mode, choose 'default' or 'workshop'.")
 
         for idx in range(n_gates):
-            name = self.rng.choice(gate_names, p=p)
+            name = self.rng.choice(gate_names, p=probabilities)
 
             if name == "cnot":
-                q1, q2 = self.rng.choice(
+                qubit1, qubit2 = self.rng.choice(
                     np.arange(self.n_qubits), size=2, replace=False
                 )
             else:
-                q1 = self.rng.integers(self.n_qubits)
-                q2 = q1
+                qubit1 = self.rng.integers(self.n_qubits)
+                qubit2 = qubit1
 
-            circuit[idx] = Gate(name, q1, q2)
+            circuit[idx] = Gate(name, qubit1, qubit2)
 
         # If mode is default, the circuit should start by initializing the qubits
         if mode.lower() == "default":
@@ -103,3 +91,28 @@ class RandomCircuitGenerator:
                 circuit[qubit] = Gate("prep", qubit, qubit)
 
         return circuit
+
+    def _parse_n_gates(self, n_gates: Union[int, str]) -> int:
+        """Parse `n_gates`.
+
+        :param n_gates: If n_gates is "random", generate a number between 1 and
+            `max_gates`. If n_gates is an ``int``, return the minimum of `n_gates` and
+            `max_gates`.
+        """
+        if isinstance(n_gates, str):
+            if n_gates.lower().strip() == "random":
+                return self.rng.integers(self.n_qubits, self.max_gates, endpoint=True)
+
+            raise ValueError(f"Unknown flag {n_gates}, choose from 'random'.")
+
+        if isinstance(n_gates, int):
+            return min(n_gates, self.max_gates)
+
+        msg = f"n_gates should be of type int or str, but was of type {type(n_gates)}."
+        raise ValueError(msg)
+
+    def __repr__(self) -> str:
+        """Create a string representation of the RandomCircuitGenerator."""
+        text = f"{self.__class__.__name__}({self.n_qubits}, {self.max_gates}, "
+        text += f"{self.rng})"
+        return text

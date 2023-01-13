@@ -11,11 +11,13 @@ class Rewarder:
     _reward_range: Tuple[float, float]
 
     @abstractmethod
-    def compute_reward(self, *args: Any, **kwargs: Any) -> float:
-        """Compute a reward, based on the given arguments.
+    def compute_reward(self, *, old_state: Any, action: Any, new_state: Any) -> float:
+        """Compute a reward, based on the old state, new state, and the given action.
 
-        :param args: Arguments for computing the reward.
-        :param kwargs: Keyword-arguments for computing the reward.
+        :param old_state: State of the ``Environment`` before the current action.
+        :param action: Action that has just been taken.
+        :param new_state: Updated state of the ``Environment``.
+        :return reward: The reward for this action.
         """
         raise NotImplementedError
 

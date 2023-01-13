@@ -24,6 +24,7 @@ from typing import (
     Tuple,
     TypeVar,
     Union,
+    cast,
     overload,
 )
 
@@ -50,7 +51,6 @@ class GateEncoder:
             learned. The ``Iterable`` can contain duplicate names.
         :returns: Self.
         """
-        idx = 0  # in case gates is empty
         self.n_gates = 0
         for idx, gate_name in enumerate(gates, 1):
             if gate_name in self._encoding_dct:
@@ -107,27 +107,13 @@ class GateEncoder:
             return encoded_str
 
         if isinstance(gates, Mapping):
-            encoded_dict: Dict[int, Any] = {}
-            gate_name: str
-            for gate_name, item in gates.items():
-                gate_encoding = self._encoding_dct[gate_name]
-                if isinstance(item, int):
-                    encoded_dict[gate_encoding] = item
-                elif isinstance(item, Iterable):
-                    item_encoded = []
-                    for i in item:
-                        item_encoded.append(self._encoding_dct[i])
-                    encoded_dict[gate_encoding] = item_encoded
-                else:
-                    raise ValueError("Unknown mapping")
-            return encoded_dict
+            return self._encode_mapping(gates)
 
         if isinstance(gates, Sequence) and isinstance(gates[0], Gate):
             # We assume that if the first element of gates is a Gate, then the whole
             # Sequence contains Gate objects.
             encoded_gates_list: List[Gate] = []
-            gate: Gate
-            for gate in gates:  # type: ignore
+            for gate in cast(Sequence[Gate], gates):
                 encoded_name = self._encoding_dct[gate.name]
                 encoded_gates_list.append(Gate(encoded_name, gate.q1, gate.q2))
             return encoded_gates_list
@@ -139,7 +125,7 @@ class GateEncoder:
                 encoded_names_set.add(gate_encoding)
             return encoded_names_set
 
-        if isinstance(gates, list) or isinstance(gates, tuple):
+        if isinstance(gates, (list, tuple)):
             encoded_names_list: List[int] = []
             for gate_name in gates:
                 gate_encoding = self._encoding_dct[gate_name]
@@ -149,6 +135,26 @@ class GateEncoder:
         raise TypeError(
             f"gates type must be str, Mapping or Sequence, got {type(gates)}."
         )
+
+    def _encode_mapping(self, mapping: Mapping[str, Any]) -> Dict[int, Any]:
+        """Encode a mapping with gate names.
+
+        :raise ValueError: For unknown mappings.
+        """
+        encoded_dict: Dict[int, Any] = {}
+        gate_name: str
+        for gate_name, item in mapping.items():
+            gate_encoding = self._encoding_dct[gate_name]
+            if isinstance(item, int):
+                encoded_dict[gate_encoding] = item
+            elif isinstance(item, Iterable):
+                item_encoded = []
+                for i in item:
+                    item_encoded.append(self._encoding_dct[i])
+                encoded_dict[gate_encoding] = item_encoded
+            else:
+                raise ValueError("Unknown mapping")
+        return encoded_dict
 
     @overload
     def decode_gates(self, encoded_gates: int) -> str:
@@ -208,8 +214,7 @@ class GateEncoder:
             # We assume that if the first element of encoded_gates is a Gate, then the
             # whole Sequence contains Gate objects.
             decoded_gate_list: List[Gate] = []
-            gate: Gate
-            for gate in encoded_gates:  # type:ignore
+            for gate in cast(Sequence[Gate], encoded_gates):
                 decoded_gate_name = self._decoding_dct[gate.name]
                 decoded_gate_list.append(Gate(decoded_gate_name, gate.q1, gate.q2))
             return decoded_gate_list
@@ -221,10 +226,7 @@ class GateEncoder:
                 decoded_name_set.add(decoded_gate)
             return decoded_name_set
 
-        if (
-            isinstance(encoded_gates, list)
-            or isinstance(encoded_gates, tuple)
-        ):
+        if isinstance(encoded_gates, (list, tuple)):
             decoded_name_list: List[str] = []
             for gate_int in encoded_gates:
                 decoded_gate = self._decoding_dct[gate_int]
@@ -235,3 +237,7 @@ class GateEncoder:
             "encoded_gates must be int, Mapping or Sequence, got "
             f"{type(encoded_gates)}."
         )
+
+    def __repr__(self) -> str:
+        """Make a string representation without endline characters."""
+        return f"{self.__class__.__name__}(encoding={self._encoding_dct})"
