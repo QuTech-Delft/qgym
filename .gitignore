@@ -11,6 +11,7 @@
 
 # Build
 /pybuild/
+CMakeFiles/
 
 # Jupyter
 **/.ipynb_checkpoints/
@@ -27,5 +28,8 @@
 /openql_output/
 *.zip
 
-#vscode
+# vscode
 .vscode/
+
+# coverage
+.coverage
