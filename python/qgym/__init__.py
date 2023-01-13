@@ -1,6 +1,36 @@
-"""Gym for RL environments in the Quantum domain."""
+"""The qgym package consist of gyms and tools used for reinforcement learning (RL)
+environments in the Quantum domain. It's main purpose is to easily create RL
+environments for the different passes of the OpenQL framework, by simply initializing an
+environment class. This abstraction of the environment allows RL developers to develop
+RL agents to improve the OpenQL framework, without requiring prior knowledge of OpenQL.
 
-from typing import Any, List
+
+Example:
+    We want to create an environment for the OpenQL pass of initial mapping for a system
+    with a QPU topology of 3x3. Using the ``qgym`` package this becomes:
+
+    .. code-block:: python
+
+        from qgym.envs import InitialMapping
+        env = InitialMapping(0.5, connection_grid_size=(3,3))
+
+    We can then use the environment in the code block above to train a stable baseline
+    RL agent using the following code:
+
+    .. code-block:: python
+
+        from stable_baselines3 import PPO
+        model = PPO("MultiInputPolicy", env, verbose=1)
+        model.learn(int(1e5))
+
+"""
+import typing
+
+import qgym.templates as templates
+import qgym.spaces as spaces
+import qgym.envs as envs
+import qgym.utils as utils
+
 
 __version__ = "0.1.0a0"
 
@@ -33,7 +63,7 @@ from .qgym import *
 
 # List of all the relevant SWIG-generated stuff, to avoid outputting docs for
 # all the other garbage SWIG generates for internal use.
-__all__ = ["map_program"]
+__all__ = ["map_program", "envs", "spaces", "templates", "utils"]
 
 
 # Swig's autodoc thing is nice, because it saves typing out all the overload
@@ -105,9 +135,9 @@ def _fixup_swig_autodoc_signature(sig: str) -> str:
     return sig
 
 
-def _fixup_swig_autodoc(ob: Any, keep_sig: bool, keep_docs: bool) -> None:
+def _fixup_swig_autodoc(ob: typing.Any, keep_sig: bool, keep_docs: bool) -> None:
     try:
-        lines: List[str] = ob.__doc__.split("\n")
+        lines: typing.List[str] = ob.__doc__.split("\n")
         new_lines = []
         state = 0
         for line in lines:
@@ -145,3 +175,5 @@ for ob in __all__:
 
     else:
         _fixup_swig_autodoc(ob, True, True)
+
+del typing, _fixup_swig_autodoc_signature, _fixup_swig_autodoc, ob
