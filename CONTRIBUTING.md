@@ -8,8 +8,9 @@ Below is a list of useful information for developers.
 ## Install in developer mode
 1. Clone the project and move to the folder.
     ```commandline
-    git clone --recurse-submodules https://github.com/qutech-sd/OpenQL-Gym.git
+    git clone https://github.com/qutech-sd/OpenQL-Gym.git
     cd OpenQl-Gym
+    git submodule update --init --recursive
     ```
 1. Make sure `wheel` and `plumbum` are up to date.
     ```commandline
