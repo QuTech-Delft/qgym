@@ -29,7 +29,7 @@ from setuptools.command.egg_info import egg_info as _egg_info
 from setuptools.command.install import install as _install
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
-ROOT_DIR = Path.cwd()   # root of the repository
+ROOT_DIR = Path.cwd()  # root of the repository
 PYSRC_DIR = ROOT_DIR / "python"  # Python source files
 TARGET_DIR = ROOT_DIR / "pybuild"  # python-specific build directory
 BUILD_DIR = TARGET_DIR / "build"  # directory for setuptools to dump various files into
@@ -146,9 +146,15 @@ class build_ext(_build_ext):
 
                 log.info("Figured out the following things:")
                 log.info(f" - Python is {64 if python_is_64 else 32}-bit")
-                log.info(f" - CMake is building {64 if cmake_is_64 else 32}-bit by default")
-                log.info(f" - CMake {'IS' if cmake_is_msvc else 'is NOT'} building using MSVC")
-                log.info(f" - MSVC {'IS' if msvc_is_fixed_to_64 else 'is NOT'} fixed to 64-bit")
+                log.info(
+                    f" - CMake is building {64 if cmake_is_64 else 32}-bit by default"
+                )
+                log.info(
+                    f" - CMake {'IS' if cmake_is_msvc else 'is NOT'} building using MSVC"
+                )
+                log.info(
+                    f" - MSVC {'IS' if msvc_is_fixed_to_64 else 'is NOT'} fixed to 64-bit"
+                )
 
                 # If there's a mismatch, see what we can do.
                 if python_is_64 != cmake_is_64:

@@ -26,11 +26,10 @@ Example:
 """
 import typing
 
-import qgym.templates as templates
-import qgym.spaces as spaces
 import qgym.envs as envs
+import qgym.spaces as spaces
+import qgym.templates as templates
 import qgym.utils as utils
-
 
 __version__ = "0.1.0a0"
 
