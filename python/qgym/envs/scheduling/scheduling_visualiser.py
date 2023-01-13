@@ -1,9 +1,14 @@
 """This module contains a class used for rendering the ``Scheduling`` environment."""
-from typing import Any, Mapping, Tuple
+from typing import Dict, Tuple, Union, cast
 
 import numpy as np
 import pygame
-from qgym.utils import GateEncoder
+from numpy.typing import NDArray
+from pygame.font import Font
+
+from qgym.custom_types import Gate
+from qgym.envs.scheduling.scheduling_state import SchedulingState
+from qgym.templates.visualiser import Visualiser
 
 # Define some colors used during rendering
 WHITE = (255, 255, 255)
@@ -12,61 +17,44 @@ DARK_BLUE = (71, 115, 147)
 BLUE = (113, 164, 195)
 
 
-class SchedulingVisualiser:
+class SchedulingVisualiser(Visualiser):
     """Visualiser class for the ``Scheduling`` environment."""
 
-    def __init__(
-        self,
-        *,
-        gate_encoder: GateEncoder,
-        gate_cycle_length: Mapping[int, int],
-        n_qubits: int,
-    ) -> None:
+    def __init__(self, initial_state: SchedulingState) -> None:
         """Init of the ``SchedulingVisualiser``.
 
-        :param gate_encoder: ``GateEncoder`` object of a ``Scheduling`` environment.
-        :param gate_cycle_length: ``Mapping`` of cycle lengths for the gates of the
-            scheduling environment.
-        :param n_qubits: Number of qubits of the scheduling environment.
+        :param initial_state: ``SchedulingState`` object containing the initial state of
+            the environment to visualise.
         """
         # Rendering data
         self.screen = None
-        self.is_open = False
-        self.screen_width = 1500
-        self.screen_height = 800
-        self.x_axis_offset = 100
-        self.y_axis_offset = 0
-
+        self.screen_dimensions = (1500, 800)
+        self.offset = {"x-axis": 100, "y-axis": 0}
         self.colors = {
             "gate_fill": BLUE,
             "gate_outline": DARK_BLUE,
             "gate_text": WHITE,
             "background": WHITE,
             "qubits": BLACK,
+            "y-axis": BLACK,
         }
 
-        subscreen_pos = (self.x_axis_offset, 0)
-        subscreen_size = (
-            self.screen_width - self.x_axis_offset,
-            self.screen_height - self.y_axis_offset,
-        )
-        self.subscreen = pygame.Rect(subscreen_pos, subscreen_size)
+        n_qubits = initial_state.machine_properties.n_qubits
+        gate_height = (self.screen_height - self.offset["y-axis"]) / n_qubits
 
-        self._gate_encoder = gate_encoder
-        self._gate_cycle_length = gate_cycle_length
-        self._n_qubits = n_qubits
-        self._gate_height = self.subscreen.height / self._n_qubits
+        longest_gate = 0
+        for n_cycles in initial_state.machine_properties.gates.values():
+            longest_gate = max(longest_gate, n_cycles)
 
-        self._longest_gate = 0
-        for n_cycles in gate_cycle_length.values():
-            self._longest_gate = max(self._longest_gate, n_cycles)
+        self.gate_size_info = {"height": gate_height, "longest": longest_gate}
 
         # define attributes that are set later
-        self.font = None
-        self._cycle_width = None
-        self._encoded_circuit = None
+        self.font: Dict[str, Font] = {}
+        self._cycle_width = 0.0
 
-    def render(self, state: Mapping[str, Any], mode: str) -> Any:
+    def render(
+        self, state: SchedulingState, mode: str
+    ) -> Union[bool, NDArray[np.int_]]:
         """Render the current state using pygame.
 
         :param mode: The mode to render with (supported modes are found in
@@ -75,125 +63,106 @@ class SchedulingVisualiser:
         :return: Result of rendering.
         """
         if self.screen is None:
-            self.start(mode)
+            self.screen = self._start_screen("Scheduling Environment", mode)
 
-        self._encoded_circuit = state["encoded_circuit"]
+        if len(self.font) == 0:
+            gate_font, axis_font = self._start_font()
+            self.font["gate"] = gate_font
+            self.font["axis"] = axis_font
 
         pygame.time.delay(50)
 
         self.screen.fill(self.colors["background"])
-        self._draw_y_axis(self.colors["qubits"])
+        self._draw_y_axis(state.machine_properties.n_qubits)
 
-        self._cycle_width = self.subscreen.width / (state["cycle"] + self._longest_gate)
+        self._cycle_width = (self.screen_width - self.offset["x-axis"]) / (
+            state.cycle + self.gate_size_info["longest"]
+        )
 
-        for gate_idx, scheduled_cycle in enumerate(state["schedule"]):
+        for gate_idx, scheduled_cycle in enumerate(state.circuit_info.schedule):
             if scheduled_cycle != -1:
-                self._draw_scheduled_gate(gate_idx, scheduled_cycle)
+                gate = state.circuit_info.encoded[gate_idx]
+                gate_cycle_length = cast(
+                    Dict[int, int], state.machine_properties.gates
+                )[gate.name]
+                gate_name = state.utils.gate_encoder.decode_gates(gate.name)
+                self._draw_scheduled_gate(
+                    gate, scheduled_cycle, gate_cycle_length, gate_name
+                )
 
-        if mode == "human":
-            pygame.event.pump()
-            pygame.display.flip()
-            return self.is_open
-        elif mode == "rgb_array":
-            return np.transpose(
-                np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
-            )
-        else:
-            raise ValueError(
-                f"You provided an invalid mode '{mode}',"
-                f" the only supported modes are 'human' and 'rgb_array'."
-            )
+        return self._display(mode)
 
-    def _draw_y_axis(self, color: Tuple[int, int, int]) -> None:
+    def _draw_y_axis(self, n_qubits: int) -> None:
         """Draw the y-axis of the display.
 
-        :param color: Color of the y-axis.
+        :param n_qubits: Number of qubits of the machine.
         """
-        for i in range(self._n_qubits):
-            text = self.axis_font.render(f"Q{i}", True, color)
+        screen = cast(pygame.surface.Surface, self.screen)
+        for i in range(n_qubits):
+            text = self.font["axis"].render(f"Q{i}", True, self.colors["y-axis"])
             text_center = (
-                self.x_axis_offset / 2,
-                self._gate_height * (self._n_qubits - i - 0.5),
+                self.offset["x-axis"] / 2,
+                self.gate_size_info["height"] * (n_qubits - i - 0.5),
             )
             text_position = text.get_rect(center=text_center)
-            self.screen.blit(text, text_position)
+            screen.blit(text, text_position)
 
-    def _draw_scheduled_gate(self, gate_idx: int, scheduled_cycle: int) -> None:
+    def _draw_scheduled_gate(
+        self, gate: Gate, scheduled_cycle: int, gate_cycle_length: int, gate_name: str
+    ) -> None:
         """Draw a gate on the screen.
 
-        :param gate_idx: Index of the gate to draw.
+        :param gate: Gate to draw.
         :param scheduled_cycle: Cycle the gate is scheduled.
+        :param gate_cycle_length: Length of the gat in machine cycles.
+        :param gate_name: Name of the gate.
         """
-        gate = self._encoded_circuit[gate_idx]
-
-        self._draw_gate_block(gate.name, gate.q1, scheduled_cycle)
+        self._draw_gate_block(gate_name, gate_cycle_length, gate.q1, scheduled_cycle)
         if gate.q1 != gate.q2:
-            self._draw_gate_block(gate.name, gate.q2, scheduled_cycle)
+            self._draw_gate_block(
+                gate_name, gate_cycle_length, gate.q2, scheduled_cycle
+            )
 
     def _draw_gate_block(
-        self, gate_int_name: int, qubit: int, scheduled_cycle: int
+        self, gate_name: str, gate_cycle_length: int, qubit: int, scheduled_cycle: int
     ) -> None:
         """Draw a single block of a gate (gates can consist of 1 or 2 blocks).
 
-        :param gate_int_name: Integer encoding of the gate name.
+        :param gate_name: Name of the gate.
+        :param gate_cycle_length: Length of the gat in machine cycles.
         :param qubit: Qubit in which the gate acts.
         :param scheduled_cycle: Cycle in which the gate is scheduled.
         """
-        gate_width = self._cycle_width * self._gate_cycle_length[gate_int_name]
-        gate_box_size = (0.98 * gate_width, 0.98 * self._gate_height)
+        screen = cast(pygame.surface.Surface, self.screen)
+        gate_width = self._cycle_width * gate_cycle_length
+        gate_box_size = (0.98 * gate_width, 0.98 * self.gate_size_info["height"])
 
         box_pos = (
             self.screen_width - scheduled_cycle * self._cycle_width - gate_width,
             self.screen_height
-            - qubit * self._gate_height
-            - self.y_axis_offset
-            - self._gate_height,
+            - qubit * self.gate_size_info["height"]
+            - self.offset["y-axis"]
+            - self.gate_size_info["height"],
         )
         gate_box = pygame.Rect(box_pos, gate_box_size)
 
+        pygame.draw.rect(screen, self.colors["gate_fill"], gate_box, border_radius=5)
         pygame.draw.rect(
-            self.screen, self.colors["gate_fill"], gate_box, border_radius=5
-        )
-        pygame.draw.rect(
-            self.screen, self.colors["gate_outline"], gate_box, width=2, border_radius=5
+            screen, self.colors["gate_outline"], gate_box, width=2, border_radius=5
         )
 
-        gate_name = self._gate_encoder.decode_gates(gate_int_name)
-        text = self.font.render(gate_name.upper(), True, self.colors["gate_text"])
+        text = self.font["gate"].render(
+            gate_name.upper(), True, self.colors["gate_text"]
+        )
         text_position = text.get_rect(center=gate_box.center)
-        self.screen.blit(text, text_position)
+        screen.blit(text, text_position)
 
-    def start(self, mode: str) -> None:
-        """Start pygame in the given mode.
+    def _start_font(self) -> Tuple[Font, Font]:
+        """Start the pygame fonts for the gate and axis font.
 
-        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
-        :raise ValueError: When an invalid mode is provided.
+        :return: pygame fonts for the gate and axis font.
         """
-        pygame.display.init()
-        if mode == "human":
-            self.screen = pygame.display.set_mode(
-                (self.screen_width, self.screen_height)
-            )
-        elif mode == "rgb_array":
-            self.screen = pygame.Surface((self.screen_width, self.screen_height))
-        else:
-            raise ValueError(
-                f"You provided an invalid mode '{mode}',"
-                f" the only supported modes are 'human' and 'rgb_array'."
-            )
-
-        pygame.display.set_caption("Scheduling Environment")
-
         pygame.font.init()
-        self.font = pygame.font.SysFont("Arial", 12)
-        self.axis_font = pygame.font.SysFont("Arial", 30)
-
-        self.is_open = True
-
-    def close(self) -> None:
-        """Close the screen used for rendering."""
-        if self.screen is not None:
-            pygame.display.quit()
-            pygame.font.quit()
-            self.is_open = False
-            self.screen = None
+        gate_font = pygame.font.SysFont("Arial", 12)
+        axis_font = pygame.font.SysFont("Arial", 30)
+        return gate_font, axis_font

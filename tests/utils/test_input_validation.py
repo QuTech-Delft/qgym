@@ -3,6 +3,8 @@ from numbers import Number
 import networkx as nx
 import numpy as np
 import pytest
+from scipy.sparse import csr_matrix
+
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_graph_is_valid_topology,
@@ -13,7 +15,6 @@ from qgym.utils.input_validation import (
     warn_if_negative,
     warn_if_positive,
 )
-from scipy.sparse import csr_matrix
 
 
 def test_check_real_no_bounds():

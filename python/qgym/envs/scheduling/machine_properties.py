@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import warnings
 from copy import deepcopy
-from typing import Any, Dict, Iterable, List, Mapping, Set, Tuple
+from typing import Any, Dict, Iterable, Mapping, Set, Tuple, Union
 
 from qgym.utils import GateEncoder
 from qgym.utils.input_validation import check_instance, check_int, check_string
@@ -44,9 +44,9 @@ class MachineProperties:
         :param n_qubits: Number of qubits of the machine.
         """
         self._n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
-        self._gates = {}
-        self._same_start = set()
-        self._not_in_same_cycle = {}
+        self._gates: Dict[Any, int] = {}
+        self._same_start: Set[Any] = set()
+        self._not_in_same_cycle: Dict[Any, Set[Any]] = {}
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
@@ -59,11 +59,11 @@ class MachineProperties:
         """
         checked_mp = cls._check_machine_properties_mapping(machine_properties)
 
-        mp = cls(checked_mp["n_qubits"])
-        mp.add_gates(checked_mp["gates"])
-        mp.add_same_start(checked_mp["same_start"])
-        mp.add_not_in_same_cycle(checked_mp["not_in_same_cycle"])
-        return mp
+        _machine_properties = cls(checked_mp["n_qubits"])
+        _machine_properties.add_gates(checked_mp["gates"])
+        _machine_properties.add_same_start(checked_mp["same_start"])
+        _machine_properties.add_not_in_same_cycle(checked_mp["not_in_same_cycle"])
+        return _machine_properties
 
     @classmethod
     def from_file(cls, filename: str) -> MachineProperties:
@@ -89,6 +89,7 @@ class MachineProperties:
                 msg += "new value."
                 warnings.warn(msg)
             self._gates[gate_name] = n_cycles
+            self._not_in_same_cycle[gate_name] = set()
         return self
 
     def add_same_start(self, gates: Iterable[str]) -> MachineProperties:
@@ -129,17 +130,10 @@ class MachineProperties:
             if gate2 not in self.gates:
                 raise ValueError(f"unknown gate '{gate2}'")
 
-            if gate1 in self.not_in_same_cycle:
-                if gate2 not in self.not_in_same_cycle[gate1]:
-                    self.not_in_same_cycle[gate1].append(gate2)
-            else:
-                self.not_in_same_cycle[gate1] = [gate2]
+            self._not_in_same_cycle[gate1].add(gate2)
+            self._not_in_same_cycle[gate2].add(gate1)
 
-            if gate2 in self.not_in_same_cycle:
-                if gate1 not in self.not_in_same_cycle[gate2]:
-                    self.not_in_same_cycle[gate2].append(gate1)
-            else:
-                self.not_in_same_cycle[gate2] = [gate1]
+        return self
 
     def encode(self) -> GateEncoder:
         """Encode the gates in the machine properties to integer values.
@@ -148,10 +142,20 @@ class MachineProperties:
             to decode the gates or encode quantum circuits containing the same gate
             names as in this ``MachineProperties`` object.
         """
-        gate_encoder = GateEncoder().learn_gates(self.gates)
-        self._gates = gate_encoder.encode_gates(self.gates)
-        self._same_start = gate_encoder.encode_gates(self.same_start)
-        self._not_in_same_cycle = gate_encoder.encode_gates(self.not_in_same_cycle)
+        if (
+            any(not isinstance(gate, str) for gate in self._gates)
+            or any(not isinstance(gate, str) for gate in self._same_start)
+            or any(not isinstance(gate, str) for gate in self._not_in_same_cycle)
+        ):
+            msg = "Gate names of machine properties are not of type str, perhaps they "
+            msg = "are already encoded?"
+            raise ValueError(msg)
+
+        gate_encoder = GateEncoder().learn_gates(self._gates)
+
+        self._gates = gate_encoder.encode_gates(self._gates)
+        self._same_start = gate_encoder.encode_gates(self._same_start)
+        self._not_in_same_cycle = gate_encoder.encode_gates(self._not_in_same_cycle)
         return gate_encoder
 
     @property
@@ -160,7 +164,7 @@ class MachineProperties:
         return self._n_qubits
 
     @property
-    def gates(self) -> Dict[str, int]:
+    def gates(self) -> Union[Dict[str, int], Dict[int, int]]:
         """Return a``Dict`` with the gate names the machine can perform as keys, and the
         number of machine cycles (time) as values.
         """
@@ -172,14 +176,14 @@ class MachineProperties:
         return len(self._gates)
 
     @property
-    def same_start(self) -> Set:
+    def same_start(self) -> Union[Set[str], Set[int]]:
         """Set of gate names that should start in the same cycle, or wait till the
         previous gate is done.
         """
         return self._same_start
 
     @property
-    def not_in_same_cycle(self) -> Dict[str, List[str]]:
+    def not_in_same_cycle(self) -> Union[Dict[str, Set[str]], Dict[int, Set[int]]]:
         """Gates that can not start in the same cycle."""
         return self._not_in_same_cycle
 
@@ -222,3 +226,21 @@ class MachineProperties:
                 checked_mp["not_in_same_cycle"].append((gate1, gate_other))
 
         return checked_mp
+
+    def __str__(self) -> str:
+        """Make a string representation of the machine properties."""
+        text = f"{self.__class__.__name__}:\n"
+        text += f"n_qubits: {self._n_qubits}\n"
+        text += f"gates: {self._gates}\n"
+        text += f"same_start: {self._same_start}\n"
+        text += f"not_in_same_cycle: {self._not_in_same_cycle}"
+        return text
+
+    def __repr__(self) -> str:
+        """Make a string representation without endline characters."""
+        text = f"{self.__class__.__name__}("
+        text += f"n_qubits={self._n_qubits}, "
+        text += f"gates={self._gates}, "
+        text += f"same_start={self._same_start}, "
+        text += f"not_in_same_cycle={self._not_in_same_cycle})"
+        return text

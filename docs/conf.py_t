@@ -16,6 +16,7 @@ copyright = "2022, QuTech & TNO"
 author = "QuTech & TNO"
 version = importlib.import_module(package_name).__version__
 
+
 # -- Extensions --------------------------------------------------------------
 extensions = [
     "sphinx.ext.intersphinx",

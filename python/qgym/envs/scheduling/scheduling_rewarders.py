@@ -26,13 +26,12 @@ Usage:
 """
 from __future__ import annotations
 
-from typing import Any, Dict
-
 import numpy as np
 from numpy.typing import NDArray
-from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
-from qgym import Rewarder
+from qgym.envs.scheduling.scheduling_state import SchedulingState
+from qgym.templates import Rewarder
+from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
 
 
 class BasicRewarder(Rewarder):
@@ -74,9 +73,9 @@ class BasicRewarder(Rewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: SchedulingState,
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: SchedulingState,
     ) -> float:
         """Compute a reward, based on the new state, and the given action. Specifically
         the 'legal_actions' actions array.
@@ -99,7 +98,7 @@ class BasicRewarder(Rewarder):
         return self._schedule_gate_bonus
 
     @staticmethod
-    def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+    def _is_illegal(action: NDArray[np.int_], old_state: SchedulingState) -> bool:
         """Check if the given action is illegal. An action is illegal if ``action[0]``
         is not in ``old_state["legal_actions"]``.
 
@@ -108,7 +107,7 @@ class BasicRewarder(Rewarder):
         :return: Boolean value stating whether this action was illegal.
         """
         gate_to_schedule = action[0]
-        return not old_state["legal_actions"][gate_to_schedule]
+        return not old_state.circuit_info.legal[gate_to_schedule]
 
     def _set_reward_range(self) -> None:
         """Set the reward range."""
@@ -163,9 +162,9 @@ class EpisodeRewarder(Rewarder):
     def compute_reward(
         self,
         *,
-        old_state: Dict[Any, Any],
+        old_state: SchedulingState,
         action: NDArray[np.int_],
-        new_state: Dict[Any, Any],
+        new_state: SchedulingState,
     ) -> float:
         """Compute a reward, based on the new state, and the given action.
 
@@ -178,22 +177,22 @@ class EpisodeRewarder(Rewarder):
             is not yet done, then the reward is 0. Otherwise, the reward is
             `update_cycle_penalty`x`current cycle`.
         """
-        if self._is_illegal(action, old_state):
+        if action[1] == 0 and self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
-        if (new_state["schedule"] == -1).any():
+        if not new_state.is_done():
             return 0
 
         reward = 0
-        for gate_idx, scheduled_cycle in enumerate(new_state["schedule"]):
-            gate = new_state["encoded_circuit"][gate_idx]
-            finished = scheduled_cycle + new_state["gate_cycle_length"][gate.name]
+        for gate_idx, scheduled_cycle in enumerate(new_state.circuit_info.schedule):
+            gate = new_state.circuit_info.encoded[gate_idx]
+            finished = scheduled_cycle + new_state.gates[gate.name].cycle_length
             reward = min(reward, self._update_cycle_penalty * finished)
 
         return reward
 
     @staticmethod
-    def _is_illegal(action: NDArray[np.int_], old_state: Dict[Any, Any]) -> bool:
+    def _is_illegal(action: NDArray[np.int_], old_state: SchedulingState) -> bool:
         """Check if the given action is illegal. An action is illegal if ``action[0]``
         is not in ``old_state["legal_actions"]``.
 
@@ -202,7 +201,7 @@ class EpisodeRewarder(Rewarder):
         :return: Boolean value stating whether this action was illegal.
         """
         gate_to_schedule = action[0]
-        return not old_state["legal_actions"][gate_to_schedule]
+        return not old_state.circuit_info.legal[gate_to_schedule]
 
     def _set_reward_range(self) -> None:
         """Set the reward range."""

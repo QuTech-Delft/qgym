@@ -1,25 +1,51 @@
-from typing import Iterator, List
+from copy import deepcopy
+from typing import Generator, List, Tuple
 
 import numpy as np
 import pytest
+from numpy.typing import NDArray
+
 from qgym.custom_types import Gate
-from qgym.envs.scheduling import BasicRewarder, EpisodeRewarder
+from qgym.envs.scheduling import (
+    BasicRewarder,
+    CommutationRulebook,
+    EpisodeRewarder,
+    MachineProperties,
+)
+from qgym.envs.scheduling.scheduling_state import SchedulingState
 
 
-def _right_to_left_action_generator(circuit: List[Gate]) -> Iterator[List[int]]:
+def _right_to_left_state_generator(
+    circuit: List[Gate],
+) -> Generator[Tuple[SchedulingState, NDArray[np.int_], SchedulingState], None, None]:
     """
     Generate actions based on a circuit of timings. No illegal action will be taken.
 
     :param circuit: List of timings in cycle steps.
     """
-    gate_cycles = {"x": 1, "measure": 5}
-    for i in range(len(circuit) - 1, 0, -1):
-        yield np.array([i, 0])
-        gate = circuit[i]
-        for _ in range(gate_cycles[gate.name]):
-            yield np.array([i, 1])
+    machine_properties = MachineProperties(2)
+    machine_properties.add_gates({"x": 1, "y": 1, "measure": 5, "cnot": 2})
+    rulebook = CommutationRulebook()
+    new_state = SchedulingState(
+        machine_properties=machine_properties,
+        max_gates=10,
+        dependency_depth=1,
+        random_circuit_mode="workshop",
+        rulebook=rulebook,
+    )
+    new_state.reset(circuit=circuit)
 
-    yield np.array([0, 0])
+    for _ in range(len(circuit) * 5):
+        legal_gates = np.nonzero(new_state.circuit_info.legal)[0]
+        if len(legal_gates) > 0:
+            action = np.array([legal_gates[-1], 0])
+        else:
+            action = np.array([0, 1])
+        old_state = deepcopy(new_state)
+        new_state.update_state(action)
+        yield old_state, action, new_state
+        if new_state.is_done():
+            break
 
 
 @pytest.fixture
@@ -39,10 +65,8 @@ def basic_rewarder():
     ],
 )
 def test_basic_rewarder_rewards(basic_rewarder, circuit, expected_reward):
-    action_generator = _right_to_left_action_generator(circuit)
-    old_state = {"legal_actions": [True] * len(circuit)}
-    new_state = {}
-    for (i, action) in enumerate(action_generator):
+    episode_generator = _right_to_left_state_generator(circuit)
+    for i, (old_state, action, new_state) in enumerate(episode_generator):
         reward = basic_rewarder.compute_reward(
             old_state=old_state, action=action, new_state=new_state
         )
@@ -57,27 +81,14 @@ def episode_rewarder():
 @pytest.mark.parametrize(
     "circuit,expected_reward",
     [
-        ([Gate("x", 1, 1)], [-2]),
+        ([Gate("x", 1, 1)], [-1]),
         ([Gate("x", 1, 1), Gate("x", 1, 1)], [0, 0, -2]),
-        (
-            [Gate("x", 1, 1), Gate("x", 1, 1), Gate("measure", 1, 1)],
-            [0, 0, 0, 0, 0, 0, 0, 0, -6],
-        ),
+        ([Gate("x", 1, 1), Gate("x", 1, 1), Gate("measure", 1, 1)], [0] * 8 + [-7]),
     ],
 )
 def test_episode_rewarder_rewards(episode_rewarder, circuit, expected_reward):
-    action_generator = _right_to_left_action_generator(circuit)
-    old_state = {
-        "legal_actions": [True] * len(circuit),
-    }
-    new_state = {"schedule": np.array([-1])}
-    for (i, action) in enumerate(action_generator):
-        if action[0] == 0:
-            new_state = {
-                "schedule": np.ones(len(circuit)),
-                "encoded_circuit": circuit,
-                "gate_cycle_length": {"x": 1, "measure": 5},
-            }
+    episode_generator = _right_to_left_state_generator(circuit)
+    for i, (old_state, action, new_state) in enumerate(episode_generator):
         reward = episode_rewarder.compute_reward(
             old_state=old_state, action=action, new_state=new_state
         )
@@ -119,7 +130,7 @@ def _rewarder(request):
 
 
 def test_illegal_actions(rewarder):
-    old_state = {"legal_actions": [False, True]}
-
+    circuit = [Gate("x", 1, 1), Gate("y", 1, 1)]
+    old_state, _, _ = next(_right_to_left_state_generator(circuit))
     assert rewarder._is_illegal([0, 0], old_state)
     assert not rewarder._is_illegal([1, 0], old_state)

@@ -26,6 +26,7 @@ from typing import Callable, List
 
 import numpy as np
 from numpy.typing import NDArray
+
 from qgym.custom_types import Gate
 
 
@@ -39,6 +40,8 @@ class CommutationRulebook:
             that gates with disjoint qubits commute and that gates that are exactly the
             same commute. If ``False``, then no rules will be initialized.
         """
+
+        self._rules: List[Callable[[Gate, Gate], bool]]
         if default_rules:
             self._rules = [disjoint_qubits, same_gate]
         else:
@@ -85,6 +88,17 @@ class CommutationRulebook:
         """
         self._rules.append(rule)
 
+    def __repr__(self) -> str:
+        """Create a string representation of the CommutationRulebook."""
+        text = f"{self.__class__.__name__}(rules=["
+        for rule in self._rules:
+            if callable(rule) and hasattr(rule, "__name__"):
+                text += f"{rule.__name__}, "
+            else:
+                text += f"{rule}, "
+        text = text[:-2] + "])"
+        return text
+
 
 def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     """Gates that have disjoint qubits commute.
@@ -93,7 +107,7 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     :param gate2: Gate to check disjointness against.
     :return: Boolean value stating whether the gates are disjoint.
     """
-    return (
+    return bool(
         gate1.q1 != gate2.q1
         and gate1.q1 != gate2.q2
         and gate1.q2 != gate2.q1

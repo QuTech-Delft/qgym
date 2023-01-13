@@ -2,7 +2,10 @@
 space in custom RL Environments. All spaces inherit from spaces of the OpenAI
 ``gym.spaces`` package.
 """
-from qgym.spaces.box import Box as Box
-from qgym.spaces.dict import Dict as Dict
-from qgym.spaces.multi_binary import MultiBinary as MultiBinary
-from qgym.spaces.multi_discrete import MultiDiscrete as MultiDiscrete
+from qgym.spaces.box import Box
+from qgym.spaces.dict import Dict
+from qgym.spaces.discrete import Discrete
+from qgym.spaces.multi_binary import MultiBinary
+from qgym.spaces.multi_discrete import MultiDiscrete
+
+__all__ = ["Box", "Dict", "Discrete", "MultiBinary", "MultiDiscrete"]

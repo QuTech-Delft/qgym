@@ -1,0 +1,16 @@
+name: pylint
+
+on: workflow_call
+
+jobs:
+  pylint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - name: Install requirements
+        run: pip install -r workflow_requirements.txt
+      - name: Install pylint
+        run: pip install pylint
+      - name: Run pylint
+        run: pylint python

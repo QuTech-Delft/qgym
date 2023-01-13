@@ -1,0 +1,30 @@
+name: sphinx
+
+on: workflow_call
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - uses: actions/download-artifact@v3
+        with:
+          name: pypi-manylinux_2_28-cp38-cp38
+          path: wheelhouse
+      - name: Install dependencies
+        run: |
+          pip install wheelhouse/qgym-0.1.0a0-cp38-cp38-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+          pip install sphinx sphinx_autodoc_typehints sphinx_math_dollar sphinx_rtd_theme
+      - name: Sphinx build
+        run: |
+          sphinx-apidoc -o docs_build -f -F -M -e -t docs --implicit-namespaces pybuild/qgym
+          sphinx-build docs_build docs_html
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs_html/
+          force_orphan: true

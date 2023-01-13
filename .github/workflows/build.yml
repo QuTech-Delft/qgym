@@ -15,11 +15,7 @@
 
 name: Build
 
-on:
-  push:
-    branches:
-      - 'release**'
-      - 'ci**'
+on: workflow_call
 
 jobs:
   macos:

@@ -1,0 +1,14 @@
+name: release
+
+on:
+  push:
+    branches:
+      - 'release**'
+      - 'ci**'
+
+jobs:
+  call-build:
+    uses: ./.github/workflows/build.yml
+  call-sphinx:
+    needs: call-build
+    uses: ./.github/workflows/sphinx.yml

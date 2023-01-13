@@ -2,5 +2,25 @@
     force-exclude="(deps|docs|docs_build|docs_html|images|openql_output|pybuild|qgym.egg-info|venv|wsl_venv)"
 
 [tool.isort]
-    profile="black"
-    extend_skip_glob = ["deps", "docs", "docs_build", "docs_html", "images", "openql_output", "pybuild", "qgym.egg-info", "venv", "wsl_venv"]
+profile="black"
+extend_skip_glob = ["deps", "docs", "docs_build", "docs_html", "images", "openql_output", "pybuild", "qgym.egg-info", "venv", "wsl_venv"]
+known_qgym= "qgym"
+sections= ["FUTURE", "STDLIB", "THIRDPARTY", "QGYM", "FIRSTPARTY", "LOCALFOLDER"]
+no_lines_before="LOCALFOLDER"
+
+[tool.mypy]
+plugins = ["numpy.typing.mypy_plugin"]
+strict = true
+ignore_missing_imports = true
+show_error_context = true
+install_types = true
+disallow_subclassing_any = false
+
+[tool.pylint.format]
+max-line-length = "88"
+
+[tool.pylint.typecheck]
+generated-members = ["torch.*", "numpy.*", "pygame.*"]
+
+[tool.pylint.main]
+extension-pkg-whitelist="pygame.gfxdraw"

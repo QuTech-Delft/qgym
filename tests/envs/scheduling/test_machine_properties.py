@@ -1,4 +1,5 @@
 import pytest
+
 from qgym.envs.scheduling import MachineProperties
 
 
@@ -98,7 +99,7 @@ def test_add_same_start(mp_with_gates, known_gates, unknown_gates):
 )
 def test_add_not_in_same_cycle(mp_with_gates, known_gates, unknown_gates):
     mp_with_gates.add_not_in_same_cycle(known_gates)
-    assert mp_with_gates.not_in_same_cycle == {"x": ["y"], "y": ["x"]}
+    assert mp_with_gates.not_in_same_cycle == {"x": {"y"}, "y": {"x"}}
     with pytest.raises(ValueError):
         mp_with_gates.add_not_in_same_cycle(unknown_gates)
 
@@ -109,10 +110,16 @@ def test_diamond_mp(diamond_mp, diamond_mp_dict):
     assert (
         diamond_mp.same_start == diamond_mp_dict["machine_restrictions"]["same_start"]
     )
-    assert (
-        diamond_mp.not_in_same_cycle
-        == diamond_mp_dict["machine_restrictions"]["not_in_same_cycle"]
-    )
+    assert diamond_mp.not_in_same_cycle == {
+        "x": {"y", "z"},
+        "y": {"x", "z"},
+        "z": {"x", "y"},
+        "cnot": set(),
+        "measure": set(),
+        "h": set(),
+        "prep": set(),
+        "swap": set(),
+    }
 
 
 def test_from_mapping(diamond_mp_dict):
@@ -120,10 +127,16 @@ def test_from_mapping(diamond_mp_dict):
     assert mp.n_qubits == diamond_mp_dict["n_qubits"]
     assert mp.gates == diamond_mp_dict["gates"]
     assert mp.same_start == diamond_mp_dict["machine_restrictions"]["same_start"]
-    assert (
-        mp.not_in_same_cycle
-        == diamond_mp_dict["machine_restrictions"]["not_in_same_cycle"]
-    )
+    assert mp.not_in_same_cycle == {
+        "x": {"y", "z"},
+        "y": {"x", "z"},
+        "z": {"x", "y"},
+        "cnot": set(),
+        "measure": set(),
+        "h": set(),
+        "prep": set(),
+        "swap": set(),
+    }
 
     diamond_mp_dict["machine_restrictions"].pop("same_start")
     error_msg = "'machine_restrictions' must have the keys 'same_start' and "

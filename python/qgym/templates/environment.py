@@ -3,16 +3,18 @@ from ``Environment``.
 """
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Tuple, Union
 
 import gym
+import numpy as np
 from gym import Space
 from numpy.random import Generator, default_rng
-from qgym.rewarder import Rewarder
+from numpy.typing import NDArray
 
-ObservationT = TypeVar("ObservationT")
-ActionT = TypeVar("ActionT")
-SelfT = TypeVar("SelfT")
+from qgym.templates.rewarder import Rewarder
+from qgym.templates.state import ActionT, ObservationT, State
+from qgym.templates.visualiser import Visualiser
+from qgym.utils.input_validation import check_string
 
 
 class Environment(Generic[ObservationT, ActionT], gym.Env):
@@ -25,14 +27,16 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     :ivar metadat: Additional metadata of this environment.
     :ivar _state: The state space of this environment.
     :ivar _rewarder: The rewarder of this environment.
+    :ivar _visualiser: The visualiser of this environment.
     """
 
     # --- These attributes should be set in any subclass ---
     action_space: Space
     observation_space: Space
     metadata: Dict[str, Any]
-    _state: Dict[str, Any]
+    _state: State[ObservationT, ActionT]
     _rewarder: Rewarder
+    _visualiser: Visualiser
 
     # --- Other attributes ---
     _rng: Optional[Generator] = None
@@ -58,18 +62,18 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
                `return_info` is ``True``.
         """
         old_state = deepcopy(self._state)
-        self._update_state(action)
+        self._state.update_state(action)
         if return_info:
             return (
-                self._obtain_observation(),
+                self._state.obtain_observation(),
                 self._compute_reward(old_state, action),
-                self._is_done(),
-                self._obtain_info(),
+                self._state.is_done(),
+                self._state.obtain_info(),
             )
         return (
-            self._obtain_observation(),
+            self._state.obtain_observation(),
             self._compute_reward(old_state, action),
-            self._is_done(),
+            self._state.is_done(),
         )
 
     @abstractmethod
@@ -90,11 +94,13 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         if seed is not None:
             self.seed(seed)
 
-        if return_info:
-            return self._obtain_observation(), self._obtain_info()
-        return self._obtain_observation()
+        self._state.reset(seed=seed, **_kwargs)
 
-    def seed(self, seed: Optional[int] = None) -> List[int]:
+        if return_info:
+            return self._state.obtain_observation(), self._state.obtain_info()
+        return self._state.obtain_observation()
+
+    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
         """Seed the rng of this space, using ``numpy.random.default_rng``.
 
         :param seed: Seed for the rng. Defaults to ``None``
@@ -103,13 +109,24 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         self._rng = default_rng(seed)
         return [seed]
 
-    @abstractmethod
-    def render(self, mode: str = "human") -> None:
-        """Render the current state.
+    def render(self, mode: str = "human") -> Union[bool, NDArray[np.int_]]:
+        """Render the current state using pygame.
 
-        :param mode: The mode to render with. Defaults to 'human'.
+        :param mode: The mode to render with (supported modes are found in
+            `self.metadata`).
+        :raise ValueError: If an unsupported mode is provided.
+        :return: Result of rendering.
         """
-        raise NotImplementedError
+        mode = check_string(mode, "mode", lower=True)
+        if mode not in self.metadata["render.modes"]:
+            raise ValueError("The given render mode is not supported.")
+
+        return self._visualiser.render(self._state, mode)
+
+    def close(self) -> None:
+        """Close the screen used for rendering."""
+        if hasattr(self, "_visualiser"):
+            self._visualiser.close()
 
     @property
     def rewarder(self) -> Rewarder:
@@ -144,7 +161,11 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         self.close()
 
     def _compute_reward(
-        self, old_state: Dict[str, Any], action: ActionT, *args: Any, **kwargs: Any
+        self,
+        old_state: State[ObservationT, ActionT],
+        action: ActionT,
+        *args: Any,
+        **kwargs: Any
     ) -> float:
         """Ask the ``Rewarder`` to compute a reward, based on the given old state, the
         given action and the updated state.
@@ -157,26 +178,3 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         return self._rewarder.compute_reward(
             *args, old_state=old_state, action=action, new_state=self._state, **kwargs
         )
-
-    @abstractmethod
-    def _update_state(self, action: ActionT) -> None:
-        """Update the state of this ``Environment`` using the given action.
-
-        :param action: Action to be executed.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def _obtain_observation(self) -> ObservationT:
-        """:return: Observation based on the current state."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def _is_done(self) -> bool:
-        """:return: Boolean value stating whether we are in a final state."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def _obtain_info(self) -> Dict[Any, Any]:
-        """:return: Optional debugging info for the current state."""
-        raise NotImplementedError

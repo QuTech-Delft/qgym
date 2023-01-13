@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 
-# This file is largely based on OpenQL (Apache 2.0 License, Copyright [2016] [Nader Khammassi & Imran Ashraf, QuTech, TU Delft]): https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
+# This file is largely based on OpenQL (Apache 2.0 License, Copyright [2016] [Nader
+# Khammassi & Imran Ashraf, QuTech, TU Delft]):
+# https://github.com/QuTech-Delft/OpenQL/blob/develop/LICENSE
+#
 # For the original file see: https://github.com/QuTech-Delft/OpenQL/blob/develop/setup.py
-# Changes were made by adding the get_version function, replacing openql (and the like) by qgym, and correctly
-# configuring the arguments to setup. Also the file was formatted following the black code style.
+#
+# Changes were made by adding the get_version function, replacing openql (and the like)
+# by qgym, and correctly configuring the arguments to setup. Furthermore, the code has
+# been modernized (f-strings, pathlib, etc), since qgym only supports Python 3.8 and
+# above. Lastly, the file was formatted following the black code style.
 
 import os
 import platform
@@ -15,6 +21,7 @@ from distutils.command.build import build as _build
 from distutils.command.clean import clean as _clean
 from distutils.command.sdist import sdist as _sdist
 from distutils.dir_util import copy_tree
+from pathlib import Path
 
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext as _build_ext
@@ -22,37 +29,28 @@ from setuptools.command.egg_info import egg_info as _egg_info
 from setuptools.command.install import install as _install
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
-root_dir = os.getcwd()  # root of the repository
-src_dir = root_dir + os.sep + "src"  # C++ source directory
-inc_dir = root_dir + os.sep + "include"  # C++ include directory
-pysrc_dir = root_dir + os.sep + "python"  # Python source files
-target_dir = root_dir + os.sep + "pybuild"  # python-specific build directory
-build_dir = (
-    target_dir + os.sep + "build"
-)  # directory for setuptools to dump various files into
-dist_dir = target_dir + os.sep + "dist"  # wheel output directory
-cbuild_dir = target_dir + os.sep + "cbuild"  # cmake build directory
-prefix_dir = target_dir + os.sep + "prefix"  # cmake install prefix
-srcmod_dir = (
-    pysrc_dir + os.sep + "qgym"
-)  # qgym Python module directory, source files only
-module_dir = (
-    target_dir + os.sep + "qgym"
-)  # qgym Python module directory for editable install
+ROOT_DIR = Path.cwd()  # root of the repository
+PYSRC_DIR = ROOT_DIR / "python"  # Python source files
+TARGET_DIR = ROOT_DIR / "pybuild"  # python-specific build directory
+BUILD_DIR = TARGET_DIR / "build"  # directory for setuptools to dump various files into
+DIST_DIR = TARGET_DIR / "dist"  # wheel output directory
+CBUILD_DIR = TARGET_DIR / "cbuild"  # cmake build directory
+PREFIX_DIR = TARGET_DIR / "prefix"  # cmake install prefix
+SRCMOD_DIR = PYSRC_DIR / "qgym"  # qgym Python module directory, source files only
+MODULE_DIR = TARGET_DIR / "qgym"  # qgym Python module directory for editable install
 
 # Copy the hand-written Python sources into the module directory that we're
 # telling setuptools is our source directory, because setuptools insists on
 # spamming output files into that directory. This is ugly, especially because
 # it has to run before setup() is invoked, but seems to be more-or-less
 # unavoidable to get editable installs to work.
-if not os.path.exists(target_dir):
-    os.makedirs(target_dir)
-copy_tree(srcmod_dir, module_dir)
+if not TARGET_DIR.exists():
+    TARGET_DIR.mkdir(parents=True)
+copy_tree(str(SRCMOD_DIR), str(MODULE_DIR))
 
 
 def read(fname):
-    with open(os.path.join(os.path.dirname(__file__), fname)) as f:
-        return f.read()
+    return (Path(__file__).parents[0] / fname).read_text()
 
 
 # this method was added specifically for qgym to read the version from the __init__ file.
@@ -61,15 +59,14 @@ def get_version(rel_path):
         if line.startswith("__version__"):
             delim = '"' if '"' in line else "'"
             return line.split(delim)[1]
-    else:
-        raise RuntimeError("Unable to find version string.")
+    raise RuntimeError("Unable to find version string.")
 
 
 class clean(_clean):
     def run(self):
         _clean.run(self)
-        if os.path.exists(target_dir):
-            shutil.rmtree(target_dir)
+        if TARGET_DIR.exists():
+            shutil.rmtree(TARGET_DIR)
 
 
 class build_ext(_build_ext):
@@ -79,18 +76,15 @@ class build_ext(_build_ext):
         # If we were previously built in a different directory, nuke the cbuild
         # dir to prevent inane CMake errors. This happens when the user does
         # pip install . after building locally.
-        if os.path.exists(cbuild_dir + os.sep + "CMakeCache.txt"):
-            with open(cbuild_dir + os.sep + "CMakeCache.txt", "r") as f:
-                for line in f.read().split("\n"):
-                    line = line.split("#")[0].strip()
-                    if not line:
-                        continue
-                    if line.startswith("QGym_BINARY_DIR:STATIC"):
-                        config_dir = line.split("=", maxsplit=1)[1]
-                        if os.path.realpath(config_dir) != os.path.realpath(cbuild_dir):
-                            print("removing pybuild/cbuild to avoid CMakeCache error")
-                            shutil.rmtree(cbuild_dir)
-                        break
+        if (CBUILD_DIR / "CMakeCache.txt").exists():
+            for line in (CBUILD_DIR / "CMakeCache.txt").read_text().split("\n"):
+                line = line.split("#")[0].strip()
+                if line and line.startswith("QGym_BINARY_DIR:STATIC"):
+                    config_dir = line.split("=", maxsplit=1)[1]
+                    if os.path.realpath(config_dir) != os.path.realpath(CBUILD_DIR):
+                        print("removing pybuild/cbuild to avoid CMakeCache error")
+                        shutil.rmtree(CBUILD_DIR)
+                    break
 
         # Figure out how many parallel processes to build with.
         if self.parallel:
@@ -104,14 +98,14 @@ class build_ext(_build_ext):
 
         # Build the Python extension and "install" it where setuptools expects
         # it.
-        if not os.path.exists(cbuild_dir):
-            os.makedirs(cbuild_dir)
-        with local.cwd(cbuild_dir):
+        if not CBUILD_DIR.exists():
+            os.makedirs(CBUILD_DIR)
+        with local.cwd(str(CBUILD_DIR)):
             build_type = os.environ.get("QGYM_BUILD_TYPE", "Release")
 
             cmd = (
-                local["cmake"][root_dir]["-DQGYM_BUILD_PYTHON=YES"][
-                    "-DCMAKE_INSTALL_PREFIX=" + prefix_dir
+                local["cmake"][str(ROOT_DIR)]["-DQGYM_BUILD_PYTHON=YES"][
+                    f"-DCMAKE_INSTALL_PREFIX={PREFIX_DIR}"
                 ]["-DQGYM_PYTHON_DIR=" + os.path.dirname(target)][
                     "-DQGYM_PYTHON_EXT=" + os.path.basename(target)
                 ]
@@ -138,12 +132,7 @@ class build_ext(_build_ext):
                 if not os.path.exists("test-cmake-config"):
                     os.makedirs("test-cmake-config")
                 with local.cwd("test-cmake-config"):
-                    (
-                        local["cmake"][
-                            pysrc_dir + os.sep + "compat" + os.sep + "test-cmake-config"
-                        ]
-                        & FG
-                    )
+                    local["cmake"][str(PYSRC_DIR / "compat" / "test-cmake-config")] & FG
                     with open("values.cfg", "r") as f:
                         void_ptr_size, generator, *_ = f.read().split("\n")
                         cmake_is_64 = int(void_ptr_size.strip()) == 8
@@ -156,21 +145,15 @@ class build_ext(_build_ext):
                 python_is_64 = sys.maxsize > 2**32
 
                 log.info("Figured out the following things:")
-                log.info(" - Python is {}-bit".format(64 if python_is_64 else 32))
+                log.info(f" - Python is {64 if python_is_64 else 32}-bit")
                 log.info(
-                    " - CMake is building {}-bit by default".format(
-                        64 if cmake_is_64 else 32
-                    )
+                    f" - CMake is building {64 if cmake_is_64 else 32}-bit by default"
                 )
                 log.info(
-                    " - CMake {} building using MSVC".format(
-                        "IS" if cmake_is_msvc else "is NOT"
-                    )
+                    f" - CMake {'IS' if cmake_is_msvc else 'is NOT'} building using MSVC"
                 )
                 log.info(
-                    " - MSVC {} fixed to 64-bit".format(
-                        "IS" if msvc_is_fixed_to_64 else "is NOT"
-                    )
+                    f" - MSVC {'IS' if msvc_is_fixed_to_64 else 'is NOT'} fixed to 64-bit"
                 )
 
                 # If there's a mismatch, see what we can do.
@@ -181,10 +164,9 @@ class build_ext(_build_ext):
                         )
                     if not cmake_is_msvc:
                         raise RuntimeError(
-                            "Mismatch in 32-bit/64-bit between CMake defaults ({}) and Python install ({})!".format(
-                                "64-bit" if cmake_is_64 else "32-bit",
-                                "64-bit" if python_is_64 else "32-bit",
-                            )
+                            "Mismatch in 32-bit/64-bit between CMake defaults "
+                            f"({64 if cmake_is_64 else 32}-bit) and Python install "
+                            f"({64 if python_is_64 else 32}-bit)!"
                         )
 
                     # Looks like we're compiling with MSVC, and MSVC is merely
@@ -229,7 +211,7 @@ class build_ext(_build_ext):
 class build(_build):
     def initialize_options(self):
         _build.initialize_options(self)
-        self.build_base = os.path.relpath(build_dir)
+        self.build_base = os.path.relpath(BUILD_DIR)
 
     def run(self):
         # Make sure the extension is built before the Python module is "built",
@@ -249,7 +231,7 @@ class install(_install):
 class bdist(_bdist):
     def finalize_options(self):
         _bdist.finalize_options(self)
-        self.dist_dir = os.path.relpath(dist_dir)
+        self.dist_dir = os.path.relpath(DIST_DIR)
 
 
 class bdist_wheel(_bdist_wheel):
@@ -258,9 +240,7 @@ class bdist_wheel(_bdist_wheel):
             os.environ["MACOSX_DEPLOYMENT_TARGET"] = "10.10"
         _bdist_wheel.run(self)
         impl_tag, abi_tag, plat_tag = self.get_tag()
-        archive_basename = "{}-{}-{}-{}".format(
-            self.wheel_dist_name, impl_tag, abi_tag, plat_tag
-        )
+        archive_basename = f"{self.wheel_dist_name}-{impl_tag}-{abi_tag}-{plat_tag}"
         wheel_path = os.path.join(self.dist_dir, archive_basename + ".whl")
         if platform.system() == "Darwin":
             from delocate.delocating import delocate_wheel
@@ -271,13 +251,13 @@ class bdist_wheel(_bdist_wheel):
 class sdist(_sdist):
     def finalize_options(self):
         _sdist.finalize_options(self)
-        self.dist_dir = os.path.relpath(dist_dir)
+        self.dist_dir = os.path.relpath(DIST_DIR)
 
 
 class egg_info(_egg_info):
     def initialize_options(self):
         _egg_info.initialize_options(self)
-        self.egg_base = os.path.relpath(target_dir)
+        self.egg_base = os.path.relpath(TARGET_DIR)
 
 
 setup(
@@ -318,6 +298,7 @@ setup(
         "qgym.envs.initial_mapping",
         "qgym.envs.scheduling",
         "qgym.spaces",
+        "qgym.templates",
         "qgym.utils",
     ],
     package_dir={"": "pybuild"},

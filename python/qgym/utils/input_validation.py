@@ -1,21 +1,23 @@
 """This module contains generic input validation methods."""
 import warnings
 from numbers import Integral, Real
-from typing import Any, Optional, Type
+from typing import Any, Optional
 
 import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
+# pylint: disable=invalid-name
+
 
 def check_real(
-    x: Real,
+    x: Any,
     name: str,
     *,
     l_bound: Optional[float] = None,
     u_bound: Optional[float] = None,
-    l_inclusive=True,
-    u_inclusive=True,
+    l_inclusive: bool = True,
+    u_inclusive: bool = True,
 ) -> float:
     """Check if the variable `x` with name 'name' is a real number. Optionally, lower
     and upper bounds can also be checked.
@@ -35,35 +37,35 @@ def check_real(
     """
     if not isinstance(x, Real):
         raise TypeError(f"'{name}' should be a real number, but was of type {type(x)}")
-
+    x_float = float(x)
     error_msg = "'" + name + "' has an {} {} bound of {}, but was " + str(x)
     if l_bound is not None:
         if l_inclusive:
-            if x < l_bound:
+            if x_float < l_bound:
                 raise ValueError(error_msg.format("inclusive", "lower", l_bound))
         else:
-            if x <= l_bound:
+            if x_float <= l_bound:
                 raise ValueError(error_msg.format("exclusive", "lower", l_bound))
 
     if u_bound is not None:
         if u_inclusive:
-            if x > u_bound:
+            if x_float > u_bound:
                 raise ValueError(error_msg.format("inclusive", "upper", u_bound))
         else:
-            if x >= u_bound:
+            if x_float >= u_bound:
                 raise ValueError(error_msg.format("exclusive", "upper", u_bound))
 
-    return float(x)
+    return x_float
 
 
 def check_int(
-    x: Integral,
+    x: Any,
     name: str,
     *,
     l_bound: Optional[float] = None,
     u_bound: Optional[float] = None,
-    l_inclusive=True,
-    u_inclusive=True,
+    l_inclusive: bool = True,
+    u_inclusive: bool = True,
 ) -> int:
     """Check if the variable `x` with name 'name' is a real number. Optionally, lower
     and upper bounds can also be checked.
@@ -91,23 +93,24 @@ def check_int(
             raise ValueError(msg)
 
     error_msg = "'" + name + "' has an {} {} bound of {}, but was " + str(x)
+    x_int = int(x)
     if l_bound is not None:
         if l_inclusive:
-            if x < l_bound:
+            if x_int < l_bound:
                 raise ValueError(error_msg.format("inclusive", "lower", l_bound))
         else:
-            if x <= l_bound:
+            if x_int <= l_bound:
                 raise ValueError(error_msg.format("exclusive", "lower", l_bound))
 
     if u_bound is not None:
         if u_inclusive:
-            if x > u_bound:
+            if x_int > u_bound:
                 raise ValueError(error_msg.format("inclusive", "upper", u_bound))
         else:
-            if x >= u_bound:
+            if x_int >= u_bound:
                 raise ValueError(error_msg.format("exclusive", "upper", u_bound))
 
-    return int(x)
+    return x_int
 
 
 def check_string(x: str, name: str, *, lower: bool = False, upper: bool = False) -> str:
@@ -141,18 +144,17 @@ def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
     :raise ValueError: When the provided input is not a square matrix.
     :return: Square NDArray representation of ``adjacency_matrix``.
     """
-    if hasattr(adjacency_matrix, "toarray"):
-        adjacency_matrix = adjacency_matrix.toarray()
-    else:
-        adjacency_matrix = np.array(adjacency_matrix)
 
-    if (
-        adjacency_matrix.ndim != 2
-        or adjacency_matrix.shape[0] != adjacency_matrix.shape[1]
-    ):
+    numpy_matrix: NDArray[Any]
+    if hasattr(adjacency_matrix, "toarray"):
+        numpy_matrix = adjacency_matrix.toarray()
+    else:
+        numpy_matrix = np.array(adjacency_matrix)
+
+    if numpy_matrix.ndim != 2 or numpy_matrix.shape[0] != numpy_matrix.shape[1]:
         raise ValueError("The provided value should be a square 2-D adjacency matrix.")
 
-    return adjacency_matrix
+    return numpy_matrix
 
 
 def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
@@ -174,7 +176,7 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
         raise ValueError(f"'{name}' has no nodes")
 
 
-def check_instance(x: Any, name: str, dtype: Type) -> None:
+def check_instance(x: Any, name: str, dtype: type) -> None:
     """Check if `x` with name 'name' is an instance of dtype.
 
     :param x: Variable to check.
@@ -187,7 +189,7 @@ def check_instance(x: Any, name: str, dtype: Type) -> None:
         raise TypeError(msg)
 
 
-def warn_if_positive(x: Real, name: str) -> None:
+def warn_if_positive(x: float, name: str) -> None:
     """Give a warning when `x` is positive.
 
     :param x: Variable to check.
@@ -197,7 +199,7 @@ def warn_if_positive(x: Real, name: str) -> None:
         warnings.warn(f"'{name}' was positive")
 
 
-def warn_if_negative(x: Real, name: str) -> None:
+def warn_if_negative(x: float, name: str) -> None:
     """Give a warning when `x` is negative.
 
     :param x: Variable to check.
