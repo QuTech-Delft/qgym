@@ -151,7 +151,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         #TODO: what is the role of this metadata?
         self.metadata = {"render.modes": ["human", "rgb_array"]}
 
-        #TODO: do we need a visualiser for routing? If so: self._visualiser = RoutingVisualiser(connection_graph)
+        #TODO: self._visualiser = RoutingVisualiser(connection_graph)
 
     def reset(
         self,
