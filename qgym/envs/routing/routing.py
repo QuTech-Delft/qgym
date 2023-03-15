@@ -79,28 +79,29 @@ from networkx import Graph, grid_graph
 from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
-from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
-from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
-from qgym.envs.initial_mapping.initial_mapping_visualiser import (
-    InitialMappingVisualiser,
-)
+from qgym.envs.routing.routing_rewarders import BasicRewarder #TODO: define BasicRewarder
+from qgym.envs.routing.routing_state import RoutingState #TODO: define RoutingState
+#TODO: Do we need a visualiser for routing? 
+# from qgym.envs.initial_mapping.initial_mapping_visualiser import (
+#    InitialMappingVisualiser,
+# )
 from qgym.templates import Environment, Rewarder
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_graph_is_valid_topology,
     check_instance,
     check_real,
-)
+) #TODO: What utils do we need for routing?
 
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
 
-class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """RL environment for the initial mapping problem of OpenQL."""
 
     def __init__(
         self,
-        interaction_graph_edge_probability: float,
+        #TODO: what do we need instead of the interaction graph?
         *,
         connection_graph: Optional[Graph] = None,
         connection_graph_matrix: Optional[ArrayLike] = None,
@@ -108,16 +109,12 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         rewarder: Optional[Rewarder] = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states.
-        Furthermore, the connection graph and edge probability for the random
-        interaction graph of each episode is defined.
+        #TODO: Write appropriate doc-string for Routing-environment!
+        
+        Furthermore, the connection graph
 
-        The supported render modes of this environment are "human" and "rgb_array".
+        The supported render modes of this environment are "human" and "rgb_array". #TODO: what do these render-modes entail?
 
-        :param interaction_graph_edge_probability: Probability that an edge between any
-            pair of qubits in the random interaction graph exists. The interaction
-            graph will have the same amount of nodes as the connection graph. Nodes
-            without any interactions can be seen as 'null' nodes. Must be a value in the
-            range [0,1].
         :param connection_graph: ``networkx`` graph representation of the QPU topology.
             Each node represents a physical qubit and each node represents a connection
             in the QPU topology.
@@ -132,12 +129,6 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
         """
-        interaction_graph_edge_probability = check_real(
-            interaction_graph_edge_probability,
-            "interaction_graph_edge_probability",
-            l_bound=0,
-            u_bound=1,
-        )
         connection_graph = self._parse_connection_graph(
             connection_graph=connection_graph,
             connection_graph_matrix=connection_graph_matrix,
@@ -147,25 +138,27 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         self._rewarder = self._parse_rewarder(rewarder)
 
         # Define internal attributes
-        self._state = InitialMappingState(
-            connection_graph, interaction_graph_edge_probability
+        self._state = RoutingState(
+            connection_graph, #TODO: what else do we need to define the internal attributes?
         )
-        self.observation_space = self._state.create_observation_space()
+        self.observation_space = self._state.create_observation_space() #TODO: how does creat_observation_space() work.
         # Define attributes defined in parent class
+        #TODO: how does the action_space work? What to do we the below command?
         self.action_space = qgym.spaces.MultiDiscrete(
             nvec=[self._state.num_nodes, self._state.num_nodes], rng=self.rng
         )
 
+        #TODO: what is the role of this metadata?
         self.metadata = {"render.modes": ["human", "rgb_array"]}
 
-        self._visualiser = InitialMappingVisualiser(connection_graph)
+        #TODO: do we need a visualiser for routing? If so: self._visualiser = RoutingVisualiser(connection_graph)
 
     def reset(
         self,
         *,
         seed: Optional[int] = None,
         return_info: bool = False,
-        interaction_graph: Optional[Graph] = None,
+        #TODO: what should be returned for usage in a next iteration?
         **_kwargs: Any,
     ) -> Union[
         Dict[str, NDArray[np.int_]],
@@ -178,8 +171,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call i.e., before any learning is done.
         :param return_info: Whether to receive debugging info. Default is ``False``.
-        :param interaction_graph: Interaction graph to be used for the next iteration,
-            if ``None`` a random interaction graph will be created.
+        #TODO: doc-string of what should be returned for usage in a next iteration?
         :param _kwargs: Additional options to configure the reset.
         :return: Initial observation and optionally debugging info.
         """
