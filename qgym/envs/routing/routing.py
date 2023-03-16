@@ -79,19 +79,22 @@ from networkx import Graph, grid_graph
 from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
-from qgym.envs.routing.routing_rewarders import BasicRewarder #TODO: define BasicRewarder
-from qgym.envs.routing.routing_state import RoutingState #TODO: define RoutingState
-#TODO: Do we need a visualiser for routing? 
+from qgym.envs.routing.routing_rewarders import (
+    BasicRewarder,  # TODO: define BasicRewarder
+)
+from qgym.envs.routing.routing_state import RoutingState  # TODO: define RoutingState
+
+# TODO: Do we need a visualiser for routing?
 # from qgym.envs.initial_mapping.initial_mapping_visualiser import (
 #    InitialMappingVisualiser,
 # )
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_validation import (
+from qgym.utils.input_validation import (  # TODO: What utils do we need for routing?
     check_adjacency_matrix,
     check_graph_is_valid_topology,
     check_instance,
     check_real,
-) #TODO: What utils do we need for routing?
+)
 
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
@@ -101,7 +104,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def __init__(
         self,
-        #TODO: what do we need instead of the interaction graph?
+        machine_properties: Union[Mapping[str, Any], str, MachineProperties],
+        # TODO: what do we need instead of the interaction graph?
         *,
         connection_graph: Optional[Graph] = None,
         connection_graph_matrix: Optional[ArrayLike] = None,
@@ -110,7 +114,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     ) -> None:
         """Initialize the action space, observation space, and initial states.
         #TODO: Write appropriate doc-string for Routing-environment!
-        
+
         Furthermore, the connection graph
 
         The supported render modes of this environment are "human" and "rgb_array". #TODO: what do these render-modes entail?
@@ -139,26 +143,28 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         # Define internal attributes
         self._state = RoutingState(
-            connection_graph, #TODO: what else do we need to define the internal attributes?
+            connection_graph,  # TODO: what else do we need to define the internal attributes?
         )
-        self.observation_space = self._state.create_observation_space() #TODO: how does creat_observation_space() work.
+        self.observation_space = (
+            self._state.create_observation_space()
+        )  # TODO: how does creat_observation_space() work.
         # Define attributes defined in parent class
-        #TODO: how does the action_space work? What to do we the below command?
+        # TODO: how does the action_space work? What to do we the below command?
         self.action_space = qgym.spaces.MultiDiscrete(
             nvec=[self._state.num_nodes, self._state.num_nodes], rng=self.rng
         )
 
-        #TODO: what is the role of this metadata?
+        # TODO: what is the role of this metadata?
         self.metadata = {"render.modes": ["human", "rgb_array"]}
 
-        #TODO: self._visualiser = RoutingVisualiser(connection_graph)
+        # TODO: self._visualiser = RoutingVisualiser(connection_graph)
 
     def reset(
         self,
         *,
         seed: Optional[int] = None,
         return_info: bool = False,
-        #TODO: what should be returned for usage in a next iteration?
+        # TODO: what should be returned for usage in a next iteration?
         **_kwargs: Any,
     ) -> Union[
         Dict[str, NDArray[np.int_]],
