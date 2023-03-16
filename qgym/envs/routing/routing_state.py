@@ -54,7 +54,7 @@ class SchedulingState(
             gate_encoder=machine_properties.encode(),
         )
 
-        # Generate a circuit
+        # Generate a random circuit
         circuit = self.utils.random_circuit_generator.generate_circuit(
             mode=self.utils.random_circuit_mode
         )
@@ -70,3 +70,33 @@ class SchedulingState(
         self._update_dependencies()
         self._update_episode_constant_observations()
         self._update_legal_actions()
+        
+    def update_state(self, action: ActionT) -> State[ObservationT, ActionT]:
+        """Update the state of this ``Environment`` using the given action.
+
+        :param action: Action to be executed.
+        """
+        raise NotImplementedError
+
+    def obtain_observation(self) -> ObservationT:
+        """:return: Observation based on the current state."""
+        raise NotImplementedError
+
+    def is_done(self) -> bool:
+        """:return: Boolean value stating whether we are in a final state."""
+        #when circuit including SWAPs can be implemented given the QPU connection graph 
+        #TODO
+        raise NotImplementedError
+
+    def obtain_info(self) -> Dict[Any, Any]:
+        """:return: Optional debugging info for the current state."""
+        raise NotImplementedError
+
+    def create_observation_space(self, observation_reach: int) -> Space:
+        """Create the corresponding observation space."""
+        #looking n gates ahead, showing for every gate whether the gate can be executed 
+        #this can be indicated by an array of binary values:
+        #return -> multibinary
+        
+        #TODO
+        raise NotImplementedError
