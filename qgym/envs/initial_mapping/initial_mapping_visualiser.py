@@ -192,7 +192,7 @@ class InitialMappingVisualiser(Visualiser):
 
         :param screen: Screen to draw the connection graph on.
         """
-        for (u, v) in self.graphs["connection"]["edges"]:
+        for u, v in self.graphs["connection"]["edges"]:
             pos_u = self.graphs["connection"]["render_positions"][u]
             pos_v = self.graphs["connection"]["render_positions"][v]
             self._draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
@@ -218,7 +218,7 @@ class InitialMappingVisualiser(Visualiser):
                 interaction_graph, self.subscreens[1]
             )
 
-        for (u, v) in interaction_graph.edges():
+        for u, v in interaction_graph.edges():
             pos_u = self.graphs["interaction"]["render_positions"][u]
             pos_v = self.graphs["interaction"]["render_positions"][v]
             self._draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
@@ -235,7 +235,7 @@ class InitialMappingVisualiser(Visualiser):
         :param mapped_graph: ``networkx.Graph`` representation of the mapped graph. Each
             edge should have a color attached to it.
         """
-        for (u, v) in mapped_graph.edges():
+        for u, v in mapped_graph.edges():
             pos_u = self.graphs["mapped"]["render_positions"][u]
             pos_v = self.graphs["mapped"]["render_positions"][v]
             if mapped_graph.edges[u, v]["color"] == "red":

@@ -74,9 +74,7 @@ class MachineProperties:
             to decode the gates or encode quantum circuits containing the same gate
             names as in this ``MachineProperties`` object.
         """
-        if (
-            any(not isinstance(gate, str) for gate in self._gates)
-        ):
+        if any(not isinstance(gate, str) for gate in self._gates):
             msg = "Gate names of machine properties are not of type str, perhaps they "
             msg = "are already encoded?"
             raise ValueError(msg)

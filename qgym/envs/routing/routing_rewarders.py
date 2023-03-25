@@ -43,7 +43,7 @@ class BasicRewarder:
         :return reward: The reward for this action.
         """
         raise NotImplementedError
-        #TODO: implement compute reward functionality
+        # TODO: implement compute reward functionality
 
     @property
     def reward_range(self) -> Tuple[float, float]:

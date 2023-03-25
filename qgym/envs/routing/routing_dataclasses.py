@@ -20,22 +20,21 @@ class RoutingUtils:
     random_circuit_mode: str
     gate_encoder: GateEncoder
 
+
 @dataclass
 class CircuitInfo:
     """Info of the circuit of ``Routing`` environment."""
-    
-    #TODO: make the circuit info relevant for routing?!
-    #TODO: check whether this dataclass functions in stripped down version
-    
+
+    # TODO: make the circuit info relevant for routing?!
+    # TODO: check whether this dataclass functions in stripped down version
+
     encoded: List[Gate]
     names: NDArray[np.int_]
     acts_on: NDArray[np.int_]
     legal: NDArray[np.bool_]
     dependencies: NDArray[np.int_]
 
-    def reset(
-        self, circuit: Optional[List[Gate]], utils: RoutingUtils
-    ) -> CircuitInfo:
+    def reset(self, circuit: Optional[List[Gate]], utils: RoutingUtils) -> CircuitInfo:
         """Reset the object.
 
         To be used in the reset function of the ``Scheduling`` environment.
@@ -49,4 +48,3 @@ class CircuitInfo:
 
         self.encoded = utils.gate_encoder.encode_gates(circuit)
         return self
-    

@@ -59,7 +59,6 @@ class CommutationRulebook:
 
         for idx, gate in enumerate(circuit):
             for idx_other in range(idx + 1, len(circuit)):
-
                 gate_other = circuit[idx_other]
 
                 if not self.commutes(gate, gate_other):
