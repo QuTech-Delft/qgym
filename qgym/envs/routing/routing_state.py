@@ -35,8 +35,6 @@ class RoutingState(
     :ivar busy: Used internally for the hardware limitations.
     """
 
-    # TODO: how to initialize with a giving Initial_Mapping? NOT NEEDED in RoutingState
-
     def __init__(
         self,
         *,
