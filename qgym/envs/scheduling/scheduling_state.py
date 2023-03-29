@@ -49,6 +49,7 @@ class SchedulingState(
         random_circuit_mode: str,
         rulebook: CommutationRulebook,
     ) -> None:
+        #TODO: docstring for init?
         self.steps_done = 0
         self.cycle = 0
 
