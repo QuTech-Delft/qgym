@@ -6,19 +6,17 @@ This ``RoutingState``represents the ``State`` of the ``Routing`` environment.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Set, Union, cast, Tuple
+import itertools
+from typing import Any, Dict, List, Optional, Set, Tuple, Union, cast
 
+import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
 
-from qgym.custom_types import Gate
-
 import qgym.spaces
+from qgym.custom_types import Gate
+from qgym.envs.routing.routing_dataclasses import CircuitInfo, RoutingUtils
 from qgym.envs.scheduling.machine_properties import MachineProperties
-from qgym.envs.routing.routing_dataclasses import (
-    RoutingUtils,
-    CircuitInfo,
-)
 from qgym.templates.state import State
 from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
@@ -36,149 +34,206 @@ class RoutingState(
     :ivar steps_done: Number of steps done since the last reset.
     :ivar busy: Used internally for the hardware limitations.
     """
-    
-    #TODO: how to initialize with a giving Initial_Mapping? NOT NEEDED in RoutingState
+
+    # TODO: how to initialize with a giving Initial_Mapping? NOT NEEDED in RoutingState
 
     def __init__(
         self,
         *,
-        machine_properties: MachineProperties,
         max_interaction_gates: int,
-        random_circuit_mode: str,
-        max_observation_depth: int,
+        max_observation_reach: int,
+        connection_graph: nx.Graph,
     ) -> None:
+        """Init of the ``RoutingState`` class.
+
+        :param max_interaction_gates:
+        :param connection_graph: ``networkx`` graph representation of the QPU topology.
+            Each node represents a physical qubit and each node represents a connection
+            in the QPU topology.
+
+        """
         self.steps_done = 0
 
-        self.utils = RoutingUtils(
-            random_circuit_generator=RandomCircuitGenerator(
-                machine_properties.n_qubits, max_gates, rng=self.rng
-            ),
-            random_circuit_mode=random_circuit_mode,
-            gate_encoder=machine_properties.encode(),
-        )
-        self.mapping = None #TODO: How do I get the Initial mapping?
+        # topology
+        self.connection_graph = connection_graph
+        self.n_qubits = self.connection_graph.number_of_nodes()
 
-        # Generate a random circuit
-        circuit = self.utils.random_circuit_generator.generate_circuit(
-            mode=self.utils.random_circuit_mode
-        )
-
-        #probably leave this out:
-        # self.circuit_info = CircuitInfo(
-        #     encoded=self.utils.gate_encoder.encode_gates(circuit),
-        #     names=np.empty(max_gates, dtype=int),
-        #     acts_on=np.empty((2, max_gates), dtype=int),
-        #     legal=np.empty(max_gates, dtype=bool),
-        #     dependencies=np.empty((dependency_depth, max_gates), dtype=int),
-        # )
-
-        self.observation_depth = max_observation_depth
+        # interaction circuit + mapping
         self.max_interaction_gates = max_interaction_gates
-        
-        # Generate circuit only containing interaction gates
-        #TODO: think about keeping track of where in the circuit the interaction gate are.
-        self.interaction_circuit = [gate for gate in circuit if not gate.q1 == gate.q2]
-        self.position : int = 0 #position of agent within interaction circuit
-        
+        self.interaction_list = self.generate_random_interaction_circuit(
+            self.n_qubits, self.max_interaction_gates
+        )
+        self.current_mapping: List[Tuple[int, int]] = [
+            (idx, idx) for idx in self.n_qubits
+        ]
+
+        # Observation attributes
+        self.position: int = 0  # position of agent within interaction circuit
+        self.max_observation_reach = int(
+            min(max_observation_reach, len(self.interaction_list))
+        )
+        self.observation_reach = self.max_observation_reach
+
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted : List[(int, Gate)] = []
-        
-        self._update_dependencies()
-        self._update_episode_constant_observations()
-        self._update_legal_actions()
+        self.swap_gates_inserted: List[int, int, int] = []
 
     def reset(
-            self,
-            *,
-            seed: Optional[int] = None,
-            circuit: Optional[List[Gate]] = None,
-            **_kwargs: Any,
-        ) -> SchedulingState:
-            """Reset the state and load a new (random) initial state.
+        self,
+        *,
+        seed: Optional[int] = None,
+        interaction_circuit: Optional[Tuple[int, int]] = None,
+        **_kwargs: Any,
+    ) -> RoutingState:
+        """Reset the state and load a new (random) initial state.
 
-            To be used after an episode is finished.
+        To be used after an episode is finished.
 
-            :param seed: Seed for the random number generator, should only be provided
-                (optionally) on the first reset call, i.e., before any learning is done.
-            :param circuit: Optional list of a circuit for the next episode, each entry in
-                the list should be a ``Gate``. When a circuit is give, no random circuit
-                will be generated.
-            :param _kwargs: Additional options to configure the reset.
-            :return: Self.
-            """
-    #TODO think about initial mapping with new circuit
-    
-    def update_state(self, action : NDArray[np.int_]) -> RoutingState:
+        :param seed: Seed for the random number generator, should only be provided
+            (optionally) on the first reset call, i.e., before any learning is done.
+        :param circuit: Optional list of tuples of ints that the interaction gates
+            via the qubits the gates are acting on.
+        :param _kwargs: Additional options to configure the reset.
+        :return: Self.
+        """
+        if seed is not None:
+            self.seed(seed)
+
+        # Reset counters
+        self.steps_done = 0
+
+        if interaction_circuit == None:
+            self.interaction_circuit = self.generate_random_interaction_circuit(
+                self.n_qubits, self.max_interaction_gates
+            )
+        else:
+            self.interaction_circuit = interaction_circuit
+
+        # start over with identity mapping
+        self.current_mapping = [(idx, idx) for idx in self.n_qubits]
+
+    def update_state(self, action: NDArray[np.int_]) -> RoutingState:
         """Update the state of this environment using the given action.
 
-        :param action: If action[0]==True a SWAP-gate applied to qubits action[1], 
-        action[2] will be placed before the first observed gate, if False the first 
+        :param action: If action[0]==True a SWAP-gate applied to qubits action[1],
+        action[2] will be placed before the first observed gate, if False the first
         observed gate will be surpassed.
         :return: Updated state.
         """
         # Increase the step number
         self.steps_done += 1
-        
-        #surpass current_gate
-        if not action[1]:
-            self.position += 1
-            return self
 
-        # Insert random swap-gate
-        SWAP_gate_to_insert = (action[1], action[2])
-        if self._is_legal[SWAP_gate_to_insert]:
-            self._place_SWAP_gate(action[1], action[2])           
-        
+        # surpass current_gate if legal
+        if not action[0] and self._is_legal_surpass():
+            self.position += 1
+            # update observation reach
+            if len(self.interaction_list) - self.position < self.observation_reach:
+                self.observation_reach -= 1
+
+        # elif insert random swap-gate if legal
+        elif self._is_legal_SWAP[(action[1], action[2])]:
+            self._place_SWAP_gate(action[1], action[2])
+
         return self
 
-    def obtain_observation(self) -> ObservationT:
+    def obtain_observation(
+        self,
+    ) -> Dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
-        #TODO: check pseudo-code below and improve! 
-        observation_dict : Dict[bool] = None #dict with booleans of length observation_reach
-        for idx in range(observation_reach):
-           q1 = self.interaction_circuit[position + idx].q1
-           q2 = self.interaction_circuit[position + idx].q2
-           observation_dict[idx] = None #check (q1,q2) connection with current mapping
-        raise NotImplementedError
+        # TODO: check for efficient slicing!
+        interaction_gates_ahead = list(
+            itertools.chain(*self.interaction_list[-self.observation_reach :])
+        )
+        if self.observation_reach < self.max_observation_reach:
+            difference = self.max_observation_reach - self.observation_reach
+            interaction_gates_ahead += [self.n_qubits] * difference
+
+        return {
+            "interaction_gates_ahead": interaction_gates_ahead,
+            "current_mapping": self.current_mapping,
+        }
 
     def is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
+        # self.observation_reach==0
         return self.position == self.len(self.interaction_circuit)
-
-    def obtain_info(self) -> Dict[Any, Any]:
-        """:return: Optional debugging info for the current state."""
-        raise NotImplementedError
 
     def create_observation_space(self) -> Space:
         """Create the corresponding observation space.
-        
+
         :returns: Observation space in the form of a ``qgym.spaces.Dict`` space
             containing:
 
-            * ``qgym.spaces.MultiBinary`` space representing the legal actions. If
-              the value at index $i$ determines if gate number $i$ can be scheduled
-              or not.
-            * ``qgym.spaces.MultiDiscrete`` space representing the integer encoded
-              gate names.
-            * ``qgym.spaces.MultiDiscrete`` space representing the interaction of
-              each gate (q1 and q2).
-            * ``qgym.spaces.MultiDiscrete`` space representing the first $n$ gates
-              that must be scheduled before this gate.
-        """  
-        observation_reach = min(max_observation_reach, len(interaction_circuit)- self.position)
+            * ``qgym.spaces.MultiDiscrete`` space representing the interaction gates
+                ahead of current position.
+            * ``qgym.spaces.MultiDiscrete`` space representing the current mapping of
+                logical onto physical qubits
+        """
+        interaction_gates_ahead = qgym.spaces.MultiDiscrete(
+            np.full(2 * self.max_observation_reach, self.n_qubits)
+        )
+        current_mapping = qgym.spaces.MultiDiscrete(
+            np.full(2 * self.n_qubits, self.n_qubits)
+        )
 
-
-        observation_space = qgym.spaces.MultiDiscrete(
-            np.full(2 * observation_reach, n_qubits + 1), rng=self.rng
+        observation_space = qgym.spaces.Dict(
+            interaction_gates_ahead=interaction_gates_ahead,
+            current_mapping=current_mapping,
         )
         return observation_space
-    
-    def _place_SWAP_gate(self, qubit1:int, qubit2:int) -> None:       
-        #TODO: from collections import DeQueue for more efficient storage
+
+    def _place_SWAP_gate(self, qubit1: int, qubit2: int) -> None:
+        # TODO: STORAGE EFFICIENCY: from collections import DeQueue
         self.swap_gates_inserted.append((self.position, qubit1, qubit2))
-        
-        #TODO: update_mapping accordingly
-        self.update_mapping(qubit1, qubit2)
-        
-    def _is_legal(self, SWAP_gate: Tuple[int, int]):
-        #TODO:checks
+
+        # TODO: update_mapping accordingly
+        self._update_mapping(qubit1, qubit2)
+
+    def _is_legal_swap(self, SWAP_gate: Tuple[int, int]):
+        # TODO:checks
+        raise NotImplementedError
+
+    def _is_legal_surpass(self):
+        # TODO
+        raise NotImplementedError
+
+    def _update_mapping(self, qubit1: int, qubit2: int):
+        # TODO
+        raise NotImplementedError
+
+    def generate_random_interaction_circuit(
+        self, n_gates: Union[str, int] = "random"
+    ) -> List[Tuple[int, int]]:
+        """Generate a random interaction circuit.
+
+        :param n_gates: If "random", then a circuit of random length will be made. If
+            an ``int`` is given, a circuit of length ``min(n_gates, max_gates)`` will
+            be made.
+        :return: A randomly generated interaction circuit.
+        """
+        n_gates = self._parse_n_gates(n_gates)
+
+        circuit: List[Tuple[int, int]] = [-1, -1] * n_gates
+        for idx in range(n_gates):
+            qubit1, qubit2 = self.rng.choice(
+                np.arange(self.n_qubits), size=2, replace=False
+            )
+            circuit[idx] = (qubit1, qubit2)
+
+    def _parse_n_gates(self, n_gates: Union[int, str]) -> int:
+        """Parse `n_gates`.
+
+        :param n_gates: If n_gates is "random", generate a number between 1 and
+            `max_gates`. If n_gates is an ``int``, return the minimum of `n_gates` and
+            `max_gates`.
+        """
+        if isinstance(n_gates, str):
+            if n_gates.lower().strip() == "random":
+                return self.rng.integers(self.n_qubits, self.max_gates, endpoint=True)
+
+            raise ValueError(f"Unknown flag {n_gates}, choose from 'random'.")
+
+        if isinstance(n_gates, int):
+            return min(n_gates, self.max_gates)
+
+        msg = f"n_gates should be of type int or str, but was of type {type(n_gates)}."
+        raise ValueError(msg)
