@@ -46,7 +46,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Init of the ``InitialMappingState`` class.
 
         :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each node represents a connection
+            Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
         :param interaction_graph_edge_probability: Probability that an edge between any
             pair of qubits in the random interaction graph exists. The interaction

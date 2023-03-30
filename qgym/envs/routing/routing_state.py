@@ -25,13 +25,11 @@ class RoutingState(
     State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
 ):
     """The ``RoutingState`` class.
-    :ivar machine_properties: ``MachineProperties`` object containing machine properties
-        and limitations.
-    :ivar utils: ``RoutingUtils`` dataclass with a random circuit generator and
+    :ivar max_interaction_gates: ``RoutingUtils`` dataclass with a random circuit generator and
         a gate encoder.
-    :ivar gates: Dictionary with gate names as keys and ``GateInfo`` dataclasses as
+    :ivar max_observation_reach: Dictionary with gate names as keys and ``GateInfo`` dataclasses as
         values.
-    :ivar steps_done: Number of steps done since the last reset.
+    :ivar connection_graph: Number of steps done since the last reset.
     :ivar busy: Used internally for the hardware limitations.
     """
 
@@ -44,9 +42,14 @@ class RoutingState(
     ) -> None:
         """Init of the ``RoutingState`` class.
 
-        :param max_interaction_gates:
+        :param max_interaction_gates: Sets the maximum amount of gates in the 
+            interaction_circuit, when a new interaction_circuit is generated.
+        :param observation_reach: Sets a cap on the maximum amount of gates the agent
+            can see ahead when making an observation. When bigger than 
+            max_interaction_gates the agent will always see all gates ahead in an 
+            observation
         :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each node represents a connection
+            Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
 
         """
@@ -58,7 +61,7 @@ class RoutingState(
 
         # interaction circuit + mapping
         self.max_interaction_gates = max_interaction_gates
-        self.interaction_list = self.generate_random_interaction_circuit(
+        self.interaction_circuit = self.generate_random_interaction_circuit(
             self.n_qubits, self.max_interaction_gates
         )
         self.current_mapping: List[Tuple[int, int]] = [
@@ -68,7 +71,7 @@ class RoutingState(
         # Observation attributes
         self.position: int = 0  # position of agent within interaction circuit
         self.max_observation_reach = int(
-            min(max_observation_reach, len(self.interaction_list))
+            min(max_observation_reach, len(self.interaction_circuit))
         )
         self.observation_reach = self.max_observation_reach
 
@@ -124,7 +127,7 @@ class RoutingState(
         if not action[0] and self._is_legal_surpass():
             self.position += 1
             # update observation reach
-            if len(self.interaction_list) - self.position < self.observation_reach:
+            if len(self.interaction_circuit) - self.position < self.observation_reach:
                 self.observation_reach -= 1
 
         # elif insert random swap-gate if legal
@@ -139,12 +142,15 @@ class RoutingState(
         """:return: Observation based on the current state."""
         # TODO: check for efficient slicing!
         interaction_gates_ahead = list(
-            itertools.chain(*self.interaction_list[-self.observation_reach :])
+            itertools.chain(*self.interaction_circuit[-self.observation_reach :])
         )
         if self.observation_reach < self.max_observation_reach:
             difference = self.max_observation_reach - self.observation_reach
             interaction_gates_ahead += [self.n_qubits] * difference
 
+        #TODO: Do we also want to give show the topology in the observation?
+        #   If so we could make use of the graps-dictionary storage format used in 
+        #   inital_mapping_state.
         return {
             "interaction_gates_ahead": interaction_gates_ahead,
             "current_mapping": self.current_mapping,
