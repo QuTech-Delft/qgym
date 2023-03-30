@@ -30,25 +30,25 @@ class RoutingState(
             Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
     :ivar n_qubits: Number of qubits in the connection_graph
-    :ivar max_interaction_gates: Sets the maximum amount of gates in the 
+    :ivar max_interaction_gates: Sets the maximum amount of gates in the
             interaction_circuit, when a new interaction_circuit is generated.
-    :ivar interaction_circuit: A list of 2-tuples of integers, where every tuple 
-        represents a, not specified, gate acting on the two qubits labeled by the 
+    :ivar interaction_circuit: A list of 2-tuples of integers, where every tuple
+        represents a, not specified, gate acting on the two qubits labeled by the
         integers in the tuples.
-    :ivar current_mapping: A list of 2-tuples of integers of length n_qubits. Every 
-        tuple represents the mapping at the current position (see ivar below) of a 
-        logical qubit in the interaction_circuit on a physical qubit in the connection 
-        graph. 
-    :ivar position: An integer representing the before which gate in the 
+    :ivar current_mapping: A list of 2-tuples of integers of length n_qubits. Every
+        tuple represents the mapping at the current position (see ivar below) of a
+        logical qubit in the interaction_circuit on a physical qubit in the connection
+        graph.
+    :ivar position: An integer representing the before which gate in the
         interaction_circuit the agent currently is.
-    :ivar max_observation_reach: An integer that sets a cap on the maximum amount of 
-        gates the agent can see ahead when making an observation. When bigger than 
-        max_interaction_gates the agent will always see all gates ahead in an 
+    :ivar max_observation_reach: An integer that sets a cap on the maximum amount of
+        gates the agent can see ahead when making an observation. When bigger than
+        max_interaction_gates the agent will always see all gates ahead in an
         observation.
-    :ivar observation_reach: An integer representing the current amount of gates the 
+    :ivar observation_reach: An integer representing the current amount of gates the
         agent can see when making an observation.
-    :ivar swap_gates_inserted: A list of 3-tuples of integers, to register which gates 
-        to insert and where. Every tuple (g, q1, q2) represents the insertion of a 
+    :ivar swap_gates_inserted: A list of 3-tuples of integers, to register which gates
+        to insert and where. Every tuple (g, q1, q2) represents the insertion of a
         SWAP-gate acting on qubits q1 and q2 before gate g in the interaction_circuit.
     """
 
@@ -61,26 +61,28 @@ class RoutingState(
     ) -> None:
         """Init of the ``RoutingState`` class.
 
-        :param max_interaction_gates: Sets the maximum amount of gates in the 
+        :param max_interaction_gates: Sets the maximum amount of gates in the
             interaction_circuit, when a new interaction_circuit is generated.
-        :param max_observation_reach: Sets a cap on the maximum amount of gates the 
-            agent can see ahead when making an observation. When bigger than 
-            max_interaction_gates the agent will always see all gates ahead in an 
+        :param max_observation_reach: Sets a cap on the maximum amount of gates the
+            agent can see ahead when making an observation. When bigger than
+            max_interaction_gates the agent will always see all gates ahead in an
             observation
         :param connection_graph: ``networkx`` graph representation of the QPU topology.
             Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
 
         """
-        self.steps_done = 0
+        self.steps_done: int = 0
 
         # topology
         self.connection_graph = connection_graph
-        self.n_qubits = self.connection_graph.number_of_nodes()
+        self.n_qubits: int = self.connection_graph.number_of_nodes()
 
         # interaction circuit + mapping
         self.max_interaction_gates = max_interaction_gates
-        self.interaction_circuit = self.generate_random_interaction_circuit(
+        self.interaction_circuit: List[
+            Tuple[int, int]
+        ] = self.generate_random_interaction_circuit(
             self.n_qubits, self.max_interaction_gates
         )
         self.current_mapping: List[Tuple[int, int]] = [
@@ -95,7 +97,7 @@ class RoutingState(
         self.observation_reach = self.max_observation_reach
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: List[int, int, int] = []
+        self.swap_gates_inserted: List[Tuple[int, int, int]] = []
 
     def reset(
         self,
@@ -167,8 +169,8 @@ class RoutingState(
             difference = self.max_observation_reach - self.observation_reach
             interaction_gates_ahead += [self.n_qubits] * difference
 
-        #TODO: Do we also want to give show the topology in the observation?
-        #   If so we could make use of the graps-dictionary storage format used in 
+        # TODO: Do we also want to give show the topology in the observation?
+        #   If so we could make use of the graps-dictionary storage format used in
         #   inital_mapping_state.
         return {
             "interaction_gates_ahead": interaction_gates_ahead,
