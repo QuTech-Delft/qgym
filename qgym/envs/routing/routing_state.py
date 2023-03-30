@@ -137,9 +137,9 @@ class RoutingState(
         """Update the state of this environment using the given action.
 
         :param action: If action[0]==True a SWAP-gate applied to qubits action[1],
-        action[2] will be placed before the first observed gate, if False the first
-        observed gate will be surpassed.
-        :return: Updated state.
+            action[2] will be registered in the swap_gates_inserted-list at the current 
+            position, if False the first observed gate will be surpassed.
+        :return: self
         """
         # Increase the step number
         self.steps_done += 1
