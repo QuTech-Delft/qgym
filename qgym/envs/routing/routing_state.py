@@ -20,10 +20,6 @@ from qgym.envs.scheduling.machine_properties import MachineProperties
 from qgym.templates.state import State
 from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
-#TODO: Add topology with a flag to observation space?
-#TODO: reason: QPU-topology practically doesn't change a lot.
-#TODO: reason not to want it: observation space depends on largest topology out there.
-
 class RoutingState(
     State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
 ):
@@ -59,6 +55,8 @@ class RoutingState(
         max_interaction_gates: int,
         max_observation_reach: int,
         connection_graph: nx.Graph,
+        observation_booleans_flag: bool,
+        observation_connection_flag: bool,
     ) -> None:
         """Init of the ``RoutingState`` class.
 
@@ -71,7 +69,14 @@ class RoutingState(
         :param connection_graph: ``networkx`` graph representation of the QPU topology.
             Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
-
+        :param observation_booleans_flag: If flag==True a list, of length 
+        observation_reach, containing booleans, indicating whether the gates ahead can 
+        be executed, will be added to the observation_space. 
+        :param observation_connection_flag: If flag==True, the connection_graph will be 
+        incorporated in the observation_space. Reason to set it False is: QPU-topology 
+        practically doesn't change a lot for one machine, hence an agent is typically 
+        trained for just one QPU-topology which can be learned implicitly by rewards 
+        and/or the booleans if they are shown, depending on the other flag above.
         """
         self.steps_done: int = 0
 
@@ -94,6 +99,8 @@ class RoutingState(
             min(max_observation_reach, len(self.interaction_circuit))
         )
         self.observation_reach = self.max_observation_reach
+        self.observation_booleans_flag = observation_booleans_flag
+        self.observation_connection_flag = observation_connection_flag
 
         # Keep track of at what position which swap_gate is inserted
         self.swap_gates_inserted: List[Tuple[int, int, int]] = []
@@ -201,11 +208,21 @@ class RoutingState(
         current_mapping = qgym.spaces.MultiDiscrete(
             np.full(self.n_qubits, self.n_qubits)
         )
-
-        observation_space = qgym.spaces.Dict(
-            interaction_gates_ahead=interaction_gates_ahead,
-            current_mapping=current_mapping,
+        #TODO: implement optional extension of observation_space based on flags.
+        if not self.observation_connection_flag and not self.observation_booleans_flag:
+            observation_space = qgym.spaces.Dict(
+                interaction_gates_ahead=interaction_gates_ahead,
+                current_mapping=current_mapping,
         )
+        elif self.observation_connection_flag and not self.observation_booleans_flag:
+            #TODO: implement.
+            pass
+        elif not self.observation_connection_flag and self.observation_booleans_flag:
+            #TODO: implement.
+            pass
+        elif self.observation_connection_flag and self.observation_booleans_flag:
+            #TODO: implement.
+            pass        
         return observation_space
 
     def _place_swap_gate(self, qubit1: int, qubit2: int) -> None:
