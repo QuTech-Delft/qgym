@@ -1,8 +1,11 @@
-# TODO: how to init -> test
-# TODO: make observation space -> test
-
 """This module contains the ``RoutingState`` class.
 This ``RoutingState``represents the ``State`` of the ``Routing`` environment.
+
+Usage:
+    >>> from qgym.envs.routing.routingstate import RoutingState
+    >>> import networkx as nx
+    >>> connection_graph = nx.grid_graph((3,3))
+    >>> state = TODO
 """
 from __future__ import annotations
 
@@ -178,7 +181,7 @@ class RoutingState(
             difference = self.max_observation_reach - self.observation_reach
             interaction_gates_ahead += [self.n_qubits] * difference
 
-        # TODO: Do we also want to give show the topology in the observation?
+        # TODO: Do we also want to show the topology in the observation?
         #   If so we could make use of the graps-dictionary storage format used in
         #   inital_mapping_state.
         return {
