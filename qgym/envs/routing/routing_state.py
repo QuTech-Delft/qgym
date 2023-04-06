@@ -20,6 +20,9 @@ from qgym.envs.scheduling.machine_properties import MachineProperties
 from qgym.templates.state import State
 from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
+#TODO: Add topology with a flag to observation space?
+#TODO: reason: QPU-topology practically doesn't change a lot.
+#TODO: reason not to want it: observation space depends on largest topology out there.
 
 class RoutingState(
     State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
@@ -35,10 +38,8 @@ class RoutingState(
     :ivar interaction_circuit: A list of 2-tuples of integers, where every tuple
         represents a, not specified, gate acting on the two qubits labeled by the
         integers in the tuples.
-    :ivar current_mapping: A list of 2-tuples of integers of length n_qubits. Every
-        tuple represents the mapping at the current position (see ivar below) of a
-        logical qubit in the interaction_circuit on a physical qubit in the connection
-        graph.
+    :ivar current_mapping: Array of which the index represents a physical qubit, and the 
+        value a logical qubit.
     :ivar position: An integer representing the before which gate in the
         interaction_circuit the agent currently is.
     :ivar max_observation_reach: An integer that sets a cap on the maximum amount of
@@ -85,9 +86,7 @@ class RoutingState(
         ] = self.generate_random_interaction_circuit(
             self.n_qubits, self.max_interaction_gates
         )
-        self.current_mapping: List[Tuple[int, int]] = [
-            (idx, idx) for idx in self.n_qubits
-        ]
+        self.current_mapping = [idx for idx in range(self.n_qubits)]
 
         # Observation attributes
         self.position: int = 0
@@ -131,7 +130,7 @@ class RoutingState(
             self.interaction_circuit = interaction_circuit
 
         # start over with identity mapping
-        self.current_mapping = [(idx, idx) for idx in self.n_qubits]
+        self.mapping = [idx for idx in self.n_qubits]
 
     def update_state(self, action: NDArray[np.int_]) -> RoutingState:
         """Update the state of this environment using the given action.
@@ -197,7 +196,7 @@ class RoutingState(
             np.full(2 * self.max_observation_reach, self.n_qubits)
         )
         current_mapping = qgym.spaces.MultiDiscrete(
-            np.full(2 * self.n_qubits, self.n_qubits)
+            np.full(self.n_qubits, self.n_qubits)
         )
 
         observation_space = qgym.spaces.Dict(
@@ -210,12 +209,11 @@ class RoutingState(
         # TODO: STORAGE EFFICIENCY: from collections import DeQueue
         self.swap_gates_inserted.append((self.position, qubit1, qubit2))
 
-        # TODO: update_mapping accordingly
         self._update_mapping(qubit1, qubit2)
 
     def _is_legal_swap(self, SWAP_gate: Tuple[int, int]):
-        # TODO:checks
-        raise NotImplementedError
+        return (SWAP_gate[0] is not SWAP_gate[1]) and (
+            SWAP_gate in self.connection_graph.edges)
 
     def _is_legal_surpass(self):
         # TODO
