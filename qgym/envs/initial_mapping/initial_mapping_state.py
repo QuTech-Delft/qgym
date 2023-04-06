@@ -34,7 +34,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     :ivar mapping: Array of which the index represents a physical qubit, and the value a
         virtual qubit. A value of ``num_nodes + 1`` represents the case when nothing is
         mapped to the physical qubit yet.
-    :ivar mapping_dict: Dictionary that maps logical qubits (keys) to physical qubit
+    :ivar mapping_dict: Dictionary that maps logical qubits (keys) to physical qubits
         (values).
     :ivar mapped_qubits: Dictionary with a two ``Set``s containing all mapped physical
         and logical qubits.
