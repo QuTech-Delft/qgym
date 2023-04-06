@@ -221,9 +221,11 @@ class RoutingState(
         # TODO
         raise NotImplementedError
 
-    def _update_mapping(self, qubit1: int, qubit2: int):
-        # TODO
-        raise NotImplementedError
+    def _update_mapping(self, qubit1: int, qubit2: int) -> None:
+        logical1 = self.current_mapping[qubit1]
+        logical2 = self.current_mapping[qubit2]
+        self.current_mapping[qubit1] = logical2
+        self.current_mapping[qubit2] = logical1
 
     def generate_random_interaction_circuit(
         self, n_gates: Union[str, int] = "random"
