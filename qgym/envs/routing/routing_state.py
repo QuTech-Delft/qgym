@@ -144,15 +144,18 @@ class RoutingState(
         self.steps_done += 1
 
         # surpass current_gate if legal
-        if not action[0] and self._is_legal_surpass():
+        if not action[0] and self._can_be_executed(
+            self.interaction_circuit[self.position][0],
+            self.interaction_circuit[self.position][1]
+            ):
             self.position += 1
             # update observation reach
             if len(self.interaction_circuit) - self.position < self.observation_reach:
                 self.observation_reach -= 1
 
         # elif insert random swap-gate if legal
-        elif self._is_legal_SWAP[(action[1], action[2])]:
-            self._place_SWAP_gate(action[1], action[2])
+        elif self._is_legal_swap[action[1], action[2]]:
+            self._place_swap_gate(action[1], action[2])
 
         return self
 
@@ -205,19 +208,20 @@ class RoutingState(
         )
         return observation_space
 
-    def _place_SWAP_gate(self, qubit1: int, qubit2: int) -> None:
+    def _place_swap_gate(self, qubit1: int, qubit2: int) -> None:
         # TODO: STORAGE EFFICIENCY: from collections import DeQueue
         self.swap_gates_inserted.append((self.position, qubit1, qubit2))
 
         self._update_mapping(qubit1, qubit2)
 
-    def _is_legal_swap(self, SWAP_gate: Tuple[int, int]):
-        return (SWAP_gate[0] is not SWAP_gate[1]) and (
-            SWAP_gate in self.connection_graph.edges)
+    def _is_legal_swap(self, swap_qubit1: int, swap_qubit2: int):
+        return (swap_qubit1 is not swap_qubit2) and (
+            (swap_qubit1, swap_qubit2) in self.connection_graph.edges)
 
-    def _is_legal_surpass(self):
-        # TODO
-        raise NotImplementedError
+    def _can_be_executed(self, gate_qubit1: int, gate_qubit2: int):
+        logical_gate_qubit1 = self.current_mapping[gate_qubit1] 
+        logical_gate_qubit2 = self.current_mapping[gate_qubit2] 
+        return (logical_gate_qubit1, logical_gate_qubit2) in self.connection_graph.edges
 
     def _update_mapping(self, qubit1: int, qubit2: int) -> None:
         logical1 = self.current_mapping[qubit1]
