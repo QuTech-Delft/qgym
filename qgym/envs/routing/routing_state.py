@@ -89,10 +89,11 @@ class RoutingState(
 
         # interaction circuit + mapping
         self.max_interaction_gates = max_interaction_gates
+        self.number_of_gates = int(self.rng.choice(range(1, max_interaction_gates+1)))
         self.interaction_circuit: List[
             Tuple[int, int]
         ] = self.generate_random_interaction_circuit(
-            self.max_interaction_gates
+            self.number_of_gates
         )
         self.current_mapping = [idx for idx in range(self.n_qubits)]
 
@@ -133,8 +134,11 @@ class RoutingState(
         self.steps_done = 0
 
         if interaction_circuit == None:
+            self.number_of_gates = int(self.rng.choice(
+                range(1,self.max_interaction_gates+1
+                                                             )))
             self.interaction_circuit = self.generate_random_interaction_circuit(
-                self.n_qubits, self.max_interaction_gates
+                self.number_of_gates
             )
         else:
             self.interaction_circuit = interaction_circuit
