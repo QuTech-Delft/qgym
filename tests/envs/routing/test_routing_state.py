@@ -4,7 +4,7 @@ import pytest
 
 from qgym.envs.routing.routing_state import RoutingState
 
-
+# Arrange
 @pytest.fixture
 def quad_graph():
     quad_graph = nx.Graph()
@@ -14,22 +14,22 @@ def quad_graph():
     quad_graph.add_edge(3, 0)
     return quad_graph
 
-@pytest.fixture
-def max_observation_reach(max_interaction_gates):
-    return np.min(5, max_interaction_gates)
 
 @pytest.mark.parametrize(
-    "max_interaction_gates",
-    [1, 5, 10, 50]
+    "max_interaction_gates, max_observation_reach",
+    [(1, 1), (5, 5), (10, 5), (50, 5)]
 )
 
 def test_routing_state_initialize(
     max_interaction_gates,
+    max_observation_reach,
+    quad_graph
+    
 ):
     state = RoutingState(
         max_interaction_gates= max_interaction_gates, 
-        max_observation_reach= max_observation_reach(max_interaction_gates), 
-        connection_graph= quad_graph(),
+        max_observation_reach= max_observation_reach, 
+        connection_graph= quad_graph,
         observation_booleans_flag=False,
         observation_connection_flag=False,
         )

@@ -92,7 +92,7 @@ class RoutingState(
         self.interaction_circuit: List[
             Tuple[int, int]
         ] = self.generate_random_interaction_circuit(
-            self.n_qubits, self.max_interaction_gates
+            self.max_interaction_gates
         )
         self.current_mapping = [idx for idx in range(self.n_qubits)]
 
@@ -267,6 +267,8 @@ class RoutingState(
                 np.arange(self.n_qubits), size=2, replace=False
             )
             circuit[idx] = (qubit1, qubit2)
+        
+        return circuit
 
     def _parse_n_gates(self, n_gates: Union[int, str]) -> int:
         """Parse `n_gates`.
@@ -282,7 +284,7 @@ class RoutingState(
             raise ValueError(f"Unknown flag {n_gates}, choose from 'random'.")
 
         if isinstance(n_gates, int):
-            return min(n_gates, self.max_gates)
+            return min(n_gates, self.max_interaction_gates)
 
         msg = f"n_gates should be of type int or str, but was of type {type(n_gates)}."
         raise ValueError(msg)
