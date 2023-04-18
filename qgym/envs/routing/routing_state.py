@@ -37,7 +37,7 @@ class RoutingState(
     :ivar interaction_circuit: A list of 2-tuples of integers, where every tuple
         represents a, not specified, gate acting on the two qubits labeled by the
         integers in the tuples.
-    :ivar current_mapping: Array of which the index represents a physical qubit, and the 
+    :ivar current_mapping: List of which the index represents a physical qubit, and the 
         value a logical qubit.
     :ivar position: An integer representing the before which gate in the
         interaction_circuit the agent currently is.
@@ -142,23 +142,24 @@ class RoutingState(
             )
         else:
             self.interaction_circuit = interaction_circuit
-
-        # start over with identity mapping
-        self.mapping = [idx for idx in self.n_qubits]
+        
+        #resetting swap_gates_inserted and mapping
+        self.swap_gates_inserted = []
+        self.mapping = [idx for idx in range(self.n_qubits)]
 
     def update_state(self, action: NDArray[np.int_]) -> RoutingState:
         """Update the state of this environment using the given action.
 
-        :param action: If action[0]==True a SWAP-gate applied to qubits action[1],
+        :param action: If action[0]==0 a SWAP-gate applied to qubits action[1],
             action[2] will be registered in the swap_gates_inserted-list at the current 
-            position, if False the first observed gate will be surpassed.
+            position, if action[0]==1 the first observed gate will be surpassed.
         :return: self
         """
         # Increase the step number
         self.steps_done += 1
 
         # surpass current_gate if legal
-        if not action[0] and self._can_be_executed(
+        if action[0]==1 and self._can_be_executed(
             self.interaction_circuit[self.position][0],
             self.interaction_circuit[self.position][1]
             ):
@@ -168,8 +169,9 @@ class RoutingState(
                 self.observation_reach -= 1
 
         # elif insert random swap-gate if legal
-        elif self._is_legal_swap[action[1], action[2]]:
+        elif action[0]==0 and self._is_legal_swap(action[1], action[2]):
             self._place_swap_gate(action[1], action[2])
+            self._update_mapping(action[1], action[2])
 
         return self
 
@@ -236,8 +238,6 @@ class RoutingState(
         # TODO: STORAGE EFFICIENCY: from collections import DeQueue
         self.swap_gates_inserted.append((self.position, qubit1, qubit2))
 
-        self._update_mapping(qubit1, qubit2)
-
     def _is_legal_swap(self, swap_qubit1: int, swap_qubit2: int):
         return (swap_qubit1 is not swap_qubit2) and (
             (swap_qubit1, swap_qubit2) in self.connection_graph.edges)
@@ -265,7 +265,7 @@ class RoutingState(
         """
         n_gates = self._parse_n_gates(n_gates)
 
-        circuit: List[Tuple[int, int]] = [-1, -1] * n_gates
+        circuit: List[Tuple[int, int]] = [0] * n_gates
         for idx in range(n_gates):
             qubit1, qubit2 = self.rng.choice(
                 np.arange(self.n_qubits), size=2, replace=False
@@ -283,7 +283,8 @@ class RoutingState(
         """
         if isinstance(n_gates, str):
             if n_gates.lower().strip() == "random":
-                return self.rng.integers(self.n_qubits, self.max_gates, endpoint=True)
+                return self.rng.integers(self.n_qubits, self.max_interaction_gates, 
+                                         endpoint=True)
 
             raise ValueError(f"Unknown flag {n_gates}, choose from 'random'.")
 
