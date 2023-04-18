@@ -69,7 +69,31 @@ def test_routing_state_initialize(
         observation_booleans_flag=False,
         observation_connection_flag=False,
         )
+    #test observation typing
     observation_space = state.create_observation_space()
-    #TOD: revise below
-    #assert isinstance(observation_space, qgym.spaces.Dict[str, list])
+    assert isinstance(observation_space, qgym.spaces.Dict)
+    assert isinstance(observation_space['interaction_gates_ahead'], 
+                      qgym.spaces.MultiDiscrete) 
+    assert isinstance(observation_space['current_mapping'], 
+                      qgym.spaces.MultiDiscrete) 
     
+    #test interaction circuit properties
+    assert len(state.interaction_circuit) <= max_interaction_gates
+    assert isinstance(state.interaction_circuit, list)
+    
+    #test can_be_executed for the given connection graph
+    assert state._can_be_executed(3, 0) and state._can_be_executed(0, 3)
+    assert state._can_be_executed(0, 1) and state._can_be_executed(1, 0)
+    assert state._can_be_executed(1, 2) and state._can_be_executed(2, 1)
+    assert state._can_be_executed(2, 3) and state._can_be_executed(3, 2)
+    assert (not state._can_be_executed(1, 3)) and (not state._can_be_executed(3, 1))
+    assert (not state._can_be_executed(0, 2)) and (not state._can_be_executed(2, 0))
+    
+
+#TODO: create observation for a given observation_reach and circuit
+#TODO: test update state
+#           1. test update observation_reach
+#           2. test SWAP an edge that is not in the connection graph
+#           3. test surpass edge
+#TODO: tests for correctness of mappings etc.
+#TODO: test reset
