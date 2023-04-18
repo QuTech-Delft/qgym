@@ -89,11 +89,30 @@ def test_routing_state_initialize(
     assert (not state._can_be_executed(1, 3)) and (not state._can_be_executed(3, 1))
     assert (not state._can_be_executed(0, 2)) and (not state._can_be_executed(2, 0))
     
-
-#TODO: create observation for a given observation_reach and circuit
-#TODO: test update state
-#           1. test update observation_reach
-#           2. test SWAP an edge that is not in the connection graph
-#           3. test surpass edge
-#TODO: tests for correctness of mappings etc.
-#TODO: test reset
+    #test obtain_observation
+    assert isinstance(state.obtain_observation()['interaction_gates_ahead'], list)
+    assert isinstance(state.obtain_observation()['current_mapping'], list)
+    assert (len(state.obtain_observation()['interaction_gates_ahead']) >= 
+    state.max_observation_reach)
+    current_observation_reach = state.observation_reach
+    
+    #test update_state
+    #   swapping
+    state.update_state((0, 2, 3))
+    assert state.current_mapping[2] == 3
+    assert state.current_mapping[3] == 2
+    assert state._can_be_executed(2, 0) and state._can_be_executed(0, 2)
+    assert not (state._can_be_executed(3, 0) and state._can_be_executed(0, 3))
+    state.update_state((0, 3, 0))
+    assert state.current_mapping[2] == 3
+    
+    #   surpassing
+    flag = (state.observation_reach == 
+        len(state.obtain_observation()['interaction_gates_ahead']))
+    state.update_state((1,2,9))
+    if flag:
+        state.observation_reach == current_observation_reach -1
+    
+    #test reset  
+    state.reset()
+    assert [state.current_mapping[idx]==idx for idx in range(state.n_qubits)]
