@@ -20,8 +20,6 @@ import qgym.spaces
 from qgym.custom_types import Gate
 from qgym.templates.state import State
 
-
-
 class RoutingState(
     State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
 ):
