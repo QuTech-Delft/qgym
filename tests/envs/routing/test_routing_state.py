@@ -57,7 +57,7 @@ def quad_graph():
     "max_interaction_gates, max_observation_reach",
     [(1, 1), (5, 5), (10, 5), (50, 5), (5, 10)]
 )
-def test_routing_state_initialize(
+def test_routing_state(
     max_interaction_gates,
     max_observation_reach,
     quad_graph
