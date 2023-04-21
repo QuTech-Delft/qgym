@@ -34,8 +34,8 @@ class RoutingState(
     :ivar interaction_circuit: A list of 2-tuples of integers, where every tuple
         represents a, not specified, gate acting on the two qubits labeled by the
         integers in the tuples.
-    :ivar current_mapping: List of which the index represents a physical qubit, and the
-        value a logical qubit.
+    :ivar current_mapping: List of which the index represents a logical qubit, and the
+        value a physical qubit.
     :ivar position: An integer representing the before which gate in the
         interaction_circuit the agent currently is.
     :ivar max_observation_reach: An integer that sets a cap on the maximum amount of
