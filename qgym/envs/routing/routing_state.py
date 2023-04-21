@@ -135,7 +135,7 @@ class RoutingState(
             )
         else:
             self.interaction_circuit = interaction_circuit
-            
+
         # Reset position, counters
         self.position = 0
         self.steps_done = 0
@@ -147,6 +147,8 @@ class RoutingState(
         self.swap_gates_inserted = []
         self.mapping = np.arange(self.n_qubits, dtype=np.uint8)
 
+        return self
+        
     def update_state(self, action: NDArray[np.int_]) -> RoutingState:
         """Update the state of this environment using the given action.
 
@@ -159,7 +161,7 @@ class RoutingState(
         self.steps_done += 1
 
         # surpass current_gate if legal
-        if action[0] == 1 and self._can_be_executed(
+        if action[0] == 1 and self._is_legal_surpass(
             self.interaction_circuit[self.position][0],
             self.interaction_circuit[self.position][1],
         ):
@@ -180,8 +182,13 @@ class RoutingState(
     ) -> Dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
         # TODO: check for efficient slicing!
-        interaction_gates_ahead = list(
-            itertools.chain(*self.interaction_circuit[-self.observation_reach :])
+        interaction_gates_ahead = np.array(
+            [
+                self.interaction_circuit[idx]
+                for idx in range(
+                    self.position, self.position + self.observation_reach
+                )
+            ]
         )
         if self.observation_reach < self.max_observation_reach:
             difference = self.max_observation_reach - self.observation_reach
@@ -234,18 +241,30 @@ class RoutingState(
             pass
         return observation_space
 
-    def _place_swap_gate(self, logical_qubit1: int, logical_qubit2: int) -> None:
+    def _place_swap_gate(
+        self,
+        logical_qubit1: int,
+        logical_qubit2: int,
+    ) -> None:
         # TODO: STORAGE EFFICIENCY: from collections import DeQueue
         self.swap_gates_inserted.append((self.position, logical_qubit1, logical_qubit2))
 
-    def _is_legal_swap(self, logical_swap_qubit1: int, logical_swap_qubit2: int):
+    def _is_legal_swap(
+        self,
+        logical_swap_qubit1: int,
+        logical_swap_qubit2: int,
+    ) -> bool:
         physical_swap_qubit1 = self.mapping[logical_swap_qubit1]
         physical_swap_qubit2 = self.mapping[logical_swap_qubit2]
         return not (logical_swap_qubit1 == logical_swap_qubit2) and (
             (physical_swap_qubit1, physical_swap_qubit2) in self.connection_graph.edges
         )
 
-    def _can_be_executed(self, logical_gate_qubit1: int, logical_gate_qubit2: int):
+    def _is_legal_surpass(
+        self,
+        logical_gate_qubit1: int,
+        logical_gate_qubit2: int,
+    ) -> bool:
         physical_gate_qubit1 = self.current_mapping[logical_gate_qubit1]
         physical_gate_qubit2 = self.current_mapping[logical_gate_qubit2]
         return (
@@ -253,23 +272,23 @@ class RoutingState(
             physical_gate_qubit2,
         ) in self.connection_graph.edges
 
-    def _update_mapping(self, logical_qubit1: int, logical_qubit2: int) -> None:
+    def _update_mapping(
+        self,
+        logical_qubit1: int,
+        logical_qubit2: int,
+    ) -> None:
         physical_qubit1 = self.current_mapping[logical_qubit1]
         physical_qubit2 = self.current_mapping[logical_qubit2]
         self.current_mapping[logical_qubit1] = physical_qubit2
         self.current_mapping[logical_qubit2] = physical_qubit1
 
     def generate_random_interaction_circuit(
-        self, n_gates: Union[str, int] = "random"
+        self, n_gates: int
     ) -> List[Tuple[int, int]]:
         """Generate a random interaction circuit.
-
-        :param n_gates: If "random", then a circuit of random length will be made. If
-            an ``int`` is given, a circuit of length ``min(n_gates, max_gates)`` will
-            be made.
+        
         :return: A randomly generated interaction circuit.
         """
-        n_gates = self._parse_n_gates(n_gates)
 
         circuit: List[Tuple[int, int]] = [0] * n_gates
         for idx in range(n_gates):
@@ -279,24 +298,3 @@ class RoutingState(
             circuit[idx] = (qubit1, qubit2)
 
         return circuit
-
-    def _parse_n_gates(self, n_gates: Union[int, str]) -> int:
-        """Parse `n_gates`.
-
-        :param n_gates: If n_gates is "random", generate a number between 1 and
-            `max_gates`. If n_gates is an ``int``, return the minimum of `n_gates` and
-            `max_gates`.
-        """
-        if isinstance(n_gates, str):
-            if n_gates.lower().strip() == "random":
-                return self.rng.integers(
-                    self.n_qubits, self.max_interaction_gates, endpoint=True
-                )
-
-            raise ValueError(f"Unknown flag {n_gates}, choose from 'random'.")
-
-        if isinstance(n_gates, int):
-            return min(n_gates, self.max_interaction_gates)
-
-        msg = f"n_gates should be of type int or str, but was of type {type(n_gates)}."
-        raise ValueError(msg)
