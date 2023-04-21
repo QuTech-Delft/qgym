@@ -90,7 +90,7 @@ class RoutingState(
         self.interaction_circuit: List[
             Tuple[int, int]
         ] = self.generate_random_interaction_circuit(self.number_of_gates)
-        self.current_mapping = [idx for idx in range(self.n_qubits)]
+        self.current_mapping = np.arange(self.n_qubits, dtype=np.uint8) 
 
         # Observation attributes
         self.position: int = 0
