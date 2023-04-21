@@ -127,7 +127,7 @@ class RoutingState(
         # Reset counters
         self.steps_done = 0
 
-        if interaction_circuit == None:
+        if interaction_circuit is None:
             self.number_of_gates = int(
                 self.rng.choice(range(1, self.max_interaction_gates + 1))
             )
