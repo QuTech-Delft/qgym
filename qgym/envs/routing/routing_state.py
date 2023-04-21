@@ -87,7 +87,7 @@ class RoutingState(
         self.n_qubits: int = self.connection_graph.number_of_nodes()
 
         # interaction circuit + mapping
-        self.max_interaction_gates = max_interaction_gates
+        self.max_interaction_gates = min(max_interaction_gates, max_interaction_gates)
         number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
         self.interaction_circuit: np.NDArry[Tuple[int, int]]
         self.interaction_circuit = self.generate_random_interaction_circuit(
