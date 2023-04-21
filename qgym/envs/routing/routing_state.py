@@ -69,10 +69,10 @@ class RoutingState(
         :param connection_graph: ``networkx`` graph representation of the QPU topology.
             Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
-        :param observation_booleans_flag: If flag==True a list, of length
+        :param observation_booleans_flag: If ``True`` a list, of length
         observation_reach, containing booleans, indicating whether the gates ahead can
         be executed, will be added to the observation_space.
-        :param observation_connection_flag: If flag==True, the connection_graph will be
+        :param observation_connection_flag: If ``True``, the connection_graph will be
         incorporated in the observation_space. Reason to set it False is: QPU-topology
         practically doesn't change a lot for one machine, hence an agent is typically
         trained for just one QPU-topology which can be learned implicitly by rewards
