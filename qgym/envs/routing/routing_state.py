@@ -149,6 +149,22 @@ class RoutingState(
 
         return self
 
+    def obtain_info(self) -> Dict[str, Union[int, NDArray[np.int_]]]:
+        """:return: Optional debugging info for the current state."""
+        return {
+            "Steps done": self.steps_done,
+            "Position": self.position,
+            "Observation reach": self.observation_reach,
+            "Interaction gates ahead": np.array(
+            [
+                self.interaction_circuit[idx]
+                for idx in range(self.position, self.position + self.observation_reach)
+            ]
+            ),
+            "Number of swaps inserted": len(self.swap_gates_inserted),
+            "Swap gates inserted": self.swap_gates_inserted,
+        }
+
     def update_state(self, action: NDArray[np.int_]) -> RoutingState:
         """Update the state of this environment using the given action.
 
@@ -176,34 +192,6 @@ class RoutingState(
             self._update_mapping(action[1], action[2])
 
         return self
-
-    def obtain_observation(
-        self,
-    ) -> Dict[str, NDArray[np.int_]]:
-        """:return: Observation based on the current state."""
-        # TODO: check for efficient slicing!
-        interaction_gates_ahead = np.array(
-            [
-                self.interaction_circuit[idx]
-                for idx in range(self.position, self.position + self.observation_reach)
-            ]
-        )
-        if self.observation_reach < self.max_observation_reach:
-            difference = self.max_observation_reach - self.observation_reach
-            interaction_gates_ahead += [self.n_qubits] * difference
-
-        # TODO: Do we also want to show the topology in the observation?
-        #   If so we could make use of the graps-dictionary storage format used in
-        #   inital_mapping_state.
-        return {
-            "interaction_gates_ahead": interaction_gates_ahead,
-            "current_mapping": self.current_mapping,
-        }
-
-    def is_done(self) -> np.bool_:
-        """:return: Boolean value stating whether we are in a final state."""
-        # self.observation_reach==0
-        return self.position == self.len(self.interaction_circuit)
 
     def create_observation_space(self) -> qgym.spaces.Dict:
         """Create the corresponding observation space.
@@ -238,6 +226,34 @@ class RoutingState(
             # TODO: implement.
             pass
         return observation_space
+
+    def obtain_observation(
+        self,
+    ) -> Dict[str, NDArray[np.int_]]:
+        """:return: Observation based on the current state."""
+        # TODO: check for efficient slicing!
+        interaction_gates_ahead = np.array(
+            [
+                self.interaction_circuit[idx]
+                for idx in range(self.position, self.position + self.observation_reach)
+            ]
+        )
+        if self.observation_reach < self.max_observation_reach:
+            difference = self.max_observation_reach - self.observation_reach
+            interaction_gates_ahead += [self.n_qubits] * difference
+
+        # TODO: Do we also want to show the topology in the observation?
+        #   If so we could make use of the graps-dictionary storage format used in
+        #   inital_mapping_state.
+        return {
+            "interaction_gates_ahead": interaction_gates_ahead,
+            "current_mapping": self.current_mapping,
+        }
+
+    def is_done(self) -> np.bool_:
+        """:return: Boolean value stating whether we are in a final state."""
+        # self.observation_reach==0
+        return self.position == self.len(self.interaction_circuit)
 
     def _place_swap_gate(
         self,
