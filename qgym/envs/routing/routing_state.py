@@ -210,6 +210,9 @@ class RoutingState(
         current_mapping = qgym.spaces.MultiDiscrete(
             np.full(self.n_qubits, self.n_qubits)
         )
+        connection_graph = qgym.spaces.MultiDiscrete(
+            np.full(self.n_qubits*self.n_qubits, self.n_qubits)
+        )
         # TODO: implement optional extension of observation_space based on flags.
         if not self.observation_connection_flag and not self.observation_booleans_flag:
             observation_space = qgym.spaces.Dict(
@@ -240,14 +243,19 @@ class RoutingState(
         )
         if self.observation_reach < self.max_observation_reach:
             difference = self.max_observation_reach - self.observation_reach
-            interaction_gates_ahead += [self.n_qubits] * difference
+            interaction_gates_ahead += np.array([self.n_qubits]) * difference
 
+        connection_graph = nx.to_numpy_array(self.connection_graph).flatten()
+        padding = np.full(self.n_qubits**2-len(connection_graph), self.n_qubits)
+        connection_graph = np.concatenate((connection_graph, padding),axis=0) 
+        
         # TODO: Do we also want to show the topology in the observation?
         #   If so we could make use of the graps-dictionary storage format used in
         #   inital_mapping_state.
         return {
             "interaction_gates_ahead": interaction_gates_ahead,
             "current_mapping": self.current_mapping,
+            "connection_graph": connection_graph,
         }
 
     def is_done(self) -> np.bool_:
