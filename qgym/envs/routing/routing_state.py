@@ -137,7 +137,7 @@ class RoutingState(
 
         # resetting swap_gates_inserted and mapping
         self.swap_gates_inserted = []
-        self.mapping = [idx for idx in range(self.n_qubits)]
+        self.mapping = np.arange(self.n_qubits, dtype=np.uint8)
 
     def update_state(self, action: NDArray[np.int_]) -> RoutingState:
         """Update the state of this environment using the given action.
