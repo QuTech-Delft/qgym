@@ -148,7 +148,7 @@ class RoutingState(
         self.mapping = np.arange(self.n_qubits, dtype=np.uint8)
 
         return self
-        
+
     def update_state(self, action: NDArray[np.int_]) -> RoutingState:
         """Update the state of this environment using the given action.
 
@@ -185,9 +185,7 @@ class RoutingState(
         interaction_gates_ahead = np.array(
             [
                 self.interaction_circuit[idx]
-                for idx in range(
-                    self.position, self.position + self.observation_reach
-                )
+                for idx in range(self.position, self.position + self.observation_reach)
             ]
         )
         if self.observation_reach < self.max_observation_reach:
@@ -282,16 +280,14 @@ class RoutingState(
         self.current_mapping[logical_qubit1] = physical_qubit2
         self.current_mapping[logical_qubit2] = physical_qubit1
 
-    def generate_random_interaction_circuit(
-        self, n_gates: int
-    ) -> np.NDAarray(int):
+    def generate_random_interaction_circuit(self, n_gates: int) -> np.NDAarray(np.int_):
         """Generate a random interaction circuit.
-        
+
         :return: A randomly generated interaction circuit.
         """
 
-        circuit = np.zeros((n_gates,2), dtype=int)
+        circuit = np.zeros((n_gates, 2), dtype=int)
         for idx in range(n_gates):
-            circuit[idx]  = self.rng.choice(self.n_qubits, size=2, replace=False)
+            circuit[idx] = self.rng.choice(self.n_qubits, size=2, replace=False)
 
         return circuit
