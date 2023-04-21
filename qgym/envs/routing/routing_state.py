@@ -20,6 +20,7 @@ import qgym.spaces
 from qgym.custom_types import Gate
 from qgym.templates.state import State
 
+
 class RoutingState(
     State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
 ):
@@ -46,7 +47,8 @@ class RoutingState(
         agent can see when making an observation.
     :ivar swap_gates_inserted: A list of 3-tuples of integers, to register which gates
         to insert and where. Every tuple (g, q1, q2) represents the insertion of a
-        SWAP-gate acting on qubits q1 and q2 before gate g in the interaction_circuit.
+        SWAP-gate acting on logical qubits q1 and q2 before gate g in the
+        interaction_circuit.
     """
 
     def __init__(
@@ -88,8 +90,10 @@ class RoutingState(
         self.max_interaction_gates = max_interaction_gates
         number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
         self.interaction_circuit: List[Tuple[int, int]]
-        self.interaction_circuit = self.generate_random_interaction_circuit(number_of_gates)
-        self.current_mapping = np.arange(self.n_qubits, dtype=np.uint8) 
+        self.interaction_circuit = self.generate_random_interaction_circuit(
+            number_of_gates
+        )
+        self.current_mapping = np.arange(self.n_qubits, dtype=np.uint8)
 
         # Observation attributes
         self.position: int = 0
@@ -226,19 +230,24 @@ class RoutingState(
             pass
         return observation_space
 
-    def _place_swap_gate(self, qubit1: int, qubit2: int) -> None:
+    def _place_swap_gate(self, logical_qubit1: int, logical_qubit2: int) -> None:
         # TODO: STORAGE EFFICIENCY: from collections import DeQueue
-        self.swap_gates_inserted.append((self.position, qubit1, qubit2))
+        self.swap_gates_inserted.append((self.position, logical_qubit1, logical_qubit2))
 
-    def _is_legal_swap(self, swap_qubit1: int, swap_qubit2: int):
-        return (swap_qubit1 is not swap_qubit2) and (
-            (swap_qubit1, swap_qubit2) in self.connection_graph.edges
+    def _is_legal_swap(self, logical_swap_qubit1: int, logical_swap_qubit2: int):
+        physical_swap_qubit1 = self.mapping[logical_swap_qubit1]
+        physical_swap_qubit2 = self.mapping[logical_swap_qubit2]
+        return not (logical_swap_qubit1 == logical_swap_qubit2) and (
+            (physical_swap_qubit1, physical_swap_qubit2) in self.connection_graph.edges
         )
 
     def _can_be_executed(self, logical_gate_qubit1: int, logical_gate_qubit2: int):
         physical_gate_qubit1 = self.current_mapping[logical_gate_qubit1]
         physical_gate_qubit2 = self.current_mapping[logical_gate_qubit2]
-        return (physical_gate_qubit1, physical_gate_qubit2) in self.connection_graph.edges
+        return (
+            physical_gate_qubit1,
+            physical_gate_qubit2,
+        ) in self.connection_graph.edges
 
     def _update_mapping(self, logical_qubit1: int, logical_qubit2: int) -> None:
         physical_qubit1 = self.current_mapping[logical_qubit1]
