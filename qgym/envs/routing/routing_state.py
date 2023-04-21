@@ -97,10 +97,10 @@ class RoutingState(
 
         # Observation attributes
         self.position: int = 0
-        self.max_observation_reach = int(
-            min(max_observation_reach, len(self.interaction_circuit))
+        self.max_observation_reach = max_observation_reach
+        self.observation_reach = int(
+            min(self.max_observation_reach, len(self.interaction_circuit))
         )
-        self.observation_reach = self.max_observation_reach
         self.observation_booleans_flag = observation_booleans_flag
         self.observation_connection_flag = observation_connection_flag
 
@@ -128,9 +128,6 @@ class RoutingState(
         if seed is not None:
             self.seed(seed)
 
-        # Reset counters
-        self.steps_done = 0
-
         if interaction_circuit is None:
             number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
             self.interaction_circuit = self.generate_random_interaction_circuit(
@@ -138,6 +135,13 @@ class RoutingState(
             )
         else:
             self.interaction_circuit = interaction_circuit
+            
+        # Reset position, counters
+        self.position = 0
+        self.steps_done = 0
+        self.observation_reach = int(
+            min(self.max_observation_reach, len(self.interaction_circuit))
+        )
 
         # resetting swap_gates_inserted and mapping
         self.swap_gates_inserted = []
