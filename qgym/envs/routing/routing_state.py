@@ -158,7 +158,7 @@ class RoutingState(
             "Interaction gates ahead": np.array(
             [
                 self.interaction_circuit[idx]
-                for idx in range(self.position, self.position + self.observation_reach)
+                for idx in range(self.position, len(self.interaction_circuit))
             ]
             ),
             "Number of swaps inserted": len(self.swap_gates_inserted),
