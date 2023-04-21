@@ -107,7 +107,7 @@ class RoutingState(
         self,
         *,
         seed: Optional[int] = None,
-        interaction_circuit: Optional[Tuple[int, int]] = None,
+        interaction_circuit: Optional[List[Tuple[int, int]]] = None,
         **_kwargs: Any,
     ) -> RoutingState:
         """Reset the state and load a new (random) initial state.
