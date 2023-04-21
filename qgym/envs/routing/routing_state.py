@@ -235,16 +235,16 @@ class RoutingState(
             (swap_qubit1, swap_qubit2) in self.connection_graph.edges
         )
 
-    def _can_be_executed(self, gate_qubit1: int, gate_qubit2: int):
-        logical_gate_qubit1 = self.current_mapping[gate_qubit1]
-        logical_gate_qubit2 = self.current_mapping[gate_qubit2]
-        return (logical_gate_qubit1, logical_gate_qubit2) in self.connection_graph.edges
+    def _can_be_executed(self, logical_gate_qubit1: int, logical_gate_qubit2: int):
+        physical_gate_qubit1 = self.current_mapping[logical_gate_qubit1]
+        physical_gate_qubit2 = self.current_mapping[logical_gate_qubit2]
+        return (physical_gate_qubit1, physical_gate_qubit2) in self.connection_graph.edges
 
-    def _update_mapping(self, qubit1: int, qubit2: int) -> None:
-        logical1 = self.current_mapping[qubit1]
-        logical2 = self.current_mapping[qubit2]
-        self.current_mapping[qubit1] = logical2
-        self.current_mapping[qubit2] = logical1
+    def _update_mapping(self, logical_qubit1: int, logical_qubit2: int) -> None:
+        physical_qubit1 = self.current_mapping[logical_qubit1]
+        physical_qubit2 = self.current_mapping[logical_qubit2]
+        self.current_mapping[logical_qubit1] = physical_qubit2
+        self.current_mapping[logical_qubit2] = physical_qubit1
 
     def generate_random_interaction_circuit(
         self, n_gates: Union[str, int] = "random"
