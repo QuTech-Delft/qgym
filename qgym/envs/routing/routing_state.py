@@ -32,7 +32,7 @@ class RoutingState(
     :ivar n_qubits: Number of qubits in the connection_graph
     :ivar max_interaction_gates: Sets the maximum amount of gates in the
             interaction_circuit, when a new interaction_circuit is generated.
-    :ivar interaction_circuit: A list of 2-tuples of integers, where every tuple
+    :ivar interaction_circuit: An array of 2-tuples of integers, where every tuple
         represents a, not specified, gate acting on the two qubits labeled by the
         integers in the tuples.
     :ivar current_mapping: List of which the index represents a logical qubit, and the
@@ -89,7 +89,7 @@ class RoutingState(
         # interaction circuit + mapping
         self.max_interaction_gates = max_interaction_gates
         number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
-        self.interaction_circuit: List[Tuple[int, int]]
+        self.interaction_circuit: np.NDArry[Tuple[int, int]]
         self.interaction_circuit = self.generate_random_interaction_circuit(
             number_of_gates
         )
@@ -105,13 +105,13 @@ class RoutingState(
         self.observation_connection_flag = observation_connection_flag
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: List[Tuple[int, int, int]] = []
+        self.swap_gates_inserted: np.NDArray[Tuple[int, int, int]] = []
 
     def reset(
         self,
         *,
         seed: Optional[int] = None,
-        interaction_circuit: Optional[List[Tuple[int, int]]] = None,
+        interaction_circuit: Optional[np.NDAarray[Tuple[int, int]]] = None,
         **_kwargs: Any,
     ) -> RoutingState:
         """Reset the state and load a new (random) initial state.
@@ -170,7 +170,7 @@ class RoutingState(
             if len(self.interaction_circuit) - self.position < self.observation_reach:
                 self.observation_reach -= 1
 
-        # elif insert random swap-gate if legal
+        # elif insert swap-gate if legal
         elif action[0] == 0 and self._is_legal_swap(action[1], action[2]):
             self._place_swap_gate(action[1], action[2])
             self._update_mapping(action[1], action[2])
@@ -202,12 +202,12 @@ class RoutingState(
             "current_mapping": self.current_mapping,
         }
 
-    def is_done(self) -> bool:
+    def is_done(self) -> np.bool_:
         """:return: Boolean value stating whether we are in a final state."""
         # self.observation_reach==0
         return self.position == self.len(self.interaction_circuit)
 
-    def create_observation_space(self) -> Space:
+    def create_observation_space(self) -> qgym.spaces.Dict:
         """Create the corresponding observation space.
 
         :returns: Observation space in the form of a ``qgym.spaces.Dict`` space
@@ -284,17 +284,14 @@ class RoutingState(
 
     def generate_random_interaction_circuit(
         self, n_gates: int
-    ) -> List[Tuple[int, int]]:
+    ) -> np.NDAarray(int):
         """Generate a random interaction circuit.
         
         :return: A randomly generated interaction circuit.
         """
 
-        circuit: List[Tuple[int, int]] = [0] * n_gates
+        circuit = np.zeros((n_gates,2), dtype=int)
         for idx in range(n_gates):
-            qubit1, qubit2 = self.rng.choice(
-                np.arange(self.n_qubits), size=2, replace=False
-            )
-            circuit[idx] = (qubit1, qubit2)
+            circuit[idx]  = self.rng.choice(self.n_qubits, size=2, replace=False)
 
         return circuit
