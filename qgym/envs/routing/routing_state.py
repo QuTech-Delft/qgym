@@ -9,15 +9,13 @@ Usage:
 """
 from __future__ import annotations
 
-import itertools
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.custom_types import Gate
 from qgym.templates.state import State
 
 
@@ -35,7 +33,7 @@ class RoutingState(
     :ivar interaction_circuit: An array of 2-tuples of integers, where every tuple
         represents a, not specified, gate acting on the two qubits labeled by the
         integers in the tuples.
-    :ivar current_mapping: List of which the index represents a logical qubit, and the
+    :ivar mapping: List of which the index represents a logical qubit, and the
         value a physical qubit.
     :ivar position: An integer representing the before which gate in the
         interaction_circuit the agent currently is.
@@ -87,13 +85,13 @@ class RoutingState(
         self.n_qubits: int = self.connection_graph.number_of_nodes()
 
         # interaction circuit + mapping
-        self.max_interaction_gates = min(max_interaction_gates, max_interaction_gates)
+        self.max_interaction_gates = max_interaction_gates
         number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
-        self.interaction_circuit: np.NDArry[Tuple[int, int]]
+        self.interaction_circuit: NDArray[np.int_]
         self.interaction_circuit = self.generate_random_interaction_circuit(
             number_of_gates
         )
-        self.current_mapping = np.arange(self.n_qubits, dtype=np.uint8)
+        self.mapping = np.arange(self.n_qubits)
 
         # Observation attributes
         self.position: int = 0
@@ -105,13 +103,13 @@ class RoutingState(
         self.observation_connection_flag = observation_connection_flag
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: np.NDArray[Tuple[int, int, int]] = []
+        self.swap_gates_inserted: List[Tuple[int, int, int]] = [(None, None, None)]
 
     def reset(
         self,
         *,
         seed: Optional[int] = None,
-        interaction_circuit: Optional[np.NDAarray[Tuple[int, int]]] = None,
+        interaction_circuit: Optional[NDArray[np.int_]] = None,
         **_kwargs: Any,
     ) -> RoutingState:
         """Reset the state and load a new (random) initial state.
@@ -145,21 +143,23 @@ class RoutingState(
 
         # resetting swap_gates_inserted and mapping
         self.swap_gates_inserted = []
-        self.mapping = np.arange(self.n_qubits, dtype=np.uint8)
+        self.mapping = np.arange(self.n_qubits, dtype=np.int_)
 
         return self
 
-    def obtain_info(self) -> Dict[str, Union[int, NDArray[np.int_]]]:
+    def obtain_info(
+        self,
+    ) -> Dict[str, Union[int, list[Tuple[int, int, int]], NDArray[np.int_]]]:
         """:return: Optional debugging info for the current state."""
         return {
             "Steps done": self.steps_done,
             "Position": self.position,
             "Observation reach": self.observation_reach,
             "Interaction gates ahead": np.array(
-            [
-                self.interaction_circuit[idx]
-                for idx in range(self.position, len(self.interaction_circuit))
-            ]
+                [
+                    self.interaction_circuit[idx]
+                    for idx in range(self.position, len(self.interaction_circuit))
+                ]
             ),
             "Number of swaps inserted": len(self.swap_gates_inserted),
             "Swap gates inserted": self.swap_gates_inserted,
@@ -207,21 +207,23 @@ class RoutingState(
         interaction_gates_ahead = qgym.spaces.MultiDiscrete(
             np.full(2 * self.max_observation_reach, self.n_qubits)
         )
-        current_mapping = qgym.spaces.MultiDiscrete(
-            np.full(self.n_qubits, self.n_qubits)
-        )
+        mapping = qgym.spaces.MultiDiscrete(np.full(self.n_qubits, self.n_qubits))
         connection_graph = qgym.spaces.MultiDiscrete(
-            np.full(self.n_qubits*self.n_qubits, self.n_qubits)
+            np.full(self.n_qubits * self.n_qubits, self.n_qubits)
         )
+
         # TODO: implement optional extension of observation_space based on flags.
         if not self.observation_connection_flag and not self.observation_booleans_flag:
             observation_space = qgym.spaces.Dict(
                 interaction_gates_ahead=interaction_gates_ahead,
-                current_mapping=current_mapping,
+                mapping=mapping,
             )
         elif self.observation_connection_flag and not self.observation_booleans_flag:
-            # TODO: implement.
-            pass
+            observation_space = qgym.spaces.Dict(
+                interaction_gates_ahead=interaction_gates_ahead,
+                mapping=mapping,
+                connection_graph=connection_graph,
+            )
         elif not self.observation_connection_flag and self.observation_booleans_flag:
             # TODO: implement.
             pass
@@ -232,36 +234,36 @@ class RoutingState(
 
     def obtain_observation(
         self,
-    ) -> Dict[str, NDArray[np.int_]]:
+    ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]:
         """:return: Observation based on the current state."""
         # TODO: check for efficient slicing!
-        interaction_gates_ahead = np.array(
+        interaction_gates_ahead = np.asarray(
             [
-                self.interaction_circuit[idx]
+                np.array_split(self.interaction_circuit[idx],2)
                 for idx in range(self.position, self.position + self.observation_reach)
             ]
         )
         if self.observation_reach < self.max_observation_reach:
             difference = self.max_observation_reach - self.observation_reach
-            interaction_gates_ahead += np.array([self.n_qubits]) * difference
+            interaction_gates_ahead += np.asarray([self.n_qubits]) * difference
 
-        connection_graph = nx.to_numpy_array(self.connection_graph).flatten()
-        padding = np.full(self.n_qubits**2-len(connection_graph), self.n_qubits)
-        connection_graph = np.concatenate((connection_graph, padding),axis=0) 
-        
+        connection_graph = nx.to_numpy_array(self.connection_graph, dtype=int).flatten()
+        padding = np.full(self.n_qubits**2 - len(connection_graph), self.n_qubits)
+        connection_graph = np.concatenate((connection_graph, padding), axis=0)
+
         # TODO: Do we also want to show the topology in the observation?
         #   If so we could make use of the graps-dictionary storage format used in
         #   inital_mapping_state.
         return {
             "interaction_gates_ahead": interaction_gates_ahead,
-            "current_mapping": self.current_mapping,
+            "mapping": self.mapping,
             "connection_graph": connection_graph,
         }
 
-    def is_done(self) -> np.bool_:
+    def is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
         # self.observation_reach==0
-        return self.position == self.len(self.interaction_circuit)
+        return self.position == len(self.interaction_circuit)
 
     def _place_swap_gate(
         self,
@@ -287,8 +289,8 @@ class RoutingState(
         logical_gate_qubit1: int,
         logical_gate_qubit2: int,
     ) -> bool:
-        physical_gate_qubit1 = self.current_mapping[logical_gate_qubit1]
-        physical_gate_qubit2 = self.current_mapping[logical_gate_qubit2]
+        physical_gate_qubit1 = self.mapping[logical_gate_qubit1]
+        physical_gate_qubit2 = self.mapping[logical_gate_qubit2]
         return (
             physical_gate_qubit1,
             physical_gate_qubit2,
@@ -299,12 +301,12 @@ class RoutingState(
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> None:
-        physical_qubit1 = self.current_mapping[logical_qubit1]
-        physical_qubit2 = self.current_mapping[logical_qubit2]
-        self.current_mapping[logical_qubit1] = physical_qubit2
-        self.current_mapping[logical_qubit2] = physical_qubit1
+        physical_qubit1 = self.mapping[logical_qubit1]
+        physical_qubit2 = self.mapping[logical_qubit2]
+        self.mapping[logical_qubit1] = physical_qubit2
+        self.mapping[logical_qubit2] = physical_qubit1
 
-    def generate_random_interaction_circuit(self, n_gates: int) -> np.NDAarray(np.int_):
+    def generate_random_interaction_circuit(self, n_gates: int) -> NDArray[np.int_]:
         """Generate a random interaction circuit.
 
         :return: A randomly generated interaction circuit.
@@ -312,6 +314,8 @@ class RoutingState(
 
         circuit = np.zeros((n_gates, 2), dtype=int)
         for idx in range(n_gates):
-            circuit[idx] = self.rng.choice(self.n_qubits, size=2, replace=False)
+            circuit[idx] = self.rng.choice(
+                np.arange(self.n_qubits), size=2, replace=False
+            )
 
         return circuit
