@@ -189,10 +189,10 @@ class RoutingVisualiser(Visualiser):
             )
 
         for x, y in self.graph["render_positions"].values():
-            self._draw_point(self.screens["graph"], x, y, self.colors["node"])
+            self._draw_point(self.screens["graph"], x, y, self.colors["node"], 20)
 
     def _draw_point(
-        self, screen: pygame.surface.Surface, x: float, y: float, color: Color
+        self, screen: pygame.surface.Surface, x: float, y: float, color: Color, r: int = 10
     ) -> None:
         """Draw a point on the screen.
 
@@ -201,9 +201,10 @@ class RoutingVisualiser(Visualiser):
         :param y: y coordinate of the point. Non integer values will be rounded down to
             the nearest integer.
         :param screen: Screen to add the point to.
+        :param r: Radius of the point (in pixels). Defaults to 10.
         """
-        gfxdraw.aacircle(screen, int(x), int(y), 10, color)
-        gfxdraw.filled_circle(screen, int(x), int(y), 10, color)
+        gfxdraw.aacircle(screen, int(x), int(y), r, color)
+        gfxdraw.filled_circle(screen, int(x), int(y), r, color)
 
     def _draw_wide_line(
         self,
@@ -282,6 +283,11 @@ class RoutingVisualiser(Visualiser):
 
 
 if __name__ == "__main__":
+    from time import sleep
+
+    from qgym.spaces import MultiDiscrete
+    action_space = MultiDiscrete([2,4,4])
+
     graph = nx.Graph()
     graph.add_edge(0,1)
     graph.add_edge(1,2)
@@ -289,7 +295,7 @@ if __name__ == "__main__":
     graph.add_edge(3,0)
 
     state = RoutingState(
-        max_interaction_gates=15,
+        max_interaction_gates=10,
         max_observation_reach=5,
         connection_graph=graph,
         observation_booleans_flag=False,
@@ -299,4 +305,7 @@ if __name__ == "__main__":
     vis = RoutingVisualiser(graph)
     for _ in range(100):
         vis.render(state, "human")
-        breakpoint()
+        action = action_space.sample()
+        state.update_state(action)
+        print(action)
+        sleep(0.1)
