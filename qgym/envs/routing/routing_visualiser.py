@@ -1,6 +1,5 @@
 """This module contains a class used for rendering a ``Routing`` environment."""
-from copy import deepcopy
-from typing import Any, Dict, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -42,6 +41,7 @@ class RoutingVisualiser(Visualiser):
 
         self.colors = {
             "node": BLUE,
+            "node_labels": WHITE,
             "edge": BLACK,
             "good gate": BLUE,
             "bad gate": RED,
@@ -49,7 +49,7 @@ class RoutingVisualiser(Visualiser):
             "circuit lines": BLACK,
             "background": WHITE,
             "hidden": BLACK,
-            "mapping": WHITE
+            "mapping": WHITE,
         }
 
         # Save everything we need to know about the connection graph
@@ -98,7 +98,8 @@ class RoutingVisualiser(Visualiser):
 
         if len(self.font) == 0:
             self.font["header"] = pygame.font.SysFont("Arial", self.font_size)
-            self.font["circuit"]= pygame.font.SysFont("Arial", 24)
+            self.font["circuit"] = pygame.font.SysFont("Arial", 24)
+            self.font["graph"] = pygame.font.SysFont("Arial", 24)
 
         pygame.time.delay(10)
 
@@ -113,12 +114,35 @@ class RoutingVisualiser(Visualiser):
         return self._display(mode)
 
     def _draw_interaction_circuit(self, state: RoutingState) -> None:
-        """Draw the interaction circuit on the interaction circuit subscreen."""
+        """Draw the interaction circuit on the interaction circuit subscreen.
+
+        :param state: Current state.
+        """
         x_text = self.screens["circuit"].get_width() * 0.05
         x_left = self.screens["circuit"].get_width() * 0.1
         x_right = self.screens["circuit"].get_width() * 0.95
         y_distance = self.screens["circuit"].get_height() / (state.n_qubits)
         y_lines = [0.5 * y_distance + y_distance * n for n in range(state.n_qubits)]
+        dx_gates = (x_right - x_left) / state.max_interaction_gates
+        x_gates = x_left + dx_gates * (0.5 + np.arange(state.max_interaction_gates))
+
+        self._draw_circuit_lines(
+            x_text=x_text, x_left=x_left, x_right=x_right, y_lines=y_lines
+        )
+        self._draw_interaction_gates(state=state, x_gates=x_gates, y_lines=y_lines)
+        self._draw_observation_reach(state=state, x_left=x_left, x_right=x_right)
+        self._draw_mapping(state=state, x_gates=x_gates, y_lines=y_lines)
+
+    def _draw_circuit_lines(
+        self, *, x_text: float, x_left: float, x_right: float, y_lines: List[float]
+    ) -> None:
+        """Draw the circuit lines on the 'circuit' screen and label them.
+
+        :param x_text: x coordinate of the labels of the circuit lines.
+        :param x_left: Left most x coordinate of the circuit lines.
+        :param x_right: RIght most x coordinate of the circuit lines.
+        :param y_lines: List of y coordinates of the circuit lines.
+        """
         for n, y in enumerate(y_lines):
             self._draw_wide_line(
                 self.screens["circuit"],
@@ -130,11 +154,18 @@ class RoutingVisualiser(Visualiser):
             text_position = pygame_text.get_rect(center=(x_text, y))
             self.screens["circuit"].blit(pygame_text, text_position)
 
-        dx_gates = (x_right - x_left) / state.max_interaction_gates
-        x_gates = [x_left + dx_gates * (0.5 + n) for n in range(state.max_interaction_gates)]
+    def _draw_interaction_gates(
+        self, *, state: RoutingState, x_gates: List[float], y_lines: List[float]
+    ) -> None:
+        """Draw the interaction gates on the 'circuit' screen.
+
+        :param state: ``RoutingState`` to draw the interaction gates.
+        :param x_gates: List of x coordinates of the swap gates.
+        :param y_lines: List of y coordinates of the circuit lines.
+        """
         for n, (qubit1, qubit2) in enumerate(state.interaction_circuit):
-            physical_qubit1 = state.current_mapping[qubit1]
-            physical_qubit2 = state.current_mapping[qubit2]
+            physical_qubit1 = state.mapping[qubit1]
+            physical_qubit2 = state.mapping[qubit2]
             if (physical_qubit1, physical_qubit2) in self.graph["edges"]:
                 color = self.colors["good gate"]
             else:
@@ -145,39 +176,92 @@ class RoutingVisualiser(Visualiser):
             self._draw_wide_line(self.screens["circuit"], color, point1, point2)
             self._draw_point(self.screens["circuit"], *point1, color)
             self._draw_point(self.screens["circuit"], *point2, color)
-        
-        shade_left_width = (state.position+0.5) * dx_gates
+
+    def _draw_observation_reach(
+        self, *, state: RoutingState, x_left: float, x_right: float
+    ) -> None:
+        """Draw shades on the 'circuit' screen to show the observation size.
+
+        :param state: Current state to draw the observation reach of.
+        :param x_left: Left most x-value of the circuit lines.
+        :param x_right: RIght most x-value of the circuit lines.
+        """
+        dx_gates = (x_right - x_left) / state.max_interaction_gates
+
+        shade_left_width = (state.position + 0.5) * dx_gates
         shade_left_height = self.screens["circuit"].get_height()
         shade_left = pygame.Surface((shade_left_width, shade_left_height))
         shade_left.set_alpha(128)
         shade_left.fill(self.colors["hidden"])
-        self.screens["circuit"].blit(shade_left, (x_left-.5 * dx_gates,0))
+        self.screens["circuit"].blit(shade_left, (x_left - 0.5 * dx_gates, 0))
 
-
-        shade_right_width = (state.max_interaction_gates - state.max_observation_reach - state.position )* dx_gates
+        shade_right_width = (
+            state.max_interaction_gates - state.max_observation_reach - state.position
+        ) * dx_gates
+        shade_right_width = max(0, shade_right_width)
         shade_right_height = self.screens["circuit"].get_height()
+
         shade_right = pygame.Surface((shade_right_width, shade_right_height))
         shade_right.set_alpha(128)
         shade_right.fill(self.colors["hidden"])
-        self.screens["circuit"].blit(shade_right, (x_right-shade_right_width,0))
+        self.screens["circuit"].blit(shade_right, (x_right - shade_right_width, 0))
 
-        mapping = np.arange(state.n_qubits)
-        idx = 0
+    def _draw_mapping(
+        self, *, state: RoutingState, x_gates: List[float], y_lines: List[float]
+    ) -> None:
+        """Draw the mapping on the 'circuit' screen.
+
+        :param state: ``RoutingState`` to draw the mapping of.
+        :param x_gates: List of x coordinates of the swap gates.
+        :param y_lines: List of y coordinates of the circuit lines.
+        """
+        dx_gates = x_gates[1] - x_gates[0]
+        mapping = np.arange(state.n_qubits, dtype=int)
+        starting_idx = 0
         for i in range(state.position):
-            # Update the mapping before drawing it if a swap was applied at this position
-            while idx < len(state.swap_gates_inserted) and i == state.swap_gates_inserted[idx][0]:
-                _, qubit1, qubit2
-                mapping[qubit1], mapping[qubit2] = mapping[qubit2], mapping[qubit1]
-                idx +=1
-            
+            starting_idx, mapping = self._update_mapping(
+                mapping=mapping,
+                swap_gates_inserted=state.swap_gates_inserted,
+                position=i,
+                starting_idx=starting_idx,
+            )
+
             # Draw the mapping
-            x = x_gates[i] - 0.5*dx_gates
+            x = x_gates[i] - 0.5 * dx_gates
             for n, y in zip(mapping, y_lines):
-                pygame_text = self.font["circuit"].render(str(n), True, self.colors["mapping"])
-                text_position = pygame_text.get_rect(center=(x,y))
+                pygame_text = self.font["circuit"].render(
+                    str(n), True, self.colors["mapping"]
+                )
+                text_position = pygame_text.get_rect(center=(x, y))
                 self.screens["circuit"].blit(pygame_text, text_position)
-            
-            
+
+    def _update_mapping(
+        self,
+        *,
+        mapping: NDArray[np.int_],
+        swap_gates_inserted: List[Tuple[int, int, int]],
+        position: int,
+        starting_idx: int = 0,
+    ) -> Tuple[int, NDArray[np.int_]]:
+        """Update the mapping to conform to the current position.
+
+        :param mapping: Mapping of the previous position
+        :param swap_gates_inserted: List of swap gates inserted.
+        :position: Position in the interaction circuit where the mapping must be made.
+        :starting_idx: Index of the last swap gate of the previous position.
+        :returns: Tuple with a starting index for the next position and the updated
+            mapping.
+        """
+        if starting_idx >= len(swap_gates_inserted):
+            return starting_idx, mapping
+
+        for i in range(starting_idx, len(swap_gates_inserted)):
+            swap_position, qubit1, qubit2 = swap_gates_inserted[i]
+            if position != swap_position:
+                break
+
+            mapping[qubit1], mapping[qubit2] = mapping[qubit2], mapping[qubit1]
+        return i, mapping
 
     def _draw_connection_graph(self) -> None:
         """Draw the connection graph on the graph subscreen."""
@@ -188,11 +272,21 @@ class RoutingVisualiser(Visualiser):
                 self.screens["graph"], self.colors["edge"], pos_u, pos_v
             )
 
-        for x, y in self.graph["render_positions"].values():
+        for label, (x, y) in self.graph["render_positions"].items():
             self._draw_point(self.screens["graph"], x, y, self.colors["node"], 20)
+            pygame_text = self.font["graph"].render(
+                str(label), True, self.colors["node_labels"]
+            )
+            text_position = pygame_text.get_rect(center=(x, y))
+            self.screens["graph"].blit(pygame_text, text_position)
 
     def _draw_point(
-        self, screen: pygame.surface.Surface, x: float, y: float, color: Color, r: int = 10
+        self,
+        screen: pygame.surface.Surface,
+        x: float,
+        y: float,
+        color: Color,
+        r: int = 10,
     ) -> None:
         """Draw a point on the screen.
 
@@ -286,13 +380,14 @@ if __name__ == "__main__":
     from time import sleep
 
     from qgym.spaces import MultiDiscrete
-    action_space = MultiDiscrete([2,4,4])
+
+    action_space = MultiDiscrete([2, 4, 4])
 
     graph = nx.Graph()
-    graph.add_edge(0,1)
-    graph.add_edge(1,2)
-    graph.add_edge(2,3)
-    graph.add_edge(3,0)
+    graph.add_edge(0, 1)
+    graph.add_edge(1, 2)
+    graph.add_edge(2, 3)
+    graph.add_edge(3, 0)
 
     state = RoutingState(
         max_interaction_gates=10,
@@ -301,11 +396,15 @@ if __name__ == "__main__":
         observation_booleans_flag=False,
         observation_connection_flag=False,
     )
+    state.reset()
 
     vis = RoutingVisualiser(graph)
+    vis.render(state, "human")
     for _ in range(100):
-        vis.render(state, "human")
         action = action_space.sample()
         state.update_state(action)
-        print(action)
+        vis.render(state, "human")
+        if state.is_done():
+            break
         sleep(0.1)
+    breakpoint()
