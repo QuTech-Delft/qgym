@@ -339,7 +339,7 @@ class RoutingVisualiser(Visualiser):
         """Header spacing."""
         return self.font_size / 3 * 4
 
-
+# TO DO: Remove this main before merge with master branch
 if __name__ == "__main__":
     from time import sleep
 
