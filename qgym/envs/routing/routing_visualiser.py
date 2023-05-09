@@ -11,7 +11,12 @@ from qgym.envs.routing.routing_state import RoutingState
 from qgym.templates.visualiser import Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, RED, WHITE
 from qgym.utils.visualisation.typing import Font, Surface
-from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line, write_text
+from qgym.utils.visualisation.wrappers import (
+    draw_point,
+    draw_wide_line,
+    shade_rect,
+    write_text,
+)
 
 
 class RoutingVisualiser(Visualiser):
@@ -197,22 +202,26 @@ class RoutingVisualiser(Visualiser):
         dx_gates = (x_right - x_left) / state.max_interaction_gates
 
         shade_left_width = (state.position + 0.5) * dx_gates
-        shade_left_height = self.screens["circuit"].get_height()
-        shade_left = pygame.Surface((shade_left_width, shade_left_height))
-        shade_left.set_alpha(128)
-        shade_left.fill(self.colors["hidden"])
-        self.screens["circuit"].blit(shade_left, (x_left - 0.5 * dx_gates, 0))
+        shade_height = self.screens["circuit"].get_height()
+        shade_rect(
+            screen=self.screens["circuit"],
+            size=(shade_left_width, shade_height),
+            pos=(x_left - 0.5 * dx_gates, 0),
+            color=self.colors["hidden"],
+            alpha=128,
+        )
 
         shade_right_width = (
             state.max_interaction_gates - state.max_observation_reach - state.position
         ) * dx_gates
-        shade_right_width = max(0, shade_right_width)
-        shade_right_height = self.screens["circuit"].get_height()
-
-        shade_right = pygame.Surface((shade_right_width, shade_right_height))
-        shade_right.set_alpha(128)
-        shade_right.fill(self.colors["hidden"])
-        self.screens["circuit"].blit(shade_right, (x_right - shade_right_width, 0))
+        if shade_right_width > 0:
+            shade_rect(
+                screen=self.screens["circuit"],
+                size=(shade_right_width, shade_height),
+                pos=(x_right - shade_right_width, 0),
+                color=self.colors["hidden"],
+                alpha=128,
+            )
 
     def _draw_mapping(
         self,
@@ -338,6 +347,7 @@ class RoutingVisualiser(Visualiser):
     def header_spacing(self) -> float:
         """Header spacing."""
         return self.font_size / 3 * 4
+
 
 # TO DO: Remove this main before merge with master branch
 if __name__ == "__main__":

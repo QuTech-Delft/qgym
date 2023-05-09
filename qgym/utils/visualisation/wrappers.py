@@ -70,3 +70,23 @@ def write_text(
     pygame_text = font.render(text, True, color)
     text_position = pygame_text.get_rect(center=(pos_x, pos_y))
     screen.blit(pygame_text, text_position)
+
+
+def shade_rect(
+    screen: Surface, size: ArrayLike, pos: ArrayLike, color: Color, alpha: int
+) -> None:
+    """Shade a rectangular area.
+
+    :param screen: Screen to draw the shade on.
+    :param size: Width and height of the rectangular area.
+    :param pos: The x,y-coordinates of the lower left corner of the rectangle.
+    :param color: Color of the shaded area.
+    :param alpha: Alpha of the shade.
+    """
+    rect_width, rect_height = np.asarray(size, dtype=int)
+    pos_x, pos_y = np.asarray(pos, dtype=int)
+
+    surf = pygame.Surface((rect_width, rect_height))
+    surf.set_alpha(alpha)
+    surf.fill(color)
+    screen.blit(surf, (pos_x, pos_y))
