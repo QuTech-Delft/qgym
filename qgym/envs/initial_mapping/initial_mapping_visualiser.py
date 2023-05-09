@@ -6,18 +6,12 @@ import numpy as np
 import pygame
 from networkx import Graph
 from numpy.typing import NDArray
-from pygame import gfxdraw
 
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.templates.visualiser import Visualiser
-
-# Define some colors used during rendering
-WHITE = (255, 255, 255)
-GRAY = (150, 150, 150)
-BLACK = (0, 0, 0)
-RED = (189, 18, 33)
-GREEN = (174, 168, 0)
-BLUE = (113, 164, 195)
+from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, GREEN, RED, WHITE
+from qgym.utils.visualisation.typing import Font, Surface
+from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
 
 # pylint: disable=invalid-name
 
@@ -37,7 +31,7 @@ class InitialMappingVisualiser(Visualiser):
 
         self.screen = None
         self.subscreens = self._init_subscreen_rectangles()
-        self.font: Dict[str, pygame.font.Font] = {}
+        self.font: Dict[str, Font] = {}
 
         self.colors = {
             "nodes": BLUE,
@@ -187,7 +181,7 @@ class InitialMappingVisualiser(Visualiser):
         if is_connected and not is_mapped:
             graph.add_edge(*edge, color="gray")
 
-    def _draw_connection_graph(self, screen: pygame.surface.Surface) -> None:
+    def _draw_connection_graph(self, screen: Surface) -> None:
         """Draw the connection graph on subscreen1.
 
         :param screen: Screen to draw the connection graph on.
@@ -195,13 +189,13 @@ class InitialMappingVisualiser(Visualiser):
         for u, v in self.graphs["connection"]["edges"]:
             pos_u = self.graphs["connection"]["render_positions"][u]
             pos_v = self.graphs["connection"]["render_positions"][v]
-            self._draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
+            draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
 
-        for x, y in self.graphs["connection"]["render_positions"].values():
-            self._draw_point(int(x), int(y), screen)
+        for pos in self.graphs["connection"]["render_positions"].values():
+            draw_point(screen, pos, self.colors["nodes"])
 
     def _draw_interaction_graph(
-        self, screen: pygame.surface.Surface, step: int, interaction_graph: nx.Graph
+        self, screen: Surface, step: int, interaction_graph: nx.Graph
     ) -> None:
         """Draw the interaction graph on subscreen2.
 
@@ -221,14 +215,12 @@ class InitialMappingVisualiser(Visualiser):
         for u, v in interaction_graph.edges():
             pos_u = self.graphs["interaction"]["render_positions"][u]
             pos_v = self.graphs["interaction"]["render_positions"][v]
-            self._draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
+            draw_wide_line(screen, self.colors["basic_edge"], pos_u, pos_v)
 
-        for x, y in self.graphs["interaction"]["render_positions"].values():
-            self._draw_point(int(x), int(y), screen)
+        for pos in self.graphs["interaction"]["render_positions"].values():
+            draw_point(screen, pos, self.colors["nodes"])
 
-    def _draw_mapped_graph(
-        self, screen: pygame.surface.Surface, mapped_graph: nx.Graph
-    ) -> None:
+    def _draw_mapped_graph(self, screen: Surface, mapped_graph: nx.Graph) -> None:
         """Draw the mapped graph on subscreen3.
 
         :param screen: Screen to draw the graph on.
@@ -244,54 +236,12 @@ class InitialMappingVisualiser(Visualiser):
                 color = self.colors["used_edge"]
             if mapped_graph.edges[u, v]["color"] == "gray":
                 color = self.colors["unused_edge"]
-            self._draw_wide_line(screen, color, pos_u, pos_v)
+            draw_wide_line(screen, color, pos_u, pos_v)
 
-        for x, y in self.graphs["mapped"]["render_positions"].values():
-            self._draw_point(int(x), int(y), screen)
+        for pos in self.graphs["mapped"]["render_positions"].values():
+            draw_point(screen, pos, self.colors["nodes"])
 
-    def _draw_point(self, x: int, y: int, screen: pygame.surface.Surface) -> None:
-        """Draw a point on the screen.
-
-        :param x: x coordinate of the point.
-        :param y: y coordinate of the point.
-        :param screen: Screen to add the point to.
-        """
-        gfxdraw.aacircle(screen, x, y, 10, self.colors["nodes"])
-        gfxdraw.filled_circle(screen, x, y, 10, self.colors["nodes"])
-
-    def _draw_wide_line(
-        self,
-        screen: pygame.surface.Surface,
-        color: Tuple[int, int, int],
-        p1: NDArray[np.float_],
-        p2: NDArray[np.float_],
-        *,
-        width: int = 2,
-    ) -> None:
-        """Draw a wide line on the screen.
-
-        :param screen: Screen to draw the line on.
-        :param color: Color of the line.
-        :param p1: Coordinates of the starting point of the line.
-        :param p2: Coordinates of the end point of the line.
-        :param width: Width of the line. Defaults to 2.
-        """
-        # distance between the points
-        dis = np.linalg.norm(p2 - p1)
-
-        # scaled perpendicular vector (vector from p1 & p2 to the polygon's points)
-        sp = np.array([p1[1] - p2[1], p2[0] - p1[0]]) * 0.5 * width / dis
-
-        # points
-        points = (p1 - sp, p1 + sp, p2 + sp, p2 - sp)
-
-        # draw the polygon
-        pygame.gfxdraw.aapolygon(screen, points, color)  # type: ignore[arg-type]
-        pygame.gfxdraw.filled_polygon(screen, points, color)  # type: ignore[arg-type]
-
-    def _draw_header(
-        self, text: str, subscreen: pygame.Rect, screen: pygame.surface.Surface
-    ) -> None:
+    def _draw_header(self, text: str, subscreen: pygame.Rect, screen: Surface) -> None:
         """Draw a header above a subscreen.
 
         :param text: Text of the header.
