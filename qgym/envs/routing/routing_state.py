@@ -103,7 +103,7 @@ class RoutingState(
         self.observation_connection_flag = observation_connection_flag
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: List[Tuple[int, int, int]] = [(None, None, None)]
+        self.swap_gates_inserted: List[Tuple[int, int, int]] = [] #TODO: fix this?
 
     def reset(
         self,
@@ -207,12 +207,19 @@ class RoutingState(
         interaction_gates_ahead = qgym.spaces.MultiDiscrete(
             np.full(2 * self.max_observation_reach, self.n_qubits)
         )
-        mapping = qgym.spaces.MultiDiscrete(np.full(self.n_qubits, self.n_qubits))
-        connection_graph = qgym.spaces.MultiDiscrete(
-            np.full(self.n_qubits * self.n_qubits, self.n_qubits)
+        is_legal_surpass_booleans = qgym.spaces.MultiBinary(
+            self.max_observation_reach
         )
-
-        # TODO: implement optional extension of observation_space based on flags.
+        #TODO: adjust create_observation according to changes in mapping and connection_graph Space
+        mapping = qgym.spaces.MultiDiscrete(np.full(self.n_qubits, self.n_qubits))
+        connection_graph = qgym.spaces.Box(
+            low=0,
+            high=np.iinfo(np.int64).max,
+            shape=(self.n_qubits * self.n_qubits,),
+            dtype=np.int64,
+        )
+        
+        #observation space depends on two flags
         if not self.observation_connection_flag and not self.observation_booleans_flag:
             observation_space = qgym.spaces.Dict(
                 interaction_gates_ahead=interaction_gates_ahead,
@@ -225,11 +232,18 @@ class RoutingState(
                 connection_graph=connection_graph,
             )
         elif not self.observation_connection_flag and self.observation_booleans_flag:
-            # TODO: implement.
-            pass
+            observation_space = qgym.spaces.Dict(
+                interaction_gates_ahead=interaction_gates_ahead,
+                mapping=mapping,
+                is_legal_surpass_booleans=is_legal_surpass_booleans,
+            )
         elif self.observation_connection_flag and self.observation_booleans_flag:
-            # TODO: implement.
-            pass
+            observation_space = qgym.spaces.Dict(
+                interaction_gates_ahead=interaction_gates_ahead,
+                mapping=mapping,
+                is_legal_surpass_booleans=is_legal_surpass_booleans,
+                connection_graph=connection_graph,
+            )
         return observation_space
 
     def obtain_observation(
@@ -237,28 +251,33 @@ class RoutingState(
     ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]:
         """:return: Observation based on the current state."""
         # TODO: check for efficient slicing!
+        
         interaction_gates_ahead = np.asarray(
             [
-                np.array_split(self.interaction_circuit[idx],2)
+                np.array_split(self.interaction_circuit[idx], 2)
                 for idx in range(self.position, self.position + self.observation_reach)
             ]
         )
+        
         if self.observation_reach < self.max_observation_reach:
             difference = self.max_observation_reach - self.observation_reach
             interaction_gates_ahead += np.asarray([self.n_qubits]) * difference
-
-        connection_graph = nx.to_numpy_array(self.connection_graph, dtype=int).flatten()
-        padding = np.full(self.n_qubits**2 - len(connection_graph), self.n_qubits)
-        connection_graph = np.concatenate((connection_graph, padding), axis=0)
-
-        # TODO: Do we also want to show the topology in the observation?
-        #   If so we could make use of the graps-dictionary storage format used in
-        #   inital_mapping_state.
-        return {
-            "interaction_gates_ahead": interaction_gates_ahead,
-            "mapping": self.mapping,
-            "connection_graph": connection_graph,
-        }
+        
+        observation = { "interaction_gates_ahead": interaction_gates_ahead,
+            "mapping": self.mapping,}
+        
+        if self.observation_connection_flag:
+            connection_graph = nx.to_numpy_array(
+                self.connection_graph, dtype=int).flatten()
+            padding = np.full(self.n_qubits**2 - len(connection_graph), self.n_qubits)
+            connection_graph = np.concatenate((connection_graph, padding), axis=0)
+            observation["connection_graph"] = connection_graph
+            
+        if self.observation_booleans_flag:
+            is_legal_surpass_booleans = np.asarray([interaction_gates_ahead])
+            observation["is_legal_surpass_booleans"] = is_legal_surpass_booleans
+            
+        return observation
 
     def is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
