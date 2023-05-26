@@ -49,7 +49,7 @@ class RoutingVisualiser(Visualiser):
             "circuit lines": BLACK,
             "background": WHITE,
             "hidden": BLACK,
-            "mapping": WHITE
+            "mapping": WHITE,
         }
 
         # Save everything we need to know about the connection graph
@@ -98,7 +98,7 @@ class RoutingVisualiser(Visualiser):
 
         if len(self.font) == 0:
             self.font["header"] = pygame.font.SysFont("Arial", self.font_size)
-            self.font["circuit"]= pygame.font.SysFont("Arial", 24)
+            self.font["circuit"] = pygame.font.SysFont("Arial", 24)
 
         pygame.time.delay(10)
 
@@ -131,7 +131,9 @@ class RoutingVisualiser(Visualiser):
             self.screens["circuit"].blit(pygame_text, text_position)
 
         dx_gates = (x_right - x_left) / state.max_interaction_gates
-        x_gates = [x_left + dx_gates * (0.5 + n) for n in range(state.max_interaction_gates)]
+        x_gates = [
+            x_left + dx_gates * (0.5 + n) for n in range(state.max_interaction_gates)
+        ]
         for n, (qubit1, qubit2) in enumerate(state.interaction_circuit):
             physical_qubit1 = state.current_mapping[qubit1]
             physical_qubit2 = state.current_mapping[qubit2]
@@ -145,39 +147,43 @@ class RoutingVisualiser(Visualiser):
             self._draw_wide_line(self.screens["circuit"], color, point1, point2)
             self._draw_point(self.screens["circuit"], *point1, color)
             self._draw_point(self.screens["circuit"], *point2, color)
-        
-        shade_left_width = (state.position+0.5) * dx_gates
+
+        shade_left_width = (state.position + 0.5) * dx_gates
         shade_left_height = self.screens["circuit"].get_height()
         shade_left = pygame.Surface((shade_left_width, shade_left_height))
         shade_left.set_alpha(128)
         shade_left.fill(self.colors["hidden"])
-        self.screens["circuit"].blit(shade_left, (x_left-.5 * dx_gates,0))
+        self.screens["circuit"].blit(shade_left, (x_left - 0.5 * dx_gates, 0))
 
-
-        shade_right_width = (state.max_interaction_gates - state.max_observation_reach - state.position )* dx_gates
+        shade_right_width = (
+            state.max_interaction_gates - state.max_observation_reach - state.position
+        ) * dx_gates
         shade_right_height = self.screens["circuit"].get_height()
         shade_right = pygame.Surface((shade_right_width, shade_right_height))
         shade_right.set_alpha(128)
         shade_right.fill(self.colors["hidden"])
-        self.screens["circuit"].blit(shade_right, (x_right-shade_right_width,0))
+        self.screens["circuit"].blit(shade_right, (x_right - shade_right_width, 0))
 
         mapping = np.arange(state.n_qubits)
         idx = 0
         for i in range(state.position):
             # Update the mapping before drawing it if a swap was applied at this position
-            while idx < len(state.swap_gates_inserted) and i == state.swap_gates_inserted[idx][0]:
+            while (
+                idx < len(state.swap_gates_inserted)
+                and i == state.swap_gates_inserted[idx][0]
+            ):
                 _, qubit1, qubit2
                 mapping[qubit1], mapping[qubit2] = mapping[qubit2], mapping[qubit1]
-                idx +=1
-            
+                idx += 1
+
             # Draw the mapping
-            x = x_gates[i] - 0.5*dx_gates
+            x = x_gates[i] - 0.5 * dx_gates
             for n, y in zip(mapping, y_lines):
-                pygame_text = self.font["circuit"].render(str(n), True, self.colors["mapping"])
-                text_position = pygame_text.get_rect(center=(x,y))
+                pygame_text = self.font["circuit"].render(
+                    str(n), True, self.colors["mapping"]
+                )
+                text_position = pygame_text.get_rect(center=(x, y))
                 self.screens["circuit"].blit(pygame_text, text_position)
-            
-            
 
     def _draw_connection_graph(self) -> None:
         """Draw the connection graph on the graph subscreen."""
@@ -192,7 +198,12 @@ class RoutingVisualiser(Visualiser):
             self._draw_point(self.screens["graph"], x, y, self.colors["node"], 20)
 
     def _draw_point(
-        self, screen: pygame.surface.Surface, x: float, y: float, color: Color, r: int = 10
+        self,
+        screen: pygame.surface.Surface,
+        x: float,
+        y: float,
+        color: Color,
+        r: int = 10,
     ) -> None:
         """Draw a point on the screen.
 
@@ -286,13 +297,14 @@ if __name__ == "__main__":
     from time import sleep
 
     from qgym.spaces import MultiDiscrete
-    action_space = MultiDiscrete([2,4,4])
+
+    action_space = MultiDiscrete([2, 4, 4])
 
     graph = nx.Graph()
-    graph.add_edge(0,1)
-    graph.add_edge(1,2)
-    graph.add_edge(2,3)
-    graph.add_edge(3,0)
+    graph.add_edge(0, 1)
+    graph.add_edge(1, 2)
+    graph.add_edge(2, 3)
+    graph.add_edge(3, 0)
 
     state = RoutingState(
         max_interaction_gates=10,
