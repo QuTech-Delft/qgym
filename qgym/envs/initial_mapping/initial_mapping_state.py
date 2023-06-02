@@ -40,6 +40,8 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         and logical qubits.
     """
 
+    __slots__ = ("steps_done", "graphs", "mapping", "mapping_dict", "mapped_qubits")
+
     def __init__(
         self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
     ) -> None:
@@ -67,11 +69,11 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.graphs = {
             "connection": {
                 "graph": deepcopy(connection_graph),
-                "matrix": nx.to_scipy_sparse_array(connection_graph),
+                "matrix": nx.to_numpy_array(connection_graph),
             },
             "interaction": {
                 "graph": deepcopy(interaction_graph),
-                "matrix": nx.to_scipy_sparse_array(interaction_graph),
+                "matrix": nx.to_numpy_array(interaction_graph).flatten(),
                 "edge_probability": interaction_graph_edge_probability,
             },
         }
@@ -133,11 +135,9 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         else:
             self.graphs["interaction"]["graph"] = deepcopy(interaction_graph)
 
-        self.graphs["interaction"]["matrix"] = (
-            nx.to_scipy_sparse_array(self.graphs["interaction"]["graph"])
-            .toarray()
-            .flatten()
-        )
+        self.graphs["interaction"]["matrix"] = nx.to_numpy_array(
+            self.graphs["interaction"]["graph"]
+        ).flatten()
 
         self.steps_done = 0
         self.mapping = np.full(self.n_nodes, self.n_nodes)
@@ -151,16 +151,16 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         for node1, node2 in self.graphs["connection"]["graph"].edges():
             weight = self.rng.gamma(2, 2) / 4
             self.graphs["connection"]["graph"].edges[node1, node2]["weight"] = weight
-        self.graphs["connection"]["matrix"] = nx.to_scipy_sparse_array(
+        self.graphs["connection"]["matrix"] = nx.to_numpy_array(
             self.graphs["connection"]["graph"]
         )
 
         for node1, node2 in self.graphs["interaction"]["graph"].edges():
             weight = self.rng.gamma(2, 2) / 4
             self.graphs["interaction"]["graph"].edges[node1, node2]["weight"] = weight
-        self.graphs["interaction"]["matrix"] = (
-            nx.to_numpy_array(self.graphs["interaction"]["graph"]).flatten()
-        )
+        self.graphs["interaction"]["matrix"] = nx.to_numpy_array(
+            self.graphs["interaction"]["graph"]
+        ).flatten()
 
     def update_state(self, action: NDArray[np.int_]) -> InitialMappingState:
         """Update the state of this environment using the given action.

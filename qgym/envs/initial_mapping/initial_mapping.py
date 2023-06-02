@@ -37,11 +37,11 @@ State Space:
     attributes:
 
     * `steps_done`: Number of steps done since the last reset.
-    * `num_nodes`: Number of *physical* qubits.
+    * `n_nodes`: Number of *physical* qubits.
     * `graphs`: Dictionary containing the graph and matrix representations of the both
       the interaction graph and connection graph.
     * `mapping`: Array of which the index represents a physical qubit, and the value a
-      virtual qubit. A value of ``num_nodes + 1`` represents the case when nothing is
+      virtual qubit. A value of ``n_nodes + 1`` represents the case when nothing is
       mapped to the physical qubit yet.
     * `mapping_dict`: Dictionary that maps logical qubits (keys) to physical qubit
       (values).
@@ -139,6 +139,15 @@ Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int
 class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """RL environment for the initial mapping problem of OpenQL."""
 
+    __slots__ = (
+        "_rewarder",
+        "_state",
+        "observation_space",
+        "action_space",
+        "metadata",
+        "_visualiser",
+    )
+
     def __init__(
         self,
         interaction_graph_edge_probability: float,
@@ -194,7 +203,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         self.observation_space = self._state.create_observation_space()
         # Define attributes defined in parent class
         self.action_space = qgym.spaces.MultiDiscrete(
-            nvec=[self._state.num_nodes, self._state.num_nodes], rng=self.rng
+            nvec=[self._state.n_nodes, self._state.n_nodes], rng=self.rng
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}

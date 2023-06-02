@@ -38,6 +38,13 @@ from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_po
 class BasicRewarder(Rewarder):
     """Basic rewarder for the ``InitialMapping`` environment."""
 
+    __slots__ = (
+        "_illegal_action_penalty",
+        "_reward_per_edge",
+        "_penalty_per_edge",
+        "_reward_range",
+    )
+
     def __init__(
         self,
         illegal_action_penalty: float = -100,
