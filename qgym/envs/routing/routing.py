@@ -69,196 +69,234 @@
 
 
 # """
-# import warnings
-# from copy import deepcopy
-# from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
+import warnings
+from copy import deepcopy
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
-# import networkx as nx
-# import numpy as np
-# from networkx import Graph, grid_graph
-# from numpy.typing import ArrayLike, NDArray
+import networkx as nx
+import numpy as np
+from numpy.typing import ArrayLike, NDArray
 
-# import qgym.spaces
-# from qgym.envs.routing.routing_rewarders import (
-#     BasicRewarder,  # TODO: define BasicRewarder
-# )
-# from qgym.envs.routing.routing_state import RoutingState  # TODO: define RoutingState
+import qgym.spaces
+from qgym.envs.routing.routing_rewarders import BasicRewarder
+from qgym.envs.routing.routing_state import RoutingState
+from qgym.envs.routing.routing_visualiser import RoutingVisualiser
+from qgym.templates import Environment, Rewarder
+from qgym.utils.input_validation import (
+    check_adjacency_matrix,
+    check_bool,
+    check_graph_is_valid_topology,
+    check_instance,
+    check_int,
+)
 
-# # TODO: Do we need a visualiser for routing?
-# # from qgym.envs.initial_mapping.initial_mapping_visualiser import (
-# #    InitialMappingVisualiser,
-# # )
-# from qgym.templates import Environment, Rewarder
-# from qgym.utils.input_validation import (  # TODO: What utils do we need for routing?
-#     check_adjacency_matrix,
-#     check_graph_is_valid_topology,
-#     check_instance,
-#     check_real,
-# )
-
-# Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
+Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
 
-# class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
-#     """RL environment for the routing problem of OpenQL."""
+class Routing(
+    Environment[
+        Dict[str, Union[int, List[Tuple[int, int, int]], NDArray[np.int_]]],
+        NDArray[np.int_],
+    ],
+):
+    """RL environment for the routing problem of OpenQL."""
 
-#     def __init__(
-#         self,
-#         machine_properties: Union[Mapping[str, Any], str, MachineProperties],
-#         # TODO: what do we need instead of the interaction graph?
-#         *,
-#         connection_graph: Optional[Graph] = None,
-#         connection_graph_matrix: Optional[ArrayLike] = None,
-#         connection_grid_size: Optional[Gridspecs] = None,
-#         rewarder: Optional[Rewarder] = None,
-#     ) -> None:
-#         """Initialize the action space, observation space, and initial states.
-#         #TODO: Write appropriate doc-string for Routing-environment!
+    def __init__(
+        self,
+        max_interaction_gates: int,
+        max_observation_reach: int,
+        observation_booleans_flag: bool,
+        observation_connection_flag: bool,
+        *,
+        connection_graph: Optional[nx.Graph] = None,
+        connection_graph_matrix: Optional[ArrayLike] = None,
+        connection_grid_size: Optional[Gridspecs] = None,
+        rewarder: Optional[Rewarder] = None,
+    ) -> None:
+        """Initialize the action space, observation space, and initial states.
 
-#         Furthermore, the connection graph
+        The supported render modes of this environment are "human" and "rgb_array".
 
-#         The supported render modes of this environment are "human" and "rgb_array". #TODO: what do these render-modes entail?
+        :param max_interaction_gates: Sets the maximum amount of gates in the
+            `interaction_circuit`, when a new `interaction_circuit` is generated.
+        :param max_observation_reach: Sets a cap on the maximum amount of gates the
+            agent can see ahead when making an observation. When bigger than
+            `max_interaction_gates` the agent will always see all gates ahead in an
+            observation
+        :param observation_booleans_flag: If ``True`` a list, of length
+            observation_reach, containing booleans, indicating whether the gates ahead
+            can be executed, will be added to the `observation_space`.
+        :param observation_connection_flag: If ``True``, the connection_graph will be
+            incorporated in the observation_space. Reason to set it ``False`` is:
+            QPU-topology practically doesn't change a lot for one machine, hence an
+            agent is typically trained for just one QPU-topology which can be learned
+            implicitly by rewards and/or the booleans if they are shown, depending on
+            the other flag above.
+        :param connection_graph: ``networkx`` graph representation of the QPU topology.
+            Each node represents a physical qubit and each node represents a connection
+            in the QPU topology.
+        :param connection_graph_matrix: Adjacency matrix representation of the QPU
+            topology.
+        :param connection_grid_size: Size of the connection graph when the connection
+            graph has a grid topology. For more information on the allowed values and
+            types, see ``networkx`` `grid_graph`_ documentation.
+        :param rewarder: Rewarder to use for the environment. Must inherit from
+            ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is used.
 
-#         :param connection_graph: ``networkx`` graph representation of the QPU topology.
-#             Each node represents a physical qubit and each node represents a connection
-#             in the QPU topology.
-#         :param connection_graph_matrix: Adjacency matrix representation of the QPU
-#             topology.
-#         :param connection_grid_size: Size of the connection graph when the connection
-#             graph has a grid topology. For more information on the allowed values and
-#             types, see ``networkx`` `grid_graph`_ documentation.
-#         :param rewarder: Rewarder to use for the environment. Must inherit from
-#             ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is used.
+        .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
+            networkx.generators.lattice.grid_graph.html#grid-graph
+        """
+        connection_graph = self._parse_connection_graph(
+            connection_graph=connection_graph,
+            connection_graph_matrix=connection_graph_matrix,
+            connection_grid_size=connection_grid_size,
+        )
 
-#         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
-#             networkx.generators.lattice.grid_graph.html#grid-graph
-#         """
-#         connection_graph = self._parse_connection_graph(
-#             connection_graph=connection_graph,
-#             connection_graph_matrix=connection_graph_matrix,
-#             connection_grid_size=connection_grid_size,
-#         )
+        max_interaction_gates = check_int(
+            max_interaction_gates, "max_interaction_gates", l_bound=0
+        )
+        max_observation_reach = check_int(
+            max_observation_reach,
+            "max_observation_reach",
+            l_bound=0,
+            u_bound=max_interaction_gates,
+        )
+        observation_booleans_flag = check_bool(
+            observation_booleans_flag, "observation_booleans_flag", safe=False
+        )
+        observation_booleans_flag = check_bool(
+            observation_connection_flag, "observation_connection_flag", safe=False
+        )
 
-#         self._rewarder = self._parse_rewarder(rewarder)
+        # Define internal attributes
+        self._rewarder = self._parse_rewarder(rewarder)
 
-#         # Define internal attributes
-#         self._state = RoutingState(
-#             connection_graph,  # TODO: what else do we need to define the internal attributes?
-#         )
-#         self.observation_space = (
-#             self._state.create_observation_space()
-#         )  # TODO: how does creat_observation_space() work.
-#         # Define attributes defined in parent class
-#         # TODO: how does the action_space work? What to do we the below command?
-#         self.action_space = qgym.spaces.MultiDiscrete(
-#             nvec=[self._state.num_nodes, self._state.num_nodes], rng=self.rng
-#         )
+        self._state = RoutingState(
+            max_interaction_gates=max_interaction_gates,
+            max_observation_reach=max_observation_reach,
+            connection_graph=connection_graph,
+            observation_booleans_flag=observation_booleans_flag,
+            observation_connection_flag=observation_connection_flag,
+        )
+        self.observation_space = self._state.create_observation_space()
 
-#         # TODO: what is the role of this metadata?
-#         self.metadata = {"render.modes": ["human", "rgb_array"]}
+        # Define attributes defined in parent class
+        self.action_space = qgym.spaces.MultiDiscrete(
+            nvec=[self._state.n_qubits, self._state.n_qubits], rng=self.rng
+        )
 
-#         # TODO: self._visualiser = RoutingVisualiser(connection_graph)
+        self.metadata = {"render.modes": ["human", "rgb_array"]}
 
-#     def reset(
-#         self,
-#         *,
-#         seed: Optional[int] = None,
-#         return_info: bool = False,
-#         # TODO: what should be returned for usage in a next iteration?
-#         **_kwargs: Any,
-#     ) -> Union[
-#         Dict[str, NDArray[np.int_]],
-#         Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]],
-#     ]:
-#         """Reset the state and set a new interaction graph.
+        self._visualiser = RoutingVisualiser(connection_graph)
 
-#         To be used after an episode is finished.
+    def reset(
+        self,
+        *,
+        seed: Optional[int] = None,
+        return_info: bool = False,
+        interaction_circuit: Optional[ArrayLike] = None,
+        **_kwargs: Any,
+    ) -> Union[
+        Dict[str, Union[int, List[Tuple[int, int, int]], NDArray[np.int_]]],
+        Tuple[
+            Dict[str, Union[int, List[Tuple[int, int, int]], NDArray[np.int_]]],
+            Dict[str, Any],
+        ],
+    ]:
+        """Reset the state and set/create a new interaction circuit.
 
-#         :param seed: Seed for the random number generator, should only be provided
-#             (optionally) on the first reset call i.e., before any learning is done.
-#         :param return_info: Whether to receive debugging info. Default is ``False``.
-#         #TODO: doc-string of what should be returned for usage in a next iteration?
-#         :param _kwargs: Additional options to configure the reset.
-#         :return: Initial observation and optionally debugging info.
-#         """
-#         # call super method for dealing with the general stuff
-#         return super().reset(
-#             seed=seed, return_info=return_info, interaction_graph=interaction_graph
-#         )
+        To be used after an episode is finished.
 
-#     def add_random_edge_weights(self) -> None:
-#         """Add random weights to the connection graph and interaction graph."""
-#         cast(RoutingState, self._state)
+        :param seed: Seed for the random number generator, should only be provided
+            (optionally) on the first reset call i.e., before any learning is done.
+        :param return_info: Whether to receive debugging info. Default is ``False``.
+        :param _kwargs: Additional options to configure the reset.
+        :return: Initial observation and optionally debugging info.
+        """
+        # parse interaction circuit
+        if interaction_circuit is not None:
+            interaction_circuit = np.array(interaction_circuit)
+            if (
+                interaction_circuit.ndim != 2
+                or interaction_circuit.shape[0] > self._state.max_interaction_gates
+                or interaction_circuit.shape[1] != 2
+            ):
+                msg = "'interaction_circuit' should have be an ArrayLike with shape "
+                msg + "(n_interactions,2), where n_interactions<=max_interaction_gates."
+                raise ValueError(msg)
+        # call super method for dealing with the general stuff
+        return super().reset(
+            seed=seed, return_info=return_info, interaction_circuit=interaction_circuit
+        )
 
-#     @staticmethod
-#     def _parse_connection_graph(
-#         *,
-#         connection_graph: Any,
-#         connection_graph_matrix: Any,
-#         connection_grid_size: Any,
-#     ) -> Graph:
-#         """Parse the user input (given in ``__init__``) to create a connection graph.
+    @staticmethod
+    def _parse_connection_graph(
+        *,
+        connection_graph: Any,
+        connection_graph_matrix: Any,
+        connection_grid_size: Any,
+    ) -> nx.Graph:
+        """Parse the user input (given in ``__init__``) to create a connection graph.
 
-#         :param connection_graph: ``networkx.Graph`` representation of the QPU topology.
-#         :param connection_graph_matrix: Adjacency matrix representation of the QPU
-#             topology
-#         :param connection_grid_size: Size of the connection graph when the topology is a
-#             grid.
-#         :raise ValueError: When `connection_graph`, `connection_graph_matrix` and
-#             `connection_grid_size` are all None.
-#         :return: Connection graph as a ``networkx.Graph``.
-#         """
-#         if connection_graph is not None:
-#             if connection_graph_matrix is not None:
-#                 msg = "Both 'connection_graph' and 'connection_graph_matrix' were "
-#                 msg += "given. Using 'connection_graph'."
-#                 warnings.warn(msg)
-#             if connection_grid_size is not None:
-#                 msg = "Both 'connection_graph' and 'connection_grid_size' were given. "
-#                 msg += "Using 'connection_graph'."
-#                 warnings.warn(msg)
+        :param connection_graph: ``networkx.Graph`` representation of the QPU topology.
+        :param connection_graph_matrix: Adjacency matrix representation of the QPU
+            topology
+        :param connection_grid_size: Size of the connection graph when the topology is a
+            grid.
+        :raise ValueError: When `connection_graph`, `connection_graph_matrix` and
+            `connection_grid_size` are all None.
+        :return: Connection graph as a ``networkx.Graph``.
+        """
+        if connection_graph is not None:
+            if connection_graph_matrix is not None:
+                msg = "Both 'connection_graph' and 'connection_graph_matrix' were "
+                msg += "given. Using 'connection_graph'."
+                warnings.warn(msg)
+            if connection_grid_size is not None:
+                msg = "Both 'connection_graph' and 'connection_grid_size' were given. "
+                msg += "Using 'connection_graph'."
+                warnings.warn(msg)
 
-#             check_graph_is_valid_topology(connection_graph, "connection_graph")
+            check_graph_is_valid_topology(connection_graph, "connection_graph")
 
-#             # deepcopy the graphs for safety
-#             return deepcopy(connection_graph)
+            # deepcopy the graphs for safety
+            return deepcopy(connection_graph)
 
-#         if connection_graph_matrix is not None:
-#             if connection_grid_size is not None:
-#                 msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
-#                 msg += "given. Using 'connection_graph_matrix'."
-#                 warnings.warn(msg)
-#             return InitialMapping._parse_adjacency_matrix(connection_graph_matrix)
-#         if connection_grid_size is not None:
-#             # Generate connection grid graph
-#             return grid_graph(connection_grid_size)
+        if connection_graph_matrix is not None:
+            if connection_grid_size is not None:
+                msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
+                msg += "given. Using 'connection_graph_matrix'."
+                warnings.warn(msg)
+            return Routing._parse_adjacency_matrix(connection_graph_matrix)
+        if connection_grid_size is not None:
+            # Generate connection grid graph
+            return nx.grid_graph(connection_grid_size)
 
-#         msg = "No valid arguments for instantiation of the initial mapping environment "
-#         msg += "were provided."
-#         raise ValueError(msg)
+        msg = "No valid arguments for instantiation of the initial mapping environment "
+        msg += "were provided."
+        raise ValueError(msg)
 
-#     @staticmethod
-#     def _parse_rewarder(rewarder: Union[Rewarder, None]) -> Rewarder:
-#         """Parse the `rewarder` given by the user.
+    @staticmethod
+    def _parse_rewarder(rewarder: Union[Rewarder, None]) -> Rewarder:
+        """Parse the `rewarder` given by the user.
 
-#         :param rewarder: ``Rewarder`` to use for the environment. If ``None``, then the
-#             ``BasicRewarder`` with default settings is used.
-#         :return: Rewarder.
-#         """
-#         if rewarder is None:
-#             return BasicRewarder()
-#         check_instance(rewarder, "rewarder", Rewarder)
-#         return deepcopy(rewarder)
+        :param rewarder: ``Rewarder`` to use for the environment. If ``None``, then the
+            ``BasicRewarder`` with default settings is used.
+        :return: Rewarder.
+        """
+        if rewarder is None:
+            return BasicRewarder()
+        check_instance(rewarder, "rewarder", Rewarder)
+        return deepcopy(rewarder)
 
-#     @staticmethod
-#     def _parse_adjacency_matrix(connection_graph_matrix: ArrayLike) -> Graph:
-#         """Parse a given connection graph adjacency matrix to its respective graph.
+    @staticmethod
+    def _parse_adjacency_matrix(connection_graph_matrix: ArrayLike) -> nx.Graph:
+        """Parse a given connection graph adjacency matrix to its respective graph.
 
-#         :param connection_graph_matrix: adjacency matrix representation of the QPU
-#             topology.
-#         :raise TypeError: When the provided matrix is not a valid adjacency matrix.
-#         :return: Graph representation of the adjacency matrix.
-#         """
-#         connection_graph_matrix = check_adjacency_matrix(connection_graph_matrix)
-
-#         return nx.from_numpy_array(connection_graph_matrix)
+        :param connection_graph_matrix: adjacency matrix representation of the QPU
+            topology.
+        :raise TypeError: When the provided matrix is not a valid adjacency matrix.
+        :return: Graph representation of the adjacency matrix.
+        """
+        connection_graph_matrix = check_adjacency_matrix(connection_graph_matrix)
+        return nx.from_numpy_array(connection_graph_matrix)
