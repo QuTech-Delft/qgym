@@ -7,6 +7,7 @@ from scipy.sparse import csr_matrix
 
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
+    check_bool,
     check_graph_is_valid_topology,
     check_instance,
     check_int,
@@ -98,6 +99,16 @@ def test_check_string():
     msg = "'test' must be a string, but was of type <class 'int'>"
     with pytest.raises(TypeError, match=msg):
         check_string(1, "test")
+
+
+def test_check_bool() -> None:
+    assert check_bool(True, "test")
+    assert not check_bool(False, "test")
+    assert check_bool(1, "test", safe=False)
+    assert not check_bool(0, "test", safe=False)
+
+    with pytest.raises(TypeError):
+        check_bool(0, "test", safe=True)
 
 
 @pytest.mark.parametrize(

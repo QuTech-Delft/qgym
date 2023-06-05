@@ -103,10 +103,10 @@ class Routing(
 
     def __init__(
         self,
-        max_interaction_gates: int,
-        max_observation_reach: int,
-        observation_booleans_flag: bool,
-        observation_connection_flag: bool,
+        max_interaction_gates: int = 10,
+        max_observation_reach: int = 5,
+        observation_booleans_flag: bool = True,
+        observation_connection_flag: bool = True,
         *,
         connection_graph: Optional[nx.Graph] = None,
         connection_graph_matrix: Optional[ArrayLike] = None,
