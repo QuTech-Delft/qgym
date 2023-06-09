@@ -1,74 +1,92 @@
-# r"""This module contains an environment for training an RL agent on the routing
-# problem of OpenQL. The routing problem is aimed at enabling to execute the quantum circuit
-# by putting those physical qubits into connection that have an interaction in the quantum
-# circuit. This problem arises when there are mismatches between the interaction graph and the
-# QPU-topology in the initial mapping.
-# The quantum circuit is represented as an **interaction graph**, where each node represent a
-# qubit and each edge represent an interaction between two qubits as defined by the circuit
-# (See the example below). The QPU structure is called the **connection graph**. In the connection
-# graph each node represents a physical qubit and each edge represent a connection between
-# two qubits in the QPU.
+r"""This module contains an environment for training an RL agent on the routing problem
+of OpenQL. The routing problem is aimed at enabling to execute the quantum circuit
+by putting those physical qubits into connection that have an interaction in the quantum
+circuit. This problem arises when there are mismatches between the interaction graph and
+the QPU-topology in the initial mapping. The quantum circuit is represented as an
+**interaction graph**, where each node represent a qubit and each edge represent an
+interaction between two qubits as defined by the circuit (See the example below). The
+QPU structure is called the **connection graph**. In the connection graph each node
+represents a physical qubit and each edge represent a connection between two qubits in
+the QPU.
 
 
-# .. code-block:: console
+.. code-block:: console
 
-#               QUANTUM CIRCUIT                        INTERACTION GRAPH
-#            ┌───┐               ┌───┐
-#     |q3>───┤ R ├───┬───────────┤ M ╞══                 q1 ────── q2
-#            └───┘   │           └───┘                            ╱
-#            ┌───┐ ┌─┴─┐         ┌───┐                           ╱
-#     |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        ╱
-#            └───┘ └───┘   │     └───┘                         ╱
-#            ┌───┐       ┌─┴─┐   ┌───┐                        ╱
-#     |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     ╱
-#            └───┘   │   └───┘   └───┘                      ╱
-#            ┌───┐ ┌─┴─┐         ┌───┐                     ╱
-#     |q0>───┤ R ├─┤ X ├─────────┤ M ╞══                q3 ─────── q4
-#            └───┘ └───┘         └───┘
-
-
-# A SWAP-gate changes the mapping from logical qubits to physical qubits at a certain point in
-# the circuit, and thereby allows to solve mismatchings from the initial mapping.
-# The goal is to place SWAP-gates in the quantum circuit to fixed the mismatches. The least amount
-# of SWAP-gates is preferred. In more advanced setups, also different factors can be taken into
-# account, like the fidelity of edge in the QPU etc.
+              QUANTUM CIRCUIT                        INTERACTION GRAPH
+           ┌───┐               ┌───┐
+    |q3>───┤ R ├───┬───────────┤ M ╞══                 q1 ────── q2
+           └───┘   │           └───┘                            ╱
+           ┌───┐ ┌─┴─┐         ┌───┐                           ╱
+    |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        ╱
+           └───┘ └───┘   │     └───┘                         ╱
+           ┌───┐       ┌─┴─┐   ┌───┐                        ╱
+    |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     ╱
+           └───┘   │   └───┘   └───┘                      ╱
+           ┌───┐ ┌─┴─┐         ┌───┐                     ╱
+    |q0>───┤ R ├─┤ X ├─────────┤ M ╞══                q3 ─────── q4
+           └───┘ └───┘         └───┘
 
 
-# State Space:
-#     The state space is described by a ``RoutingState`` with the following
-#     attributes:
+A SWAP-gate changes the mapping from logical qubits to physical qubits at a certain
+point in the circuit, and thereby allows to solve mismatchings from the initial mapping.
+The goal is to place SWAP-gates in the quantum circuit to fix the mismatches. The least
+amount of SWAP-gates is preferred. In more advanced setups, also different factors can
+be taken into account, like the fidelity of connections in the QPU.
 
-#     * `steps_done`: Number of steps done since the last reset.
-#     * `num_nodes`: Number of *physical* qubits.
-#     * `graphs`: Dictionary containing the graph and matrix representation of the connection graph.
-#     * `mapping`: Array of which the index represents a physical qubit, and the value a
-#       virtual qubit. A value of ``num_nodes + 1`` represents the case when nothing is
-#       mapped to the physical qubit yet.
-#     * `mapping_dict`: Dictionary that maps logical qubits (keys) to physical qubit
-#       (values).
-#     * `mapped_qubits`: Dictionary with a two Sets containing all mapped physical and
-#       logical qubits.
 
-# Observation Space:
-#     The observation space is a ``qgym.spaces.Dict`` with 2 entries:
+State Space:
+    The state space is described by a ``RoutingState`` with the following
+    attributes:
 
-#     * `m_execution_array`: Array with Boolean values for the upcoming m multiple qubit gates in the quantum circuit.
-#       A Boolean value True in the array indicates that, given the current mapping and the connection graph, that
-#       multiple qubit gate can be executed.
-#     * `mapping`: The current state of the mapping.
+    * `steps_done`: Number of steps done since the last reset.
+    * `num_nodes`: Number of *physical* qubits.
+    * `connection_graph`: A networkx representation of the connection graph.
+    * `mapping`: Array of which the index represents a physical qubit, and the value a
+      virtual qubit. This is updated after each swap.
+    * `max_interaction_gates`: Maximum amount of gates allowed in the interaction 
+      circuit, when a new interaction circuit is (randomly) generated.
+    * `interaction_circuit`: An array of 2-tuples of integers, where every tuple
+      represents a, not specified, gate acting on the two qubits labeled by the
+      integers in the tuples.
+    * `position`: The position in the original connection circuit.
+    * `max_observation_reach`:  Caps the maximum amount of gates the agent can see ahead
+      when making an observation.
+    * `observation_booleans_flag`: If ``True`` a list called `boolean_flags` will be
+      added to the observation space. The list `boolean_flags` has length
+      `observation_reach` and containing Boolean values indicating whether the gates
+      ahead can be executed.
+    * `observation_connection_flag`: If ``True``, the connection_graph will be
+        incorporated in the observation_space.
+    * `swap_gates_inserted`: A list of 3-tuples of integers, to register which gates
+        to insert and where. Every tuple (g, q1, q2) represents the insertion of a
+        SWAP-gate acting on logical qubits q1 and q2 before gate g in the
+        interaction_circuit.
 
-# Action Space:
-#     A valid action is a tuple of integers  $(i,j,k)$, such that $i$ indicates where in
-#     the circuit (i.e. after the i-th gate, counting from zero) to put in a SWAP-gate on
-#     physical qubits $j$ and $k$.
-#     An action is legal when:
-#     #. physical qubit $j$ does not equal physical qubit $k$.
-#     #. physical qubits $j$ and $k$ have a connection between them in the connection graph.
+Observation Space:
+    The observation space is a ``qgym.spaces.Dict`` with 2-4 entries:
+
+    * `interaction_gates_ahead`: Array with Boolean values for the upcoming connection
+      gates in the quantum circuit.
+    * `mapping`: The current state of the mapping.
+    * (Optional)`connection_graph`: Adjacency matrix of the connection graph.
+    * (Optional)`is_legal_surpass_booleans`: Array with boolean values stating wether a
+      connection gate can be surpassed with the current mapping.
+
+Action Space:
+    A valid action is a tuple of integers  $(i,j,k)$. The integer $i$ indicates wether
+    the agent wants to surpass the current gate and move on to the next gate. If $i$ is 
+    0, then a SWAP gate is inserted at the current position between qubits $j$ and $k$.
+    Only legal actions will be executed, an action is legal when:
+    #. $i=1$ and the next gate can be executed.
+    #. $i=0$ and physical qubit $j$ does not equal physical qubit $k$.
+    #. $i=0$ and physical qubits $j$ and $k$ have a connection between them in the
+      connection graph.
+
 
 # TODO: create Examples
 
 
-# """
+"""
 import warnings
 from copy import deepcopy
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
