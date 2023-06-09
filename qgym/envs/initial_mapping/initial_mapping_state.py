@@ -13,7 +13,7 @@ Usage:
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, Optional, Set
+from typing import Any, Dict, Optional, Set, cast
 
 import networkx as nx
 import numpy as np
@@ -65,7 +65,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
 
         self.steps_done = 0
-        n_nodes = connection_graph.number_of_nodes()
+
         self.graphs = {
             "connection": {
                 "graph": deepcopy(connection_graph),
@@ -77,7 +77,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 "edge_probability": interaction_graph_edge_probability,
             },
         }
-        self.mapping = np.full(n_nodes, n_nodes)
+        self.mapping = np.full(self.n_nodes, self.n_nodes)
         self.mapping_dict: Dict[int, int] = {}
         self.mapped_qubits: Dict[str, Set[int]] = {"physical": set(), "logical": set()}
 
@@ -203,4 +203,4 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     @property
     def n_nodes(self) -> int:
         """:return: The number of physical qubits."""
-        return len(self.mapping)
+        return cast(int, self.graphs["connection"]["graph"].number_of_nodes())
