@@ -241,7 +241,7 @@ class RoutingState(
             diff = self.max_observation_reach - self.observation_reach
             interaction_gates_ahead = np.pad(
                 interaction_gates_ahead,
-                ((0, 0), (0, diff)),
+                ((0, diff), (0, 0)),
                 constant_values=self.n_qubits,
             )
 
@@ -294,8 +294,12 @@ class RoutingState(
         logical_gate_qubit1: int,
         logical_gate_qubit2: int,
     ) -> bool:
-        physical_gate_qubit1 = self.mapping[logical_gate_qubit1]
-        physical_gate_qubit2 = self.mapping[logical_gate_qubit2]
+        try:
+            physical_gate_qubit1 = self.mapping[logical_gate_qubit1]
+            physical_gate_qubit2 = self.mapping[logical_gate_qubit2]
+        except IndexError:
+            # The only logical qubits that are out of index, are those of padded gates.
+            return True
         return (
             physical_gate_qubit1,
             physical_gate_qubit2,
