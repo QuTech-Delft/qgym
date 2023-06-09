@@ -200,7 +200,12 @@ class Routing(
 
         # Define attributes defined in parent class
         self.action_space = qgym.spaces.MultiDiscrete(
-            nvec=[self._state.n_qubits, self._state.n_qubits], rng=self.rng
+            nvec=[
+                2,
+                connection_graph.number_of_nodes(),
+                connection_graph.number_of_nodes(),
+            ],
+            rng=self.rng,
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
@@ -236,11 +241,13 @@ class Routing(
             interaction_circuit = np.array(interaction_circuit)
             if (
                 interaction_circuit.ndim != 2
-                or interaction_circuit.shape[0] > self._state.max_interaction_gates
+                or interaction_circuit.shape[0] > self._state.max_interaction_gates  # type: ignore[attr-defined]
                 or interaction_circuit.shape[1] != 2
             ):
                 msg = "'interaction_circuit' should have be an ArrayLike with shape "
-                msg + "(n_interactions,2), where n_interactions<=max_interaction_gates."
+                msg += (
+                    "(n_interactions,2), where n_interactions<=max_interaction_gates."
+                )
                 raise ValueError(msg)
         # call super method for dealing with the general stuff
         return super().reset(

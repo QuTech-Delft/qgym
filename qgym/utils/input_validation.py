@@ -137,7 +137,7 @@ def check_string(x: str, name: str, *, lower: bool = False, upper: bool = False)
     return x
 
 
-def check_bool(x: Any, name: str, *, safe=False) -> bool:
+def check_bool(x: Any, name: str, *, safe: bool = False) -> bool:
     """Check if the variable `x` with name 'name' is a Boolean value. Optionally, cast
     to Boolean value if it is not.
 
