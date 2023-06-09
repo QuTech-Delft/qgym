@@ -82,7 +82,6 @@ class RoutingState(
 
         # topology
         self.connection_graph = connection_graph
-        self.n_qubits: int = self.connection_graph.number_of_nodes()
 
         # interaction circuit + mapping
         self.max_interaction_gates = max_interaction_gates
@@ -103,7 +102,7 @@ class RoutingState(
         self.observation_connection_flag = observation_connection_flag
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: List[Tuple[int, int, int]] = [(None, None, None)]
+        self.swap_gates_inserted: List[Tuple[int, int, int]] = []
 
     def reset(
         self,
@@ -246,6 +245,7 @@ class RoutingState(
                 constant_values=self.n_qubits,
             )
 
+        observation: Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]
         observation = {
             "interaction_gates_ahead": interaction_gates_ahead.flatten(),
             "mapping": self.mapping,
@@ -253,7 +253,7 @@ class RoutingState(
 
         if self.observation_connection_flag:
             connection_graph = nx.to_numpy_array(
-                self.connection_graph, dtype=int
+                self.connection_graph, dtype=np.int_
             ).flatten()
             observation["connection_graph"] = connection_graph
 
@@ -324,3 +324,8 @@ class RoutingState(
             )
 
         return circuit
+
+    @property
+    def n_qubits(self) -> int:
+        """:return: Number of qubits in the `connection_graph`."""
+        return int(self.connection_graph.number_of_nodes())
