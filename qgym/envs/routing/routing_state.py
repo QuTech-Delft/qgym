@@ -235,18 +235,16 @@ class RoutingState(
         self,
     ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]:
         """:return: Observation based on the current state."""
-        # TODO: check for efficient slicing!
 
-        interaction_gates_ahead = np.asarray(
-            [
-                np.array_split(self.interaction_circuit[idx], 2)
-                for idx in range(self.position, self.position + self.observation_reach)
-            ]
-        )
-
+        # construct interaction_gates_ahead
+        interaction_gates_ahead_list = []
+        for idx in range(self.position, self.position + self.observation_reach):
+            interaction_gates_ahead_list.append(self.interaction_circuit[idx][0])
+            interaction_gates_ahead_list.append(self.interaction_circuit[idx][1])
         if self.observation_reach < self.max_observation_reach:
             difference = self.max_observation_reach - self.observation_reach
-            interaction_gates_ahead += np.asarray([self.n_qubits]) * difference
+            interaction_gates_ahead_list += [self.n_qubits] * difference * 2
+        interaction_gates_ahead = np.asarray(interaction_gates_ahead_list)
 
         observation = {
             "interaction_gates_ahead": interaction_gates_ahead,
@@ -262,7 +260,19 @@ class RoutingState(
             observation["connection_graph"] = connection_graph
 
         if self.observation_booleans_flag:
-            is_legal_surpass_booleans = np.asarray([interaction_gates_ahead])
+            is_legal_surpass_booleans_list = []
+            for idx in range(self.position, self.position + self.observation_reach):
+                if self._is_legal_surpass(
+                    self.interaction_circuit[idx][0], self.interaction_circuit[idx][1]
+                ):
+                    is_legal_surpass_booleans_list.append(1)
+                else:
+                    is_legal_surpass_booleans_list.append(0)
+            if self.observation_reach < self.max_observation_reach:
+                difference = self.max_observation_reach - self.observation_reach
+                interaction_gates_ahead_list += [2] * difference
+            is_legal_surpass_booleans = np.asarray(is_legal_surpass_booleans_list)
+
             observation["is_legal_surpass_booleans"] = is_legal_surpass_booleans
 
         return observation
