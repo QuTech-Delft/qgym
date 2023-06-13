@@ -4,17 +4,13 @@ from typing import Dict, Tuple, Union, cast
 import numpy as np
 import pygame
 from numpy.typing import NDArray
-from pygame.font import Font
 
 from qgym.custom_types import Gate
 from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.templates.visualiser import Visualiser
-
-# Define some colors used during rendering
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-DARK_BLUE = (71, 115, 147)
-BLUE = (113, 164, 195)
+from qgym.utils.visualisation.colors import BLACK, BLUE, DARK_BLUE, WHITE
+from qgym.utils.visualisation.typing import Font, Surface
+from qgym.utils.visualisation.wrappers import write_text
 
 
 class SchedulingVisualiser(Visualiser):
@@ -97,15 +93,13 @@ class SchedulingVisualiser(Visualiser):
 
         :param n_qubits: Number of qubits of the machine.
         """
-        screen = cast(pygame.surface.Surface, self.screen)
+        screen = cast(Surface, self.screen)
         for i in range(n_qubits):
-            text = self.font["axis"].render(f"Q{i}", True, self.colors["y-axis"])
-            text_center = (
+            pos = (
                 self.offset["x-axis"] / 2,
                 self.gate_size_info["height"] * (n_qubits - i - 0.5),
             )
-            text_position = text.get_rect(center=text_center)
-            screen.blit(text, text_position)
+            write_text(screen, self.font["axis"], f"Q{i}", pos, self.colors["y-axis"])
 
     def _draw_scheduled_gate(
         self, gate: Gate, scheduled_cycle: int, gate_cycle_length: int, gate_name: str
@@ -133,7 +127,7 @@ class SchedulingVisualiser(Visualiser):
         :param qubit: Qubit in which the gate acts.
         :param scheduled_cycle: Cycle in which the gate is scheduled.
         """
-        screen = cast(pygame.surface.Surface, self.screen)
+        screen = cast(Surface, self.screen)
         gate_width = self._cycle_width * gate_cycle_length
         gate_box_size = (0.98 * gate_width, 0.98 * self.gate_size_info["height"])
 
@@ -150,12 +144,13 @@ class SchedulingVisualiser(Visualiser):
         pygame.draw.rect(
             screen, self.colors["gate_outline"], gate_box, width=2, border_radius=5
         )
-
-        text = self.font["gate"].render(
-            gate_name.upper(), True, self.colors["gate_text"]
+        write_text(
+            screen=screen,
+            font=self.font["gate"],
+            text=gate_name.upper(),
+            pos=gate_box.center,
+            color=self.colors["gate_text"],
         )
-        text_position = text.get_rect(center=gate_box.center)
-        screen.blit(text, text_position)
 
     def _start_font(self) -> Tuple[Font, Font]:
         """Start the pygame fonts for the gate and axis font.

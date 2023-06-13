@@ -103,7 +103,7 @@ class RoutingState(
         self.observation_connection_flag = observation_connection_flag
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: List[Tuple[int, int, int]] = []
+        self.swap_gates_inserted: List[Tuple[int, int, int]] = [(None, None, None)]
 
     def reset(
         self,
