@@ -109,7 +109,7 @@ class BasicRewarder(Rewarder):
         return self._reward_range
 
 
-class SingleStepRewarder(BasicRewarder):
+class SwapQualityRewarder(BasicRewarder):
     """Rewarder for the ``InitialMapping`` environment, which gives a reward based on
     the improvement in the current step.
     """
