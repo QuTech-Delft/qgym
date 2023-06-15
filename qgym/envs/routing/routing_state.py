@@ -228,13 +228,12 @@ class RoutingState(
                 self.max_observation_reach
             )
             observation_space = qgym.spaces.Dict(
-            interaction_gates_ahead=interaction_gates_ahead,
-            mapping=mapping,
-            connection_graph= connection_graph,
-            is_legal_surpass_booleans=is_legal_surpass_booleans
-        )
+                interaction_gates_ahead=interaction_gates_ahead,
+                mapping=mapping,
+                connection_graph=connection_graph,
+                is_legal_surpass_booleans=is_legal_surpass_booleans,
+            )
             observation_kwargs["is_legal_surpass_booleans"] = is_legal_surpass_booleans
-
 
         return qgym.spaces.Dict(**observation_kwargs)
 
