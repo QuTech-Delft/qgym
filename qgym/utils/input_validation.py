@@ -137,6 +137,22 @@ def check_string(x: str, name: str, *, lower: bool = False, upper: bool = False)
     return x
 
 
+def check_bool(x: Any, name: str, *, safe: bool = False) -> bool:
+    """Check if the variable `x` with name 'name' is a Boolean value. Optionally, cast
+    to Boolean value if it is not.
+
+    :param x: Variable to check.
+    :param name: Name of the variable. This name will be displayed in possible error
+        messages.
+    :param safe: If ``True`` raise a ``TypeError`` when `x` is not a bool. If ``False``
+        cast to bool.
+    :raise TypeError: If `safe` is ``True`` and `x` is not a Boolean value.
+    """
+    if not isinstance(x, bool) and safe:
+        raise TypeError(f"'{name}' must be a Boolean value, but was of type {type(x)}")
+    return bool(x)
+
+
 def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
     """Check if a matrix is an adjacency matrix, i.e., a square matrix.
 
