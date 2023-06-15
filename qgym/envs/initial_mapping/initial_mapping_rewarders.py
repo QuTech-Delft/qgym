@@ -38,6 +38,13 @@ from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_po
 class BasicRewarder(Rewarder):
     """Basic rewarder for the ``InitialMapping`` environment."""
 
+    __slots__ = (
+        "_illegal_action_penalty",
+        "_reward_per_edge",
+        "_penalty_per_edge",
+        "_reward_range",
+    )
+
     def __init__(
         self,
         illegal_action_penalty: float = -100,
@@ -99,22 +106,18 @@ class BasicRewarder(Rewarder):
         :return: The reward value of this state.
         """
         reward = 0.0
-        for interaction_i, interaction_j in zip(
-            *state.graphs["interaction"]["matrix"].nonzero()
-        ):
+        for flat_idx in state.graphs["interaction"]["matrix"].nonzero()[0]:
+            interaction_i, interaction_j = divmod(flat_idx, state.n_nodes)
             mapped_interaction_i = state.mapping_dict.get(interaction_i, None)
             mapped_interaction_j = state.mapping_dict.get(interaction_j, None)
             if mapped_interaction_i is None or mapped_interaction_j is None:
                 continue
-            if (
-                state.graphs["connection"]["matrix"][
-                    mapped_interaction_i, mapped_interaction_j
-                ]
-                == 0
-            ):
-                reward += self._penalty_per_edge
-            else:
+            if state.graphs["connection"]["matrix"][
+                mapped_interaction_i, mapped_interaction_j
+            ]:
                 reward += self._reward_per_edge
+            else:
+                reward += self._penalty_per_edge
 
         return reward / 2  # divide by two due to double counting of edges
 
@@ -220,7 +223,7 @@ class EpisodeRewarder(BasicRewarder):
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
-        if len(new_state.mapped_qubits["physical"]) != new_state.num_nodes:
+        if len(new_state.mapped_qubits["physical"]) != new_state.n_nodes:
             return 0
 
         return self._compute_state_reward(new_state)

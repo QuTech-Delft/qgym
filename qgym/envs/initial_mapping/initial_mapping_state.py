@@ -13,7 +13,7 @@ Usage:
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, Optional, Set
+from typing import Any, Dict, Optional, Set, cast
 
 import networkx as nx
 import numpy as np
@@ -27,18 +27,20 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """The ``InitialMappingState`` class.
 
     :ivar steps_done: Number of steps done since the last reset.
-    :ivar num_nodes: Number of nodes in the connection graph. Represent the of physical
+    :ivar n_nodes: Number of nodes in the connection graph. Represent the of physical
         qubits.
     :ivar graphs: Dictionary containing the graph and matrix representations of the
         both the interaction graph and connection graph.
     :ivar mapping: Array of which the index represents a physical qubit, and the value a
-        virtual qubit. A value of ``num_nodes + 1`` represents the case when nothing is
+        virtual qubit. A value of ``n_nodes + 1`` represents the case when nothing is
         mapped to the physical qubit yet.
     :ivar mapping_dict: Dictionary that maps logical qubits (keys) to physical qubit
         (values).
     :ivar mapped_qubits: Dictionary with a two ``Set``s containing all mapped physical
         and logical qubits.
     """
+
+    __slots__ = ("steps_done", "graphs", "mapping", "mapping_dict", "mapped_qubits")
 
     def __init__(
         self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
@@ -54,7 +56,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             without any interactions can be seen as 'null' nodes. Must be a value in the
             range $[0,1]$.
         """
-        # Create a random connection graph with `num_nodes` and with edges existing with
+        # Create a random connection graph with `n_nodes` and with edges existing with
         # probability `interaction_graph_edge_probability` (nodes without connections
         # can be seen as 'null' nodes)
         interaction_graph = nx.fast_gnp_random_graph(
@@ -63,19 +65,19 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
 
         self.steps_done = 0
-        self.num_nodes = connection_graph.number_of_nodes()
+
         self.graphs = {
             "connection": {
                 "graph": deepcopy(connection_graph),
-                "matrix": nx.to_scipy_sparse_array(connection_graph),
+                "matrix": nx.to_numpy_array(connection_graph),
             },
             "interaction": {
                 "graph": deepcopy(interaction_graph),
-                "matrix": nx.to_scipy_sparse_array(interaction_graph),
+                "matrix": nx.to_numpy_array(interaction_graph).flatten(),
                 "edge_probability": interaction_graph_edge_probability,
             },
         }
-        self.mapping = np.full(self.num_nodes, self.num_nodes)
+        self.mapping = np.full(self.n_nodes, self.n_nodes)
         self.mapping_dict: Dict[int, int] = {}
         self.mapped_qubits: Dict[str, Set[int]] = {"physical": set(), "logical": set()}
 
@@ -89,12 +91,12 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             * ``qgym.spaces.Box`` representing the interaction matrix.
         """
         mapping_space = qgym.spaces.MultiDiscrete(
-            nvec=[self.num_nodes + 1] * self.num_nodes, rng=self.rng
+            nvec=[self.n_nodes + 1] * self.n_nodes, rng=self.rng
         )
         interaction_matrix_space = qgym.spaces.Box(
             low=0,
             high=np.iinfo(np.int64).max,
-            shape=(self.num_nodes * self.num_nodes,),
+            shape=(self.n_nodes * self.n_nodes,),
             dtype=np.int64,
         )
         observation_space = qgym.spaces.Dict(
@@ -128,17 +130,17 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # Reset the state
         if interaction_graph is None:
             self.graphs["interaction"]["graph"] = nx.fast_gnp_random_graph(
-                self.num_nodes, self.graphs["interaction"]["edge_probability"]
+                self.n_nodes, self.graphs["interaction"]["edge_probability"]
             )
         else:
             self.graphs["interaction"]["graph"] = deepcopy(interaction_graph)
 
-        self.graphs["interaction"]["matrix"] = nx.to_scipy_sparse_array(
+        self.graphs["interaction"]["matrix"] = nx.to_numpy_array(
             self.graphs["interaction"]["graph"]
-        ).toarray()
+        ).flatten()
 
         self.steps_done = 0
-        self.mapping = np.full(self.num_nodes, self.num_nodes)
+        self.mapping = np.full(self.n_nodes, self.n_nodes)
         self.mapping_dict = {}
         self.mapped_qubits = {"physical": set(), "logical": set()}
 
@@ -146,19 +148,19 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def add_random_edge_weights(self) -> None:
         """Add random weights to the connection graph and interaction graph."""
-        for (node1, node2) in self.graphs["connection"]["graph"].edges():
+        for node1, node2 in self.graphs["connection"]["graph"].edges():
             weight = self.rng.gamma(2, 2) / 4
             self.graphs["connection"]["graph"].edges[node1, node2]["weight"] = weight
-        self.graphs["connection"]["matrix"] = nx.to_scipy_sparse_array(
+        self.graphs["connection"]["matrix"] = nx.to_numpy_array(
             self.graphs["connection"]["graph"]
         )
 
-        for (node1, node2) in self.graphs["interaction"]["graph"].edges():
+        for node1, node2 in self.graphs["interaction"]["graph"].edges():
             weight = self.rng.gamma(2, 2) / 4
             self.graphs["interaction"]["graph"].edges[node1, node2]["weight"] = weight
-        self.graphs["interaction"]["matrix"] = nx.to_scipy_sparse_array(
+        self.graphs["interaction"]["matrix"] = nx.to_numpy_array(
             self.graphs["interaction"]["graph"]
-        )
+        ).flatten()
 
     def update_state(self, action: NDArray[np.int_]) -> InitialMappingState:
         """Update the state of this environment using the given action.
@@ -169,32 +171,36 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.steps_done += 1
 
         # update state based on the given action
-        physical_qubit_index = action[0]
-        logical_qubit_index = action[1]
+        physical_qubit, logical_qubit = action
 
         if (
-            physical_qubit_index in self.mapped_qubits["physical"]
-            or logical_qubit_index in self.mapped_qubits["logical"]
+            physical_qubit in self.mapped_qubits["physical"]
+            or logical_qubit in self.mapped_qubits["logical"]
         ):
             return self
 
-        self.mapping[physical_qubit_index] = logical_qubit_index
-        self.mapping_dict[logical_qubit_index] = physical_qubit_index
-        self.mapped_qubits["physical"].add(physical_qubit_index)
-        self.mapped_qubits["logical"].add(logical_qubit_index)
+        self.mapping[physical_qubit] = logical_qubit
+        self.mapping_dict[logical_qubit] = physical_qubit
+        self.mapped_qubits["physical"].add(physical_qubit)
+        self.mapped_qubits["logical"].add(logical_qubit)
         return self
 
     def obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
         return {
             "mapping": self.mapping,
-            "interaction_matrix": self.graphs["interaction"]["matrix"].flatten(),
+            "interaction_matrix": self.graphs["interaction"]["matrix"],
         }
 
     def is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
-        return bool(len(self.mapped_qubits["physical"]) == self.num_nodes)
+        return bool(len(self.mapping_dict) == self.n_nodes)
 
     def obtain_info(self) -> Dict[str, Any]:
         """:return: Optional debugging info for the current state."""
         return {"Steps done": self.steps_done}
+
+    @property
+    def n_nodes(self) -> int:
+        """:return: The number of physical qubits."""
+        return cast(int, self.graphs["connection"]["graph"].number_of_nodes())
