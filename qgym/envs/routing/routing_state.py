@@ -220,13 +220,21 @@ class RoutingState(
                 shape=(self.n_qubits * self.n_qubits,),
                 dtype=np.int64,
             )
+
             observation_kwargs["connection_graph"] = connection_graph
 
         if self.observation_booleans_flag:
             is_legal_surpass_booleans = qgym.spaces.MultiBinary(
                 self.max_observation_reach
             )
+            observation_space = qgym.spaces.Dict(
+            interaction_gates_ahead=interaction_gates_ahead,
+            mapping=mapping,
+            connection_graph= connection_graph,
+            is_legal_surpass_booleans=is_legal_surpass_booleans
+        )
             observation_kwargs["is_legal_surpass_booleans"] = is_legal_surpass_booleans
+
 
         return qgym.spaces.Dict(**observation_kwargs)
 
@@ -237,6 +245,11 @@ class RoutingState(
         gate_slice = slice(self.position, self.position + self.observation_reach)
         interaction_gates_ahead = self.interaction_circuit[gate_slice]
 
+        # construct interaction_gates_ahead
+        interaction_gates_ahead_list = []
+        for idx in range(self.position, self.position + self.observation_reach):
+            interaction_gates_ahead_list.append(self.interaction_circuit[idx][0])
+            interaction_gates_ahead_list.append(self.interaction_circuit[idx][1])
         if self.observation_reach < self.max_observation_reach:
             diff = self.max_observation_reach - self.observation_reach
             interaction_gates_ahead = np.pad(
