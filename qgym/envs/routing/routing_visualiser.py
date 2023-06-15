@@ -163,6 +163,7 @@ class RoutingVisualiser(Visualiser):
                 color=self.colors["text"],
             )
 
+
     def _draw_interaction_gates(
         self,
         *,
@@ -354,6 +355,7 @@ if __name__ == "__main__":
     from time import sleep
 
     from qgym.spaces import MultiDiscrete
+
 
     action_space = MultiDiscrete([2, 4, 4])
 
