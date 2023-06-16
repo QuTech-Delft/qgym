@@ -348,37 +348,3 @@ class RoutingVisualiser(Visualiser):
         """Header spacing."""
         return self.font_size / 3 * 4
 
-
-# TO DO: Remove this main before merge with master branch
-if __name__ == "__main__":
-    from time import sleep
-
-    from qgym.spaces import MultiDiscrete
-
-    action_space = MultiDiscrete([2, 4, 4])
-
-    test_graph = nx.Graph()
-    test_graph.add_edge(0, 1)
-    test_graph.add_edge(1, 2)
-    test_graph.add_edge(2, 3)
-    test_graph.add_edge(3, 0)
-
-    test_state = RoutingState(
-        max_interaction_gates=10,
-        max_observation_reach=5,
-        connection_graph=test_graph,
-        observation_booleans_flag=False,
-        observation_connection_flag=False,
-    )
-    test_state.reset()
-
-    vis = RoutingVisualiser(test_graph)
-    vis.render(test_state, "human")
-    for _ in range(100):
-        action = action_space.sample()
-        test_state.update_state(action)
-        vis.render(test_state, "human")
-        if test_state.is_done():
-            break
-        sleep(0.1)
-    breakpoint()
