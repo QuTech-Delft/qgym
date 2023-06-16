@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.templates.visualiser import Visualiser
-from qgym.utils.visualisation.colors import BLACK, BLUE, RED, WHITE
+from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, RED, WHITE
 from qgym.utils.visualisation.typing import Font, Surface
 from qgym.utils.visualisation.wrappers import (
     draw_point,
@@ -41,6 +41,7 @@ class RoutingVisualiser(Visualiser):
             "edge": BLACK,
             "good gate": BLUE,
             "bad gate": RED,
+            "passed gate": GRAY,
             "text": BLACK,
             "circuit lines": BLACK,
             "background": WHITE,
@@ -97,9 +98,7 @@ class RoutingVisualiser(Visualiser):
             pygame.font.init()
 
         if len(self.font) == 0:
-            self.font["header"] = pygame.font.SysFont("Arial", self.font_size)
-            self.font["circuit"] = pygame.font.SysFont("Arial", 24)
-            self.font["graph"] = pygame.font.SysFont("Arial", 24)
+            self._setup_fonts()
 
         pygame.time.delay(10)
 
@@ -177,9 +176,10 @@ class RoutingVisualiser(Visualiser):
         :param y_lines: Array of y coordinates of the circuit lines.
         """
         for i, (qubit1, qubit2) in enumerate(state.interaction_circuit):
-            physical_qubit1 = state.mapping[qubit1]
-            physical_qubit2 = state.mapping[qubit2]
-            if (physical_qubit1, physical_qubit2) in self.graph["edges"]:
+            physical_qubit1, physical_qubit2 = state.mapping[[qubit1, qubit2]]
+            if i < state.position:
+                color = self.colors["passed gate"]
+            elif (physical_qubit1, physical_qubit2) in self.graph["edges"]:
                 color = self.colors["good gate"]
             else:
                 color = self.colors["bad gate"]
@@ -206,7 +206,7 @@ class RoutingVisualiser(Visualiser):
         shade_rect(
             screen=self.screens["circuit"],
             size=(shade_left_width, shade_height),
-            pos=(x_left - 0.5 * dx_gates, 0),
+            pos=(x_left - 0.25 * dx_gates, 0),
             color=self.colors["hidden"],
             alpha=128,
         )
@@ -237,10 +237,12 @@ class RoutingVisualiser(Visualiser):
         :param y_lines: Array of y coordinates of the circuit lines.
         """
         dx_gates = x_gates[1] - x_gates[0]
+        dy_lines = y_lines[1] - y_lines[0]
         mapping = np.arange(state.n_qubits, dtype=int)
         starting_idx = 0
         for i in range(state.position):
-            starting_idx, mapping = self._update_mapping(
+            old_mapping = mapping.copy()
+            starting_idx, mapping, n_swaps = self._update_mapping(
                 mapping=mapping,
                 swap_gates_inserted=state.swap_gates_inserted,
                 position=i,
@@ -249,14 +251,24 @@ class RoutingVisualiser(Visualiser):
 
             # Draw the mapping
             x_mapping = x_gates[i] - 0.5 * dx_gates
-            for physical_qubit, y_logical_qubit in zip(mapping, y_lines):
+            for physical_qubit, y_logical_qubit, is_changed in zip(
+                mapping, y_lines, old_mapping != mapping
+            ):
                 write_text(
                     screen=self.screens["circuit"],
-                    font=self.font["circuit"],
+                    font=self.font["mapping_emph" if is_changed else "mapping"],
                     text=str(physical_qubit),
                     pos=(x_mapping, y_logical_qubit),
                     color=self.colors["mapping"],
                 )
+
+            write_text(
+                screen=self.screens["circuit"],
+                font=self.font["n_swaps"],
+                text=str(n_swaps),
+                pos=(x_mapping, y_lines[0] - 0.3 * dy_lines),
+                color=self.colors["mapping"],
+            )
 
     def _update_mapping(
         self,
@@ -265,26 +277,28 @@ class RoutingVisualiser(Visualiser):
         swap_gates_inserted: List[Tuple[int, int, int]],
         position: int,
         starting_idx: int = 0,
-    ) -> Tuple[int, NDArray[np.int_]]:
+    ) -> Tuple[int, NDArray[np.int_], int]:
         """Update the mapping to conform to the current position.
 
         :param mapping: Mapping of the previous position
         :param swap_gates_inserted: List of swap gates inserted.
         :position: Position in the interaction circuit where the mapping must be made.
         :starting_idx: Index of the last swap gate of the previous position.
-        :returns: Tuple with a starting index for the next position and the updated
-            mapping.
+        :returns: Tuple with a starting index for the next position, the updated
+            mapping and number of swap gates used since the last mapping.
         """
+        n_swaps = 0
         if starting_idx >= len(swap_gates_inserted):
-            return starting_idx, mapping
+            return starting_idx, mapping, n_swaps
 
         for i in range(starting_idx, len(swap_gates_inserted)):
             swap_position, qubit1, qubit2 = swap_gates_inserted[i]
             if position != swap_position:
                 break
 
-            mapping[qubit1], mapping[qubit2] = mapping[qubit2], mapping[qubit1]
-        return i, mapping
+            n_swaps += 1
+            mapping[[qubit1, qubit2]] = mapping[[qubit2, qubit1]]
+        return i, mapping, n_swaps
 
     def _draw_connection_graph(self) -> None:
         """Draw the connection graph on the graph subscreen."""
@@ -337,6 +351,17 @@ class RoutingVisualiser(Visualiser):
             node_positions[node] = position * 0.45 * size + 0.5 * size
 
         return node_positions
+
+    def _setup_fonts(self) -> None:
+        """Setup the fonts for rendering with pygame."""
+        self.font["header"] = pygame.font.SysFont("Arial", self.font_size)
+        self.font["circuit"] = pygame.font.SysFont("Arial", 24)
+        self.font["mapping"] = pygame.font.SysFont("Arial", 22)
+        self.font["mapping_emph"] = pygame.font.SysFont(
+            "Arial", 24, bold=True, italic=True
+        )
+        self.font["n_swaps"] = pygame.font.SysFont("Arial", 28)
+        self.font["graph"] = pygame.font.SysFont("Arial", 24)
 
     @property
     def is_open(self) -> bool:
