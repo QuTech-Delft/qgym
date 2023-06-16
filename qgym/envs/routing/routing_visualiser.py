@@ -347,4 +347,3 @@ class RoutingVisualiser(Visualiser):
     def header_spacing(self) -> float:
         """Header spacing."""
         return self.font_size / 3 * 4
-
