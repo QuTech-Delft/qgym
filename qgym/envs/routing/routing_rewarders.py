@@ -55,7 +55,13 @@ class BasicRewarder(Rewarder):
         warn_if_positive(self._penalty_per_swap, "penalty_per_swap")
         warn_if_negative(self._reward_per_surpass, "reward_per_surpass")
 
-    def compute_reward(self, *, old_state: RoutingState, action: NDArray[np.int_], new_state: RoutingState) -> float:
+    def compute_reward(
+        self,
+        *,
+        old_state: RoutingState,
+        action: NDArray[np.int_],
+        new_state: RoutingState,
+    ) -> float:
         """Compute a reward, based on the old state, new state, and the given action.
 
         :param old_state: ``RoutingState`` before the current action.
@@ -98,7 +104,7 @@ class BasicRewarder(Rewarder):
             return (
                 type(self) is type(other)
                 and self._reward_range == other._reward_range
-                and self._illegal_action_penalty  == other._illegal_action_penalty
+                and self._illegal_action_penalty == other._illegal_action_penalty
                 and self._penalty_per_swap == other._penalty_per_swap
                 and self._reward_per_surpass == other._reward_per_surpass
             )
@@ -110,8 +116,8 @@ class BasicRewarder(Rewarder):
 
 
 class SwapQualityRewarder(BasicRewarder):
-    """Rewarder for the ``Routing`` environment, which has an adjusted reward w.r.t. 
-    the BasicRewarder in the sense that good SWAPs give lower penalties and bad SWAPs 
+    """Rewarder for the ``Routing`` environment, which has an adjusted reward w.r.t.
+    the BasicRewarder in the sense that good SWAPs give lower penalties and bad SWAPs
     give higher penalties.
     """
 
@@ -121,7 +127,12 @@ class SwapQualityRewarder(BasicRewarder):
         penalty_per_swap: float = -10,
         reward_per_surpass: float = 10,
         good_swap_reward: float = 10,
+        observation_booleans_flag: bool = False,
     ) -> None:
+        assert (
+            observation_booleans_flag
+        ), "The SwapQualityRewarder can only be used efficiently if observation_booleans_flag=True"
+
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
         )
@@ -226,7 +237,7 @@ class EpisodeRewarder(BasicRewarder):
 
         warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
         warn_if_positive(self._penalty_per_swap, "penalty_per_swap")
-        
+
     def compute_reward(
         self,
         *,
@@ -241,18 +252,24 @@ class EpisodeRewarder(BasicRewarder):
         :param new_state: ``RoutingState`` after the current action.
         :return reward: The reward calculated over the last N steps.
         """
-        is_legal = (action[0] == 1 and old_state._is_legal_surpass(
-            old_state.interaction_circuit[old_state.position][0],
-            old_state.interaction_circuit[old_state.position][1],
-        )) or (action[0] == 1 and old_state._is_legal_surpass(
-            old_state.interaction_circuit[old_state.position][0],
-            old_state.interaction_circuit[old_state.position][1],
-        ))
-        
+        is_legal = (
+            action[0] == 1
+            and old_state._is_legal_surpass(
+                old_state.interaction_circuit[old_state.position][0],
+                old_state.interaction_circuit[old_state.position][1],
+            )
+        ) or (
+            action[0] == 1
+            and old_state._is_legal_surpass(
+                old_state.interaction_circuit[old_state.position][0],
+                old_state.interaction_circuit[old_state.position][1],
+            )
+        )
+
         if not is_legal:
             return self._illegal_action_penalty
 
         if not new_state.is_done():
             return 0
-        
-        return len(new_state.swap_gates_inserted)* self._penalty_per_swap
+
+        return len(new_state.swap_gates_inserted) * self._penalty_per_swap
