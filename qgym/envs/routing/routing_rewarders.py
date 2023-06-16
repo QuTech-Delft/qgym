@@ -70,15 +70,21 @@ class BasicRewarder(Rewarder):
         :return reward: The reward for this action.
         """
 
-        if action[0] == 1 and old_state._is_legal_surpass(
-            old_state.interaction_circuit[old_state.position][0],
-            old_state.interaction_circuit[old_state.position][1],
-        ):
-            return self._reward_per_surpass
-        elif action[0] == 0 and old_state._is_legal_swap(action[1], action[2]):
-            return self._penalty_per_swap
-        else:
+        if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
+
+        reward = old_state.position * self._reward_per_surpass
+        reward += len(old_state.swap_gates_inserted) * self._penalty_per_swap
+        reward += self._reward_per_surpass if action[0] else self._penalty_per_swap
+
+        return reward
+
+    def _is_illegal(self, action: NDArray[np.int_], old_state: RoutingState) -> bool:
+        if action[0]:
+            qubit1, qubit2 = old_state.interaction_circuit[old_state.position]
+            return not old_state._is_legal_surpass(qubit1, qubit2)
+
+        return not old_state._is_legal_swap(action[1], action[2])
 
     def _set_reward_range(self) -> None:
         """Set the reward range."""
