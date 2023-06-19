@@ -82,7 +82,6 @@ class RoutingState(
 
         # topology
         self.connection_graph = connection_graph
-        self.n_qubits: int = self.connection_graph.number_of_nodes()
 
         # interaction circuit + mapping
         self.max_interaction_gates = max_interaction_gates
@@ -205,11 +204,11 @@ class RoutingState(
                 logical onto physical qubits
         """
         interaction_gates_ahead = qgym.spaces.MultiDiscrete(
-            np.full(2 * self.max_observation_reach, self.n_qubits)
+            np.full(2 * self.max_observation_reach, self.n_qubits + 1)
         )
         mapping = qgym.spaces.MultiDiscrete(np.full(self.n_qubits, self.n_qubits))
 
-        observation_space = qgym.spaces.Dict(
+        observation_kwargs = dict(
             interaction_gates_ahead=interaction_gates_ahead,
             mapping=mapping,
         )
@@ -227,12 +226,14 @@ class RoutingState(
                 self.max_observation_reach
             )
 
-        return observation_space
+        return qgym.spaces.Dict(**observation_kwargs)
 
     def obtain_observation(
         self,
     ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]:
         """:return: Observation based on the current state."""
+        gate_slice = slice(self.position, self.position + self.observation_reach)
+        interaction_gates_ahead = self.interaction_circuit[gate_slice]
 
         # construct interaction_gates_ahead
         interaction_gates_ahead_list = []
@@ -240,37 +241,29 @@ class RoutingState(
             interaction_gates_ahead_list.append(self.interaction_circuit[idx][0])
             interaction_gates_ahead_list.append(self.interaction_circuit[idx][1])
         if self.observation_reach < self.max_observation_reach:
-            difference = self.max_observation_reach - self.observation_reach
-            interaction_gates_ahead_list += [self.n_qubits] * difference * 2
-        interaction_gates_ahead = np.asarray(interaction_gates_ahead_list)
+            diff = self.max_observation_reach - self.observation_reach
+            interaction_gates_ahead = np.pad(
+                interaction_gates_ahead,
+                ((0, diff), (0, 0)),
+                constant_values=self.n_qubits,
+            )
 
+        observation: Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]
         observation = {
-            "interaction_gates_ahead": interaction_gates_ahead,
+            "interaction_gates_ahead": interaction_gates_ahead.flatten(),
             "mapping": self.mapping,
         }
 
         if self.observation_connection_flag:
             connection_graph = nx.to_numpy_array(
-                self.connection_graph, dtype=int
+                self.connection_graph, dtype=np.int_
             ).flatten()
-            padding = np.full(self.n_qubits**2 - len(connection_graph), self.n_qubits)
-            connection_graph = np.concatenate((connection_graph, padding), axis=0)
             observation["connection_graph"] = connection_graph
 
         if self.observation_booleans_flag:
-            is_legal_surpass_booleans_list = []
-            for idx in range(self.position, self.position + self.observation_reach):
-                if self._is_legal_surpass(
-                    self.interaction_circuit[idx][0], self.interaction_circuit[idx][1]
-                ):
-                    is_legal_surpass_booleans_list.append(1)
-                else:
-                    is_legal_surpass_booleans_list.append(0)
-            if self.observation_reach < self.max_observation_reach:
-                difference = self.max_observation_reach - self.observation_reach
-                interaction_gates_ahead_list += [2] * difference
-            is_legal_surpass_booleans = np.asarray(is_legal_surpass_booleans_list)
-
+            is_legal_surpass_booleans = np.asarray(
+                [self._is_legal_surpass(*gate) for gate in interaction_gates_ahead]
+            )
             observation["is_legal_surpass_booleans"] = is_legal_surpass_booleans
 
         return observation
@@ -304,8 +297,12 @@ class RoutingState(
         logical_gate_qubit1: int,
         logical_gate_qubit2: int,
     ) -> bool:
-        physical_gate_qubit1 = self.mapping[logical_gate_qubit1]
-        physical_gate_qubit2 = self.mapping[logical_gate_qubit2]
+        try:
+            physical_gate_qubit1 = self.mapping[logical_gate_qubit1]
+            physical_gate_qubit2 = self.mapping[logical_gate_qubit2]
+        except IndexError:
+            # The only logical qubits that are out of index, are those of padded gates.
+            return True
         return (
             physical_gate_qubit1,
             physical_gate_qubit2,
@@ -334,3 +331,8 @@ class RoutingState(
             )
 
         return circuit
+
+    @property
+    def n_qubits(self) -> int:
+        """:return: Number of qubits in the `connection_graph`."""
+        return int(self.connection_graph.number_of_nodes())
