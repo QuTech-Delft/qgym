@@ -24,7 +24,6 @@ Usage:
     action space.
 
 """
-from abc import abstractmethod
 from typing import Any, Tuple
 
 import numpy as np
@@ -106,14 +105,14 @@ class BasicRewarder(Rewarder):
 
         self._reward_range = (l_bound, u_bound)
 
-        def __eq__(self, other: BasicRewarder) -> bool:
-            return (
-                type(self) is type(other)
-                and self._reward_range == other._reward_range
-                and self._illegal_action_penalty == other._illegal_action_penalty
-                and self._penalty_per_swap == other._penalty_per_swap
-                and self._reward_per_surpass == other._reward_per_surpass
-            )
+    def __eq__(self, other: Any) -> bool:
+        return (
+            type(self) is type(other)
+            and self._reward_range == other._reward_range
+            and self._illegal_action_penalty == other._illegal_action_penalty
+            and self._penalty_per_swap == other._penalty_per_swap
+            and self._reward_per_surpass == other._reward_per_surpass
+        )
 
     @property
     def reward_range(self) -> Tuple[float, float]:
@@ -176,19 +175,17 @@ class SwapQualityRewarder(BasicRewarder):
             reduced if it increases the observation_reach and the penalty is increased
             if the observation_reach is decreases.
         """
-        if action[0] == 1 and old_state._is_legal_surpass(
-            old_state.interaction_circuit[old_state.position][0],
-            old_state.interaction_circuit[old_state.position][1],
-        ):
-            return self._reward_per_surpass
-        elif action[0] == 0 and old_state._is_legal_swap(action[1], action[2]):
-            return (
-                self._penalty_per_swap
-                - self._good_swap_reward
-                * self._observation_enhancement_factor(old_state, new_state)
-            )
-        else:
+        if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
+
+        if action[0]:
+            return self._reward_per_surpass
+
+        return (
+            self._penalty_per_swap
+            - self._good_swap_reward
+            * self._observation_enhancement_factor(old_state, new_state)
+        )
 
     def _observation_enhancement_factor(
         self,
@@ -258,21 +255,7 @@ class EpisodeRewarder(BasicRewarder):
         :param new_state: ``RoutingState`` after the current action.
         :return reward: The reward calculated over the last N steps.
         """
-        is_legal = (
-            action[0] == 1
-            and old_state._is_legal_surpass(
-                old_state.interaction_circuit[old_state.position][0],
-                old_state.interaction_circuit[old_state.position][1],
-            )
-        ) or (
-            action[0] == 1
-            and old_state._is_legal_surpass(
-                old_state.interaction_circuit[old_state.position][0],
-                old_state.interaction_circuit[old_state.position][1],
-            )
-        )
-
-        if not is_legal:
+        if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
         if not new_state.is_done():
