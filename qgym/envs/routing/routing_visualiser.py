@@ -162,6 +162,7 @@ class RoutingVisualiser(Visualiser):
                 color=self.colors["text"],
             )
 
+
     def _draw_interaction_gates(
         self,
         *,

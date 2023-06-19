@@ -121,8 +121,8 @@ class BasicRewarder(Rewarder):
 
 
 class SwapQualityRewarder(BasicRewarder):
-    """Rewarder for the ``Routing`` environment, which has an adjusted reward w.r.t.
-    the BasicRewarder in the sense that good SWAPs give lower penalties and bad SWAPs
+    """Rewarder for the ``Routing`` environment, which has an adjusted reward w.r.t. 
+    the BasicRewarder in the sense that good SWAPs give lower penalties and bad SWAPs 
     give higher penalties.
     """
 
