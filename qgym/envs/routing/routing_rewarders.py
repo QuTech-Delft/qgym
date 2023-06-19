@@ -131,7 +131,7 @@ class SwapQualityRewarder(BasicRewarder):
         illegal_action_penalty: float = -50,
         penalty_per_swap: float = -10,
         reward_per_surpass: float = 10,
-        good_swap_reward: float = 10,
+        good_swap_reward: float = 5,
         observation_booleans_flag: bool = False,
     ) -> None:
         assert (
@@ -183,7 +183,7 @@ class SwapQualityRewarder(BasicRewarder):
 
         return (
             self._penalty_per_swap
-            - self._good_swap_reward
+            + self._good_swap_reward
             * self._observation_enhancement_factor(old_state, new_state)
         )
 
@@ -192,32 +192,47 @@ class SwapQualityRewarder(BasicRewarder):
         old_state: RoutingState,
         new_state: RoutingState,
     ) -> float:
-        surpassing = True
-        gate_number = 0
-        while surpassing:
-            if (
-                new_state.obtain_observation()["is_legal_surpass_booleans"][gate_number]
-                == 1
-            ):
-                gate_number += 1
-            else:
-                surpassing = False
-        new_direct_executable_gates_ahead = gate_number
+        is_legal_surpass = old_state.obtain_observation()["is_legal_surpass_booleans"]
+        old_executable_gates_ahead = is_legal_surpass.sum()
 
-        surpassing = True
-        gate_number = 0
-        while surpassing:
-            if (
-                old_state.obtain_observation()["is_legal_surpass_booleans"][gate_number]
-                == 1
-            ):
-                gate_number += 1
-            else:
-                surpassing = False
-        old_direct_executable_gates_ahead = gate_number
+        is_legal_surpass = new_state.obtain_observation()["is_legal_surpass_booleans"]
+        new_executable_gates_ahead = is_legal_surpass.sum()
+
         return (
-            new_direct_executable_gates_ahead - old_direct_executable_gates_ahead
+            new_executable_gates_ahead - old_executable_gates_ahead
         ) / old_state.observation_reach
+
+    def _set_reward_range(self) -> None:
+        """Set the reward range."""
+        l_bound = -float("inf")
+        if (
+            self._illegal_action_penalty >= 0
+            and self._penalty_per_swap >= 0
+            and self._reward_per_surpass >= 0
+            and self._good_swap_reward >= 0
+        ):
+            l_bound = 0
+
+        u_bound = float("inf")
+        if (
+            self._illegal_action_penalty <= 0
+            and self._penalty_per_swap <= 0
+            and self._reward_per_surpass <= 0
+            and self._good_swap_reward <= 0
+        ):
+            u_bound = 0
+
+        self._reward_range = (l_bound, u_bound)
+
+    def __eq__(self, other: Any) -> bool:
+        return (
+            type(self) is type(other)
+            and self._reward_range == other._reward_range
+            and self._illegal_action_penalty == other._illegal_action_penalty
+            and self._penalty_per_swap == other._penalty_per_swap
+            and self._reward_per_surpass == other._reward_per_surpass
+            and self._good_swap_reward == other._good_swap_reward
+        )
 
 
 class EpisodeRewarder(BasicRewarder):
@@ -262,3 +277,23 @@ class EpisodeRewarder(BasicRewarder):
             return 0
 
         return len(new_state.swap_gates_inserted) * self._penalty_per_swap
+
+    def _set_reward_range(self) -> None:
+        """Set the reward range."""
+        l_bound = -float("inf")
+        if self._illegal_action_penalty >= 0 and self._penalty_per_swap >= 0:
+            l_bound = 0
+
+        u_bound = float("inf")
+        if self._illegal_action_penalty <= 0 and self._penalty_per_swap <= 0:
+            u_bound = 0
+
+        self._reward_range = (l_bound, u_bound)
+
+    def __eq__(self, other: Any) -> bool:
+        return (
+            type(self) is type(other)
+            and self._reward_range == other._reward_range
+            and self._illegal_action_penalty == other._illegal_action_penalty
+            and self._penalty_per_swap == other._penalty_per_swap
+        )
