@@ -193,10 +193,10 @@ class SwapQualityRewarder(BasicRewarder):
         new_state: RoutingState,
     ) -> float:
         is_legal_surpass = old_state.obtain_observation()["is_legal_surpass_booleans"]
-        old_executable_gates_ahead = is_legal_surpass.sum()
+        old_executable_gates_ahead = int(is_legal_surpass.sum())
 
         is_legal_surpass = new_state.obtain_observation()["is_legal_surpass_booleans"]
-        new_executable_gates_ahead = is_legal_surpass.sum()
+        new_executable_gates_ahead = int(is_legal_surpass.sum())
 
         return (
             new_executable_gates_ahead - old_executable_gates_ahead

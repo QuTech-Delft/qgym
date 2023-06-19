@@ -19,9 +19,7 @@ import qgym.spaces
 from qgym.templates.state import State
 
 
-class RoutingState(
-    State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
-):
+class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """The ``RoutingState`` class.
     :ivar steps_done: Number of steps done since the last reset.
     :ivar connection_graph: ``networkx`` graph representation of the QPU topology.
@@ -230,7 +228,7 @@ class RoutingState(
 
     def obtain_observation(
         self,
-    ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]:
+    ) -> Dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
         gate_slice = slice(self.position, self.position + self.observation_reach)
         interaction_gates_ahead = self.interaction_circuit[gate_slice]
@@ -248,7 +246,7 @@ class RoutingState(
                 constant_values=self.n_qubits,
             )
 
-        observation: Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]
+        observation: Dict[str, NDArray[np.int_]]
         observation = {
             "interaction_gates_ahead": interaction_gates_ahead.flatten(),
             "mapping": self.mapping,

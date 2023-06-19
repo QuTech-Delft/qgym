@@ -111,12 +111,7 @@ from qgym.utils.input_validation import (
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
 
-class Routing(
-    Environment[
-        Dict[str, Union[int, List[Tuple[int, int, int]], NDArray[np.int_]]],
-        NDArray[np.int_],
-    ],
-):
+class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """RL environment for the routing problem of OpenQL."""
 
     def __init__(
@@ -220,11 +215,7 @@ class Routing(
         interaction_circuit: Optional[ArrayLike] = None,
         **_kwargs: Any,
     ) -> Union[
-        Dict[str, Union[int, List[Tuple[int, int, int]], NDArray[np.int_]]],
-        Tuple[
-            Dict[str, Union[int, List[Tuple[int, int, int]], NDArray[np.int_]]],
-            Dict[str, Any],
-        ],
+        Dict[str, NDArray[np.int_]], Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]]
     ]:
         """Reset the state and set/create a new interaction circuit.
 
