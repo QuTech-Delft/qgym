@@ -271,7 +271,9 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
                 msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
                 msg += "given. Using 'connection_graph_matrix'."
                 warnings.warn(msg)
-            return InitialMapping._parse_adjacency_matrix(connection_graph_matrix)
+            connection_graph_matrix = check_adjacency_matrix(connection_graph_matrix)
+            return nx.from_numpy_array(connection_graph_matrix)
+
         if connection_grid_size is not None:
             # Generate connection grid graph
             return grid_graph(connection_grid_size)
@@ -292,16 +294,3 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             return BasicRewarder()
         check_instance(rewarder, "rewarder", Rewarder)
         return deepcopy(rewarder)
-
-    @staticmethod
-    def _parse_adjacency_matrix(connection_graph_matrix: ArrayLike) -> Graph:
-        """Parse a given connection graph adjacency matrix to its respective graph.
-
-        :param connection_graph_matrix: adjacency matrix representation of the QPU
-            topology.
-        :raise TypeError: When the provided matrix is not a valid adjacency matrix.
-        :return: Graph representation of the adjacency matrix.
-        """
-        connection_graph_matrix = check_adjacency_matrix(connection_graph_matrix)
-
-        return nx.from_numpy_array(connection_graph_matrix)
