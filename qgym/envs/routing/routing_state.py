@@ -215,28 +215,17 @@ class RoutingState(
         )
 
         if self.observation_connection_flag:
-            connection_graph = qgym.spaces.Box(
+            observation_kwargs["connection_graph"] = qgym.spaces.Box(
                 low=0,
                 high=np.iinfo(np.int64).max,
                 shape=(self.n_qubits * self.n_qubits,),
                 dtype=np.int64,
             )
-            observation_space = qgym.spaces.Dict(
-            interaction_gates_ahead=interaction_gates_ahead,
-            mapping=mapping,
-            connection_graph= connection_graph
-        )
 
         if self.observation_booleans_flag:
-            is_legal_surpass_booleans = qgym.spaces.MultiBinary(
+            observation_kwargs["is_legal_surpass_booleans"] = qgym.spaces.MultiBinary(
                 self.max_observation_reach
             )
-            observation_space = qgym.spaces.Dict(
-            interaction_gates_ahead=interaction_gates_ahead,
-            mapping=mapping,
-            connection_graph= connection_graph,
-            is_legal_surpass_booleans=is_legal_surpass_booleans
-        )
 
         return observation_space
 

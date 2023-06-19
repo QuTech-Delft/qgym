@@ -24,7 +24,6 @@ Usage:
     action space.
 
 """
-from abc import abstractmethod
 from typing import Any, Tuple
 
 import numpy as np
@@ -55,7 +54,13 @@ class BasicRewarder(Rewarder):
         warn_if_positive(self._penalty_per_swap, "penalty_per_swap")
         warn_if_negative(self._reward_per_surpass, "reward_per_surpass")
 
-    def compute_reward(self, *, old_state: RoutingState, action: NDArray[np.int_], new_state: RoutingState) -> float:
+    def compute_reward(
+        self,
+        *,
+        old_state: RoutingState,
+        action: NDArray[np.int_],
+        new_state: RoutingState,
+    ) -> float:
         """Compute a reward, based on the old state, new state, and the given action.
 
         :param old_state: ``RoutingState`` before the current action.
@@ -64,15 +69,21 @@ class BasicRewarder(Rewarder):
         :return reward: The reward for this action.
         """
 
-        if action[0] == 1 and old_state._is_legal_surpass(
-            old_state.interaction_circuit[old_state.position][0],
-            old_state.interaction_circuit[old_state.position][1],
-        ):
-            return self._reward_per_surpass
-        elif action[0] == 0 and old_state._is_legal_swap(action[1], action[2]):
-            return self._penalty_per_swap
-        else:
+        if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
+
+        reward = old_state.position * self._reward_per_surpass
+        reward += len(old_state.swap_gates_inserted) * self._penalty_per_swap
+        reward += self._reward_per_surpass if action[0] else self._penalty_per_swap
+
+        return reward
+
+    def _is_illegal(self, action: NDArray[np.int_], old_state: RoutingState) -> bool:
+        if action[0]:
+            qubit1, qubit2 = old_state.interaction_circuit[old_state.position]
+            return not old_state._is_legal_surpass(qubit1, qubit2)
+
+        return not old_state._is_legal_swap(action[1], action[2])
 
     def _set_reward_range(self) -> None:
         """Set the reward range."""
@@ -94,14 +105,14 @@ class BasicRewarder(Rewarder):
 
         self._reward_range = (l_bound, u_bound)
 
-        def __eq__(self, other: BasicRewarder) -> bool:
-            return (
-                type(self) is type(other)
-                and self._reward_range == other._reward_range
-                and self._illegal_action_penalty  == other._illegal_action_penalty
-                and self._penalty_per_swap == other._penalty_per_swap
-                and self._reward_per_surpass == other._reward_per_surpass
-            )
+    def __eq__(self, other: Any) -> bool:
+        return (
+            type(self) is type(other)
+            and self._reward_range == other._reward_range
+            and self._illegal_action_penalty == other._illegal_action_penalty
+            and self._penalty_per_swap == other._penalty_per_swap
+            and self._reward_per_surpass == other._reward_per_surpass
+        )
 
     @property
     def reward_range(self) -> Tuple[float, float]:
@@ -120,8 +131,13 @@ class SwapQualityRewarder(BasicRewarder):
         illegal_action_penalty: float = -50,
         penalty_per_swap: float = -10,
         reward_per_surpass: float = 10,
-        good_swap_reward: float = 10,
+        good_swap_reward: float = 5,
+        observation_booleans_flag: bool = False,
     ) -> None:
+        assert (
+            observation_booleans_flag
+        ), "The SwapQualityRewarder can only be used efficiently if observation_booleans_flag=True"
+
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
         )
@@ -159,51 +175,64 @@ class SwapQualityRewarder(BasicRewarder):
             reduced if it increases the observation_reach and the penalty is increased
             if the observation_reach is decreases.
         """
-        if action[0] == 1 and old_state._is_legal_surpass(
-            old_state.interaction_circuit[old_state.position][0],
-            old_state.interaction_circuit[old_state.position][1],
-        ):
-            return self._reward_per_surpass
-        elif action[0] == 0 and old_state._is_legal_swap(action[1], action[2]):
-            return (
-                self._penalty_per_swap
-                - self._good_swap_reward
-                * self._observation_enhancement_factor(old_state, new_state)
-            )
-        else:
+        if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
+
+        if action[0]:
+            return self._reward_per_surpass
+
+        return (
+            self._penalty_per_swap
+            + self._good_swap_reward
+            * self._observation_enhancement_factor(old_state, new_state)
+        )
 
     def _observation_enhancement_factor(
         self,
         old_state: RoutingState,
         new_state: RoutingState,
     ) -> float:
-        surpassing = True
-        gate_number = 0
-        while surpassing:
-            if (
-                new_state.obtain_observation()["is_legal_surpass_booleans"][gate_number]
-                == 1
-            ):
-                gate_number += 1
-            else:
-                surpassing = False
-        new_direct_executable_gates_ahead = gate_number
+        is_legal_surpass = old_state.obtain_observation()["is_legal_surpass_booleans"]
+        old_executable_gates_ahead = is_legal_surpass.sum()
 
-        surpassing = True
-        gate_number = 0
-        while surpassing:
-            if (
-                old_state.obtain_observation()["is_legal_surpass_booleans"][gate_number]
-                == 1
-            ):
-                gate_number += 1
-            else:
-                surpassing = False
-        old_direct_executable_gates_ahead = gate_number
+        is_legal_surpass = new_state.obtain_observation()["is_legal_surpass_booleans"]
+        new_executable_gates_ahead = is_legal_surpass.sum()
+
         return (
-            new_direct_executable_gates_ahead - old_direct_executable_gates_ahead
+            new_executable_gates_ahead - old_executable_gates_ahead
         ) / old_state.observation_reach
+
+    def _set_reward_range(self) -> None:
+        """Set the reward range."""
+        l_bound = -float("inf")
+        if (
+            self._illegal_action_penalty >= 0
+            and self._penalty_per_swap >= 0
+            and self._reward_per_surpass >= 0
+            and self._good_swap_reward >= 0
+        ):
+            l_bound = 0
+
+        u_bound = float("inf")
+        if (
+            self._illegal_action_penalty <= 0
+            and self._penalty_per_swap <= 0
+            and self._reward_per_surpass <= 0
+            and self._good_swap_reward <= 0
+        ):
+            u_bound = 0
+
+        self._reward_range = (l_bound, u_bound)
+
+    def __eq__(self, other: Any) -> bool:
+        return (
+            type(self) is type(other)
+            and self._reward_range == other._reward_range
+            and self._illegal_action_penalty == other._illegal_action_penalty
+            and self._penalty_per_swap == other._penalty_per_swap
+            and self._reward_per_surpass == other._reward_per_surpass
+            and self._good_swap_reward == other._good_swap_reward
+        )
 
 
 class EpisodeRewarder(BasicRewarder):
@@ -226,7 +255,7 @@ class EpisodeRewarder(BasicRewarder):
 
         warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
         warn_if_positive(self._penalty_per_swap, "penalty_per_swap")
-        
+
     def compute_reward(
         self,
         *,
@@ -241,18 +270,30 @@ class EpisodeRewarder(BasicRewarder):
         :param new_state: ``RoutingState`` after the current action.
         :return reward: The reward calculated over the last N steps.
         """
-        is_legal = (action[0] == 1 and old_state._is_legal_surpass(
-            old_state.interaction_circuit[old_state.position][0],
-            old_state.interaction_circuit[old_state.position][1],
-        )) or (action[0] == 1 and old_state._is_legal_surpass(
-            old_state.interaction_circuit[old_state.position][0],
-            old_state.interaction_circuit[old_state.position][1],
-        ))
-        
-        if not is_legal:
+        if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
         if not new_state.is_done():
             return 0
-        
-        return len(new_state.swap_gates_inserted)* self._penalty_per_swap
+
+        return len(new_state.swap_gates_inserted) * self._penalty_per_swap
+
+    def _set_reward_range(self) -> None:
+        """Set the reward range."""
+        l_bound = -float("inf")
+        if self._illegal_action_penalty >= 0 and self._penalty_per_swap >= 0:
+            l_bound = 0
+
+        u_bound = float("inf")
+        if self._illegal_action_penalty <= 0 and self._penalty_per_swap <= 0:
+            u_bound = 0
+
+        self._reward_range = (l_bound, u_bound)
+
+    def __eq__(self, other: Any) -> bool:
+        return (
+            type(self) is type(other)
+            and self._reward_range == other._reward_range
+            and self._illegal_action_penalty == other._illegal_action_penalty
+            and self._penalty_per_swap == other._penalty_per_swap
+        )
