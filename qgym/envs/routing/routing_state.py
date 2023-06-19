@@ -206,10 +206,10 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
         mapping = qgym.spaces.MultiDiscrete(np.full(self.n_qubits, self.n_qubits))
 
-        observation_kwargs = dict(
-            interaction_gates_ahead=interaction_gates_ahead,
-            mapping=mapping,
-        )
+        observation_kwargs = {
+            "interaction_gates_ahead": interaction_gates_ahead,
+            "mapping": mapping,
+        }
 
         if self.observation_connection_flag:
             observation_kwargs["connection_graph"] = qgym.spaces.Box(
