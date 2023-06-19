@@ -8,6 +8,8 @@ import numpy as np
 import pygame
 from numpy.typing import NDArray
 
+from qgym.utils.visualisation.typing import Font, Surface
+
 
 class Visualiser:
     """Visualizer for the the current state of the problem.
@@ -20,9 +22,9 @@ class Visualiser:
     """
 
     # --- These attributes should be set in any subclass ---
-    screen: Optional[pygame.surface.Surface]
+    screen: Optional[Surface]
     screen_dimensions: Tuple[int, int]
-    font: Dict[str, pygame.font.Font]
+    font: Dict[str, Font]
 
     @abstractmethod
     def render(self, state: Any, mode: str) -> Union[bool, NDArray[np.int_]]:
@@ -57,7 +59,7 @@ class Visualiser:
         msg += "'human' and 'rgb_array'."
         raise ValueError(msg)
 
-    def _start_screen(self, screen_name: str, mode: str) -> pygame.surface.Surface:
+    def _start_screen(self, screen_name: str, mode: str) -> Surface:
         """Start a pygame screen in the given mode.
 
         :param screen_name: Name of the screen.
@@ -92,7 +94,6 @@ class Visualiser:
             self.screens: Dict[str, Surface] = {}
 
         self.font: Dict[str, Font] = {}
-
 
     @property
     def screen_width(self) -> int:
