@@ -57,7 +57,7 @@ class InitialMappingVisualiser(Visualiser):
                 ),
                 "nodes": connection_graph.nodes,
                 "edges": connection_graph.edges,
-                "matrix": nx.to_scipy_sparse_array(connection_graph),
+                "matrix": nx.to_numpy_array(connection_graph),
             },
             "interaction": {"render_positions": {}},
             "mapped": {
@@ -145,7 +145,7 @@ class InitialMappingVisualiser(Visualiser):
         :return: Mapped graph.
         """
         # Make the adjacency matrix of the mapped graph
-        n_nodes = len(mapping)
+        n_nodes = len(self.graphs["connection"]["nodes"])
         mapped_matrix = np.zeros_like(self.graphs["connection"]["matrix"])
         for map_i, i in mapping.items():
             for map_j, j in mapping.items():
