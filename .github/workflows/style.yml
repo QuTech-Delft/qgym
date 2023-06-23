@@ -10,7 +10,7 @@ jobs:
       - uses: psf/black@stable
         with:
           jupyter: true
-  
+
   isort:
     runs-on: ubuntu-latest
     steps:
