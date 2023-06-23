@@ -308,10 +308,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> None:
-        physical_qubit1 = self.mapping[logical_qubit1]
-        physical_qubit2 = self.mapping[logical_qubit2]
-        self.mapping[logical_qubit1] = physical_qubit2
-        self.mapping[logical_qubit2] = physical_qubit1
+        physical_qubits = mapping[[logical_qubit1, logical_qubit2]]
+        mapping[[logical_qubit2, logical_qubit1]] = physical_qubits
 
     def generate_random_interaction_circuit(self, n_gates: int) -> NDArray[np.int_]:
         """Generate a random interaction circuit.
