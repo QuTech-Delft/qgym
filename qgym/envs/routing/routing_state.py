@@ -266,7 +266,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def is_done(self) -> bool:
         """:return: Boolean value stating whether we are in a final state."""
-        # self.observation_reach==0
         return self.position == len(self.interaction_circuit)
 
     def _place_swap_gate(
