@@ -120,8 +120,7 @@ class MachineProperties:
             input `gates`.
         """
         check_instance(gates, "gates", Iterable)
-        for (gate1, gate2) in gates:
-
+        for gate1, gate2 in gates:
             # Check if the gates are strings and known.
             gate1 = check_string(gate1, "gate", lower=True)
             gate2 = check_string(gate2, "gate", lower=True)

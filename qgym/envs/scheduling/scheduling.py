@@ -163,7 +163,7 @@ from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
 class Scheduling(
-    Environment[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
+    Environment[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
 ):
     """RL environment for the scheduling problem."""
 
@@ -227,8 +227,8 @@ class Scheduling(
         circuit: Optional[List[Gate]] = None,
         **_kwargs: Any,
     ) -> Union[
-        Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]],
-        Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], Dict[Any, Any]],
+        Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]],
+        Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], Dict[Any, Any]],
     ]:
         """Reset the state, action space and step number.and load a new (random) initial
         state. To be used after an episode is finished.

@@ -23,7 +23,7 @@ from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
 
 class SchedulingState(
-    State[Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]], NDArray[np.int_]]
+    State[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
 ):
     """The ``SchedulingState`` class.
 
@@ -49,7 +49,6 @@ class SchedulingState(
         random_circuit_mode: str,
         rulebook: CommutationRulebook,
     ) -> None:
-
         self.steps_done = 0
         self.cycle = 0
 
@@ -89,7 +88,7 @@ class SchedulingState(
             encoded=self.utils.gate_encoder.encode_gates(circuit),
             names=np.empty(max_gates, dtype=int),
             acts_on=np.empty((2, max_gates), dtype=int),
-            legal=np.empty(max_gates, dtype=bool),
+            legal=np.empty(max_gates, dtype=np.int8),
             dependencies=np.empty((dependency_depth, max_gates), dtype=int),
             schedule=np.full(len(circuit), -1, dtype=int),
             blocking_matrix=self.utils.rulebook.make_blocking_matrix(circuit),
@@ -197,7 +196,7 @@ class SchedulingState(
 
     def obtain_observation(
         self,
-    ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.bool_]]]:
+    ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]]:
         """:return: Observation based on the current state."""
         return {
             "gate_names": self.circuit_info.names,
