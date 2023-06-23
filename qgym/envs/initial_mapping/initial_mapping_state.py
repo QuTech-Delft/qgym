@@ -19,11 +19,11 @@ import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
 
-import qgym.spaces as spaces
+from qgym import spaces
 from qgym.templates.state import State
 
 
-class InitialMappingState(State[Dict[str, NDArray[Any]], NDArray[np.int_]]):
+class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """The ``InitialMappingState`` class.
 
     :ivar steps_done: Number of steps done since the last reset.
@@ -69,11 +69,11 @@ class InitialMappingState(State[Dict[str, NDArray[Any]], NDArray[np.int_]]):
         self.graphs = {
             "connection": {
                 "graph": deepcopy(connection_graph),
-                "matrix": nx.to_numpy_array(connection_graph, dtype=bool),
+                "matrix": nx.to_numpy_array(connection_graph, dtype=np.int8),
             },
             "interaction": {
                 "graph": deepcopy(interaction_graph),
-                "matrix": nx.to_numpy_array(interaction_graph, dtype=bool).flatten(),
+                "matrix": nx.to_numpy_array(interaction_graph, dtype=np.int8).flatten(),
                 "edge_probability": interaction_graph_edge_probability,
             },
         }
@@ -130,7 +130,7 @@ class InitialMappingState(State[Dict[str, NDArray[Any]], NDArray[np.int_]]):
             self.graphs["interaction"]["graph"] = deepcopy(interaction_graph)
 
         self.graphs["interaction"]["matrix"] = nx.to_numpy_array(
-            self.graphs["interaction"]["graph"], dtype=bool
+            self.graphs["interaction"]["graph"], dtype=np.int8
         ).flatten()
 
         self.steps_done = 0
@@ -179,7 +179,7 @@ class InitialMappingState(State[Dict[str, NDArray[Any]], NDArray[np.int_]]):
         self.mapped_qubits["logical"].add(logical_qubit)
         return self
 
-    def obtain_observation(self) -> Dict[str, NDArray[Any]]:
+    def obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
         return {
             "mapping": self.mapping,

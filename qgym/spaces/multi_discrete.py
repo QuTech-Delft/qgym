@@ -21,7 +21,7 @@ class MultiDiscrete(gym.spaces.MultiDiscrete):
     def __init__(
         self,
         nvec: Union[List[int], NDArray[np.int_]],
-        dtype: DTypeLike = np.int64,
+        dtype: DTypeLike = np.int_,
         *,
         rng: Optional[Generator] = None,
     ) -> None:

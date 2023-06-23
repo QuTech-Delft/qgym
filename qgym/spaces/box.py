@@ -27,7 +27,7 @@ class Box(gym.spaces.Box):
         low: Union[SupportsFloat, NDArray[np.float_]],
         high: Union[SupportsFloat, NDArray[np.float_]],
         shape: Optional[Sequence[int]] = None,
-        dtype: DTypeLike = np.float32,
+        dtype: DTypeLike = np.float_,
         *,
         rng: Optional[Generator] = None,
     ) -> None:
