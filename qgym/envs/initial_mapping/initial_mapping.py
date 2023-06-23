@@ -136,7 +136,7 @@ from qgym.utils.input_validation import (
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
 
-class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class InitialMapping(Environment[Dict[str, NDArray[Any]], NDArray[np.int_]]):
     """RL environment for the initial mapping problem of OpenQL."""
 
     __slots__ = (
@@ -218,8 +218,8 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         interaction_graph: Optional[Graph] = None,
         **_kwargs: Any,
     ) -> Union[
-        Dict[str, NDArray[np.int_]],
-        Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]],
+        Dict[str, NDArray[Any]],
+        Tuple[Dict[str, NDArray[Any]], Dict[str, Any]],
     ]:
         """Reset the state and set a new interaction graph.
 

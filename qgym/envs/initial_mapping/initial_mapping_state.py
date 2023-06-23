@@ -19,11 +19,11 @@ import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
 
-import qgym.spaces
+import qgym.spaces as spaces
 from qgym.templates.state import State
 
 
-class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class InitialMappingState(State[Dict[str, NDArray[Any]], NDArray[np.int_]]):
     """The ``InitialMappingState`` class.
 
     :ivar steps_done: Number of steps done since the last reset.
@@ -69,11 +69,11 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.graphs = {
             "connection": {
                 "graph": deepcopy(connection_graph),
-                "matrix": nx.to_numpy_array(connection_graph),
+                "matrix": nx.to_numpy_array(connection_graph, dtype=bool),
             },
             "interaction": {
                 "graph": deepcopy(interaction_graph),
-                "matrix": nx.to_numpy_array(interaction_graph).flatten(),
+                "matrix": nx.to_numpy_array(interaction_graph, dtype=bool).flatten(),
                 "edge_probability": interaction_graph_edge_probability,
             },
         }
@@ -81,30 +81,24 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.mapping_dict: Dict[int, int] = {}
         self.mapped_qubits: Dict[str, Set[int]] = {"physical": set(), "logical": set()}
 
-    def create_observation_space(self) -> qgym.spaces.Dict:
+    def create_observation_space(self) -> spaces.Dict:
         """Create the corresponding observation space.
 
         :returns: Observation space in the form of a ``qgym.spaces.Dict`` space
             containing:
 
             * ``qgym.spaces.MultiDiscrete`` space representing the mapping.
-            * ``qgym.spaces.Box`` representing the interaction matrix.
+            * ``qgym.spaces.MultiBinary`` representing the interaction matrix.
         """
-        mapping_space = qgym.spaces.MultiDiscrete(
+        mapping_space = spaces.MultiDiscrete(
             nvec=[self.n_nodes + 1] * self.n_nodes, rng=self.rng
         )
-        interaction_matrix_space = qgym.spaces.Box(
-            low=0,
-            high=np.iinfo(np.int64).max,
-            shape=(self.n_nodes * self.n_nodes,),
-            dtype=np.int64,
-        )
-        observation_space = qgym.spaces.Dict(
+        interaction_matrix_space = spaces.MultiBinary(self.n_nodes**2, rng=self.rng)
+        return spaces.Dict(
             rng=self.rng,
             mapping=mapping_space,
             interaction_matrix=interaction_matrix_space,
         )
-        return observation_space
 
     def reset(
         self,
@@ -136,7 +130,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             self.graphs["interaction"]["graph"] = deepcopy(interaction_graph)
 
         self.graphs["interaction"]["matrix"] = nx.to_numpy_array(
-            self.graphs["interaction"]["graph"]
+            self.graphs["interaction"]["graph"], dtype=bool
         ).flatten()
 
         self.steps_done = 0
@@ -185,7 +179,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.mapped_qubits["logical"].add(logical_qubit)
         return self
 
-    def obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
+    def obtain_observation(self) -> Dict[str, NDArray[Any]]:
         """:return: Observation based on the current state."""
         return {
             "mapping": self.mapping,
