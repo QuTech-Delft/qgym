@@ -114,11 +114,6 @@ class BasicRewarder(Rewarder):
             and self._reward_per_surpass == other._reward_per_surpass
         )
 
-    @property
-    def reward_range(self) -> Tuple[float, float]:
-        """Reward range of the rewarder. I.e., range that rewards can lie in."""
-        return self._reward_range
-
 
 class SwapQualityRewarder(BasicRewarder):
     """Rewarder for the ``Routing`` environment, which has an adjusted reward w.r.t.
