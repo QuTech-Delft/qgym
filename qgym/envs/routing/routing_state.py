@@ -173,20 +173,18 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # Increase the step number
         self.steps_done += 1
 
+        surpass, qubit1, qubit2 = action
         # surpass current_gate if legal
-        if action[0] == 1 and self._is_legal_surpass(
-            self.interaction_circuit[self.position][0],
-            self.interaction_circuit[self.position][1],
-        ):
+        if surpass and self._is_legal_surpass(*self.interaction_circuit[self.position]):
             self.position += 1
             # update observation reach
             if len(self.interaction_circuit) - self.position < self.observation_reach:
                 self.observation_reach -= 1
 
         # elif insert swap-gate if legal
-        elif action[0] == 0 and self._is_legal_swap(action[1], action[2]):
-            self._place_swap_gate(action[1], action[2])
-            self._update_mapping(action[1], action[2])
+        elif not surpass and self._is_legal_swap(qubit1, qubit2):
+            self._place_swap_gate(qubit1, qubit2)
+            self._update_mapping(qubit1, qubit2)
 
         return self
 
