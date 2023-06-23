@@ -283,7 +283,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     ) -> bool:
         physical_swap_qubit1 = self.mapping[logical_swap_qubit1]
         physical_swap_qubit2 = self.mapping[logical_swap_qubit2]
-        return not (logical_swap_qubit1 == logical_swap_qubit2) and (
+        return (logical_swap_qubit1 != logical_swap_qubit2) and (
             (physical_swap_qubit1, physical_swap_qubit2) in self.connection_graph.edges
         )
 
