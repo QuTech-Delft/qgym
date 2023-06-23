@@ -51,7 +51,7 @@ class CircuitInfo:
     encoded: List[Gate]
     names: NDArray[np.int_]
     acts_on: NDArray[np.int_]
-    legal: NDArray[np.bool_]
+    legal: NDArray[np.int8]
     dependencies: NDArray[np.int_]
     schedule: NDArray[np.int_]
     blocking_matrix: NDArray[np.int_]
