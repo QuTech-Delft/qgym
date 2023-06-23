@@ -289,19 +289,15 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def _is_legal_surpass(
         self,
-        logical_gate_qubit1: int,
-        logical_gate_qubit2: int,
+        logical_qubit1: int,
+        logical_qubit2: int,
     ) -> bool:
         try:
-            physical_gate_qubit1 = self.mapping[logical_gate_qubit1]
-            physical_gate_qubit2 = self.mapping[logical_gate_qubit2]
+            physical_connection = self.mapping[[logical_qubit1, logical_qubit2]]
         except IndexError:
             # The only logical qubits that are out of index, are those of padded gates.
             return True
-        return (
-            physical_gate_qubit1,
-            physical_gate_qubit2,
-        ) in self.connection_graph.edges
+        return physical_connection in self.connection_graph.edges
 
     def _update_mapping(
         self,
