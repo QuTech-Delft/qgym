@@ -284,13 +284,16 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def _is_legal_swap(
         self,
-        logical_swap_qubit1: int,
-        logical_swap_qubit2: int,
+        logical_qubit1: int,
+        logical_qubit2: int,
     ) -> bool:
-        physical_swap_qubit1 = self.mapping[logical_swap_qubit1]
-        physical_swap_qubit2 = self.mapping[logical_swap_qubit2]
-        return (logical_swap_qubit1 != logical_swap_qubit2) and (
-            (physical_swap_qubit1, physical_swap_qubit2) in self.connection_graph.edges
+        """Checks whether a swap of two logical qubits is legal. 
+        returns: a boolean.
+        """
+        physical_qubit1 = self.mapping[logical_qubit1]
+        physical_qubit2 = self.mapping[logical_qubit2]
+        return (logical_qubit1 != logical_qubit2) and (
+            (physical_qubit1, physical_qubit2) in self.connection_graph.edges
         )
 
     def _is_legal_surpass(
@@ -298,6 +301,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> bool:
+        """Checks whether a surpass of the current gate ahead is legal. 
+        returns: a boolean.
+        """
         try:
             physical_connection = self.mapping[[logical_qubit1, logical_qubit2]]
         except IndexError:
@@ -310,8 +316,11 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> None:
-        physical_qubits = mapping[[logical_qubit1, logical_qubit2]]
-        mapping[[logical_qubit2, logical_qubit1]] = physical_qubits
+        """Updates mapping for a swap of two qubits.
+        returns: a boolean.
+        """
+        physical_qubits = self.mapping[[logical_qubit1, logical_qubit2]]
+        self.mapping[[logical_qubit2, logical_qubit1]] = physical_qubits
 
     def generate_random_interaction_circuit(self, n_gates: int) -> NDArray[np.int_]:
         """Generate a random interaction circuit.
