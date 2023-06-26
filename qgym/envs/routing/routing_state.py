@@ -5,7 +5,13 @@ Usage:
     >>> from qgym.envs.routing.routingstate import RoutingState
     >>> import networkx as nx
     >>> connection_graph = nx.grid_graph((3,3))
-    >>> state = TODO
+    >>> state = RoutingState(
+    >>>             max_interaction_gates = 100,
+    >>>             max_observation_reach = 20,
+    >>>             connection_graph = connection_graph,
+    >>>             observation_booleans_flag = True,
+    >>>             observation_connection_flag = False,
+    >>>             )
 """
 from __future__ import annotations
 
