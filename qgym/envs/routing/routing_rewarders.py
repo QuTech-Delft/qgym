@@ -24,11 +24,11 @@ Usage:
     action space.
 
 """
+import warnings
 from typing import Any, Tuple
 
 import numpy as np
 from numpy.typing import NDArray
-import warnings
 
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.templates import Rewarder
@@ -49,9 +49,9 @@ class BasicRewarder(Rewarder):
             action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
             This value should be negative (but is not required) and defaults to -50.
         :param penalty_per_swap: Penalty for placing a swap. In general, we want to have
-            as little swaps as possible. Therefore, this value should be negative and 
+            as little swaps as possible. Therefore, this value should be negative and
             defaults to -10.
-        :param reward_per_surpass: Reward given for surpassing a gate. In general, we 
+        :param reward_per_surpass: Reward given for surpassing a gate. In general, we
             want to have go to the end of the circuit as fast as possible. Therefore,
             this value should be positive and defaults to 10.
         """
@@ -92,9 +92,9 @@ class BasicRewarder(Rewarder):
 
     def _is_illegal(self, action: NDArray[np.int_], old_state: RoutingState) -> bool:
         """
-        Checks whether an action chosen by the agent is illegal. 
+        Checks whether an action chosen by the agent is illegal.
         returns: a boolean.
-        """        
+        """
         if action[0]:
             qubit1, qubit2 = old_state.interaction_circuit[old_state.position]
             return not old_state._is_legal_surpass(qubit1, qubit2)
@@ -123,7 +123,7 @@ class BasicRewarder(Rewarder):
 
     def __eq__(self, other: Any) -> bool:
         """
-        Checks whether an object 'other' is of the same type as self. 
+        Checks whether an object 'other' is of the same type as self.
         returns: a boolean.
         """
         return (
@@ -154,22 +154,22 @@ class SwapQualityRewarder(BasicRewarder):
             action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
             This value should be negative (but is not required) and defaults to -50.
         :param penalty_per_swap: Penalty for placing a swap. In general, we want to have
-            as little swaps as possible. Therefore, this value should be negative and 
+            as little swaps as possible. Therefore, this value should be negative and
             defaults to -10.
-        :param reward_per_surpass: Reward given for surpassing a gate. In general, we 
+        :param reward_per_surpass: Reward given for surpassing a gate. In general, we
             want to have go to the end of the circuit as fast as possible. Therefore,
             this value should be positive and defaults to 10.
-        :param good_swap_reward: Reward given for placing a good swap. In general, we 
+        :param good_swap_reward: Reward given for placing a good swap. In general, we
             want to place as little swaps as possible. However, when they are good, the
-            penalty for the placement should be surpressed. That happens with this 
-            reward. So, the value should be positive and smaller than the 
+            penalty for the placement should be surpressed. That happens with this
+            reward. So, the value should be positive and smaller than the
             penalty_per_swap, in order not to get positive rewards for swaps, default=5.
         """
         if not observation_booleans_flag:
             msg = "observation_booleans_flag needs to be True to compute"
             msg += "Observation_enhancement_factor"
             raise warnings.warn(msg)
-            
+
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
         )
@@ -226,7 +226,7 @@ class SwapQualityRewarder(BasicRewarder):
         """Calculates the change of the observation reach as an effect of a swap.
         :param old_state: ``RoutingState`` before the current action.
         :param new_state: ``RoutingState`` after the current action.
-        :return float: A fraction that expresses the procentual improvement w.r.t the 
+        :return float: A fraction that expresses the procentual improvement w.r.t the
         old_state's observation.
         """
         is_legal_surpass = old_state.obtain_observation()["is_legal_surpass_booleans"]
@@ -263,7 +263,7 @@ class SwapQualityRewarder(BasicRewarder):
 
     def __eq__(self, other: Any) -> bool:
         """
-        Checks whether an object 'other' is of the same type as self. 
+        Checks whether an object 'other' is of the same type as self.
         returns: a boolean.
         """
         return (
@@ -293,9 +293,9 @@ class EpisodeRewarder(BasicRewarder):
             action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
             This value should be negative (but is not required) and defaults to -50.
         :param penalty_per_swap: Penalty for placing a swap. In general, we want to have
-            as little swaps as possible. Therefore, this value should be negative and 
+            as little swaps as possible. Therefore, this value should be negative and
             defaults to -10.
-        :param reward_per_surpass: Reward given for surpassing a gate. In general, we 
+        :param reward_per_surpass: Reward given for surpassing a gate. In general, we
             want to have go to the end of the circuit as fast as possible. Therefore,
             this value should be positive and defaults to 10.
         """
@@ -315,7 +315,7 @@ class EpisodeRewarder(BasicRewarder):
         action: NDArray[np.int_],
         new_state: RoutingState,
     ) -> float:
-        """Compute a reward, based on the new state, and the given action. 
+        """Compute a reward, based on the new state, and the given action.
 
         :param new_state: ``RoutingState`` after the current action.
         :return reward: The reward calculated over the episode.
@@ -342,7 +342,7 @@ class EpisodeRewarder(BasicRewarder):
 
     def __eq__(self, other: Any) -> bool:
         """
-        Checks whether an object 'other' is of the same type as self. 
+        Checks whether an object 'other' is of the same type as self.
         returns: a boolean.
         """
         return (
