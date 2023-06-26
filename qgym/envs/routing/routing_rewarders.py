@@ -168,7 +168,7 @@ class SwapQualityRewarder(BasicRewarder):
         if not observation_booleans_flag:
             msg = "observation_booleans_flag needs to be True to compute"
             msg += "Observation_enhancement_factor"
-            raise warnings.warn(msg)
+            warnings.warn(msg)
 
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
@@ -179,7 +179,7 @@ class SwapQualityRewarder(BasicRewarder):
         self._set_reward_range()
 
         if not 0 <= self._good_swap_reward < -self._penalty_per_swap:
-            raise warnings.warn("Good swaps should not result in positive rewards.")
+            warnings.warn("Good swaps should not result in positive rewards.")
 
         warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
         warn_if_positive(self._penalty_per_swap, "penalty_per_swap")

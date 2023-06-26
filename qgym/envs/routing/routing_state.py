@@ -287,7 +287,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> bool:
-        """Checks whether a swap of two logical qubits is legal. 
+        """Checks whether a swap of two logical qubits is legal.
         returns: a boolean.
         """
         physical_qubit1 = self.mapping[logical_qubit1]
@@ -301,7 +301,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> bool:
-        """Checks whether a surpass of the current gate ahead is legal. 
+        """Checks whether a surpass of the current gate ahead is legal.
         returns: a boolean.
         """
         try:
