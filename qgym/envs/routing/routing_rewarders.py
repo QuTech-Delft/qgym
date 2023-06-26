@@ -28,6 +28,7 @@ from typing import Any, Tuple
 
 import numpy as np
 from numpy.typing import NDArray
+import warnings
 
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.templates import Rewarder
@@ -129,10 +130,11 @@ class SwapQualityRewarder(BasicRewarder):
         good_swap_reward: float = 5,
         observation_booleans_flag: bool = False,
     ) -> None:
-        assert (
-            observation_booleans_flag
-        ), "The SwapQualityRewarder can only be used efficiently if observation_booleans_flag=True"
-
+        if not observation_booleans_flag:
+            msg = "observation_booleans_flag needs to be True to compute"
+            msg += "Observation_enhancement_factor"
+            raise warnings.warn(msg)
+            
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
         )
@@ -141,9 +143,8 @@ class SwapQualityRewarder(BasicRewarder):
         self._good_swap_reward = check_real(good_swap_reward, "reward_per_good_swap")
         self._set_reward_range()
 
-        assert (
-            0 <= self._good_swap_reward < -self._penalty_per_swap
-        ), "Good swaps should not result in positive rewards."
+        if not 0 <= self._good_swap_reward < -self._penalty_per_swap:
+            raise warnings.warn("Good swaps should not result in positive rewards.")
 
         warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
         warn_if_positive(self._penalty_per_swap, "penalty_per_swap")
