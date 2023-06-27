@@ -298,7 +298,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Parse the `rewarder` given by the user.
 
         :param rewarder: ``Rewarder`` to use for the environment. If ``None``, then the
-            ``BasicRewarder`` with default settings is used.
+            ``BasicRewarder`` is used with default settings.
         :return: Rewarder.
         """
         if rewarder is None:

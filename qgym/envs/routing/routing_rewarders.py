@@ -25,7 +25,6 @@ Usage:
 
 """
 import warnings
-from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -119,7 +118,6 @@ class BasicRewarder(Rewarder):
             u_bound = 0
 
         self._reward_range = (l_bound, u_bound)
-
 
 
 class SwapQualityRewarder(BasicRewarder):
@@ -249,7 +247,6 @@ class SwapQualityRewarder(BasicRewarder):
         self._reward_range = (l_bound, u_bound)
 
 
-
 class EpisodeRewarder(BasicRewarder):
     """Rewarder for the ``Routing`` environment, which only gives a reward after at
     the end of a full episode. The reward is the lowest for the lowest amount of SWAPs.
@@ -313,4 +310,3 @@ class EpisodeRewarder(BasicRewarder):
             u_bound = 0
 
         self._reward_range = (l_bound, u_bound)
-

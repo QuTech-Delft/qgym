@@ -1,5 +1,5 @@
 """This module contains tests for the ``RoutingState`` class."""
-from typing import List, Tuple
+from typing import Iterable, List, Tuple
 
 import networkx as nx
 import numpy as np
@@ -50,7 +50,7 @@ def test_init(
     assert state.max_interaction_gates == max_interaction_gates
     upper_limited = min(max_interaction_gates, max_observation_reach)
     assert state.observation_reach <= upper_limited
-    assert isinstance(state.swap_gates_inserted, list)
+    assert isinstance(state.swap_gates_inserted, Iterable)
     assert state.position == 0
     assert state.steps_done == 0
     circuit = np.asarray(state.interaction_circuit)
@@ -128,6 +128,6 @@ class TestUpdateState:
 
 def test_reset(simple_state: RoutingState) -> None:
     assert isinstance(simple_state.reset(), RoutingState)
-    assert simple_state.swap_gates_inserted == []
+    assert len(simple_state.swap_gates_inserted) == 0
     assert simple_state.position == 0
     assert simple_state.steps_done == 0

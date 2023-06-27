@@ -15,7 +15,8 @@ Usage:
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from collections import deque
+from typing import Any, Deque, Dict, List, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -47,7 +48,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         observation.
     :ivar observation_reach: An integer representing the current amount of gates the
         agent can see when making an observation.
-    :ivar swap_gates_inserted: A list of 3-tuples of integers, to register which gates
+    :ivar swap_gates_inserted: A deque of 3-tuples of integers, to register which gates
         to insert and where. Every tuple (g, q1, q2) represents the insertion of a
         SWAP-gate acting on logical qubits q1 and q2 before gate g in the
         interaction_circuit.
@@ -106,7 +107,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.observation_connection_flag = observation_connection_flag
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: List[Tuple[int, int, int]] = []
+        self.swap_gates_inserted: Deque[Tuple[int, int, int]] = deque()
 
     def reset(
         self,
@@ -145,7 +146,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
 
         # resetting swap_gates_inserted and mapping
-        self.swap_gates_inserted = []
+        self.swap_gates_inserted = deque()
         self.mapping = np.arange(self.n_qubits, dtype=np.int_)
 
         return self
@@ -172,7 +173,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Update the state of this environment using the given action.
 
         :param action: If action[0]==0 a SWAP-gate applied to qubits action[1],
-            action[2] will be registered in the swap_gates_inserted-list at the current
+            action[2] will be registered in the swap_gates_inserted-deque at the current
             position, if action[0]==1 the first observed gate will be surpassed.
         :return: self
         """
@@ -279,7 +280,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> None:
-        # TODO: STORAGE EFFICIENCY: from collections import DeQueue
         self.swap_gates_inserted.append((self.position, logical_qubit1, logical_qubit2))
 
     def _is_legal_swap(
