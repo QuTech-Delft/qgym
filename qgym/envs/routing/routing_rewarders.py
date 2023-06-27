@@ -25,7 +25,7 @@ Usage:
 
 """
 import warnings
-from typing import Any, Tuple
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -91,8 +91,7 @@ class BasicRewarder(Rewarder):
         return reward
 
     def _is_illegal(self, action: NDArray[np.int_], old_state: RoutingState) -> bool:
-        """
-        Checks whether an action chosen by the agent is illegal.
+        """Checks whether an action chosen by the agent is illegal.
         returns: a boolean.
         """
         if action[0]:
@@ -121,18 +120,6 @@ class BasicRewarder(Rewarder):
 
         self._reward_range = (l_bound, u_bound)
 
-    def __eq__(self, other: Any) -> bool:
-        """
-        Checks whether an object 'other' is of the same type as self.
-        returns: a boolean.
-        """
-        return (
-            type(self) is type(other)
-            and self._reward_range == other._reward_range
-            and self._illegal_action_penalty == other._illegal_action_penalty
-            and self._penalty_per_swap == other._penalty_per_swap
-            and self._reward_per_surpass == other._reward_per_surpass
-        )
 
 
 class SwapQualityRewarder(BasicRewarder):
@@ -261,19 +248,6 @@ class SwapQualityRewarder(BasicRewarder):
 
         self._reward_range = (l_bound, u_bound)
 
-    def __eq__(self, other: Any) -> bool:
-        """
-        Checks whether an object 'other' is of the same type as self.
-        returns: a boolean.
-        """
-        return (
-            type(self) is type(other)
-            and self._reward_range == other._reward_range
-            and self._illegal_action_penalty == other._illegal_action_penalty
-            and self._penalty_per_swap == other._penalty_per_swap
-            and self._reward_per_surpass == other._reward_per_surpass
-            and self._good_swap_reward == other._good_swap_reward
-        )
 
 
 class EpisodeRewarder(BasicRewarder):
@@ -340,14 +314,3 @@ class EpisodeRewarder(BasicRewarder):
 
         self._reward_range = (l_bound, u_bound)
 
-    def __eq__(self, other: Any) -> bool:
-        """
-        Checks whether an object 'other' is of the same type as self.
-        returns: a boolean.
-        """
-        return (
-            type(self) is type(other)
-            and self._reward_range == other._reward_range
-            and self._illegal_action_penalty == other._illegal_action_penalty
-            and self._penalty_per_swap == other._penalty_per_swap
-        )
