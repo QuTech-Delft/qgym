@@ -126,10 +126,10 @@ from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
 from qgym.templates import Environment, Rewarder
+from qgym.utils.input_parsing import parse_rewarder
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_graph_is_valid_topology,
-    check_instance,
     check_real,
 )
 
@@ -185,7 +185,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             connection_grid_size=connection_grid_size,
         )
 
-        self._rewarder = self._parse_rewarder(rewarder)
+        self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 
         # Define internal attributes
         self._state = InitialMappingState(
@@ -281,16 +281,3 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         msg = "No valid arguments for instantiation of the initial mapping environment "
         msg += "were provided."
         raise ValueError(msg)
-
-    @staticmethod
-    def _parse_rewarder(rewarder: Union[Rewarder, None]) -> Rewarder:
-        """Parse the `rewarder` given by the user.
-
-        :param rewarder: ``Rewarder`` to use for the environment. If ``None``, then the
-            ``BasicRewarder`` with default settings is used.
-        :return: Rewarder.
-        """
-        if rewarder is None:
-            return BasicRewarder()
-        check_instance(rewarder, "rewarder", Rewarder)
-        return deepcopy(rewarder)

@@ -100,11 +100,11 @@ from qgym.envs.routing.routing_rewarders import BasicRewarder
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.envs.routing.routing_visualiser import RoutingVisualiser
 from qgym.templates import Environment, Rewarder
+from qgym.utils.input_parsing import parse_rewarder
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_bool,
     check_graph_is_valid_topology,
-    check_instance,
     check_int,
 )
 
@@ -182,7 +182,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
 
         # Define internal attributes
-        self._rewarder = self._parse_rewarder(rewarder)
+        self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 
         self._state = RoutingState(
             max_interaction_gates=max_interaction_gates,
@@ -292,16 +292,3 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         msg = "No valid arguments for instantiation of the initial mapping environment "
         msg += "were provided."
         raise ValueError(msg)
-
-    @staticmethod
-    def _parse_rewarder(rewarder: Union[Rewarder, None]) -> Rewarder:
-        """Parse the `rewarder` given by the user.
-
-        :param rewarder: ``Rewarder`` to use for the environment. If ``None``, then the
-            ``BasicRewarder`` is used with default settings.
-        :return: Rewarder.
-        """
-        if rewarder is None:
-            return BasicRewarder()
-        check_instance(rewarder, "rewarder", Rewarder)
-        return deepcopy(rewarder)
