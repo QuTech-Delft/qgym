@@ -16,7 +16,7 @@ Usage:
 from __future__ import annotations
 
 from collections import deque
-from typing import Any, Deque, Dict, List, Optional, Tuple, Union
+from typing import Any, Deque, Dict, Optional, Tuple, Union
 
 import networkx as nx
 import numpy as np

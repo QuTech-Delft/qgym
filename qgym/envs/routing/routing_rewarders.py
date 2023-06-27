@@ -150,25 +150,22 @@ class SwapQualityRewarder(BasicRewarder):
             reward. So, the value should be positive and smaller than the
             penalty_per_swap, in order not to get positive rewards for swaps, default=5.
         """
+        super().__init__(
+            illegal_action_penalty=illegal_action_penalty,
+            penalty_per_swap=penalty_per_swap,
+            reward_per_surpass=reward_per_surpass,
+        )
+
+        self._good_swap_reward = check_real(good_swap_reward, "reward_per_good_swap")
+
+        if not 0 <= self._good_swap_reward < -self._penalty_per_swap:
+            warnings.warn("Good swaps should not result in positive rewards.")
+
         if not observation_booleans_flag:
             msg = "observation_booleans_flag needs to be True to compute"
             msg += "Observation_enhancement_factor"
             warnings.warn(msg)
 
-        self._illegal_action_penalty = check_real(
-            illegal_action_penalty, "illegal_action_penalty"
-        )
-        self._penalty_per_swap = check_real(penalty_per_swap, "penalty_per_swap")
-        self._reward_per_surpass = check_real(reward_per_surpass, "reward_per_surpass")
-        self._good_swap_reward = check_real(good_swap_reward, "reward_per_good_swap")
-        self._set_reward_range()
-
-        if not 0 <= self._good_swap_reward < -self._penalty_per_swap:
-            warnings.warn("Good swaps should not result in positive rewards.")
-
-        warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
-        warn_if_positive(self._penalty_per_swap, "penalty_per_swap")
-        warn_if_negative(self._reward_per_surpass, "reward_per_surpass")
         warn_if_negative(self._good_swap_reward, "reward_per_good_swap")
 
     def compute_reward(
@@ -253,31 +250,6 @@ class EpisodeRewarder(BasicRewarder):
     This could be improved for setting for taking into account the fidelity of edges and
     scoring good and looking at what edges the circuit is executed.
     """
-
-    def __init__(
-        self,
-        illegal_action_penalty: float = -50,
-        penalty_per_swap: float = -1,
-    ) -> None:
-        """Set the rewards and penalties and a flag.
-        :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
-            This value should be negative (but is not required) and defaults to -50.
-        :param penalty_per_swap: Penalty for placing a swap. In general, we want to have
-            as little swaps as possible. Therefore, this value should be negative and
-            defaults to -10.
-        :param reward_per_surpass: Reward given for surpassing a gate. In general, we
-            want to have go to the end of the circuit as fast as possible. Therefore,
-            this value should be positive and defaults to 10.
-        """
-        self._illegal_action_penalty = check_real(
-            illegal_action_penalty, "illegal_action_penalty"
-        )
-        self._penalty_per_swap = check_real(penalty_per_swap, "penalty_per_swap")
-        self._set_reward_range()
-
-        warn_if_positive(self._illegal_action_penalty, "illegal_action_penalty")
-        warn_if_positive(self._penalty_per_swap, "penalty_per_swap")
 
     def compute_reward(
         self,
