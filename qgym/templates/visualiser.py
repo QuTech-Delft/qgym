@@ -82,16 +82,9 @@ class Visualiser:
 
     def close(self) -> None:
         """Close the screen used for rendering."""
-        if hasattr(self, "screen") and self.screen is not None:
+        if self.screen is not None:
             pygame.quit()
             self.screen = None
-
-        if hasattr(self, "screens") and self.screens:
-            try:
-                pygame.quit()
-            except TypeError:
-                pass
-            self.screens: Dict[str, Surface] = {}
 
         self.font: Dict[str, Font] = {}
 

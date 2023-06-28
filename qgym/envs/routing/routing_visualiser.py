@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``Routing`` environment."""
-from typing import Any, Deque, Dict, Tuple, Union
+from typing import Any, Deque, Dict, List, Tuple, Union, cast
 
 import networkx as nx
 import numpy as np
@@ -32,7 +32,8 @@ class RoutingVisualiser(Visualiser):
         self.screen_dimensions = (1600, 700)
         self.font_size = 30
 
-        self.screens: Dict[str, Surface] = {}
+        self.screen = None
+        self.subscreens: List[Surface] = []
         self.font: Dict[str, Font] = {}
 
         self.colors = {
@@ -87,53 +88,52 @@ class RoutingVisualiser(Visualiser):
             screen is open. In 'rgb_array' mode returns an RGB array encoding of the
             rendered image.
         """
-        if not self.screens:
-            screen = self._start_screen("Routing Environment", mode)
-            circuit_screen, graph_screen = self._start_subscreens(screen)
-            self.screens = {
-                "main": screen,
-                "circuit": circuit_screen,
-                "graph": graph_screen,
-            }
+        if self.screen is None:
+            self.screen = self._start_screen("Routing Environment", mode)
+            self.subscreens = list(self._start_subscreens(self.screen))
             pygame.font.init()
 
         if len(self.font) == 0:
             self._setup_fonts()
 
-        pygame.time.delay(10)
+        self.screen.fill(self.colors["background"])
 
-        self.screens["main"].fill(self.colors["background"])
+        self._draw_connection_graph(self.subscreens[1])
+        self._draw_interaction_circuit(state, self.subscreens[0])
 
-        self._draw_connection_graph()
-        self._draw_interaction_circuit(state)
-
-        self._draw_header("Interaction Circuit", "circuit")
-        self._draw_header("Connection Graph", "graph")
+        self._draw_header("Interaction Circuit", self.subscreens[0])
+        self._draw_header("Connection Graph", self.subscreens[1])
 
         return self._display(mode)
 
-    def _draw_interaction_circuit(self, state: RoutingState) -> None:
+    def _draw_interaction_circuit(self, state: RoutingState, screen: Surface) -> None:
         """Draw the interaction circuit on the interaction circuit subscreen.
 
         :param state: Current state.
+        :param screen: (Sub)screen to draw the circuit on.
         """
-        x_text = self.screens["circuit"].get_width() * 0.05
-        x_left = self.screens["circuit"].get_width() * 0.1
-        x_right = self.screens["circuit"].get_width() * 0.95
-        y_distance = self.screens["circuit"].get_height() / (state.n_qubits)
+        x_text = screen.get_width() * 0.05
+        x_left = screen.get_width() * 0.1
+        x_right = screen.get_width() * 0.95
+        y_distance = screen.get_height() / (state.n_qubits)
         y_lines = y_distance * (0.5 + np.arange(state.n_qubits))
         dx_gates = (x_right - x_left) / state.max_interaction_gates
         x_gates = x_left + dx_gates * (0.5 + np.arange(state.max_interaction_gates))
 
         self._draw_circuit_lines(
-            x_text=x_text, x_left=x_left, x_right=x_right, y_lines=y_lines
+            screen, x_text=x_text, x_left=x_left, x_right=x_right, y_lines=y_lines
         )
-        self._draw_interaction_gates(state=state, x_gates=x_gates, y_lines=y_lines)
-        self._draw_observation_reach(state=state, x_left=x_left, x_right=x_right)
-        self._draw_mapping(state=state, x_gates=x_gates, y_lines=y_lines)
+        self._draw_interaction_gates(
+            screen, state=state, x_gates=x_gates, y_lines=y_lines
+        )
+        self._draw_observation_reach(
+            screen, state=state, x_left=x_left, x_right=x_right
+        )
+        self._draw_mapping(screen, state=state, x_gates=x_gates, y_lines=y_lines)
 
     def _draw_circuit_lines(
         self,
+        screen: Surface,
         *,
         x_text: float,
         x_left: float,
@@ -142,6 +142,7 @@ class RoutingVisualiser(Visualiser):
     ) -> None:
         """Draw the circuit lines on the 'circuit' screen and label them.
 
+        :param screen: (Sub)screen to draw the circuit lines on.
         :param x_text: x coordinate of the labels of the circuit lines.
         :param x_left: Left most x coordinate of the circuit lines.
         :param x_right: Right most x coordinate of the circuit lines.
@@ -149,13 +150,13 @@ class RoutingVisualiser(Visualiser):
         """
         for qubit_idx, y_line in enumerate(y_lines):
             draw_wide_line(
-                self.screens["circuit"],
+                screen,
                 self.colors["circuit lines"],
                 (x_left, y_line),
                 (x_right, y_line),
             )
             write_text(
-                screen=self.screens["circuit"],
+                screen,
                 font=self.font["header"],
                 text=f"Q{qubit_idx}",
                 pos=(x_text, y_line),
@@ -164,6 +165,7 @@ class RoutingVisualiser(Visualiser):
 
     def _draw_interaction_gates(
         self,
+        screen: Surface,
         *,
         state: RoutingState,
         x_gates: NDArray[np.float_],
@@ -171,6 +173,7 @@ class RoutingVisualiser(Visualiser):
     ) -> None:
         """Draw the interaction gates on the 'circuit' screen.
 
+        :param screen: (Sub)screen to draw the interactions on.
         :param state: ``RoutingState`` to draw the interaction gates.
         :param x_gates: Array of x coordinates of the swap gates.
         :param y_lines: Array of y coordinates of the circuit lines.
@@ -186,15 +189,16 @@ class RoutingVisualiser(Visualiser):
 
             point1 = (x_gates[i], y_lines[qubit1])
             point2 = (x_gates[i], y_lines[qubit2])
-            draw_wide_line(self.screens["circuit"], color, point1, point2)
-            draw_point(self.screens["circuit"], point1, color)
-            draw_point(self.screens["circuit"], point2, color)
+            draw_wide_line(screen, color, point1, point2)
+            draw_point(screen, point1, color)
+            draw_point(screen, point2, color)
 
     def _draw_observation_reach(
-        self, *, state: RoutingState, x_left: float, x_right: float
+        self, screen: Surface, *, state: RoutingState, x_left: float, x_right: float
     ) -> None:
         """Draw shades on the 'circuit' screen to show the observation size.
 
+        :param screen: (Sub)screen to draw the observation reach on.
         :param state: Current state to draw the observation reach of.
         :param x_left: Left most x coordinate of the circuit lines.
         :param x_right: Right most x coordinate of the circuit lines.
@@ -202,9 +206,9 @@ class RoutingVisualiser(Visualiser):
         dx_gates = (x_right - x_left) / state.max_interaction_gates
 
         shade_left_width = (state.position + 0.5) * dx_gates
-        shade_height = self.screens["circuit"].get_height()
+        shade_height = screen.get_height()
         shade_rect(
-            screen=self.screens["circuit"],
+            screen,
             size=(shade_left_width, shade_height),
             pos=(x_left - 0.25 * dx_gates, 0),
             color=self.colors["hidden"],
@@ -216,7 +220,7 @@ class RoutingVisualiser(Visualiser):
         ) * dx_gates
         if shade_right_width > 0:
             shade_rect(
-                screen=self.screens["circuit"],
+                screen,
                 size=(shade_right_width, shade_height),
                 pos=(x_right - shade_right_width, 0),
                 color=self.colors["hidden"],
@@ -225,6 +229,7 @@ class RoutingVisualiser(Visualiser):
 
     def _draw_mapping(
         self,
+        screen: Surface,
         *,
         state: RoutingState,
         x_gates: NDArray[np.float_],
@@ -232,6 +237,7 @@ class RoutingVisualiser(Visualiser):
     ) -> None:
         """Draw the mapping on the 'circuit' screen.
 
+        :param screen: (Sub)screen to draw the mapping on.
         :param state: ``RoutingState`` to draw the mapping of.
         :param x_gates: Array of x coordinates of the swap gates.
         :param y_lines: Array of y coordinates of the circuit lines.
@@ -255,7 +261,7 @@ class RoutingVisualiser(Visualiser):
                 mapping, y_lines, old_mapping != mapping
             ):
                 write_text(
-                    screen=self.screens["circuit"],
+                    screen,
                     font=self.font["mapping_emph" if is_changed else "mapping"],
                     text=str(physical_qubit),
                     pos=(x_mapping, y_logical_qubit),
@@ -263,7 +269,7 @@ class RoutingVisualiser(Visualiser):
                 )
 
             write_text(
-                screen=self.screens["circuit"],
+                screen,
                 font=self.font["n_swaps"],
                 text=str(n_swaps),
                 pos=(x_mapping, y_lines[0] - 0.3 * dy_lines),
@@ -300,35 +306,34 @@ class RoutingVisualiser(Visualiser):
             mapping[[qubit1, qubit2]] = mapping[[qubit2, qubit1]]
         return i, mapping, n_swaps
 
-    def _draw_connection_graph(self) -> None:
-        """Draw the connection graph on the graph subscreen."""
+    def _draw_connection_graph(self, screen: Surface) -> None:
+        """Draw the connection graph on the graph subscreen.
+
+        :param screen: (Sub)screen to draw the connection graph on.
+        """
         for node_u, node_v in self.graph["edges"]:
             pos_u = self.graph["render_positions"][node_u]
             pos_v = self.graph["render_positions"][node_v]
-            draw_wide_line(self.screens["graph"], self.colors["edge"], pos_u, pos_v)
+            draw_wide_line(screen, self.colors["edge"], pos_u, pos_v)
 
         for label, pos in self.graph["render_positions"].items():
-            draw_point(self.screens["graph"], pos, self.colors["node"], 20)
+            draw_point(screen, pos, self.colors["node"], 20)
             write_text(
-                screen=self.screens["graph"],
-                font=self.font["graph"],
-                text=str(label),
-                pos=pos,
-                color=self.colors["node_labels"],
+                screen, self.font["graph"], str(label), pos, self.colors["node_labels"]
             )
 
-    def _draw_header(self, text: str, screen_name: str) -> None:
+    def _draw_header(self, text: str, screen: Surface) -> None:
         """Draw a header above a subscreen.
 
         :param text: Text of the header.
-        :param screen_name: Name of the subscreen, choose from 'graph' and 'circuit'.
+        :param screen: Subscreen to draw the header of.
         """
         pygame_text = self.font["header"].render(text, True, self.colors["text"])
-        offset = self.screens[screen_name].get_offset()
-        rect = self.screens[screen_name].get_rect(topleft=offset)
+        offset = screen.get_offset()
+        rect = screen.get_rect(topleft=offset)
         text_center = (rect.center[0], rect.y - self.header_spacing / 2)
         text_position = pygame_text.get_rect(center=text_center)
-        self.screens["main"].blit(pygame_text, text_position)
+        cast(Surface, self.screen).blit(pygame_text, text_position)
 
     def _get_render_positions(
         self, graph: nx.Graph, padding: int = 20
@@ -362,11 +367,6 @@ class RoutingVisualiser(Visualiser):
         )
         self.font["n_swaps"] = pygame.font.SysFont("Arial", 28)
         self.font["graph"] = pygame.font.SysFont("Arial", 24)
-
-    @property
-    def is_open(self) -> bool:
-        """Boolean value stating whether a ``pygame.screen`` is currently open."""
-        return not self.screens
 
     @property
     def header_spacing(self) -> float:
