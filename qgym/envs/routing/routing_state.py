@@ -25,6 +25,8 @@ from numpy.typing import NDArray
 import qgym.spaces
 from qgym.templates.state import State
 
+# pylint: disable=too-many-instance-attributes
+
 
 class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """The ``RoutingState`` class.
@@ -218,7 +220,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             )
 
         if self.observe_legal_surpasses:
-            observation_kwargs["is_legal_surpass_booleans"] = qgym.spaces.MultiBinary(
+            observation_kwargs["is_legal_surpass"] = qgym.spaces.MultiBinary(
                 self.max_observation_reach
             )
 
@@ -247,10 +249,10 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             observation["connection_graph"] = self.connection_matrix
 
         if self.observe_legal_surpasses:
-            is_legal_surpass_booleans = np.asarray(
+            is_legal_surpass = np.array(
                 [self.is_legal_surpass(*gate) for gate in interaction_gates_ahead]
             )
-            observation["is_legal_surpass_booleans"] = is_legal_surpass_booleans
+            observation["is_legal_surpass"] = is_legal_surpass
 
         return observation
 

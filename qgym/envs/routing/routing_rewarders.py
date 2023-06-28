@@ -207,14 +207,10 @@ class SwapQualityRewarder(BasicRewarder):
             old_state's observation.
         """
         try:
-            is_legal_surpass = old_state.obtain_observation()[
-                "is_legal_surpass_booleans"
-            ]
+            is_legal_surpass = old_state.obtain_observation()["is_legal_surpass"]
             old_executable_gates_ahead = int(is_legal_surpass.sum())
 
-            is_legal_surpass = new_state.obtain_observation()[
-                "is_legal_surpass_booleans"
-            ]
+            is_legal_surpass = new_state.obtain_observation()["is_legal_surpass"]
             new_executable_gates_ahead = int(is_legal_surpass.sum())
         except KeyError as error:
             if not old_state.observe_legal_surpasses:
