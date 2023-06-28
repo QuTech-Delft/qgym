@@ -265,6 +265,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> None:
+        """Place a swap gate at the current position with the given logical qubits."""
         self.swap_gates_inserted.append((self.position, logical_qubit1, logical_qubit2))
 
     def is_legal_swap(
@@ -312,7 +313,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         :return: A randomly generated interaction circuit.
         """
-
         circuit = np.zeros((n_gates, 2), dtype=int)
         for idx in range(n_gates):
             circuit[idx] = self.rng.choice(
