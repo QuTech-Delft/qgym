@@ -48,8 +48,6 @@ def test_init(
         observe_connection_graph=True,
     )
     assert state.max_interaction_gates == max_interaction_gates
-    upper_limited = min(max_interaction_gates, max_observation_reach)
-    assert state.observation_reach <= upper_limited
     assert isinstance(state.swap_gates_inserted, Iterable)
     assert state.position == 0
     assert state.steps_done == 0

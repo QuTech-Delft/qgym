@@ -120,7 +120,7 @@ def test_episode_rewarder(circuit: ArrayLike, rewards: Iterable[float]) -> None:
     "circuit,rewards",
     [
         ([(0, 1), (1, 2), (2, 3), (3, 0)], [3, 3, 3, 3]),
-        ([(0, 1), (0, 2), (1, 3)], [3, -5, 3, 3]),
+        ([(0, 1), (0, 2), (1, 3)], [3, -8, 3, 3]),
     ],
     ids=["no-swap", "1-swap"],
 )

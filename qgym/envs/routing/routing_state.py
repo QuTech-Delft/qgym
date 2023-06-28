@@ -99,9 +99,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # Observation attributes
         self.position: int = 0
         self.max_observation_reach = max_observation_reach
-        self.observation_reach = int(
-            min(self.max_observation_reach, len(self.interaction_circuit))
-        )
+
         self.observe_legal_surpasses = observe_legal_surpasses
         self.observe_connection_graph = observe_connection_graph
 
@@ -140,9 +138,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # Reset position, counters
         self.position = 0
         self.steps_done = 0
-        self.observation_reach = int(
-            min(self.max_observation_reach, len(self.interaction_circuit))
-        )
 
         # resetting swap_gates_inserted and mapping
         self.swap_gates_inserted = deque()
@@ -157,7 +152,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         return {
             "Steps done": self.steps_done,
             "Position": self.position,
-            "Observation reach": self.observation_reach,
             "Interaction gates ahead": np.array(
                 [
                     self.interaction_circuit[idx]
@@ -183,9 +177,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # surpass current_gate if legal
         if surpass and self.is_legal_surpass(*self.interaction_circuit[self.position]):
             self.position += 1
-            # update observation reach
-            if len(self.interaction_circuit) - self.position < self.observation_reach:
-                self.observation_reach -= 1
 
         # elif insert swap-gate if legal
         elif not surpass and self.is_legal_swap(qubit1, qubit2):
@@ -235,17 +226,15 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     ) -> Dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
         # construct interaction_gates_ahead
-        gate_slice = slice(self.position, self.position + self.observation_reach)
+        gate_slice = slice(self.position, self.position + self.max_observation_reach)
         interaction_gates_ahead = self.interaction_circuit[gate_slice]
-        if self.observation_reach < self.max_observation_reach:
-            diff = self.max_observation_reach - self.observation_reach
-            interaction_gates_ahead = np.pad(
-                interaction_gates_ahead,
-                ((0, diff), (0, 0)),
-                constant_values=self.n_qubits,
-            )
+        n_pad = self.max_observation_reach - len(interaction_gates_ahead)
+        interaction_gates_ahead = np.pad(
+            interaction_gates_ahead,
+            ((0, n_pad), (0, 0)),
+            constant_values=self.n_qubits,
+        )
 
-        observation: Dict[str, NDArray[np.int_]]
         observation = {
             "interaction_gates_ahead": interaction_gates_ahead.flatten(),
             "mapping": self.mapping,

@@ -225,7 +225,7 @@ class SwapQualityRewarder(BasicRewarder):
 
         return (
             new_executable_gates_ahead - old_executable_gates_ahead
-        ) / old_state.observation_reach
+        ) / old_state.max_observation_reach
 
     def _set_reward_range(self) -> None:
         """Set the reward range."""
