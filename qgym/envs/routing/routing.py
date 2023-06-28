@@ -87,8 +87,6 @@ Action Space:
 
 
 """
-import warnings
-from copy import deepcopy
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 import networkx as nx
@@ -154,6 +152,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
         """
+        # Check user input and parse it to a uniform format
         connection_graph = parse_connection_graph(
             connection_graph, connection_graph_matrix, connection_grid_size
         )

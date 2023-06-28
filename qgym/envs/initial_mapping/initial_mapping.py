@@ -166,6 +166,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
         """
+        # Check user input and parse it to a uniform format
         interaction_graph_edge_probability = check_real(
             interaction_graph_edge_probability,
             "interaction_graph_edge_probability",
