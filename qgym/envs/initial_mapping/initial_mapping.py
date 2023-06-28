@@ -173,9 +173,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             u_bound=1,
         )
         connection_graph = parse_connection_graph(
-            connection_graph=connection_graph,
-            connection_graph_matrix=connection_graph_matrix,
-            connection_grid_size=connection_grid_size,
+            connection_graph, connection_graph_matrix, connection_grid_size
         )
 
         self._rewarder = parse_rewarder(rewarder, BasicRewarder)

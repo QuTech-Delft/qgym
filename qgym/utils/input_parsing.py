@@ -37,46 +37,37 @@ def parse_rewarder(rewarder: Optional[Rewarder], default: Type[Rewarder]) -> Rew
 
 
 def parse_connection_graph(
-    connection_graph: Optional[nx.Graph] = None,
-    connection_graph_matrix: Optional[ArrayLike] = None,
-    connection_grid_size: Optional[Gridspecs] = None,
+    graph: Optional[nx.Graph] = None,
+    matrix: Optional[ArrayLike] = None,
+    grid_size: Optional[Gridspecs] = None,
 ) -> nx.Graph:
     """Parse the user input (given in ``__init__``) to create a connection graph.
 
-    :param connection_graph: ``networkx.Graph`` representation of the QPU topology.
-    :param connection_graph_matrix: Adjacency matrix representation of the QPU
-        topology
-    :param connection_grid_size: Size of the connection graph when the topology is a
-        grid.
-    :raise ValueError: When `connection_graph`, `connection_graph_matrix` and
-        `connection_grid_size` are all None.
+    :param graph: ``networkx.Graph`` representation of the QPU topology.
+    :param matrix: Adjacency matrix representation of the QPU topology.
+    :param size: Size of the connection graph when the topology is a grid.
+    :raise ValueError: When `graph`, `matrix` and `grid_size` are all ``None``.
     :return: Connection graph as a ``networkx.Graph``.
     """
-    if connection_graph is not None:
-        if connection_graph_matrix is not None:
-            msg = "Both 'connection_graph' and 'connection_graph_matrix' were given. "
-            msg += "Using 'connection_graph'."
-            warnings.warn(msg)
-        if connection_grid_size is not None:
-            msg = "Both 'connection_graph' and 'connection_grid_size' were given. "
-            msg += "Using 'connection_graph'."
-            warnings.warn(msg)
+    if graph is not None:
+        if matrix is not None:
+            warnings.warn("Both 'graph' and 'matrix' were given. Using 'graph'.")
+        if grid_size is not None:
+            warnings.warn("Both 'graph' and 'grid_size' were given. Using 'graph'.")
 
-        check_graph_is_valid_topology(connection_graph, "connection_graph")
+        check_graph_is_valid_topology(graph, "graph")
 
         # deepcopy the graphs for safety
-        return deepcopy(connection_graph)
+        return deepcopy(graph)
 
-    if connection_graph_matrix is not None:
-        if connection_grid_size is not None:
-            msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
-            msg += "given. Using 'connection_graph_matrix'."
-            warnings.warn(msg)
-        connection_graph_matrix = check_adjacency_matrix(connection_graph_matrix)
-        return nx.from_numpy_array(connection_graph_matrix)
-    if connection_grid_size is not None:
+    if matrix is not None:
+        if grid_size is not None:
+            warnings.warn("Both 'matrix' and 'grid_size' were given. Using 'matrix'.")
+        matrix = check_adjacency_matrix(matrix)
+        return nx.from_numpy_array(matrix)
+
+    if grid_size is not None:
         # Generate connection grid graph
-        return nx.grid_graph(connection_grid_size)
+        return nx.grid_graph(grid_size)
 
-    msg = "No valid arguments for instantiation a connection graph were given"
-    raise ValueError(msg)
+    raise ValueError("No valid arguments for a connection graph were given")

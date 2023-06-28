@@ -155,9 +155,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             networkx.generators.lattice.grid_graph.html#grid-graph
         """
         connection_graph = parse_connection_graph(
-            connection_graph=connection_graph,
-            connection_graph_matrix=connection_graph_matrix,
-            connection_grid_size=connection_grid_size,
+            connection_graph, connection_graph_matrix, connection_grid_size
         )
 
         max_interaction_gates = check_int(

@@ -29,49 +29,36 @@ class TestParseConnectionGraph:
     def test_parse_connection_graph(self, expected_output: nx.Graph) -> None:
         graph = nx.Graph()
         graph.add_edge(0, 1)
-        output_graph = parse_connection_graph(connection_graph=graph)
+        output_graph = parse_connection_graph(graph=graph)
         assert nx.is_isomorphic(output_graph, expected_output)
         # Test if it is a copy
         assert graph is not output_graph
 
     def test_parse_connection_graph(self, expected_output: nx.Graph) -> None:
-        output_graph = parse_connection_graph(connection_graph_matrix=[[0, 1], [1, 0]])
+        output_graph = parse_connection_graph(matrix=[[0, 1], [1, 0]])
         assert nx.is_isomorphic(output_graph, expected_output)
 
     def test_parse_connection_graph(self, expected_output: nx.Graph) -> None:
-        output_graph = parse_connection_graph(connection_grid_size=(1, 2))
+        output_graph = parse_connection_graph(grid_size=(1, 2))
         assert nx.is_isomorphic(output_graph, expected_output)
 
 
 class TestParseConnectionGraphWarnings:
     @pytest.mark.parametrize(
-        "connection_graph_matrix,connection_grid_size",
-        [("test", None), (None, "test"), ("test", "test")],
+        "matrix,grid_size", [("test", None), (None, "test"), ("test", "test")]
     )
-    def test_nx_graph_and_other(self, connection_graph_matrix, connection_grid_size):
+    def test_nx_graph_and_other(self, matrix, grid_size):
         small_graph = nx.Graph()
         small_graph.add_edge(0, 1)
 
         with pytest.warns(UserWarning):
-            parse_connection_graph(
-                connection_graph=small_graph,
-                connection_graph_matrix=connection_graph_matrix,
-                connection_grid_size=connection_grid_size,
-            )
+            parse_connection_graph(small_graph, matrix, grid_size)
 
     def test_array_like_and_gridspec(self):
         with pytest.warns(UserWarning):
-            parse_connection_graph(
-                connection_graph=None,
-                connection_graph_matrix=[[0, 1], [1, 0]],
-                connection_grid_size="test",
-            )
+            parse_connection_graph(matrix=[[0, 1], [1, 0]], grid_size="test")
 
 
 def test_parse_connection_graph_exception():
     with pytest.raises(ValueError):
-        parse_connection_graph(
-            connection_graph=None,
-            connection_graph_matrix=None,
-            connection_grid_size=None,
-        )
+        parse_connection_graph()
