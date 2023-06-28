@@ -87,7 +87,7 @@ Action Space:
 
 
 """
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 import networkx as nx
 import numpy as np
@@ -222,9 +222,10 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # parse interaction circuit
         if interaction_circuit is not None:
             interaction_circuit = np.array(interaction_circuit)
+            max_gates = cast(RoutingState, self._state).max_interaction_gates
             if (
                 interaction_circuit.ndim != 2
-                or interaction_circuit.shape[0] > self._state.max_interaction_gates  # type: ignore[attr-defined]
+                or interaction_circuit.shape[0] > max_gates
                 or interaction_circuit.shape[1] != 2
             ):
                 msg = "'interaction_circuit' should have be an ArrayLike with shape "

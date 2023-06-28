@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``Routing`` environment."""
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Deque, Dict, List, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -274,7 +274,7 @@ class RoutingVisualiser(Visualiser):
         self,
         *,
         mapping: NDArray[np.int_],
-        swap_gates_inserted: List[Tuple[int, int, int]],
+        swap_gates_inserted: Deque[Tuple[int, int, int]],
         position: int,
         starting_idx: int = 0,
     ) -> Tuple[int, NDArray[np.int_], int]:

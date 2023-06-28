@@ -153,7 +153,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def obtain_info(
         self,
-    ) -> Dict[str, Union[int, list[Tuple[int, int, int]], NDArray[np.int_]]]:
+    ) -> Dict[str, Union[int, Deque[Tuple[int, int, int]], NDArray[np.int_]]]:
         """:return: Optional debugging info for the current state."""
         return {
             "Steps done": self.steps_done,
