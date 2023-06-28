@@ -27,8 +27,8 @@ def simple_state_fixture(quad_graph: nx.Graph) -> RoutingState:
         max_interaction_gates=50,
         max_observation_reach=5,
         connection_graph=quad_graph,
-        observation_booleans_flag=False,
-        observation_connection_flag=True,
+        observe_legal_surpasses=False,
+        observe_connection_graph=True,
     )
 
 
@@ -44,8 +44,8 @@ def test_init(
         max_interaction_gates=max_interaction_gates,
         max_observation_reach=max_observation_reach,
         connection_graph=quad_graph,
-        observation_booleans_flag=False,
-        observation_connection_flag=True,
+        observe_legal_surpasses=False,
+        observe_connection_graph=True,
     )
     assert state.max_interaction_gates == max_interaction_gates
     upper_limited = min(max_interaction_gates, max_observation_reach)

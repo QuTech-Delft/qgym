@@ -27,8 +27,8 @@ def _episode_generator(
         max_interaction_gates=10,
         max_observation_reach=5,
         connection_graph=connection_graph,
-        observation_booleans_flag=True,
-        observation_connection_flag=True,
+        observe_legal_surpasses=True,
+        observe_connection_graph=True,
     )
     new_state.reset(interaction_circuit=interaction_circuit)
 
@@ -145,6 +145,6 @@ def test_swap_quality_rewarder_error() -> None:
     rewarder = SwapQualityRewarder()
 
     old_state, action, new_state = next(episode_generator)
-    old_state.observation_booleans_flag = False
+    old_state.observe_legal_surpasses = False
     with pytest.raises(ValueError):
         rewarder.compute_reward(old_state=old_state, action=action, new_state=new_state)

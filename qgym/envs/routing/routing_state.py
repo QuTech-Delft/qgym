@@ -9,8 +9,8 @@ Usage:
     >>>             max_interaction_gates = 100,
     >>>             max_observation_reach = 20,
     >>>             connection_graph = connection_graph,
-    >>>             observation_booleans_flag = True,
-    >>>             observation_connection_flag = False,
+    >>>             observe_legal_surpasses = True,
+    >>>             observe_connection_graph = False,
     >>>             )
 """
 from __future__ import annotations
@@ -60,8 +60,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         max_interaction_gates: int,
         max_observation_reach: int,
         connection_graph: nx.Graph,
-        observation_booleans_flag: bool,
-        observation_connection_flag: bool,
+        observe_legal_surpasses: bool,
+        observe_connection_graph: bool,
     ) -> None:
         """Init of the ``RoutingState`` class.
 
@@ -74,14 +74,14 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         :param connection_graph: ``networkx`` graph representation of the QPU topology.
             Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
-        :param observation_booleans_flag: If ``True`` a list, of length
-        observation_reach, containing booleans, indicating whether the gates ahead can
-        be executed, will be added to the observation_space.
-        :param observation_connection_flag: If ``True``, the connection_graph will be
-        incorporated in the observation_space. Reason to set it False is: QPU-topology
-        practically doesn't change a lot for one machine, hence an agent is typically
-        trained for just one QPU-topology which can be learned implicitly by rewards
-        and/or the booleans if they are shown, depending on the other flag above.
+        :param observe_legal_surpasses: If ``True`` a boolean array of length
+            observation_reach indicating whether the gates ahead can be executed, will
+            be added to the `observation_space`.
+        :param observe_connection_graph: If ``True``, the connection_graph will be
+            incorporated in the `observation_space`. Reason to set it ``False`` is:
+            QPU-topology doesn't change, hence an agent could infer the topology from
+            the training data without needing to explicitly add it to the observations.
+            This reduced the size `observation_space`.
         """
         self.steps_done: int = 0
 
@@ -91,7 +91,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # interaction circuit + mapping
         self.max_interaction_gates = max_interaction_gates
         number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
-        self.interaction_circuit: NDArray[np.int_]
         self.interaction_circuit = self.generate_random_interaction_circuit(
             number_of_gates
         )
@@ -103,8 +102,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.observation_reach = int(
             min(self.max_observation_reach, len(self.interaction_circuit))
         )
-        self.observation_booleans_flag = observation_booleans_flag
-        self.observation_connection_flag = observation_connection_flag
+        self.observe_legal_surpasses = observe_legal_surpasses
+        self.observe_connection_graph = observe_connection_graph
 
         # Keep track of at what position which swap_gate is inserted
         self.swap_gates_inserted: Deque[Tuple[int, int, int]] = deque()
@@ -216,7 +215,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             "mapping": mapping,
         }
 
-        if self.observation_connection_flag:
+        if self.observe_connection_graph:
             observation_kwargs["connection_graph"] = qgym.spaces.Box(
                 low=0,
                 high=np.iinfo(np.int64).max,
@@ -224,7 +223,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 dtype=np.int64,
             )
 
-        if self.observation_booleans_flag:
+        if self.observe_legal_surpasses:
             observation_kwargs["is_legal_surpass_booleans"] = qgym.spaces.MultiBinary(
                 self.max_observation_reach
             )
@@ -252,13 +251,13 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             "mapping": self.mapping,
         }
 
-        if self.observation_connection_flag:
+        if self.observe_connection_graph:
             connection_graph = nx.to_numpy_array(
                 self.connection_graph, dtype=np.int_
             ).flatten()
             observation["connection_graph"] = connection_graph
 
-        if self.observation_booleans_flag:
+        if self.observe_legal_surpasses:
             is_legal_surpass_booleans = np.asarray(
                 [self.is_legal_surpass(*gate) for gate in interaction_gates_ahead]
             )

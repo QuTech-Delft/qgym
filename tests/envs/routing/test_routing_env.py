@@ -10,12 +10,12 @@ from qgym.envs.routing.routing import Routing
     "kwargs",
     [
         {"connection_grid_size": (2, 2)},
-        {"connection_grid_size": (2, 2), "observation_booleans_flag": False},
-        {"connection_grid_size": (2, 2), "observation_connection_flag": False},
+        {"connection_grid_size": (2, 2), "observe_legal_surpasses": False},
+        {"connection_grid_size": (2, 2), "observe_connection_graph": False},
         {
             "connection_grid_size": (2, 2),
-            "observation_booleans_flag": False,
-            "observation_connection_flag": False,
+            "observe_legal_surpasses": False,
+            "observe_connection_graph": False,
         },
     ],
 )

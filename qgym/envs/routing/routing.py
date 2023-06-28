@@ -51,11 +51,11 @@ State Space:
     * `position`: The position in the original connection circuit.
     * `max_observation_reach`:  Caps the maximum amount of gates the agent can see ahead
       when making an observation.
-    * `observation_booleans_flag`: If ``True`` a list called `boolean_flags` will be
+    * `observe_legal_surpasses`: If ``True`` a list called `boolean_flags` will be
       added to the observation space. The list `boolean_flags` has length
       `observation_reach` and containing Boolean values indicating whether the gates
       ahead can be executed.
-    * `observation_connection_flag`: If ``True``, the connection_graph will be
+    * `observe_connection_graph`: If ``True``, the connection_graph will be
         incorporated in the observation_space.
     * `swap_gates_inserted`: A list of 3-tuples of integers, to register which gates
         to insert and where. Every tuple (g, q1, q2) represents the insertion of a
@@ -111,8 +111,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self,
         max_interaction_gates: int = 10,
         max_observation_reach: int = 5,
-        observation_booleans_flag: bool = True,
-        observation_connection_flag: bool = True,
+        observe_legal_surpasses: bool = True,
+        observe_connection_graph: bool = True,
         *,
         connection_graph: Optional[nx.Graph] = None,
         connection_graph_matrix: Optional[ArrayLike] = None,
@@ -129,10 +129,10 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             agent can see ahead when making an observation. When bigger than
             `max_interaction_gates` the agent will always see all gates ahead in an
             observation
-        :param observation_booleans_flag: If ``True`` a list, of length
-            observation_reach, containing booleans, indicating whether the gates ahead
-            can be executed, will be added to the `observation_space`.
-        :param observation_connection_flag: If ``True``, the connection_graph will be
+        :param observe_legal_surpasses: If ``True`` a boolean array of length
+            observation_reach indicating whether the gates ahead can be executed, will
+            be added to the `observation_space`.
+        :param observe_connection_graph: If ``True``, the connection_graph will be
             incorporated in the observation_space. Reason to set it ``False`` is:
             QPU-topology practically doesn't change a lot for one machine, hence an
             agent is typically trained for just one QPU-topology which can be learned
@@ -166,11 +166,11 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             l_bound=0,
             u_bound=max_interaction_gates,
         )
-        observation_booleans_flag = check_bool(
-            observation_booleans_flag, "observation_booleans_flag", safe=False
+        observe_legal_surpasses = check_bool(
+            observe_legal_surpasses, "observe_legal_surpasses", safe=False
         )
-        observation_booleans_flag = check_bool(
-            observation_connection_flag, "observation_connection_flag", safe=False
+        observe_connection_graph = check_bool(
+            observe_connection_graph, "observe_connection_graph", safe=False
         )
 
         # Define internal attributes
@@ -180,8 +180,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             max_interaction_gates=max_interaction_gates,
             max_observation_reach=max_observation_reach,
             connection_graph=connection_graph,
-            observation_booleans_flag=observation_booleans_flag,
-            observation_connection_flag=observation_connection_flag,
+            observe_legal_surpasses=observe_legal_surpasses,
+            observe_connection_graph=observe_connection_graph,
         )
         self.observation_space = self._state.create_observation_space()
 
