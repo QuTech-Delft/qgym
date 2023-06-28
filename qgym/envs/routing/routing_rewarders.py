@@ -216,13 +216,12 @@ class SwapQualityRewarder(BasicRewarder):
                 "is_legal_surpass_booleans"
             ]
             new_executable_gates_ahead = int(is_legal_surpass.sum())
-        except KeyError as e:
+        except KeyError as error:
             if not old_state.observation_booleans_flag:
                 msg = "observation_booleans_flag needs to be True to compute"
                 msg += "observation_enhancement_factor"
-                raise ValueError(msg)
-            else:
-                raise e
+                raise ValueError(msg) from error
+            raise error
 
         return (
             new_executable_gates_ahead - old_executable_gates_ahead
