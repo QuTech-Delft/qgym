@@ -55,7 +55,7 @@ def _episode_generator(
     name="rewarder",
     params=(
         BasicRewarder(),
-        SwapQualityRewarder(observation_booleans_flag=True),
+        SwapQualityRewarder(),
         EpisodeRewarder(),
     ),
 )
@@ -131,10 +131,20 @@ def test_swap_quality_rewarder(circuit: ArrayLike, rewards: Iterable[float]) -> 
         penalty_per_swap=-10,
         reward_per_surpass=3,
         good_swap_reward=5,
-        observation_booleans_flag=True,
     )
     for (old_state, action, new_state), reward in zip(episode_generator, rewards):
         computed_reward = rewarder.compute_reward(
             old_state=old_state, action=action, new_state=new_state
         )
         assert computed_reward == reward
+
+
+def test_swap_quality_rewarder_error() -> None:
+    circuit = [(0, 2)]
+    episode_generator = _episode_generator(circuit)
+    rewarder = SwapQualityRewarder()
+
+    old_state, action, new_state = next(episode_generator)
+    old_state.observation_booleans_flag = False
+    with pytest.raises(ValueError):
+        rewarder.compute_reward(old_state=old_state, action=action, new_state=new_state)

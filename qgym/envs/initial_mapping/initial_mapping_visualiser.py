@@ -107,8 +107,6 @@ class InitialMappingVisualiser(Visualiser):
         if len(self.font) == 0:
             self.font["header"] = pygame.font.SysFont("Arial", self.font_size)
 
-        pygame.time.delay(10)
-
         self.screen.fill(self.colors["background"])
 
         mapped_graph = self._get_mapped_graph(

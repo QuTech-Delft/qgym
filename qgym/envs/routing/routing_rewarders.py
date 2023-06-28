@@ -132,7 +132,6 @@ class SwapQualityRewarder(BasicRewarder):
         penalty_per_swap: float = -10,
         reward_per_surpass: float = 10,
         good_swap_reward: float = 5,
-        observation_booleans_flag: bool = False,
     ) -> None:
         """Set the rewards and penalties and a flag.
         :param illegal_action_penalty: Penalty for performing an illegal action. An
@@ -160,11 +159,6 @@ class SwapQualityRewarder(BasicRewarder):
 
         if not 0 <= self._good_swap_reward < -self._penalty_per_swap:
             warnings.warn("Good swaps should not result in positive rewards.")
-
-        if not observation_booleans_flag:
-            msg = "observation_booleans_flag needs to be True to compute"
-            msg += "Observation_enhancement_factor"
-            warnings.warn(msg)
 
         warn_if_negative(self._good_swap_reward, "reward_per_good_swap")
 
@@ -206,16 +200,29 @@ class SwapQualityRewarder(BasicRewarder):
         new_state: RoutingState,
     ) -> float:
         """Calculates the change of the observation reach as an effect of a swap.
+
         :param old_state: ``RoutingState`` before the current action.
         :param new_state: ``RoutingState`` after the current action.
         :return float: A fraction that expresses the procentual improvement w.r.t the
-        old_state's observation.
+            old_state's observation.
         """
-        is_legal_surpass = old_state.obtain_observation()["is_legal_surpass_booleans"]
-        old_executable_gates_ahead = int(is_legal_surpass.sum())
+        try:
+            is_legal_surpass = old_state.obtain_observation()[
+                "is_legal_surpass_booleans"
+            ]
+            old_executable_gates_ahead = int(is_legal_surpass.sum())
 
-        is_legal_surpass = new_state.obtain_observation()["is_legal_surpass_booleans"]
-        new_executable_gates_ahead = int(is_legal_surpass.sum())
+            is_legal_surpass = new_state.obtain_observation()[
+                "is_legal_surpass_booleans"
+            ]
+            new_executable_gates_ahead = int(is_legal_surpass.sum())
+        except KeyError as e:
+            if not old_state.observation_booleans_flag:
+                msg = "observation_booleans_flag needs to be True to compute"
+                msg += "observation_enhancement_factor"
+                raise ValueError(msg)
+            else:
+                raise e
 
         return (
             new_executable_gates_ahead - old_executable_gates_ahead

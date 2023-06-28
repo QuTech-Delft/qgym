@@ -243,7 +243,6 @@ class RoutingVisualiser(Visualiser):
         :param y_lines: Array of y coordinates of the circuit lines.
         """
         dx_gates = x_gates[1] - x_gates[0]
-        dy_lines = y_lines[1] - y_lines[0]
         mapping = np.arange(state.n_qubits, dtype=int)
         starting_idx = 0
         for i in range(state.position):
@@ -272,7 +271,7 @@ class RoutingVisualiser(Visualiser):
                 screen,
                 font=self.font["n_swaps"],
                 text=str(n_swaps),
-                pos=(x_mapping, y_lines[0] - 0.3 * dy_lines),
+                pos=(x_mapping, 1.3 * y_lines[0] - 0.3 * y_lines[1]),
                 color=self.colors["mapping"],
             )
 

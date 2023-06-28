@@ -235,14 +235,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self,
     ) -> Dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
+        # construct interaction_gates_ahead
         gate_slice = slice(self.position, self.position + self.observation_reach)
         interaction_gates_ahead = self.interaction_circuit[gate_slice]
-
-        # construct interaction_gates_ahead
-        interaction_gates_ahead_list = []
-        for idx in range(self.position, self.position + self.observation_reach):
-            interaction_gates_ahead_list.append(self.interaction_circuit[idx][0])
-            interaction_gates_ahead_list.append(self.interaction_circuit[idx][1])
         if self.observation_reach < self.max_observation_reach:
             diff = self.max_observation_reach - self.observation_reach
             interaction_gates_ahead = np.pad(

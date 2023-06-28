@@ -113,7 +113,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     ) -> InitialMappingState:
         """Reset the state and set a new interaction graph.
 
-        To be used after an episode sis finished.
+        To be used after an episode is finished.
 
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call i.e., before any learning is done.
