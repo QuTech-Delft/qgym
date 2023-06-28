@@ -83,7 +83,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             the training data without needing to explicitly add it to the observations.
             This reduced the size `observation_space`.
         """
-        self.steps_done: int = 0
+        self.steps_done = 0
 
         # topology
         self.connection_graph = connection_graph
@@ -101,7 +101,10 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.max_observation_reach = max_observation_reach
 
         self.observe_legal_surpasses = observe_legal_surpasses
-        self.observe_connection_graph = observe_connection_graph
+        if observe_connection_graph:
+            self.connection_matrix = nx.to_numpy_array(
+                connection_graph, dtype=np.int_
+            ).flatten()
 
         # Keep track of at what position which swap_gate is inserted
         self.swap_gates_inserted: Deque[Tuple[int, int, int]] = deque()
@@ -206,7 +209,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             "mapping": mapping,
         }
 
-        if self.observe_connection_graph:
+        if hasattr(self, "connection_matrix"):
             observation_kwargs["connection_graph"] = qgym.spaces.Box(
                 low=0,
                 high=np.iinfo(np.int64).max,
@@ -240,11 +243,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             "mapping": self.mapping,
         }
 
-        if self.observe_connection_graph:
-            connection_graph = nx.to_numpy_array(
-                self.connection_graph, dtype=np.int_
-            ).flatten()
-            observation["connection_graph"] = connection_graph
+        if hasattr(self, "connection_matrix"):
+            observation["connection_graph"] = self.connection_matrix
 
         if self.observe_legal_surpasses:
             is_legal_surpass_booleans = np.asarray(
