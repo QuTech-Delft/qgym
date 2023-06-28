@@ -110,13 +110,10 @@ Example 2:
 
 
 """
-import warnings
-from copy import deepcopy
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
 
 import networkx as nx
 import numpy as np
-from networkx import Graph, grid_graph
 from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
@@ -126,12 +123,8 @@ from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_parsing import parse_rewarder
-from qgym.utils.input_validation import (
-    check_adjacency_matrix,
-    check_graph_is_valid_topology,
-    check_real,
-)
+from qgym.utils.input_parsing import parse_connection_graph, parse_rewarder
+from qgym.utils.input_validation import check_real
 
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
@@ -143,7 +136,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         self,
         interaction_graph_edge_probability: float,
         *,
-        connection_graph: Optional[Graph] = None,
+        connection_graph: Optional[nx.Graph] = None,
         connection_graph_matrix: Optional[ArrayLike] = None,
         connection_grid_size: Optional[Gridspecs] = None,
         rewarder: Optional[Rewarder] = None,
@@ -179,7 +172,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             l_bound=0,
             u_bound=1,
         )
-        connection_graph = self._parse_connection_graph(
+        connection_graph = parse_connection_graph(
             connection_graph=connection_graph,
             connection_graph_matrix=connection_graph_matrix,
             connection_grid_size=connection_grid_size,
@@ -206,7 +199,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         *,
         seed: Optional[int] = None,
         return_info: bool = False,
-        interaction_graph: Optional[Graph] = None,
+        interaction_graph: Optional[nx.Graph] = None,
         **_kwargs: Any,
     ) -> Union[
         Dict[str, NDArray[np.int_]],
@@ -232,52 +225,3 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
     def add_random_edge_weights(self) -> None:
         """Add random weights to the connection graph and interaction graph."""
         cast(InitialMappingState, self._state).add_random_edge_weights()
-
-    @staticmethod
-    def _parse_connection_graph(
-        *,
-        connection_graph: Any,
-        connection_graph_matrix: Any,
-        connection_grid_size: Any,
-    ) -> Graph:
-        """Parse the user input (given in ``__init__``) to create a connection graph.
-
-        :param connection_graph: ``networkx.Graph`` representation of the QPU topology.
-        :param connection_graph_matrix: Adjacency matrix representation of the QPU
-            topology
-        :param connection_grid_size: Size of the connection graph when the topology is a
-            grid.
-        :raise ValueError: When `connection_graph`, `connection_graph_matrix` and
-            `connection_grid_size` are all None.
-        :return: Connection graph as a ``networkx.Graph``.
-        """
-        if connection_graph is not None:
-            if connection_graph_matrix is not None:
-                msg = "Both 'connection_graph' and 'connection_graph_matrix' were "
-                msg += "given. Using 'connection_graph'."
-                warnings.warn(msg)
-            if connection_grid_size is not None:
-                msg = "Both 'connection_graph' and 'connection_grid_size' were given. "
-                msg += "Using 'connection_graph'."
-                warnings.warn(msg)
-
-            check_graph_is_valid_topology(connection_graph, "connection_graph")
-
-            # deepcopy the graphs for safety
-            return deepcopy(connection_graph)
-
-        if connection_graph_matrix is not None:
-            if connection_grid_size is not None:
-                msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
-                msg += "given. Using 'connection_graph_matrix'."
-                warnings.warn(msg)
-            connection_graph_matrix = check_adjacency_matrix(connection_graph_matrix)
-            return nx.from_numpy_array(connection_graph_matrix)
-
-        if connection_grid_size is not None:
-            # Generate connection grid graph
-            return grid_graph(connection_grid_size)
-
-        msg = "No valid arguments for instantiation of the initial mapping environment "
-        msg += "were provided."
-        raise ValueError(msg)

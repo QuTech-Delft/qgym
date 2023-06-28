@@ -100,13 +100,8 @@ from qgym.envs.routing.routing_rewarders import BasicRewarder
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.envs.routing.routing_visualiser import RoutingVisualiser
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_parsing import parse_rewarder
-from qgym.utils.input_validation import (
-    check_adjacency_matrix,
-    check_bool,
-    check_graph_is_valid_topology,
-    check_int,
-)
+from qgym.utils.input_parsing import parse_connection_graph, parse_rewarder
+from qgym.utils.input_validation import check_bool, check_int
 
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
 
@@ -159,7 +154,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
         """
-        connection_graph = self._parse_connection_graph(
+        connection_graph = parse_connection_graph(
             connection_graph=connection_graph,
             connection_graph_matrix=connection_graph_matrix,
             connection_grid_size=connection_grid_size,
@@ -244,51 +239,3 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         return super().reset(
             seed=seed, return_info=return_info, interaction_circuit=interaction_circuit
         )
-
-    @staticmethod
-    def _parse_connection_graph(
-        *,
-        connection_graph: Any,
-        connection_graph_matrix: Any,
-        connection_grid_size: Any,
-    ) -> nx.Graph:
-        """Parse the user input (given in ``__init__``) to create a connection graph.
-
-        :param connection_graph: ``networkx.Graph`` representation of the QPU topology.
-        :param connection_graph_matrix: Adjacency matrix representation of the QPU
-            topology
-        :param connection_grid_size: Size of the connection graph when the topology is a
-            grid.
-        :raise ValueError: When `connection_graph`, `connection_graph_matrix` and
-            `connection_grid_size` are all None.
-        :return: Connection graph as a ``networkx.Graph``.
-        """
-        if connection_graph is not None:
-            if connection_graph_matrix is not None:
-                msg = "Both 'connection_graph' and 'connection_graph_matrix' were "
-                msg += "given. Using 'connection_graph'."
-                warnings.warn(msg)
-            if connection_grid_size is not None:
-                msg = "Both 'connection_graph' and 'connection_grid_size' were given. "
-                msg += "Using 'connection_graph'."
-                warnings.warn(msg)
-
-            check_graph_is_valid_topology(connection_graph, "connection_graph")
-
-            # deepcopy the graphs for safety
-            return deepcopy(connection_graph)
-
-        if connection_graph_matrix is not None:
-            if connection_grid_size is not None:
-                msg = "Both 'connection_graph_matrix' and 'connection_grid_size' were "
-                msg += "given. Using 'connection_graph_matrix'."
-                warnings.warn(msg)
-            connection_graph_matrix = check_adjacency_matrix(connection_graph_matrix)
-            return nx.from_numpy_array(connection_graph_matrix)
-        if connection_grid_size is not None:
-            # Generate connection grid graph
-            return nx.grid_graph(connection_grid_size)
-
-        msg = "No valid arguments for instantiation of the initial mapping environment "
-        msg += "were provided."
-        raise ValueError(msg)
