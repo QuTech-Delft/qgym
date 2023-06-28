@@ -37,7 +37,7 @@ def _episode_generator(
             break
 
         next_gate = new_state.interaction_circuit[new_state.position]
-        if new_state._is_legal_surpass(*next_gate):
+        if new_state.is_legal_surpass(*next_gate):
             action = np.array([1, 0, 0])
         else:
             physical_qubit1 = new_state.mapping[next_gate[0]]

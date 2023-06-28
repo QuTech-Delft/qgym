@@ -182,14 +182,14 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         surpass, qubit1, qubit2 = action
         # surpass current_gate if legal
-        if surpass and self._is_legal_surpass(*self.interaction_circuit[self.position]):
+        if surpass and self.is_legal_surpass(*self.interaction_circuit[self.position]):
             self.position += 1
             # update observation reach
             if len(self.interaction_circuit) - self.position < self.observation_reach:
                 self.observation_reach -= 1
 
         # elif insert swap-gate if legal
-        elif not surpass and self._is_legal_swap(qubit1, qubit2):
+        elif not surpass and self.is_legal_swap(qubit1, qubit2):
             self._place_swap_gate(qubit1, qubit2)
             self._update_mapping(qubit1, qubit2)
 
@@ -265,7 +265,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         if self.observation_booleans_flag:
             is_legal_surpass_booleans = np.asarray(
-                [self._is_legal_surpass(*gate) for gate in interaction_gates_ahead]
+                [self.is_legal_surpass(*gate) for gate in interaction_gates_ahead]
             )
             observation["is_legal_surpass_booleans"] = is_legal_surpass_booleans
 
@@ -282,7 +282,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     ) -> None:
         self.swap_gates_inserted.append((self.position, logical_qubit1, logical_qubit2))
 
-    def _is_legal_swap(
+    def is_legal_swap(
         self,
         logical_qubit1: int,
         logical_qubit2: int,
@@ -296,7 +296,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             (physical_qubit1, physical_qubit2) in self.connection_graph.edges
         )
 
-    def _is_legal_surpass(
+    def is_legal_surpass(
         self,
         logical_qubit1: int,
         logical_qubit2: int,

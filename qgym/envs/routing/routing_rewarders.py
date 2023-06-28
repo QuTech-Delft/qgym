@@ -95,9 +95,9 @@ class BasicRewarder(Rewarder):
         """
         if action[0]:
             qubit1, qubit2 = old_state.interaction_circuit[old_state.position]
-            return not old_state._is_legal_surpass(qubit1, qubit2)
+            return not old_state.is_legal_surpass(qubit1, qubit2)
 
-        return not old_state._is_legal_swap(action[1], action[2])
+        return not old_state.is_legal_swap(action[1], action[2])
 
     def _set_reward_range(self) -> None:
         """Set the reward range."""

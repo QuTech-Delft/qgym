@@ -76,13 +76,13 @@ def test_interaction_circuit_properties(simple_state: RoutingState) -> None:
 class TestCanBeExecuted:
     @pytest.mark.parametrize("qubit1, qubit2", [(0, 3), (0, 1), (1, 2), (2, 3)])
     def test_succes(self, simple_state: RoutingState, qubit1: int, qubit2: int) -> None:
-        assert simple_state._is_legal_surpass(qubit1, qubit2)
-        assert simple_state._is_legal_surpass(qubit2, qubit1)
+        assert simple_state.is_legal_surpass(qubit1, qubit2)
+        assert simple_state.is_legal_surpass(qubit2, qubit1)
 
     @pytest.mark.parametrize("qubit1, qubit2", [(1, 3), (0, 2)])
     def test_fail(self, simple_state: RoutingState, qubit1: int, qubit2: int) -> None:
-        assert not simple_state._is_legal_surpass(qubit1, qubit2)
-        assert not simple_state._is_legal_surpass(qubit2, qubit1)
+        assert not simple_state.is_legal_surpass(qubit1, qubit2)
+        assert not simple_state.is_legal_surpass(qubit2, qubit1)
 
 
 def test_obtain_observation(simple_state: RoutingState) -> None:

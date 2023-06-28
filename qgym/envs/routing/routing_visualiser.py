@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``Routing`` environment."""
-from typing import Any, Deque, Dict, List, Tuple, Union
+from typing import Any, Deque, Dict, Tuple, Union
 
 import networkx as nx
 import numpy as np
