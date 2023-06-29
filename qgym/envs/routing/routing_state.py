@@ -48,8 +48,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         gates the agent can see ahead when making an observation. When bigger than
         max_interaction_gates the agent will always see all gates ahead in an
         observation.
-    :ivar observation_reach: An integer representing the current amount of gates the
-        agent can see when making an observation.
     :ivar swap_gates_inserted: A deque of 3-tuples of integers, to register which gates
         to insert and where. Every tuple (g, q1, q2) represents the insertion of a
         SWAP-gate acting on logical qubits q1 and q2 before gate g in the
@@ -77,8 +75,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
         :param observe_legal_surpasses: If ``True`` a boolean array of length
-            observation_reach indicating whether the gates ahead can be executed, will
-            be added to the `observation_space`.
+            max_observation_reach indicating whether the gates ahead can be executed, 
+            will be added to the `observation_space`.
         :param observe_connection_graph: If ``True``, the connection_graph will be
             incorporated in the `observation_space`. Reason to set it ``False`` is:
             QPU-topology doesn't change, hence an agent could infer the topology from
