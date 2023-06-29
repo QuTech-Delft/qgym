@@ -17,6 +17,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install requirements
+        run: pip install setuptools==65.5.0 pip==21
         run: pip install pytest .
       - name: Test with pytest
         run: pytest tests
