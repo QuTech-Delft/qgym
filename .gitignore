@@ -1,8 +1,10 @@
 # Jetbrains
 /.idea/
 
+# venvs
+/venv*/
+
 # Python
-/venv/
 /build/
 /dist/
 /*.egg-info/
