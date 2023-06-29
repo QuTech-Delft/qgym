@@ -8,13 +8,13 @@ Usage:
 """
 from typing import List, Optional, Sequence, Union
 
-import gym.spaces
+import gymnasium.spaces
 import numpy as np
 from numpy.random import Generator, default_rng
 from numpy.typing import NDArray
 
 
-class MultiBinary(gym.spaces.MultiBinary):
+class MultiBinary(gymnasium.spaces.MultiBinary):
     """Multi-binary action/observation space for use in RL environments."""
 
     def __init__(
@@ -41,12 +41,3 @@ class MultiBinary(gym.spaces.MultiBinary):
         """
         self._np_random = default_rng(seed)
         return [seed]
-
-    def sample(self) -> NDArray[np.int_]:
-        """Sample a random element from this space.
-
-        :return: ``NDArray`` of shape (n,) containing random binary values.
-        """
-        sample: NDArray[np.int_]
-        sample = self.np_random.integers(2, size=self.n, dtype=self.dtype)
-        return sample

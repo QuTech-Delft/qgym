@@ -15,21 +15,25 @@ Usage:
      [1. 1.]], (3, 2), float64))
 """
 import typing
-from typing import List, Optional
+from typing import List, Optional, Sequence, Tuple, Union
 
-import gym.spaces
+import gymnasium.spaces
 from numpy.random import Generator, default_rng
 
 
-class Dict(gym.spaces.Dict):
+class Dict(gymnasium.spaces.Dict):
     """Dictionary of other action/observation spaces for use in RL environments."""
 
     def __init__(
         self,
-        spaces: Optional[typing.Dict[str, gym.Space]] = None,
+        spaces: Optional[
+            Union[
+                typing.Dict[str, gymnasium.Space], Sequence[Tuple[str, gymnasium.Space]]
+            ]
+        ] = None,
         *,
         rng: Optional[Generator] = None,
-        **spaces_kwargs: gym.Space
+        **spaces_kwargs: gymnasium.Space
     ) -> None:
         """Initialize a ``Dict`` space, with string valued keys and spaces inheriting
         from ``gym.Space`` as values.

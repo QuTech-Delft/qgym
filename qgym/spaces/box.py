@@ -9,25 +9,25 @@ Usage:
      [20 20 20]], (2, 3), int32)
 
 """
-from typing import List, Optional, Sequence, SupportsFloat, Union
+from typing import Any, List, Optional, Sequence, SupportsFloat, Type, Union
 
-import gym.spaces
+import gymnasium.spaces
 import numpy as np
 from numpy.random import Generator, default_rng
-from numpy.typing import DTypeLike, NDArray
+from numpy.typing import NDArray
 
 
-class Box(gym.spaces.Box):
+class Box(gymnasium.spaces.Box):
     """An $n$-dimensional box space, i.e., collection of (possibly) open-ended
     intervals.
     """
 
     def __init__(
         self,
-        low: Union[SupportsFloat, NDArray[np.float_]],
-        high: Union[SupportsFloat, NDArray[np.float_]],
+        low: Union[SupportsFloat, NDArray[Any]],
+        high: Union[SupportsFloat, NDArray[Any]],
         shape: Optional[Sequence[int]] = None,
-        dtype: DTypeLike = np.float_,
+        dtype: Type[np.floating[Any]] | Type[np.integer[Any]] = np.float_,
         *,
         rng: Optional[Generator] = None,
     ) -> None:
