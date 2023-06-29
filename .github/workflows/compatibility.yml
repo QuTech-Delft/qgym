@@ -19,6 +19,6 @@ jobs:
       - name: Downgrade setuptools and pip
         run: pip install setuptools==65.5.0 pip==21
       - name: Install requirements
-        run: pip install pytest .
+        run: pip install .[test]
       - name: Test with pytest
         run: pytest tests
