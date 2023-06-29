@@ -12,7 +12,7 @@ import importlib
 
 year = datetime.date.today().year
 project = package_name
-copyright = "2022, QuTech & TNO"
+copyright = "2023, QuTech & TNO"
 author = "QuTech & TNO"
 version = importlib.import_module(package_name).__version__
 
@@ -30,6 +30,25 @@ extensions = [
 
 napoleon_include_init_with_doc = True
 napoleon_include_special_with_doc = True
+
+# Make ArrayLike pretty. The `typehints_formatter`` must be a function with an
+# annotation as first argument and a sphinx.config.Config as second argument. Returns
+# the desired string or None for default behaviour.
+try:
+    from typing import Optional
+
+    from numpy.typing import ArrayLike
+
+    def typehints_formatter(annotation, _):
+        if annotation == ArrayLike:
+            return ":py:const:`ArrayLike`"
+        if annotation == Optional[ArrayLike]:
+            return ":py:const:`Optional[ArrayLike]`"
+        return None
+
+except ImportError:
+    pass
+
 
 mathjax3_config = {
     "tex2jax": {

@@ -17,7 +17,7 @@
 
 # Sphinx
 /docs_build/
-/docs_html/
+/docs/
 
 # Data/pictures
 /images/
