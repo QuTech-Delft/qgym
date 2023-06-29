@@ -25,8 +25,6 @@ Usage:
     the state and action space.
 
 """
-from typing import Any
-
 import numpy as np
 from numpy.typing import NDArray
 
@@ -154,15 +152,6 @@ class BasicRewarder(Rewarder):
             u_bound = 0
 
         self._reward_range = (l_bound, u_bound)
-
-    def __eq__(self, other: Any) -> bool:
-        return (
-            type(self) is type(other)
-            and self._reward_range == other._reward_range
-            and self._illegal_action_penalty == other._illegal_action_penalty
-            and self._reward_per_edge == other._reward_per_edge
-            and self._penalty_per_edge == other._penalty_per_edge
-        )
 
 
 class SingleStepRewarder(BasicRewarder):

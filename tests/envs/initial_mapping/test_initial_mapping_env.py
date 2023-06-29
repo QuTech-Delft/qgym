@@ -79,38 +79,3 @@ def test_init_custom_connection_grid_size(small_graph, connection_grid_size):
 def test_init_custom_rewarder(rewarder):
     env = InitialMapping(1, connection_grid_size=(2, 2), rewarder=rewarder)
     assert env.rewarder == rewarder
-
-
-@pytest.mark.parametrize(
-    "connection_graph_matrix,connection_grid_size",
-    [("test", None), (None, "test"), ("test", "test")],
-)
-def test_parse_connection_graph_warnings(
-    small_graph, connection_graph_matrix, connection_grid_size
-):
-    with pytest.warns(UserWarning):
-        InitialMapping._parse_connection_graph(
-            connection_graph=small_graph,
-            connection_graph_matrix=connection_graph_matrix,
-            connection_grid_size=connection_grid_size,
-        )
-
-
-def test_parse_connection_graph_warnings2():
-    with pytest.warns(UserWarning):
-        InitialMapping._parse_connection_graph(
-            connection_graph=None,
-            connection_graph_matrix=np.zeros([2, 2]),
-            connection_grid_size="test",
-        )
-
-
-def test_parse_connection_graph_exception():
-    msg = "No valid arguments for instantiation of the initial mapping environment were"
-    msg += " provided."
-    with pytest.raises(ValueError, match=msg):
-        InitialMapping._parse_connection_graph(
-            connection_graph=None,
-            connection_graph_matrix=None,
-            connection_grid_size=None,
-        )

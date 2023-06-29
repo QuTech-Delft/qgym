@@ -159,6 +159,7 @@ from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.templates import Environment, Rewarder
+from qgym.utils.input_parsing import parse_rewarder
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
@@ -205,7 +206,7 @@ class Scheduling(
         dependency_depth = check_int(dependency_depth, "dependency_depth", l_bound=1)
         random_circuit_mode = self._parse_random_circuit_mode(random_circuit_mode)
         rulebook = self._parse_rulebook(rulebook)
-        self._rewarder = self._parse_rewarder(rewarder)
+        self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 
         self._state = SchedulingState(
             machine_properties=machine_properties,
@@ -322,16 +323,3 @@ class Scheduling(
             return CommutationRulebook()
         check_instance(rulebook, "rulebook", CommutationRulebook)
         return deepcopy(rulebook)
-
-    @staticmethod
-    def _parse_rewarder(rewarder: Union[Rewarder, None]) -> Rewarder:
-        """Parse the rewarder given by the user.
-
-        :param rewarder: Rewarder to use for the environment. If ``None``, then a
-            ``BasicRewarder`` is used.
-        :return: Rewarder.
-        """
-        if rewarder is None:
-            return BasicRewarder()
-        check_instance(rewarder, "rewarder", Rewarder)
-        return deepcopy(rewarder)
