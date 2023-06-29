@@ -1,5 +1,6 @@
-"""Generic abstract base class for a RL rewarder. All rewarders should inherit from
-``Rewarder``.
+"""Generic abstract base class for a RL rewarder.
+
+All rewarders should inherit from ``Rewarder``.
 """
 from abc import abstractmethod
 from typing import Any, Tuple

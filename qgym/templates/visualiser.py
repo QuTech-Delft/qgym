@@ -1,5 +1,6 @@
-"""Generic abstract base class for visualisers of RL environments. All visualisers
-should inherit from ``Visualiser``.
+"""Generic abstract base class for visualisers of RL environments.
+
+All visualisers should inherit from ``Visualiser``.
 """
 from abc import abstractmethod
 from typing import Any, Dict, Optional, Tuple, Union, cast

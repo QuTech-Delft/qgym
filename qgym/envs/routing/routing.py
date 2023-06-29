@@ -203,12 +203,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self,
         *,
         seed: Optional[int] = None,
-        return_info: bool = False,
         interaction_circuit: Optional[ArrayLike] = None,
-        **_kwargs: Any,
-    ) -> Union[
-        Dict[str, NDArray[np.int_]], Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]]
-    ]:
+    ) -> Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]]:
         """Reset the state and set/create a new interaction circuit.
 
         To be used after an episode is finished.
@@ -235,5 +231,5 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 raise ValueError(msg)
         # call super method for dealing with the general stuff
         return super().reset(
-            seed=seed, return_info=return_info, interaction_circuit=interaction_circuit
+            seed=seed, options={"interaction_circuit": interaction_circuit}
         )

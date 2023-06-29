@@ -75,7 +75,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             Each node represents a physical qubit and each edge represents a connection
             in the QPU topology.
         :param observe_legal_surpasses: If ``True`` a boolean array of length
-            max_observation_reach indicating whether the gates ahead can be executed, 
+            max_observation_reach indicating whether the gates ahead can be executed,
             will be added to the `observation_space`.
         :param observe_connection_graph: If ``True``, the connection_graph will be
             incorporated in the `observation_space`. Reason to set it ``False`` is:

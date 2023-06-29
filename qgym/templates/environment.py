@@ -1,23 +1,24 @@
-"""Generic abstract base class for RL environments. All environments should inherit
-from ``Environment``.
+"""Generic abstract base class for RL environments.
+
+All environments should inherit from ``Environment``.
 """
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Generic, List, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
-import gym
+import gymnasium
 import numpy as np
-from gym import Space
+from gymnasium import Space
 from numpy.random import Generator, default_rng
 from numpy.typing import NDArray
 
 from qgym.templates.rewarder import Rewarder
-from qgym.templates.state import ActionT, ObservationT, State
+from qgym.templates.state import ActType, ObsType, State
 from qgym.templates.visualiser import Visualiser
 from qgym.utils.input_validation import check_string
 
 
-class Environment(Generic[ObservationT, ActionT], gym.Env):
+class Environment(gymnasium.Env[ObsType, ActType]):
     """RL Environment containing the current state of the problem.
 
     Each subclass should set at least the following attributes:
@@ -34,7 +35,7 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     action_space: Space
     observation_space: Space
     metadata: Dict[str, Any]
-    _state: State[ObservationT, ActionT]
+    _state: State[ObsType, ActType]
     _rewarder: Rewarder
     _visualiser: Visualiser
 
@@ -42,10 +43,10 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
     _rng: Optional[Generator] = None
 
     def step(
-        self, action: ActionT, *, return_info: bool = True
+        self, action: ActType, *, return_info: bool = True
     ) -> Union[
-        Tuple[ObservationT, float, bool],
-        Tuple[ObservationT, float, bool, Dict[Any, Any]],
+        Tuple[ObsType, float, bool, bool],
+        Tuple[ObsType, float, bool, bool, Dict[Any, Any]],
     ]:
         """Update the state based on the input action. Return observation, reward,
         done-indicator and (optional) debugging info based on the updated state.
@@ -58,7 +59,9 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
             2. Reward for the given action;
             3. Boolean value stating whether the new state is a final state (i.e., if
                we are done);
-            4. Optional additional (debugging) information. This entry is only given if
+            4. Boolean value stating whether the episode is truncated. Currently always
+               returns ``False``.
+            5. Optional additional (debugging) information. This entry is only given if
                `return_info` is ``True``.
         """
         old_state = deepcopy(self._state)
@@ -68,18 +71,20 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
                 self._state.obtain_observation(),
                 self._compute_reward(old_state, action),
                 self._state.is_done(),
+                False,
                 self._state.obtain_info(),
             )
         return (
             self._state.obtain_observation(),
             self._compute_reward(old_state, action),
             self._state.is_done(),
+            False,
         )
 
     @abstractmethod
     def reset(
-        self, *, seed: Optional[int] = None, return_info: bool = False, **_kwargs: Any
-    ) -> Union[ObservationT, Tuple[ObservationT, Dict[Any, Any]]]:
+        self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
+    ) -> Tuple[ObsType, Dict[str, Any]]:
         """Reset the environment and load a new random initial state. To be used after
         an episode is finished. Optionally, one can provide additional options to
         configure the reset.
@@ -91,23 +96,9 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
             defined for a specific environment.
         :return: Initial observation and optionally also debugging info.
         """
-        if seed is not None:
-            self.seed(seed)
-
-        self._state.reset(seed=seed, **_kwargs)
-
-        if return_info:
-            return self._state.obtain_observation(), self._state.obtain_info()
-        return self._state.obtain_observation()
-
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
-        """Seed the rng of this space, using ``numpy.random.default_rng``.
-
-        :param seed: Seed for the rng. Defaults to ``None``
-        :return: The used seeds.
-        """
-        self._rng = default_rng(seed)
-        return [seed]
+        super().reset(seed=seed)
+        self._state.reset(seed=seed, **options)
+        return self._state.obtain_observation(), self._state.obtain_info()
 
     def render(self, mode: str = "human") -> Union[bool, NDArray[np.int_]]:
         """Render the current state using pygame.
@@ -162,8 +153,8 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
 
     def _compute_reward(
         self,
-        old_state: State[ObservationT, ActionT],
-        action: ActionT,
+        old_state: State[ObsType, ActType],
+        action: ActType,
         *args: Any,
         **kwargs: Any
     ) -> float:

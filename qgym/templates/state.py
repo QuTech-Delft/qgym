@@ -7,14 +7,14 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import Any, Dict, Generic, List, Optional, TypeVar
 
-from gym.spaces import Space
+from gymnasium.spaces import Space
 from numpy.random import Generator, default_rng
 
-ActionT = TypeVar("ActionT")
-ObservationT = TypeVar("ObservationT")
+ObsType = TypeVar("ObsType")
+ActType = TypeVar("ActType")
 
 
-class State(Generic[ObservationT, ActionT]):
+class State(Generic[ObsType, ActType]):
     """RL State containing the current state of the problem.
 
     Each subclass should set at least the following attributes:
@@ -28,7 +28,7 @@ class State(Generic[ObservationT, ActionT]):
     @abstractmethod
     def reset(
         self, *, seed: Optional[int] = None, **_kwargs: Any
-    ) -> State[ObservationT, ActionT]:
+    ) -> State[ObsType, ActType]:
         """Reset the state.
 
         :returns: Self"""
@@ -59,7 +59,7 @@ class State(Generic[ObservationT, ActionT]):
         self._rng = rng
 
     @abstractmethod
-    def update_state(self, action: ActionT) -> State[ObservationT, ActionT]:
+    def update_state(self, action: ActType) -> State[ObsType, ActType]:
         """Update the state of this ``Environment`` using the given action.
 
         :param action: Action to be executed.
@@ -67,7 +67,7 @@ class State(Generic[ObservationT, ActionT]):
         raise NotImplementedError
 
     @abstractmethod
-    def obtain_observation(self) -> ObservationT:
+    def obtain_observation(self) -> ObsType:
         """:return: Observation based on the current state."""
         raise NotImplementedError
 

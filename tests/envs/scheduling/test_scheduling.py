@@ -36,17 +36,17 @@ def diamond_env(diamond_mp_dict):
 
 
 def naive_schedule_algorithm(scheduling_env, circuit=None):
-    obs = scheduling_env.reset(circuit=circuit)
+    obs, _ = scheduling_env.reset(circuit=circuit)
     action = np.array([0, 0])
     done = False
 
     while not done:
         while obs["legal_actions"].any():
             action[0] = obs["legal_actions"].argmax()
-            obs, _, done, _ = scheduling_env.step(action)
+            obs, _, done, _, _ = scheduling_env.step(action)
 
         action[1] = 1
-        obs, _, done, _ = scheduling_env.step(action)
+        obs, _, done, _, _ = scheduling_env.step(action)
         action[1] = 0
     return scheduling_env._state.circuit_info.schedule
 
@@ -98,7 +98,7 @@ def test_action_space(diamond_mp_dict) -> None:
 def test_scheduled_after(diamond_mp_dict) -> None:
     env = Scheduling(diamond_mp_dict, dependency_depth=2)
     circuit = [Gate("cnot", 1, 2), Gate("x", 2, 2), Gate("cnot", 1, 3)]
-    obs = env.reset(circuit=circuit)
+    obs, _ = env.reset(circuit=circuit)
 
     expected_scheduled_after = np.zeros(400, dtype=int)
     expected_scheduled_after[0] = 1
@@ -109,7 +109,7 @@ def test_scheduled_after(diamond_mp_dict) -> None:
 
 def test_same_gates_commute(diamond_env) -> None:
     circuit = [Gate("cnot", 1, 2), Gate("cnot", 1, 2)]
-    obs = diamond_env.reset(circuit=circuit)
+    obs, _ = diamond_env.reset(circuit=circuit)
 
     expected_scheduled_after = np.zeros(200, dtype=int)
 
@@ -118,7 +118,7 @@ def test_same_gates_commute(diamond_env) -> None:
 
 def test_legal_actions(diamond_env) -> None:
     circuit = [Gate("cnot", 1, 2), Gate("x", 2, 2), Gate("cnot", 1, 3)]
-    obs = diamond_env.reset(circuit=circuit)
+    obs, _ = diamond_env.reset(circuit=circuit)
 
     expected_legal_actions = np.zeros(200, dtype=bool)
     expected_legal_actions[1] = True

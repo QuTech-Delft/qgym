@@ -224,13 +224,8 @@ class Scheduling(
         self,
         *,
         seed: Optional[int] = None,
-        return_info: bool = False,
         circuit: Optional[List[Gate]] = None,
-        **_kwargs: Any,
-    ) -> Union[
-        Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]],
-        Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], Dict[Any, Any]],
-    ]:
+    ) -> Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], Dict[str, Any]]:
         """Reset the state, action space and step number.and load a new (random) initial
         state. To be used after an episode is finished.
 
@@ -245,7 +240,7 @@ class Scheduling(
         :return: Initial observation and optionally also debugging info.
         """
         # call super method for dealing with the general stuff
-        return super().reset(seed=seed, return_info=return_info, circuit=circuit)
+        return super().reset(seed=seed, options={"circuit": circuit})
 
     def get_circuit(self, mode: str = "human") -> List[Gate]:
         """Return the quantum circuit of this episode.

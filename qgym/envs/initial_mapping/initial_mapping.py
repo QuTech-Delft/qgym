@@ -206,13 +206,8 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         self,
         *,
         seed: Optional[int] = None,
-        return_info: bool = False,
         interaction_graph: Optional[nx.Graph] = None,
-        **_kwargs: Any,
-    ) -> Union[
-        Dict[str, NDArray[np.int_]],
-        Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]],
-    ]:
+    ) -> Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]]:
         """Reset the state and set a new interaction graph.
 
         To be used after an episode is finished.
@@ -227,7 +222,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         """
         # call super method for dealing with the general stuff
         return super().reset(
-            seed=seed, return_info=return_info, interaction_graph=interaction_graph
+            seed=seed, options={"interaction_graph": interaction_graph}
         )
 
     def add_random_edge_weights(self) -> None:
