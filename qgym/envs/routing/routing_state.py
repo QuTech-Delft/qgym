@@ -136,6 +136,18 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 number_of_gates
             )
         else:
+            interaction_circuit = np.array(interaction_circuit)
+            max_gates = self.max_interaction_gates
+            if (
+                interaction_circuit.ndim != 2
+                or interaction_circuit.shape[0] > max_gates
+                or interaction_circuit.shape[1] != 2
+            ):
+                msg = "'interaction_circuit' should have be an ArrayLike with shape "
+                msg += (
+                    "(n_interactions,2), where n_interactions<=max_interaction_gates."
+                )
+                raise ValueError(msg)
             self.interaction_circuit = interaction_circuit
 
         # Reset position, counters
@@ -204,6 +216,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
         mapping = qgym.spaces.MultiDiscrete(np.full(self.n_qubits, self.n_qubits))
 
+        observation_kwargs: Dict[str, Any]
         observation_kwargs = {
             "interaction_gates_ahead": interaction_gates_ahead,
             "mapping": mapping,
@@ -222,7 +235,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 self.max_observation_reach
             )
 
-        return qgym.spaces.Dict(**observation_kwargs)
+        return qgym.spaces.Dict(observation_kwargs)
 
     def obtain_observation(
         self,

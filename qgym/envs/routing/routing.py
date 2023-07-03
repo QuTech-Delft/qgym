@@ -87,7 +87,7 @@ Action Space:
 
 
 """
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple, Union, cast
 
 import networkx as nx
 import numpy as np
@@ -207,7 +207,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self,
         *,
         seed: Optional[int] = None,
-        interaction_circuit: Optional[ArrayLike] = None,
+        options: Optional[Mapping[str, Any]] = None,
     ) -> Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]]:
         """Reset the state and set/create a new interaction circuit.
 
@@ -215,25 +215,11 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call i.e., before any learning is done.
-        :param return_info: Whether to receive debugging info. Default is ``False``.
-        :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optionally debugging info.
+        :param options: Mapping with keyword arguments with addition options for the
+            reset. Keywords can be found in the description of ``RoutingState.reset()``
+        :return: Initial observation and debugging info.
         """
-        # parse interaction circuit
-        if interaction_circuit is not None:
-            interaction_circuit = np.array(interaction_circuit)
-            max_gates = cast(RoutingState, self._state).max_interaction_gates
-            if (
-                interaction_circuit.ndim != 2
-                or interaction_circuit.shape[0] > max_gates
-                or interaction_circuit.shape[1] != 2
-            ):
-                msg = "'interaction_circuit' should have be an ArrayLike with shape "
-                msg += (
-                    "(n_interactions,2), where n_interactions<=max_interaction_gates."
-                )
-                raise ValueError(msg)
         # call super method for dealing with the general stuff
         return super().reset(
-            seed=seed, options={"interaction_circuit": interaction_circuit}
+            seed=seed, options=options
         )

@@ -238,9 +238,10 @@ class Scheduling(
         :param return_info: Whether to receive debugging info.
         :return: Initial observation and optionally debugging info.
         :param options: Mapping with keyword arguments with addition options for the
-            reset. Keywords can be found in the description of ``Scheduling.reset()``
+            reset. Keywords can be found in the description of
+            ``SchedulingState.reset()``
         :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optionally also debugging info.
+        :return: Initial observation and also debugging info.
         """
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, options=options)
