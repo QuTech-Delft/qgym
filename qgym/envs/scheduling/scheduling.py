@@ -228,7 +228,7 @@ class Scheduling(
         self,
         *,
         seed: Optional[int] = None,
-        circuit: Optional[List[Gate]] = None,
+        options: Optional[Mapping[str, Any]] = None,
     ) -> Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], Dict[str, Any]]:
         """Reset the state, action space and step number.and load a new (random) initial
         state. To be used after an episode is finished.
@@ -237,14 +237,13 @@ class Scheduling(
             (optionally) on the first reset call, i.e., before any learning is done.
         :param return_info: Whether to receive debugging info.
         :return: Initial observation and optionally debugging info.
-        :param circuit: Optional list of a circuit for the next episode, each entry in
-            the list should be a ``Gate``. When a circuit is give, no random circuit
-            will be generated.
+        :param options: Mapping with keyword arguments with addition options for the
+            reset. Keywords can be found in the description of ``Scheduling.reset()``
         :param _kwargs: Additional options to configure the reset.
         :return: Initial observation and optionally also debugging info.
         """
         # call super method for dealing with the general stuff
-        return super().reset(seed=seed, options={"circuit": circuit})
+        return super().reset(seed=seed, options=options)
 
     def get_circuit(self, mode: str = "human") -> List[Gate]:
         """Return the quantum circuit of this episode.

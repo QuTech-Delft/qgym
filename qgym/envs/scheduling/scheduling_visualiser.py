@@ -16,7 +16,7 @@ from qgym.utils.visualisation.wrappers import write_text
 class SchedulingVisualiser(Visualiser):
     """Visualiser class for the ``Scheduling`` environment."""
 
-    def __init__(self, initial_state: SchedulingState) -> None:
+    def __init__(self, initial_state: SchedulingState, render_mode: Optional[str]) -> None:
         """Init of the ``SchedulingVisualiser``.
 
         :param initial_state: ``SchedulingState`` object containing the initial state of
@@ -28,6 +28,7 @@ class SchedulingVisualiser(Visualiser):
         # Rendering data
         self.screen = None
         self.screen_dimensions = (1500, 800)
+        self.render_mode = render_mode
         self.offset = {"x-axis": 100, "y-axis": 0}
         self.colors = {
             "gate_fill": BLUE,
