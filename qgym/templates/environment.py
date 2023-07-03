@@ -4,18 +4,15 @@ All environments should inherit from ``Environment``.
 """
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 import gymnasium
-import numpy as np
 from gymnasium import Space
 from numpy.random import Generator, default_rng
-from numpy.typing import NDArray
 
 from qgym.templates.rewarder import Rewarder
 from qgym.templates.state import ActType, ObsType, State
-from qgym.templates.visualiser import Visualiser
-from qgym.utils.input_validation import check_string
+from qgym.templates.visualiser import RenderFrame, Visualiser
 
 
 class Environment(gymnasium.Env[ObsType, ActType]):
@@ -32,8 +29,8 @@ class Environment(gymnasium.Env[ObsType, ActType]):
     """
 
     # --- These attributes should be set in any subclass ---
-    action_space: Space
-    observation_space: Space
+    action_space: Space[Any]
+    observation_space: Space[Any]
     metadata: Dict[str, Any]
     _state: State[ObsType, ActType]
     _rewarder: Rewarder
@@ -42,12 +39,7 @@ class Environment(gymnasium.Env[ObsType, ActType]):
     # --- Other attributes ---
     _rng: Optional[Generator] = None
 
-    def step(
-        self, action: ActType, *, return_info: bool = True
-    ) -> Union[
-        Tuple[ObsType, float, bool, bool],
-        Tuple[ObsType, float, bool, bool, Dict[Any, Any]],
-    ]:
+    def step(self, action: ActType) -> Tuple[ObsType, float, bool, bool, Dict[Any, Any]]:
         """Update the state based on the input action. Return observation, reward,
         done-indicator and (optional) debugging info based on the updated state.
 
@@ -61,29 +53,23 @@ class Environment(gymnasium.Env[ObsType, ActType]):
                we are done);
             4. Boolean value stating whether the episode is truncated. Currently always
                returns ``False``.
-            5. Optional additional (debugging) information. This entry is only given if
-               `return_info` is ``True``.
+            5. Additional (debugging) information.
         """
         old_state = deepcopy(self._state)
         self._state.update_state(action)
-        if return_info:
-            return (
-                self._state.obtain_observation(),
-                self._compute_reward(old_state, action),
-                self._state.is_done(),
-                False,
-                self._state.obtain_info(),
-            )
+        self._visualiser.step(self._state)
+
         return (
             self._state.obtain_observation(),
             self._compute_reward(old_state, action),
             self._state.is_done(),
             False,
+            self._state.obtain_info(),
         )
 
     @abstractmethod
     def reset(
-        self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
+        self, *, seed: Optional[int] = None, options: Optional[Mapping[str, Any]] = None
     ) -> Tuple[ObsType, Dict[str, Any]]:
         """Reset the environment and load a new random initial state. To be used after
         an episode is finished. Optionally, one can provide additional options to
@@ -97,27 +83,22 @@ class Environment(gymnasium.Env[ObsType, ActType]):
         :return: Initial observation and optionally also debugging info.
         """
         super().reset(seed=seed)
+        if options is None:
+            options = {}
         self._state.reset(seed=seed, **options)
+        self._visualiser.step(self._state)
         return self._state.obtain_observation(), self._state.obtain_info()
 
-    def render(self, mode: str = "human") -> Union[bool, NDArray[np.int_]]:
+    def render(self) -> Union[RenderFrame, List[RenderFrame], None]:
         """Render the current state using pygame.
 
-        :param mode: The mode to render with (supported modes are found in
-            `self.metadata`).
-        :raise ValueError: If an unsupported mode is provided.
         :return: Result of rendering.
         """
-        mode = check_string(mode, "mode", lower=True)
-        if mode not in self.metadata["render.modes"]:
-            raise ValueError("The given render mode is not supported.")
-
-        return self._visualiser.render(self._state, mode)
+        return self._visualiser.render(self._state)
 
     def close(self) -> None:
         """Close the screen used for rendering."""
-        if hasattr(self, "_visualiser"):
-            self._visualiser.close()
+        self._visualiser.close()
 
     @property
     def rewarder(self) -> Rewarder:

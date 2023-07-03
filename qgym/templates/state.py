@@ -82,7 +82,7 @@ class State(Generic[ObsType, ActType]):
         raise NotImplementedError
 
     @abstractmethod
-    def create_observation_space(self) -> Space:
+    def create_observation_space(self) -> Space[Any]:
         """Create the corresponding observation space."""
         raise NotImplementedError
 

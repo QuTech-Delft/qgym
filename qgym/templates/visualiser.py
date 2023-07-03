@@ -3,7 +3,7 @@
 All visualisers should inherit from ``Visualiser``.
 """
 from abc import abstractmethod
-from typing import Any, Dict, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, cast
 
 import numpy as np
 import pygame
@@ -11,6 +11,7 @@ from numpy.typing import NDArray
 
 from qgym.utils.visualisation.typing import Font, Surface
 
+RenderFrame = TypeVar("RenderFrame")
 
 class Visualiser:
     """Visualizer for the the current state of the problem.
@@ -26,29 +27,36 @@ class Visualiser:
     screen: Optional[Surface]
     screen_dimensions: Tuple[int, int]
     font: Dict[str, Font]
+    render_mode: str
 
     @abstractmethod
-    def render(self, state: Any, mode: str) -> Union[bool, NDArray[np.int_]]:
+    def render(self, state: Any) -> Union[RenderFrame, List[RenderFrame], None]:
         """Render the current state using ``pygame``."""
         raise NotImplementedError
+    
+    def step(self, state: Any) -> None:
+        """To be used during a step of the environment.
+        
+        Renders the display if `render_mode` is 'human', does nothing otherwise."""
+        if self.render_mode == "human":
+            self.render(state)
 
-    def _display(self, mode: str) -> Union[bool, NDArray[np.int_]]:
+    def _display(self) -> Union[None, NDArray[np.int_]]:
         """Display the current state using ``pygame``.
 
         The render function should call this method at the end.
 
-        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
         :raise ValueError: When an invalid mode is provided.
-        :return: In 'human' mode returns a boolean value encoding whether the ``pygame``
+        :return: If 'human' mode returns a boolean value encoding whether the ``pygame``
             screen is open. In 'rgb_array' mode returns an RGB array encoding of the
             rendered image.
         """
-        if mode == "human":
+        if self.render_mode == "human":
             pygame.event.pump()
             pygame.display.flip()
-            return self.is_open
+            return None
 
-        if mode == "rgb_array":
+        if self.render_mode == "rgb_array":
             return np.transpose(
                 np.array(
                     pygame.surfarray.pixels3d(cast(pygame.surface.Surface, self.screen))
@@ -56,26 +64,25 @@ class Visualiser:
                 axes=(1, 0, 2),
             )
 
-        msg = f"You provided an invalid mode '{mode}', the only supported modes are "
-        msg += "'human' and 'rgb_array'."
+        msg = f"You provided an invalid mode '{self.render_mode}', the only supported "
+        msg += "modes are 'human' and 'rgb_array'."
         raise ValueError(msg)
 
-    def _start_screen(self, screen_name: str, mode: str) -> Surface:
+    def _start_screen(self, screen_name: str) -> Surface:
         """Start a pygame screen in the given mode.
 
         :param screen_name: Name of the screen.
-        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
         :raise ValueError: When an invalid mode is provided.
         :return: The initialized screen.
         """
         pygame.display.init()
-        if mode == "human":
+        if self.render_mode == "human":
             screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        elif mode == "rgb_array":
+        elif self.render_mode == "rgb_array":
             screen = pygame.Surface((self.screen_width, self.screen_height))
         else:
             raise ValueError(
-                f"You provided an invalid mode '{mode}',"
+                f"You provided an invalid render mode '{self.render_mode}',"
                 f" the only supported modes are 'human' and 'rgb_array'."
             )
         pygame.display.set_caption(screen_name)
