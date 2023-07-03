@@ -149,7 +149,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         connection_graph_matrix: Optional[ArrayLike] = None,
         connection_grid_size: Optional[Gridspecs] = None,
         rewarder: Optional[Rewarder] = None,
-        render_mode: str = "human"
+        render_mode: Optional[str] = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states.
         Furthermore, the connection graph and edge probability for the random
@@ -206,7 +206,8 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
         self._visualiser = InitialMappingVisualiser(connection_graph, render_mode)
 
-    def reset(self,
+    def reset(
+        self,
         *,
         seed: Optional[int] = None,
         options: Optional[Mapping[str, Any]] = None,

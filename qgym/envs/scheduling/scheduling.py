@@ -177,6 +177,7 @@ class Scheduling(
         random_circuit_mode: str = "default",
         rulebook: Optional[CommutationRulebook] = None,
         rewarder: Optional[Rewarder] = None,
+        render_mode: Optional[str] = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states for the
         scheduling environment.
@@ -195,6 +196,9 @@ class Scheduling(
             (See ``CommutationRulebook`` for more info on the default rules.)
         :param rewarder: Rewarder to use for the environment. If ``None`` (default),
             then a default ``BasicRewarder`` is used.
+        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
+            each step. If 'rgb_array', return an RGB array encoding of the rendered
+            on the render call.
         """
         self.metadata = {
             "render.modes": ["human", "rgb_array"],
@@ -218,7 +222,7 @@ class Scheduling(
         self.observation_space = self._state.create_observation_space()
         self.action_space = qgym.spaces.MultiDiscrete([max_gates, 2], rng=self.rng)
 
-        self._visualiser = SchedulingVisualiser(self._state)
+        self._visualiser = SchedulingVisualiser(self._state, render_mode)
 
     def reset(
         self,

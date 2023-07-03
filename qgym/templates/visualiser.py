@@ -32,10 +32,10 @@ class Visualiser:
     def render(self, state: Any) -> Optional[NDArray[np.int_]]:
         """Render the current state using ``pygame``."""
         raise NotImplementedError
-    
+
     def step(self, state: Any) -> None:
         """To be used during a step of the environment.
-        
+
         Renders the display if `render_mode` is 'human', does nothing otherwise."""
         if self.render_mode == "human":
             self.render(state)

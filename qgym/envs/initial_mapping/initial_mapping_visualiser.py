@@ -19,11 +19,16 @@ from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
 class InitialMappingVisualiser(Visualiser):
     """Visualiser class for the ``InitialMapping`` environment."""
 
-    def __init__(self, connection_graph: Graph, render_mode: str = "human") -> None:
+    def __init__(
+        self, connection_graph: Graph, render_mode: Optional[str] = None
+    ) -> None:
         """Init of the ``InitialMappingVisualiser``.
 
         :param connection_graph: ``networkx.Graph`` representation of the connection
             graph.
+        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
+            each step. If 'rgb_array', return an RGB array encoding of the rendered
+            on the render call.
         """
         # Rendering data
         self.screen_dimensions = (1300, 730)

@@ -41,7 +41,9 @@ class Environment(gymnasium.Env[ObsType, ActType]):
     # --- Other attributes ---
     _rng: Optional[Generator] = None
 
-    def step(self, action: ActType) -> Tuple[ObsType, float, bool, bool, Dict[Any, Any]]:
+    def step(
+        self, action: ActType
+    ) -> Tuple[ObsType, float, bool, bool, Dict[Any, Any]]:
         """Update the state based on the input action. Return observation, reward,
         done-indicator and (optional) debugging info based on the updated state.
 
@@ -91,7 +93,7 @@ class Environment(gymnasium.Env[ObsType, ActType]):
         self._visualiser.step(self._state)
         return self._state.obtain_observation(), self._state.obtain_info()
 
-    def render(self) -> Optional[NDArray[np.int_]]: # type: ignore[override]
+    def render(self) -> Optional[NDArray[np.int_]]:  # type: ignore[override]
         """Render the current state using pygame.
 
         :return: Result of rendering.

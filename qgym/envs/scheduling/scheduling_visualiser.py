@@ -1,5 +1,5 @@
 """This module contains a class used for rendering the ``Scheduling`` environment."""
-from typing import Dict, Tuple, Union, cast
+from typing import Dict, Optional, Tuple, cast
 
 import numpy as np
 import pygame
@@ -21,6 +21,9 @@ class SchedulingVisualiser(Visualiser):
 
         :param initial_state: ``SchedulingState`` object containing the initial state of
             the environment to visualise.
+        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
+            each step. If 'rgb_array', return an RGB array encoding of the rendered
+            on the render call.
         """
         # Rendering data
         self.screen = None
@@ -48,18 +51,14 @@ class SchedulingVisualiser(Visualiser):
         self.font: Dict[str, Font] = {}
         self._cycle_width = 0.0
 
-    def render(
-        self, state: SchedulingState, mode: str
-    ) -> Union[bool, NDArray[np.int_]]:
+    def render(self, state: SchedulingState) -> Optional[NDArray[np.int_]]:
         """Render the current state using pygame.
 
-        :param mode: The mode to render with (supported modes are found in
-            `self.metadata`.).
         :raise ValueError: If an unsupported mode is provided.
         :return: Result of rendering.
         """
         if self.screen is None:
-            self.screen = self._start_screen("Scheduling Environment", mode)
+            self.screen = self._start_screen("Scheduling Environment")
 
         if len(self.font) == 0:
             gate_font, axis_font = self._start_font()
@@ -86,7 +85,7 @@ class SchedulingVisualiser(Visualiser):
                     gate, scheduled_cycle, gate_cycle_length, gate_name
                 )
 
-        return self._display(mode)
+        return self._display()
 
     def _draw_y_axis(self, n_qubits: int) -> None:
         """Draw the y-axis of the display.
