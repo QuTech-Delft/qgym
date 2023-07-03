@@ -9,6 +9,8 @@ Usage:
      [20 20 20]], (2, 3), int32)
 
 """
+from __future__ import annotations
+
 from typing import Any, Optional, Sequence, SupportsFloat, Type, Union
 
 import gymnasium.spaces

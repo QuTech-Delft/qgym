@@ -7,6 +7,8 @@ Usage:
     MultiDiscrete([2 3 4])
 
 """
+from __future__ import annotations
+
 from typing import Any, List, Optional, Type, Union
 
 import gymnasium.spaces
