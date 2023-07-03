@@ -1,5 +1,5 @@
 """This module contains a class used for rendering the ``Scheduling`` environment."""
-from typing import Dict, Optional, Tuple, cast
+from typing import Dict, Union, cast
 
 import numpy as np
 import pygame
@@ -7,18 +7,16 @@ from numpy.typing import NDArray
 
 from qgym.custom_types import Gate
 from qgym.envs.scheduling.scheduling_state import SchedulingState
-from qgym.templates.visualiser import Visualiser
+from qgym.templates.visualiser import RenderData, Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, DARK_BLUE, WHITE
-from qgym.utils.visualisation.typing import Font, Surface
+from qgym.utils.visualisation.typing import Font
 from qgym.utils.visualisation.wrappers import write_text
 
 
 class SchedulingVisualiser(Visualiser):
     """Visualiser class for the ``Scheduling`` environment."""
 
-    def __init__(
-        self, initial_state: SchedulingState, render_mode: Optional[str]
-    ) -> None:
+    def __init__(self, render_mode: str, initial_state: SchedulingState) -> None:
         """Init of the ``SchedulingVisualiser``.
 
         :param initial_state: ``SchedulingState`` object containing the initial state of
@@ -28,11 +26,8 @@ class SchedulingVisualiser(Visualiser):
             on the render call.
         """
         # Rendering data
-        self.screen = None
-        self.screen_dimensions = (1500, 800)
-        self.render_mode = render_mode
         self.offset = {"x-axis": 100, "y-axis": 0}
-        self.colors = {
+        colors = {
             "gate_fill": BLUE,
             "gate_outline": DARK_BLUE,
             "gate_text": WHITE,
@@ -40,6 +35,14 @@ class SchedulingVisualiser(Visualiser):
             "qubits": BLACK,
             "y-axis": BLACK,
         }
+        self.render_data = RenderData(
+            screen=self._start_screen(
+                "Scheduling Environment", render_mode, (1500, 800)
+            ),
+            font=self._start_font(),
+            colors=colors,
+            render_mode=render_mode,
+        )
 
         n_qubits = initial_state.machine_properties.n_qubits
         gate_height = (self.screen_height - self.offset["y-axis"]) / n_qubits
@@ -51,23 +54,14 @@ class SchedulingVisualiser(Visualiser):
         self.gate_size_info = {"height": gate_height, "longest": longest_gate}
 
         # define attributes that are set later
-        self.font: Dict[str, Font] = {}
         self._cycle_width = 0.0
 
-    def render(self, state: SchedulingState) -> Optional[NDArray[np.int_]]:
+    def render(self, state: SchedulingState) -> Union[None, NDArray[np.int_]]:
         """Render the current state using pygame.
 
         :raise ValueError: If an unsupported mode is provided.
         :return: Result of rendering.
         """
-        if self.screen is None:
-            self.screen = self._start_screen("Scheduling Environment")
-
-        if len(self.font) == 0:
-            gate_font, axis_font = self._start_font()
-            self.font["gate"] = gate_font
-            self.font["axis"] = axis_font
-
         pygame.time.delay(50)
 
         self.screen.fill(self.colors["background"])
@@ -95,7 +89,7 @@ class SchedulingVisualiser(Visualiser):
 
         :param n_qubits: Number of qubits of the machine.
         """
-        screen = cast(Surface, self.screen)
+        screen = self.screen
         for i in range(n_qubits):
             pos = (
                 self.offset["x-axis"] / 2,
@@ -129,7 +123,7 @@ class SchedulingVisualiser(Visualiser):
         :param qubit: Qubit in which the gate acts.
         :param scheduled_cycle: Cycle in which the gate is scheduled.
         """
-        screen = cast(Surface, self.screen)
+        screen = self.screen
         gate_width = self._cycle_width * gate_cycle_length
         gate_box_size = (0.98 * gate_width, 0.98 * self.gate_size_info["height"])
 
@@ -154,12 +148,13 @@ class SchedulingVisualiser(Visualiser):
             color=self.colors["gate_text"],
         )
 
-    def _start_font(self) -> Tuple[Font, Font]:
+    def _start_font(self) -> Dict[str, Font]:
         """Start the pygame fonts for the gate and axis font.
 
         :return: pygame fonts for the gate and axis font.
         """
         pygame.font.init()
-        gate_font = pygame.font.SysFont("Arial", 12)
-        axis_font = pygame.font.SysFont("Arial", 30)
-        return gate_font, axis_font
+        return {
+            "gate": pygame.font.SysFont("Arial", 12),
+            "axis": pygame.font.SysFont("Arial", 30),
+        }

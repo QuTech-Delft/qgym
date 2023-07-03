@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -8,9 +8,9 @@ from networkx import Graph
 from numpy.typing import NDArray
 
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
-from qgym.templates.visualiser import Visualiser
+from qgym.templates.visualiser import RenderData, Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, GREEN, RED, WHITE
-from qgym.utils.visualisation.typing import Font, Surface
+from qgym.utils.visualisation.typing import Surface
 from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
 
 # pylint: disable=invalid-name
@@ -19,9 +19,7 @@ from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
 class InitialMappingVisualiser(Visualiser):
     """Visualiser class for the ``InitialMapping`` environment."""
 
-    def __init__(
-        self, connection_graph: Graph, render_mode: Optional[str] = None
-    ) -> None:
+    def __init__(self, render_mode: str, connection_graph: Graph) -> None:
         """Init of the ``InitialMappingVisualiser``.
 
         :param connection_graph: ``networkx.Graph`` representation of the connection
@@ -31,15 +29,7 @@ class InitialMappingVisualiser(Visualiser):
             on the render call.
         """
         # Rendering data
-        self.screen_dimensions = (1300, 730)
-        self.font_size = 30
-        self.render_mode = render_mode
-
-        self.screen = None
-        self.subscreens = self._init_subscreen_rectangles()
-        self.font: Dict[str, Font] = {}
-
-        self.colors = {
+        colors = {
             "nodes": BLUE,
             "basic_edge": BLACK,
             "unused_edge": GRAY,
@@ -48,6 +38,14 @@ class InitialMappingVisualiser(Visualiser):
             "text": BLACK,
             "background": WHITE,
         }
+        self.render_data = RenderData(
+            screen=self._start_screen("Mapping Environment", render_mode, (1300, 730)),
+            font={"header": pygame.font.SysFont("Arial", 30)},
+            colors=colors,
+            render_mode=render_mode,
+        )
+
+        self.subscreens = self._init_subscreen_rectangles()
 
         # Save evrything we need to know about the graphs
         self.graphs = {
@@ -91,7 +89,7 @@ class InitialMappingVisualiser(Visualiser):
         subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
         return subscreen1, subscreen2, subscreen3
 
-    def render(self, state: InitialMappingState) -> Optional[NDArray[np.int_]]:
+    def render(self, state: InitialMappingState) -> Union[None, NDArray[np.int_]]:
         """Render the current state using ``pygame``. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The right screen
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly
@@ -103,13 +101,6 @@ class InitialMappingVisualiser(Visualiser):
             screen is open. In 'rgb_array' mode returns an RGB array encoding of the
             rendered image.
         """
-        if self.screen is None:
-            self.screen = self._start_screen("Mapping Environment")
-            pygame.font.init()
-
-        if len(self.font) == 0:
-            self.font["header"] = pygame.font.SysFont("Arial", self.font_size)
-
         self.screen.fill(self.colors["background"])
 
         mapped_graph = self._get_mapped_graph(
@@ -278,4 +269,4 @@ class InitialMappingVisualiser(Visualiser):
     @property
     def header_spacing(self) -> float:
         """Header spacing."""
-        return self.font_size / 3 * 4
+        return 30 / 3 * 4

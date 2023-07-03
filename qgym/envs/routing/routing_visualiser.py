@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``Routing`` environment."""
-from typing import Any, Deque, Dict, List, Optional, Tuple, cast
+from typing import Any, Deque, Dict, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -8,7 +8,7 @@ from networkx import Graph
 from numpy.typing import NDArray
 
 from qgym.envs.routing.routing_state import RoutingState
-from qgym.templates.visualiser import Visualiser
+from qgym.templates.visualiser import RenderData, Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, RED, WHITE
 from qgym.utils.visualisation.typing import Font, Surface
 from qgym.utils.visualisation.wrappers import (
@@ -22,7 +22,7 @@ from qgym.utils.visualisation.wrappers import (
 class RoutingVisualiser(Visualiser):
     """Visualiser class for the ``Routing`` environment."""
 
-    def __init__(self, connection_graph: Graph, render_mode: Optional[str]) -> None:
+    def __init__(self, render_mode: str, connection_graph: Graph) -> None:
         """Init of the ``RoutingVisualiser``.
 
         :param connection_graph: ``networkx.Graph`` representation of the connection
@@ -32,15 +32,7 @@ class RoutingVisualiser(Visualiser):
             on the render call.
         """
         # Rendering data
-        self.screen_dimensions = (1600, 700)
-        self.font_size = 30
-        self.render_mode = render_mode
-
-        self.screen = None
-        self.subscreens: List[Surface] = []
-        self.font: Dict[str, Font] = {}
-
-        self.colors = {
+        colors = {
             "node": BLUE,
             "node_labels": WHITE,
             "edge": BLACK,
@@ -53,6 +45,14 @@ class RoutingVisualiser(Visualiser):
             "hidden": BLACK,
             "mapping": WHITE,
         }
+        self.render_data = RenderData(
+            screen=self._start_screen("Routing Environment", render_mode, (1600, 700)),
+            font=self._setup_fonts(),
+            colors=colors,
+            render_mode=render_mode,
+        )
+
+        self.subscreens = self._start_subscreens(self.screen)
 
         # Save everything we need to know about the connection graph
         self.graph = {
@@ -82,7 +82,7 @@ class RoutingVisualiser(Visualiser):
         subscreen_graph = screen.subsurface(rect_graph)
         return subscreen_circuit, subscreen_graph
 
-    def render(self, state: RoutingState) -> Optional[NDArray[np.int_]]:
+    def render(self, state: RoutingState) -> Union[None, NDArray[np.int_]]:
         """Render the current state using ``pygame``.
 
         :param state: State to render.
@@ -91,13 +91,6 @@ class RoutingVisualiser(Visualiser):
             pygame screen. If `render_mode` is 'rgb_array' returns a RGB array encoding
             of the rendered image.
         """
-        if self.screen is None:
-            self.screen = self._start_screen("Routing Environment")
-            self.subscreens = list(self._start_subscreens(self.screen))
-            pygame.font.init()
-
-        if len(self.font) == 0:
-            self._setup_fonts()
 
         self.screen.fill(self.colors["background"])
 
@@ -335,7 +328,7 @@ class RoutingVisualiser(Visualiser):
         rect = screen.get_rect(topleft=offset)
         text_center = (rect.center[0], rect.y - self.header_spacing / 2)
         text_position = pygame_text.get_rect(center=text_center)
-        cast(Surface, self.screen).blit(pygame_text, text_position)
+        self.screen.blit(pygame_text, text_position)
 
     def _get_render_positions(
         self, graph: nx.Graph, padding: int = 20
@@ -359,18 +352,19 @@ class RoutingVisualiser(Visualiser):
 
         return node_positions
 
-    def _setup_fonts(self) -> None:
+    def _setup_fonts(self) -> Dict[str, Font]:
         """Setup the fonts for rendering with pygame."""
-        self.font["header"] = pygame.font.SysFont("Arial", self.font_size)
-        self.font["circuit"] = pygame.font.SysFont("Arial", 24)
-        self.font["mapping"] = pygame.font.SysFont("Arial", 22)
-        self.font["mapping_emph"] = pygame.font.SysFont(
-            "Arial", 24, bold=True, italic=True
-        )
-        self.font["n_swaps"] = pygame.font.SysFont("Arial", 28)
-        self.font["graph"] = pygame.font.SysFont("Arial", 24)
+        pygame.font.init()
+        return {
+            "header": pygame.font.SysFont("Arial", 30),
+            "circuit": pygame.font.SysFont("Arial", 24),
+            "mapping": pygame.font.SysFont("Arial", 22),
+            "mapping_emph": pygame.font.SysFont("Arial", 24, bold=True, italic=True),
+            "n_swaps": pygame.font.SysFont("Arial", 28),
+            "graph": pygame.font.SysFont("Arial", 24),
+        }
 
     @property
     def header_spacing(self) -> float:
         """Header spacing."""
-        return self.font_size / 3 * 4
+        return 30 / 3 * 4

@@ -35,12 +35,8 @@ def test_validity(small_env) -> None:
     ids=["TypeError", "ValueError"],
 )
 def test_unsupported_render_mode(small_graph, render_mode, error_type):
-    render_env = InitialMapping(
-        0.5, connection_graph=small_graph, render_mode=render_mode
-    )
     with pytest.raises(error_type):
-        render_env.render()
-    render_env.close()
+        InitialMapping(0.5, connection_graph=small_graph, render_mode=render_mode)
 
 
 def test_init_custom_connection_graph(small_env, small_graph):

@@ -123,7 +123,11 @@ from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_parsing import parse_connection_graph, parse_rewarder
+from qgym.utils.input_parsing import (
+    parse_connection_graph,
+    parse_rewarder,
+    parse_visualiser,
+)
 from qgym.utils.input_validation import check_real
 
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
@@ -203,8 +207,9 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
-
-        self._visualiser = InitialMappingVisualiser(connection_graph, render_mode)
+        self._visualiser = parse_visualiser(
+            render_mode, InitialMappingVisualiser, [connection_graph]
+        )
 
     def reset(
         self,

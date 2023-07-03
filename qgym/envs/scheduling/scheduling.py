@@ -159,7 +159,7 @@ from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_parsing import parse_rewarder
+from qgym.utils.input_parsing import parse_rewarder, parse_visualiser
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
@@ -222,7 +222,9 @@ class Scheduling(
         self.observation_space = self._state.create_observation_space()
         self.action_space = qgym.spaces.MultiDiscrete([max_gates, 2], rng=self.rng)
 
-        self._visualiser = SchedulingVisualiser(self._state, render_mode)
+        self._visualiser = parse_visualiser(
+            render_mode, SchedulingVisualiser, [self._state]
+        )
 
     def reset(
         self,

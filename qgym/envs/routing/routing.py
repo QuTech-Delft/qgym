@@ -98,7 +98,11 @@ from qgym.envs.routing.routing_rewarders import BasicRewarder
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.envs.routing.routing_visualiser import RoutingVisualiser
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_parsing import parse_connection_graph, parse_rewarder
+from qgym.utils.input_parsing import (
+    parse_connection_graph,
+    parse_rewarder,
+    parse_visualiser,
+)
 from qgym.utils.input_validation import check_bool, check_int
 
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
@@ -200,8 +204,9 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
-
-        self._visualiser = RoutingVisualiser(connection_graph, render_mode)
+        self._visualiser = parse_visualiser(
+            render_mode, RoutingVisualiser, [connection_graph]
+        )
 
     def reset(
         self,

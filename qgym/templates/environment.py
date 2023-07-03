@@ -4,7 +4,7 @@ All environments should inherit from ``Environment``.
 """
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Mapping, Optional, Tuple
+from typing import Any, Dict, Mapping, Optional, Tuple, Union
 
 import gymnasium
 import numpy as np
@@ -36,7 +36,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
     metadata: Dict[str, Any]
     _state: State[ObservationT, ActionT]
     _rewarder: Rewarder
-    _visualiser: Visualiser
+    _visualiser: Optional[Visualiser]
 
     # --- Other attributes ---
     _rng: Optional[Generator] = None
@@ -61,7 +61,8 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         """
         old_state = deepcopy(self._state)
         self._state.update_state(action)
-        self._visualiser.step(self._state)
+        if self._visualiser is not None:
+            self._visualiser.step(self._state)
 
         return (
             self._state.obtain_observation(),
@@ -90,19 +91,23 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         if options is None:
             options = {}
         self._state.reset(seed=seed, **options)
-        self._visualiser.step(self._state)
+        self.render()
         return self._state.obtain_observation(), self._state.obtain_info()
 
-    def render(self) -> Optional[NDArray[np.int_]]:  # type: ignore[override]
+    def render(self) -> Union[None, NDArray[np.int_]]:  # type: ignore[override]
         """Render the current state using pygame.
 
         :return: Result of rendering.
         """
-        return self._visualiser.render(self._state)
+        if self._visualiser is not None:
+            return self._visualiser.render(self._state)
+        return None
 
     def close(self) -> None:
         """Close the screen used for rendering."""
-        self._visualiser.close()
+        if self._visualiser is not None:
+            self._visualiser.close()
+        self._visualiser = None
 
     @property
     def rewarder(self) -> Rewarder:

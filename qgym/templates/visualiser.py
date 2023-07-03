@@ -3,13 +3,41 @@
 All visualisers should inherit from ``Visualiser``.
 """
 from abc import abstractmethod
-from typing import Any, Dict, Optional, Tuple, cast
+from typing import Any, Dict, List, Tuple, Union
 
 import numpy as np
 import pygame
 from numpy.typing import NDArray
 
-from qgym.utils.visualisation.typing import Font, Surface
+from qgym.utils.visualisation.typing import Color, Font, Surface
+
+
+class RenderData:
+    """Class containing usefull data for rendering like screen, font and colors."""
+
+    __slots__ = ["screen", "font", "colors", "render_mode"]
+
+    def __init__(
+        self,
+        screen: Surface,
+        font: Dict[str, Font],
+        colors: Dict[str, Color],
+        render_mode: str,
+    ) -> None:
+        self.screen = screen
+        self.font = font
+        self.colors = colors
+        self.render_mode = render_mode
+
+    @property
+    def screen_width(self) -> int:
+        """Screen width. Alias for ``self.screen_dimensions[0]``."""
+        return self.screen.get_width()
+
+    @property
+    def screen_height(self) -> int:
+        """Screen height. Alias for ``self.screen_dimensions[1]``."""
+        return self.screen.get_height()
 
 
 class Visualiser:
@@ -23,13 +51,14 @@ class Visualiser:
     """
 
     # --- These attributes should be set in any subclass ---
-    screen: Optional[Surface]
-    screen_dimensions: Tuple[int, int]
-    font: Dict[str, Font]
-    render_mode: Optional[str]
+    render_data: RenderData
 
     @abstractmethod
-    def render(self, state: Any) -> Optional[NDArray[np.int_]]:
+    def __init__(self, render_mode: str, *args: List[Any]):
+        raise NotImplementedError
+
+    @abstractmethod
+    def render(self, state: Any) -> Union[None, NDArray[np.int_]]:
         """Render the current state using ``pygame``."""
         raise NotImplementedError
 
@@ -37,10 +66,10 @@ class Visualiser:
         """To be used during a step of the environment.
 
         Renders the display if `render_mode` is 'human', does nothing otherwise."""
-        if self.render_mode == "human":
+        if self.render_data.render_mode == "human":
             self.render(state)
 
-    def _display(self) -> Optional[NDArray[np.int_]]:
+    def _display(self) -> Union[None, NDArray[np.int_]]:
         """Display the current state using ``pygame``.
 
         The render function should call this method at the end.
@@ -50,68 +79,79 @@ class Visualiser:
             screen is open. In 'rgb_array' mode returns an RGB array encoding of the
             rendered image.
         """
-        if self.render_mode == "human":
+        if self.render_data.render_mode == "human":
             pygame.event.pump()
             pygame.display.flip()
             return None
 
-        if self.render_mode == "rgb_array":
+        if self.render_data.render_mode == "rgb_array":
             return np.transpose(
-                np.array(
-                    pygame.surfarray.pixels3d(cast(pygame.surface.Surface, self.screen))
-                ),
-                axes=(1, 0, 2),
+                np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
             )
 
-        msg = f"You provided an invalid mode '{self.render_mode}', the only supported "
-        msg += "modes are 'human' and 'rgb_array'."
+        msg = f"You provided an invalid mode '{self.render_data.render_mode}', the only"
+        msg += " supported modes are 'human' and 'rgb_array'."
         raise ValueError(msg)
 
-    def _start_screen(self, screen_name: str) -> Surface:
+    def _start_screen(
+        self, screen_name: str, render_mode: str, screen_dimensions: Tuple[int, int]
+    ) -> Surface:
         """Start a pygame screen in the given mode.
 
         :param screen_name: Name of the screen.
+        :param render_mode: The render mode to use. Choose from 'human' or 'rgb_array'.
+        :param screen_dimension: Width and height of the screen.
         :raise ValueError: When an invalid mode is provided.
         :return: The initialized screen.
         """
-        if not isinstance(self.render_mode, str):
+        if not isinstance(render_mode, str):
             raise TypeError(
-                f"'rendermode' of type {type(self.render_mode)} has no "
-                "screen to start"
+                f"'rendermode' of type {type(render_mode)} has no screen to start"
             )
 
         pygame.display.init()
-        if self.render_mode == "human":
-            screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        elif self.render_mode == "rgb_array":
-            screen = pygame.Surface((self.screen_width, self.screen_height))
+        if render_mode == "human":
+            screen = pygame.display.set_mode(screen_dimensions)
+        elif render_mode == "rgb_array":
+            screen = pygame.Surface(screen_dimensions)
         else:
             raise ValueError(
-                f"You provided an invalid render mode '{self.render_mode}',"
-                f" the only supported modes are 'human' and 'rgb_array'."
+                f"You provided an invalid render mode '{render_mode}', the only "
+                "supported modes are 'human' and 'rgb_array'."
             )
         pygame.display.set_caption(screen_name)
         return screen
 
     def close(self) -> None:
         """Close the screen used for rendering."""
-        if self.screen is not None:
-            pygame.quit()
-            self.screen = None
-
-        self.font: Dict[str, Font] = {}
+        pygame.quit()
 
     @property
     def screen_width(self) -> int:
         """Screen width. Alias for ``self.screen_dimensions[0]``."""
-        return self.screen_dimensions[0]
+        return self.render_data.screen_width
 
     @property
     def screen_height(self) -> int:
         """Screen height. Alias for ``self.screen_dimensions[1]``."""
-        return self.screen_dimensions[1]
+        return self.render_data.screen_height
 
     @property
     def is_open(self) -> bool:
         """Boolean value stating whether a ``pygame.screen`` is currently open."""
-        return self.screen is not None
+        return self.render_data.screen is not None
+
+    @property
+    def colors(self) -> Dict[str, Color]:
+        """Dict containing names color pairs."""
+        return self.render_data.colors
+
+    @property
+    def screen(self) -> Surface:
+        """Main screen to draw on."""
+        return self.render_data.screen
+
+    @property
+    def font(self) -> Dict[str, Font]:
+        """Dict containing str Font pairs."""
+        return self.render_data.font

@@ -5,16 +5,17 @@ format. In this way, user can give different input formats, but internally we ar
 assured that the data has the same format."""
 import warnings
 from copy import deepcopy
-from typing import Iterable, List, Optional, Tuple, Type, Union
+from typing import Any, Iterable, List, Optional, Tuple, Type, Union
 
 import networkx as nx
 from numpy.typing import ArrayLike
 
-from qgym.templates import Rewarder
+from qgym.templates import Rewarder, Visualiser
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_graph_is_valid_topology,
     check_instance,
+    check_string,
 )
 
 Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
@@ -34,6 +35,26 @@ def parse_rewarder(rewarder: Optional[Rewarder], default: Type[Rewarder]) -> Rew
         return default()
     check_instance(rewarder, "rewarder", Rewarder)
     return deepcopy(rewarder)
+
+
+def parse_visualiser(
+    render_mode: Optional[str], vis_type: Type[Visualiser], args: List[Any]
+) -> Union[None, Visualiser]:
+    """Parse a `Visualiser` by the render mode.
+
+    :param render_mode: If ``None`` return ``None``. Otherwise return a ``Visualiser``
+        of type `vis_type` with optional arguments given in `args`.
+    :param vis_type: Type of ``Visualiser`` to make if `render_mode` is not ``None``.
+    :param args: Additional argument to give to the init of the ``Visualiser`` if
+        `vis_type` is not ``None``.
+    :return: If `render_mode` is ``None`` return ``None``. Otherwise return a
+        ``Visualiser`` of type `vis_type` with optional arguments given in `args`.
+    """
+    if render_mode is None:
+        return None
+
+    render_mode = check_string(render_mode, "render_mode", lower=True)
+    return vis_type(render_mode, *args)
 
 
 def parse_connection_graph(
