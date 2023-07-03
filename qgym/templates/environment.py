@@ -4,7 +4,7 @@ All environments should inherit from ``Environment``.
 """
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
+from typing import Any, Dict, Mapping, Optional, Tuple
 
 import gymnasium
 import numpy as np
@@ -13,11 +13,11 @@ from numpy.random import Generator, default_rng
 from numpy.typing import NDArray
 
 from qgym.templates.rewarder import Rewarder
-from qgym.templates.state import ActType, ObsType, State
+from qgym.templates.state import ActionT, ObservationT, State
 from qgym.templates.visualiser import Visualiser
 
 
-class Environment(gymnasium.Env[ObsType, ActType]):
+class Environment(gymnasium.Env[ObservationT, ActionT]):
     """RL Environment containing the current state of the problem.
 
     Each subclass should set at least the following attributes:
@@ -34,7 +34,7 @@ class Environment(gymnasium.Env[ObsType, ActType]):
     action_space: Space[Any]
     observation_space: Space[Any]
     metadata: Dict[str, Any]
-    _state: State[ObsType, ActType]
+    _state: State[ObservationT, ActionT]
     _rewarder: Rewarder
     _visualiser: Visualiser
 
@@ -42,8 +42,8 @@ class Environment(gymnasium.Env[ObsType, ActType]):
     _rng: Optional[Generator] = None
 
     def step(
-        self, action: ActType
-    ) -> Tuple[ObsType, float, bool, bool, Dict[Any, Any]]:
+        self, action: ActionT
+    ) -> Tuple[ObservationT, float, bool, bool, Dict[Any, Any]]:
         """Update the state based on the input action. Return observation, reward,
         done-indicator and (optional) debugging info based on the updated state.
 
@@ -74,7 +74,7 @@ class Environment(gymnasium.Env[ObsType, ActType]):
     @abstractmethod
     def reset(
         self, *, seed: Optional[int] = None, options: Optional[Mapping[str, Any]] = None
-    ) -> Tuple[ObsType, Dict[str, Any]]:
+    ) -> Tuple[ObservationT, Dict[str, Any]]:
         """Reset the environment and load a new random initial state. To be used after
         an episode is finished. Optionally, one can provide additional options to
         configure the reset.
@@ -138,8 +138,8 @@ class Environment(gymnasium.Env[ObsType, ActType]):
 
     def _compute_reward(
         self,
-        old_state: State[ObsType, ActType],
-        action: ActType,
+        old_state: State[ObservationT, ActionT],
+        action: ActionT,
         *args: Any,
         **kwargs: Any
     ) -> float:
