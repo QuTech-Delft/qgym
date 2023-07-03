@@ -149,6 +149,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         connection_graph_matrix: Optional[ArrayLike] = None,
         connection_grid_size: Optional[Gridspecs] = None,
         rewarder: Optional[Rewarder] = None,
+        render_mode: str = "human"
     ) -> None:
         """Initialize the action space, observation space, and initial states.
         Furthermore, the connection graph and edge probability for the random
@@ -171,6 +172,9 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             types, see ``networkx`` `grid_graph`_ documentation.
         :param rewarder: Rewarder to use for the environment. Must inherit from
             ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is used.
+        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
+            each step. If 'rgb_array', return an RGB array encoding of the rendered
+            on the render call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -200,7 +204,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
 
-        self._visualiser = InitialMappingVisualiser(connection_graph)
+        self._visualiser = InitialMappingVisualiser(connection_graph, render_mode)
 
     def reset(
         self,

@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import networkx as nx
 import numpy as np
@@ -8,7 +8,7 @@ from networkx import Graph
 from numpy.typing import NDArray
 
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
-from qgym.templates.visualiser import Visualiser
+from qgym.templates.visualiser import RenderFrame, Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, GREEN, RED, WHITE
 from qgym.utils.visualisation.typing import Font, Surface
 from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
@@ -19,7 +19,7 @@ from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
 class InitialMappingVisualiser(Visualiser):
     """Visualiser class for the ``InitialMapping`` environment."""
 
-    def __init__(self, connection_graph: Graph) -> None:
+    def __init__(self, connection_graph: Graph, render_mode: str = "human") -> None:
         """Init of the ``InitialMappingVisualiser``.
 
         :param connection_graph: ``networkx.Graph`` representation of the connection
@@ -28,6 +28,7 @@ class InitialMappingVisualiser(Visualiser):
         # Rendering data
         self.screen_dimensions = (1300, 730)
         self.font_size = 30
+        self.render_mode = render_mode
 
         self.screen = None
         self.subscreens = self._init_subscreen_rectangles()
@@ -85,23 +86,20 @@ class InitialMappingVisualiser(Visualiser):
         subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
         return subscreen1, subscreen2, subscreen3
 
-    def render(
-        self, state: InitialMappingState, mode: str
-    ) -> Union[bool, NDArray[np.int_]]:
+    def render(self, state: InitialMappingState) -> Union[RenderFrame, List[RenderFrame], None]:
         """Render the current state using ``pygame``. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The right screen
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly
         and red edges need at least on swap.
 
         :param state: State to render.
-        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
         :raise ValueError: When an invalid mode is provided.
         :return: In 'human' mode returns a boolean value encoding whether the ``pygame``
             screen is open. In 'rgb_array' mode returns an RGB array encoding of the
             rendered image.
         """
         if self.screen is None:
-            self.screen = self._start_screen("Mapping Environment", mode)
+            self.screen = self._start_screen("Mapping Environment")
             pygame.font.init()
 
         if len(self.font) == 0:
@@ -122,7 +120,7 @@ class InitialMappingVisualiser(Visualiser):
         self._draw_header("Interaction Graph", self.subscreens[1], self.screen)
         self._draw_header("Mapped Graph", self.subscreens[2], self.screen)
 
-        return self._display(mode)
+        return self._display()
 
     def _get_mapped_graph(
         self, mapping: Dict[int, int], interaction_graph_matrix: NDArray[np.float_]
