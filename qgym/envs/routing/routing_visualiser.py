@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``Routing`` environment."""
-from typing import Any, Deque, Dict, List, Tuple, Union, cast
+from typing import Any, Deque, Dict, List, Optional, Tuple, Union, cast
 
 import networkx as nx
 import numpy as np
@@ -22,15 +22,19 @@ from qgym.utils.visualisation.wrappers import (
 class RoutingVisualiser(Visualiser):
     """Visualiser class for the ``Routing`` environment."""
 
-    def __init__(self, connection_graph: Graph) -> None:
+    def __init__(self, connection_graph: Graph, render_mode: Optional[str]) -> None:
         """Init of the ``RoutingVisualiser``.
 
         :param connection_graph: ``networkx.Graph`` representation of the connection
             graph.
+        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
+            each step. If 'rgb_array', return an RGB array encoding of the rendered
+            on the render call.
         """
         # Rendering data
         self.screen_dimensions = (1600, 700)
         self.font_size = 30
+        self.render_mode = render_mode
 
         self.screen = None
         self.subscreens: List[Surface] = []
@@ -78,18 +82,17 @@ class RoutingVisualiser(Visualiser):
         subscreen_graph = screen.subsurface(rect_graph)
         return subscreen_circuit, subscreen_graph
 
-    def render(self, state: RoutingState, mode: str) -> Union[bool, NDArray[np.int_]]:
+    def render(self, state: RoutingState) ->Optional[NDArray[np.int_]]:
         """Render the current state using ``pygame``.
 
         :param state: State to render.
-        :param mode: Mode to start pygame for ("human" and "rgb_array" are supported).
         :raise ValueError: When an invalid mode is provided.
-        :return: In 'human' mode returns a boolean value encoding whether the ``pygame``
-            screen is open. In 'rgb_array' mode returns an RGB array encoding of the
-            rendered image.
+        :return: If `render_mode` is 'human' returns show the current step at using a
+            pygame screen. If `render_mode` is 'rgb_array' returns a RGB array encoding
+            of the rendered image.
         """
         if self.screen is None:
-            self.screen = self._start_screen("Routing Environment", mode)
+            self.screen = self._start_screen("Routing Environment")
             self.subscreens = list(self._start_subscreens(self.screen))
             pygame.font.init()
 
@@ -104,7 +107,7 @@ class RoutingVisualiser(Visualiser):
         self._draw_header("Interaction Circuit", self.subscreens[0])
         self._draw_header("Connection Graph", self.subscreens[1])
 
-        return self._display(mode)
+        return self._display()
 
     def _draw_interaction_circuit(self, state: RoutingState, screen: Surface) -> None:
         """Draw the interaction circuit on the interaction circuit subscreen.
