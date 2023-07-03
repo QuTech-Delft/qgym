@@ -30,16 +30,17 @@ def test_validity(small_env) -> None:
 
 
 @pytest.mark.parametrize(
-    "mode,error_type,error_msg",
-    [
-        (1, TypeError, "'mode' must be a string, but was of type <class 'int'>"),
-        ("test", ValueError, "The given render mode is not supported"),
-    ],
+    "render_mode,error_type",
+    [(1, TypeError), ("test", ValueError)],
+    ids=["TypeError", "ValueError"],
 )
-def test_unsupported_render_mode(small_env, mode, error_type, error_msg):
-    with pytest.raises(error_type, match=error_msg):
-        small_env.render(mode=mode)
-    small_env.close()
+def test_unsupported_render_mode(small_graph, render_mode, error_type):
+    render_env = InitialMapping(
+        0.5, connection_graph=small_graph, render_mode=render_mode
+    )
+    with pytest.raises(error_type):
+        render_env.render()
+    render_env.close()
 
 
 def test_init_custom_connection_graph(small_env, small_graph):

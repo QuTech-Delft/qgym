@@ -74,6 +74,12 @@ class Visualiser:
         :raise ValueError: When an invalid mode is provided.
         :return: The initialized screen.
         """
+        if not isinstance(self.render_mode, str):
+            raise TypeError(
+                f"'rendermode' of type {type(self.render_mode)} has no "
+                "screen to start"
+            )
+
         pygame.display.init()
         if self.render_mode == "human":
             screen = pygame.display.set_mode((self.screen_width, self.screen_height))

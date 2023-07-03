@@ -82,7 +82,7 @@ class RoutingVisualiser(Visualiser):
         subscreen_graph = screen.subsurface(rect_graph)
         return subscreen_circuit, subscreen_graph
 
-    def render(self, state: RoutingState) ->Optional[NDArray[np.int_]]:
+    def render(self, state: RoutingState) -> Optional[NDArray[np.int_]]:
         """Render the current state using ``pygame``.
 
         :param state: State to render.

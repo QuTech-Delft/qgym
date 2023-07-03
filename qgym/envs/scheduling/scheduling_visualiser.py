@@ -16,7 +16,9 @@ from qgym.utils.visualisation.wrappers import write_text
 class SchedulingVisualiser(Visualiser):
     """Visualiser class for the ``Scheduling`` environment."""
 
-    def __init__(self, initial_state: SchedulingState, render_mode: Optional[str]) -> None:
+    def __init__(
+        self, initial_state: SchedulingState, render_mode: Optional[str]
+    ) -> None:
         """Init of the ``SchedulingVisualiser``.
 
         :param initial_state: ``SchedulingState`` object containing the initial state of

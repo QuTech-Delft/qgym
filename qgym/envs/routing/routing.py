@@ -220,6 +220,4 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         :return: Initial observation and debugging info.
         """
         # call super method for dealing with the general stuff
-        return super().reset(
-            seed=seed, options=options
-        )
+        return super().reset(seed=seed, options=options)
