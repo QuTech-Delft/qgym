@@ -7,12 +7,14 @@ from copy import deepcopy
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 import gymnasium
+import numpy as np
 from gymnasium import Space
 from numpy.random import Generator, default_rng
+from numpy.typing import NDArray
 
 from qgym.templates.rewarder import Rewarder
 from qgym.templates.state import ActType, ObsType, State
-from qgym.templates.visualiser import RenderFrame, Visualiser
+from qgym.templates.visualiser import Visualiser
 
 
 class Environment(gymnasium.Env[ObsType, ActType]):
@@ -89,7 +91,7 @@ class Environment(gymnasium.Env[ObsType, ActType]):
         self._visualiser.step(self._state)
         return self._state.obtain_observation(), self._state.obtain_info()
 
-    def render(self) -> Union[RenderFrame, List[RenderFrame], None]:
+    def render(self) -> Optional[NDArray[np.int_]]: # type: ignore[override]
         """Render the current state using pygame.
 
         :return: Result of rendering.

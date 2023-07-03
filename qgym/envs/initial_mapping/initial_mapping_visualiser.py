@@ -1,5 +1,5 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, Optional, Tuple
 
 import networkx as nx
 import numpy as np
@@ -8,7 +8,7 @@ from networkx import Graph
 from numpy.typing import NDArray
 
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
-from qgym.templates.visualiser import RenderFrame, Visualiser
+from qgym.templates.visualiser import Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, GREEN, RED, WHITE
 from qgym.utils.visualisation.typing import Font, Surface
 from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
@@ -86,7 +86,7 @@ class InitialMappingVisualiser(Visualiser):
         subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
         return subscreen1, subscreen2, subscreen3
 
-    def render(self, state: InitialMappingState) -> Union[RenderFrame, List[RenderFrame], None]:
+    def render(self, state: InitialMappingState) -> Optional[NDArray[np.int_]]:
         """Render the current state using ``pygame``. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The right screen
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly

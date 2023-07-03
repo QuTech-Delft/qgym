@@ -110,7 +110,7 @@ Example 2:
 
 
 """
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple, Union, cast
 
 import networkx as nx
 import numpy as np
@@ -206,11 +206,10 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
         self._visualiser = InitialMappingVisualiser(connection_graph, render_mode)
 
-    def reset(
-        self,
+    def reset(self,
         *,
         seed: Optional[int] = None,
-        interaction_graph: Optional[nx.Graph] = None,
+        options: Optional[Mapping[str, Any]] = None,
     ) -> Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]]:
         """Reset the state and set a new interaction graph.
 
@@ -219,15 +218,13 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         :param seed: Seed for the random number generator, should only be provided
             (optionally) on the first reset call i.e., before any learning is done.
         :param return_info: Whether to receive debugging info. Default is ``False``.
-        :param interaction_graph: Interaction graph to be used for the next iteration,
-            if ``None`` a random interaction graph will be created.
-        :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optionally debugging info.
+        :param options: Mapping with keyword arguments with addition options for the
+            reset. Keywords can be found in the description of
+            ``InitialMappingState.reset()``
+        :return: Initial observation and debugging info.
         """
         # call super method for dealing with the general stuff
-        return super().reset(
-            seed=seed, options={"interaction_graph": interaction_graph}
-        )
+        return super().reset(seed=seed, options=options)
 
     def add_random_edge_weights(self) -> None:
         """Add random weights to the connection graph and interaction graph."""

@@ -3,7 +3,7 @@
 All visualisers should inherit from ``Visualiser``.
 """
 from abc import abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, cast
+from typing import Any, Dict, Optional, Tuple, cast
 
 import numpy as np
 import pygame
@@ -11,7 +11,6 @@ from numpy.typing import NDArray
 
 from qgym.utils.visualisation.typing import Font, Surface
 
-RenderFrame = TypeVar("RenderFrame")
 
 class Visualiser:
     """Visualizer for the the current state of the problem.
@@ -30,7 +29,7 @@ class Visualiser:
     render_mode: str
 
     @abstractmethod
-    def render(self, state: Any) -> Union[RenderFrame, List[RenderFrame], None]:
+    def render(self, state: Any) -> Optional[NDArray[np.int_]]:
         """Render the current state using ``pygame``."""
         raise NotImplementedError
     
@@ -41,7 +40,7 @@ class Visualiser:
         if self.render_mode == "human":
             self.render(state)
 
-    def _display(self) -> Union[None, NDArray[np.int_]]:
+    def _display(self) -> Optional[NDArray[np.int_]]:
         """Display the current state using ``pygame``.
 
         The render function should call this method at the end.
