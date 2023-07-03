@@ -11,7 +11,7 @@ from typing import Any, List, Optional, Type, Union
 
 import gymnasium.spaces
 import numpy as np
-from numpy.random import Generator, default_rng
+from numpy.random import Generator
 from numpy.typing import NDArray
 
 
@@ -36,12 +36,3 @@ class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
         """
         super().__init__(nvec=nvec, dtype=dtype)
         self._np_random = rng  # this overrides the default behaviour of the gym space
-
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
-        """Seed the rng of this space, using ``numpy.random.default_rng``.
-
-        :param seed: Seed for the rng. Defaults to ``None``
-        :return: The used seeds.
-        """
-        self._np_random = default_rng(seed)
-        return [seed]

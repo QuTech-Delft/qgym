@@ -15,10 +15,10 @@ Usage:
      [1. 1.]], (3, 2), float64))
 """
 import typing
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import Any, Optional, Sequence, Tuple, Union
 
 import gymnasium.spaces
-from numpy.random import Generator, default_rng
+from numpy.random import Generator
 
 
 class Dict(gymnasium.spaces.Dict):
@@ -28,12 +28,13 @@ class Dict(gymnasium.spaces.Dict):
         self,
         spaces: Optional[
             Union[
-                typing.Dict[str, gymnasium.Space], Sequence[Tuple[str, gymnasium.Space]]
+                typing.Dict[str, gymnasium.Space[Any]],
+                Sequence[Tuple[str, gymnasium.Space[Any]]],
             ]
         ] = None,
         *,
         rng: Optional[Generator] = None,
-        **spaces_kwargs: gymnasium.Space
+        **spaces_kwargs: gymnasium.Space[Any]
     ) -> None:
         """Initialize a ``Dict`` space, with string valued keys and spaces inheriting
         from ``gym.Space`` as values.
@@ -44,18 +45,7 @@ class Dict(gymnasium.spaces.Dict):
             one will be constructed.
         :param spaces_kwargs: Spaces that are to form this ``Dict`` space.
         """
-        super().__init__(spaces, **spaces_kwargs)
+        super().__init__(spaces, seed=None, **spaces_kwargs)
         for space in self.spaces.values():
             # override the default behaviour of the gym space
             space._np_random = rng  # pylint: disable=protected-access
-
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
-        """Seed the rng of this space, using ``numpy.random.default_rng``. The seed will
-        be applied to all spaces in the ``Dict`` space.
-
-        :param seed: Seed for the rng. Defaults to ``None``
-        :return: The used seeds.
-        """
-        for space in self.spaces.values():
-            space._np_random = default_rng(seed)  # pylint: disable=protected-access
-        return [seed]

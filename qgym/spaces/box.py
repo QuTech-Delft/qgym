@@ -9,11 +9,11 @@ Usage:
      [20 20 20]], (2, 3), int32)
 
 """
-from typing import Any, List, Optional, Sequence, SupportsFloat, Type, Union
+from typing import Any, Optional, Sequence, SupportsFloat, Type, Union
 
 import gymnasium.spaces
 import numpy as np
-from numpy.random import Generator, default_rng
+from numpy.random import Generator
 from numpy.typing import NDArray
 
 
@@ -27,7 +27,7 @@ class Box(gymnasium.spaces.Box):
         low: Union[SupportsFloat, NDArray[Any]],
         high: Union[SupportsFloat, NDArray[Any]],
         shape: Optional[Sequence[int]] = None,
-        dtype: Type[np.floating[Any]] | Type[np.integer[Any]] = np.float_,
+        dtype: Union[Type[np.floating[Any]], Type[np.integer[Any]]] = np.float_,
         *,
         rng: Optional[Generator] = None,
     ) -> None:
@@ -45,12 +45,3 @@ class Box(gymnasium.spaces.Box):
         """
         super().__init__(low, high, shape=shape, dtype=dtype)
         self._np_random = rng  # this overrides the default behaviour of the gym space
-
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
-        """Seed the rng of this space, using ``numpy.random.default_rng``.
-
-        :param seed: Seed for the rng. Defaults to ``None``
-        :return: The used seeds.
-        """
-        self._np_random = default_rng(seed)
-        return [seed]

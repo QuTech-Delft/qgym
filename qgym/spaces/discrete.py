@@ -8,10 +8,10 @@ Usage:
     Discrete(3)
 
 """
-from typing import List, Optional
+from typing import Optional
 
 import gymnasium.spaces
-from numpy.random import Generator, default_rng
+from numpy.random import Generator
 
 
 class Discrete(gymnasium.spaces.Discrete):
@@ -33,12 +33,3 @@ class Discrete(gymnasium.spaces.Discrete):
         """
         super().__init__(n=n, start=start)
         self._np_random = rng  # this overrides the default behaviour of the gym space
-
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
-        """Seed the rng of this space, using ``numpy.random.default_rng``.
-
-        :param seed: Seed for the rng. Defaults to ``None``
-        :return: The used seeds.
-        """
-        self._np_random = default_rng(seed)
-        return [seed]
