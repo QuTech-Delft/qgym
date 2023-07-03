@@ -26,7 +26,7 @@ class Visualiser:
     screen: Optional[Surface]
     screen_dimensions: Tuple[int, int]
     font: Dict[str, Font]
-    render_mode: str
+    render_mode: Optional[str]
 
     @abstractmethod
     def render(self, state: Any) -> Optional[NDArray[np.int_]]:
