@@ -10,7 +10,7 @@ from numpy.typing import NDArray
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.templates.visualiser import RenderData, Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, GREEN, RED, WHITE
-from qgym.utils.visualisation.typing import Surface
+from qgym.utils.visualisation.typing import Font, Surface
 from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
 
 # pylint: disable=invalid-name
@@ -40,7 +40,7 @@ class InitialMappingVisualiser(Visualiser):
         }
         self.render_data = RenderData(
             screen=self._start_screen("Mapping Environment", render_mode, (1300, 730)),
-            font={"header": pygame.font.SysFont("Arial", 30)},
+            font=self._start_font(),
             colors=colors,
             render_mode=render_mode,
         )
@@ -265,6 +265,14 @@ class InitialMappingVisualiser(Visualiser):
             node_positions[node] = position * 0.45 * subscreen.size + subscreen.center
 
         return node_positions
+
+    def _start_font(self) -> Dict[str, Font]:
+        """Start the pygame font.
+
+        :return: pygame fonts for the gate and axis font.
+        """
+        pygame.font.init()
+        return {"header": pygame.font.SysFont("Arial", 30)}
 
     @property
     def header_spacing(self) -> float:

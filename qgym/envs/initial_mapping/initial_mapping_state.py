@@ -40,7 +40,13 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         and logical qubits.
     """
 
-    __slots__ = ("steps_done", "graphs", "mapping", "mapping_dict", "mapped_qubits")
+    __slots__ = (
+        "steps_done",
+        "graphs",
+        "mapping",
+        "mapping_dict",
+        "mapped_qubits",
+    )
 
     def __init__(
         self, connection_graph: nx.Graph, interaction_graph_edge_probability: float

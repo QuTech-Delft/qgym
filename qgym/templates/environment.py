@@ -88,8 +88,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         :return: Initial observation and optionally also debugging info.
         """
         super().reset(seed=seed)
-        if options is None:
-            options = {}
+        options = {} if options is None else options
         self._state.reset(seed=seed, **options)
         self.render()
         return self._state.obtain_observation(), self._state.obtain_info()

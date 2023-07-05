@@ -86,8 +86,12 @@ class State(Generic[ObservationT, ActionT]):
         """Create the corresponding observation space."""
         raise NotImplementedError
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         text = f"{self.__class__.__name__}:\n"
-        for attribute_name, attribute_value in self.__dict__.items():
-            text += f"{attribute_name}: {repr(attribute_value)}\n"
+        if hasattr(self, "__slots__"):
+            for attribute_name in self.__slots__:
+                text += f"{attribute_name}: {repr(getattr(self, attribute_name))}\n"
+        if hasattr(self, "__dir__"):
+            for attribute_name, attribute_value in self.__dict__.items():
+                text += f"{attribute_name}: {repr(attribute_value)}\n"
         return text
