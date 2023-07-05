@@ -36,7 +36,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
     metadata: Dict[str, Any]
     _state: State[ObservationT, ActionT]
     _rewarder: Rewarder
-    _visualiser: Optional[Visualiser]
+    _visualiser: Optional[Visualiser] = None
 
     # --- Other attributes ---
     _rng: Optional[Generator] = None
