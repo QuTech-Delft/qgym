@@ -164,7 +164,12 @@ class GateEncoder:
 
     def decode_gates(
         self,
-        encoded_gates: int | Mapping[int, Any] | Sequence[Gate] | set[int] | list[int] | tuple[int, ...]
+        encoded_gates: int
+        | Mapping[int, Any]
+        | Sequence[Gate]
+        | set[int]
+        | list[int]
+        | tuple[int, ...],
     ) -> str | dict[str, Any] | list[Gate] | set[str] | list[str]:
         """Decode integer encoded gate names to the original gate names based on the
         gates seen in ``learn_gates``.
