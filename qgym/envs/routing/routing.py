@@ -87,7 +87,9 @@ Action Space:
 
 
 """
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
 
 import networkx as nx
 import numpy as np
@@ -105,7 +107,8 @@ from qgym.utils.input_parsing import (
 )
 from qgym.utils.input_validation import check_bool, check_int
 
-Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
+if TYPE_CHECKING:
+    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
 
 
 class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
@@ -118,11 +121,11 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         observe_legal_surpasses: bool = True,
         observe_connection_graph: bool = True,
         *,
-        connection_graph: Optional[nx.Graph] = None,
-        connection_graph_matrix: Optional[ArrayLike] = None,
-        connection_grid_size: Optional[Gridspecs] = None,
-        rewarder: Optional[Rewarder] = None,
-        render_mode: Optional[str] = None,
+        connection_graph: nx.Graph | None = None,
+        connection_graph_matrix: ArrayLike | None = None,
+        connection_grid_size: Gridspecs | None = None,
+        rewarder: Rewarder | None = None,
+        render_mode: str | None = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states.
 
@@ -211,9 +214,9 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        options: Optional[Mapping[str, Any]] = None,
-    ) -> Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]]:
+        seed: int | None = None,
+        options: Mapping[str, Any] | None = None,
+    ) -> tuple[dict[str, NDArray[np.int_]], dict[str, Any]]:
         """Reset the state and set/create a new interaction circuit.
 
         To be used after an episode is finished.

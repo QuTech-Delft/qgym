@@ -145,8 +145,10 @@ Example 2:
 
 
 """
+from __future__ import annotations
+
 from copy import deepcopy
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Union, cast
+from typing import Any, Dict, Mapping, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -170,14 +172,14 @@ class Scheduling(
 
     def __init__(
         self,
-        machine_properties: Union[Mapping[str, Any], str, MachineProperties],
+        machine_properties: Mapping[str, Any] | str | MachineProperties,
         *,
         max_gates: int = 200,
         dependency_depth: int = 1,
         random_circuit_mode: str = "default",
-        rulebook: Optional[CommutationRulebook] = None,
-        rewarder: Optional[Rewarder] = None,
-        render_mode: Optional[str] = None,
+        rulebook: CommutationRulebook | None = None,
+        rewarder: Rewarder | None = None,
+        render_mode: str | None = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states for the
         scheduling environment.
@@ -229,9 +231,9 @@ class Scheduling(
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        options: Optional[Mapping[str, Any]] = None,
-    ) -> Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], Dict[str, Any]]:
+        seed: int | None = None,
+        options: Mapping[str, Any] | None = None,
+    ) -> tuple[dict[str, NDArray[np.int_] | NDArray[np.int8]], dict[str, Any]]:
         """Reset the state, action space and step number.and load a new (random) initial
         state. To be used after an episode is finished.
 
@@ -248,7 +250,7 @@ class Scheduling(
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, options=options)
 
-    def get_circuit(self, mode: str = "human") -> List[Gate]:
+    def get_circuit(self, mode: str = "human") -> list[Gate]:
         """Return the quantum circuit of this episode.
 
         :param mode: Choose from be 'human' or 'encoded'. Defaults to 'human'.
@@ -269,7 +271,7 @@ class Scheduling(
 
     @staticmethod
     def _parse_machine_properties(
-        machine_properties: Union[Mapping[str, Any], str, MachineProperties]
+        machine_properties: Mapping[str, Any] | str | MachineProperties
     ) -> MachineProperties:
         """
         Parse the machine_properties given by the user and return a
@@ -310,9 +312,7 @@ class Scheduling(
         return random_circuit_mode
 
     @staticmethod
-    def _parse_rulebook(
-        rulebook: Union[CommutationRulebook, None]
-    ) -> CommutationRulebook:
+    def _parse_rulebook(rulebook: CommutationRulebook | None) -> CommutationRulebook:
         """Parse the `rulebook` given by the user.
 
         :param rulebook: Rulebook describing the commutation rules. If ``None`` is

@@ -5,7 +5,7 @@ This ``SchedulingState``represents the ``State`` of the ``Scheduling`` environme
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Set, Union, cast
+from typing import Any, Dict, Set, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -197,7 +197,7 @@ class SchedulingState(
 
     def obtain_observation(
         self,
-    ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]]:
+    ) -> dict[str, NDArray[np.int_] | NDArray[np.int8]]:
         """:return: Observation based on the current state."""
         return {
             "gate_names": self.circuit_info.names,
@@ -210,7 +210,7 @@ class SchedulingState(
         """:return: Boolean value stating whether we are in a final state."""
         return all(self.circuit_info.schedule != -1)
 
-    def obtain_info(self) -> Dict[str, Union[int, NDArray[np.int_]]]:
+    def obtain_info(self) -> dict[str, int | NDArray[np.int_]]:
         """:return: Optional debugging info for the current state."""
         return {
             "Steps done": self.steps_done,
@@ -242,8 +242,8 @@ class SchedulingState(
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        circuit: Optional[List[Gate]] = None,
+        seed: int | None = None,
+        circuit: list[Gate] | None = None,
         **_kwargs: Any,
     ) -> SchedulingState:
         """Reset the state and load a new (random) initial state.

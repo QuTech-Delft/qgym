@@ -14,7 +14,7 @@ from typing import Any, List, Optional, Type, Union
 import gymnasium.spaces
 import numpy as np
 from numpy.random import Generator
-from numpy.typing import NDArray
+from numpy.typing import ArrayLike
 
 
 class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
@@ -22,7 +22,7 @@ class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
 
     def __init__(
         self,
-        nvec: Union[List[int], NDArray[np.int_]],
+        nvec: ArrayLike,
         dtype: Union[str, Type[np.integer[Any]]] = np.int_,
         *,
         rng: Optional[Generator] = None,
@@ -36,5 +36,5 @@ class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
         :param rng: Random number generator to be used in this space, if ``None`` a new
             random number generator will be constructed.
         """
-        super().__init__(nvec=nvec, dtype=dtype)
+        super().__init__(nvec=np.asarray(nvec), dtype=dtype)
         self._np_random = rng  # this overrides the default behaviour of the gym space

@@ -5,7 +5,7 @@ All states should inherit from ``State``.
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Generic, TypeVar
 
 from gymnasium.spaces import Space
 from numpy.random import Generator, default_rng
@@ -23,18 +23,18 @@ class State(Generic[ObservationT, ActionT]):
     """
 
     steps_done: int
-    _rng: Optional[Generator] = None
+    _rng: Generator | None = None
 
     @abstractmethod
     def reset(
-        self, *, seed: Optional[int] = None, **_kwargs: Any
+        self, *, seed: int | None = None, **_kwargs: Any
     ) -> State[ObservationT, ActionT]:
         """Reset the state.
 
         :returns: Self"""
         raise NotImplementedError
 
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
+    def seed(self, seed: int | None = None) -> list[int | None]:
         """Seed the rng of this space, using ``numpy.random.default_rng``.
 
         :param seed: Seed for the rng. Defaults to ``None``
@@ -77,7 +77,7 @@ class State(Generic[ObservationT, ActionT]):
         raise NotImplementedError
 
     @abstractmethod
-    def obtain_info(self) -> Dict[Any, Any]:
+    def obtain_info(self) -> dict[Any, Any]:
         """:return: Optional debugging info for the current state."""
         raise NotImplementedError
 

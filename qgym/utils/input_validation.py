@@ -1,7 +1,9 @@
 """This module contains generic input validation methods."""
+from __future__ import annotations
+
 import warnings
 from numbers import Integral, Real
-from typing import Any, Optional
+from typing import Any
 
 import networkx as nx
 import numpy as np
@@ -14,8 +16,8 @@ def check_real(
     x: Any,
     name: str,
     *,
-    l_bound: Optional[float] = None,
-    u_bound: Optional[float] = None,
+    l_bound: float | None = None,
+    u_bound: float | None = None,
     l_inclusive: bool = True,
     u_inclusive: bool = True,
 ) -> float:
@@ -62,8 +64,8 @@ def check_int(
     x: Any,
     name: str,
     *,
-    l_bound: Optional[float] = None,
-    u_bound: Optional[float] = None,
+    l_bound: float | None = None,
+    u_bound: float | None = None,
     l_inclusive: bool = True,
     u_inclusive: bool = True,
 ) -> int:

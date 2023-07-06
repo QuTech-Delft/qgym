@@ -16,7 +16,7 @@ Usage:
 from __future__ import annotations
 
 from collections import deque
-from typing import Any, Deque, Dict, Optional, Tuple, Union
+from typing import Any, Dict
 
 import networkx as nx
 import numpy as np
@@ -107,13 +107,13 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             ).flatten()
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: Deque[Tuple[int, int, int]] = deque()
+        self.swap_gates_inserted: deque[tuple[int, int, int]] = deque()
 
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        interaction_circuit: Optional[NDArray[np.int_]] = None,
+        seed: int | None = None,
+        interaction_circuit: NDArray[np.int_] | None = None,
         **_kwargs: Any,
     ) -> RoutingState:
         """Reset the state and load a new (random) initial state.
@@ -162,7 +162,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def obtain_info(
         self,
-    ) -> Dict[str, Union[int, Deque[Tuple[int, int, int]], NDArray[np.int_]]]:
+    ) -> dict[str, int | deque[tuple[int, int, int]] | NDArray[np.int_]]:
         """:return: Optional debugging info for the current state."""
         return {
             "Steps done": self.steps_done,
@@ -216,7 +216,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
         mapping = qgym.spaces.MultiDiscrete(np.full(self.n_qubits, self.n_qubits))
 
-        observation_kwargs: Dict[str, Any]
+        observation_kwargs: dict[str, Any]
         observation_kwargs = {
             "interaction_gates_ahead": interaction_gates_ahead,
             "mapping": mapping,
@@ -239,7 +239,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def obtain_observation(
         self,
-    ) -> Dict[str, NDArray[np.int_]]:
+    ) -> dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
         # construct interaction_gates_ahead
         gate_slice = slice(self.position, self.position + self.max_observation_reach)

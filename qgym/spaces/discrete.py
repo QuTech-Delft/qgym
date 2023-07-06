@@ -8,7 +8,7 @@ Usage:
     Discrete(3)
 
 """
-from typing import Optional
+from __future__ import annotations
 
 import gymnasium.spaces
 from numpy.random import Generator
@@ -22,7 +22,7 @@ class Discrete(gymnasium.spaces.Discrete):
         n: int,
         start: int = 0,
         *,
-        rng: Optional[Generator] = None,
+        rng: Generator | None = None,
     ) -> None:
         """Initialize a Discrete space,  i.e., a range of integers.
 

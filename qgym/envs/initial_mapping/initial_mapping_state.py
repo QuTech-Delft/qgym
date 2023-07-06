@@ -13,7 +13,7 @@ Usage:
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, Optional, Set, cast
+from typing import Any, Dict, cast
 
 import networkx as nx
 import numpy as np
@@ -84,8 +84,8 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             },
         }
         self.mapping = np.full(self.n_nodes, self.n_nodes)
-        self.mapping_dict: Dict[int, int] = {}
-        self.mapped_qubits: Dict[str, Set[int]] = {"physical": set(), "logical": set()}
+        self.mapping_dict: dict[int, int] = {}
+        self.mapped_qubits: dict[str, set[int]] = {"physical": set(), "logical": set()}
 
     def create_observation_space(self) -> spaces.Dict:
         """Create the corresponding observation space.
@@ -109,8 +109,8 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        interaction_graph: Optional[nx.Graph] = None,
+        seed: int | None = None,
+        interaction_graph: nx.Graph | None = None,
         **_kwargs: Any,
     ) -> InitialMappingState:
         """Reset the state and set a new interaction graph.
@@ -185,7 +185,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.mapped_qubits["logical"].add(logical_qubit)
         return self
 
-    def obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
+    def obtain_observation(self) -> dict[str, NDArray[np.int_]]:
         """:return: Observation based on the current state."""
         return {
             "mapping": self.mapping,
@@ -196,7 +196,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """:return: Boolean value stating whether we are in a final state."""
         return bool(len(self.mapping_dict) == self.n_nodes)
 
-    def obtain_info(self) -> Dict[str, Any]:
+    def obtain_info(self) -> dict[str, Any]:
         """:return: Optional debugging info for the current state."""
         return {"Steps done": self.steps_done}
 

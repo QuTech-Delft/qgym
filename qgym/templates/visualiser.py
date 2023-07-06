@@ -2,8 +2,10 @@
 
 All visualisers should inherit from ``Visualiser``.
 """
+from __future__ import annotations
+
 from abc import abstractmethod
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 import numpy as np
 import pygame
@@ -20,8 +22,8 @@ class RenderData:
     def __init__(
         self,
         screen: Surface,
-        font: Dict[str, Font],
-        colors: Dict[str, Color],
+        font: dict[str, Font],
+        colors: dict[str, Color],
         render_mode: str,
     ) -> None:
         self.screen = screen
@@ -54,11 +56,11 @@ class Visualiser:
     render_data: RenderData
 
     @abstractmethod
-    def __init__(self, render_mode: str, *args: List[Any]):
+    def __init__(self, render_mode: str, *args: list[Any]):
         raise NotImplementedError
 
     @abstractmethod
-    def render(self, state: Any) -> Union[None, NDArray[np.int_]]:
+    def render(self, state: Any) -> None | NDArray[np.int_]:
         """Render the current state using ``pygame``."""
         raise NotImplementedError
 
@@ -69,7 +71,7 @@ class Visualiser:
         if self.render_data.render_mode == "human":
             self.render(state)
 
-    def _display(self) -> Union[None, NDArray[np.int_]]:
+    def _display(self) -> None | NDArray[np.int_]:
         """Display the current state using ``pygame``.
 
         The render function should call this method at the end.
@@ -94,7 +96,7 @@ class Visualiser:
         raise ValueError(msg)
 
     def _start_screen(
-        self, screen_name: str, render_mode: str, screen_dimensions: Tuple[int, int]
+        self, screen_name: str, render_mode: str, screen_dimensions: tuple[int, int]
     ) -> Surface:
         """Start a pygame screen in the given mode.
 
@@ -142,7 +144,7 @@ class Visualiser:
         return self.render_data.screen is not None
 
     @property
-    def colors(self) -> Dict[str, Color]:
+    def colors(self) -> dict[str, Color]:
         """Dict containing names color pairs."""
         return self.render_data.colors
 
@@ -152,6 +154,6 @@ class Visualiser:
         return self.render_data.screen
 
     @property
-    def font(self) -> Dict[str, Font]:
+    def font(self) -> dict[str, Font]:
         """Dict containing str Font pairs."""
         return self.render_data.font

@@ -11,12 +11,13 @@ Usage:
 """
 from __future__ import annotations
 
-from typing import Any, Optional, Sequence, SupportsFloat, Type, Union
+from numbers import Integral
+from typing import Any, Sequence, SupportsFloat
 
 import gymnasium.spaces
 import numpy as np
 from numpy.random import Generator
-from numpy.typing import NDArray
+from numpy.typing import ArrayLike
 
 
 class Box(gymnasium.spaces.Box):
@@ -26,12 +27,12 @@ class Box(gymnasium.spaces.Box):
 
     def __init__(
         self,
-        low: Union[SupportsFloat, NDArray[Any]],
-        high: Union[SupportsFloat, NDArray[Any]],
-        shape: Optional[Sequence[int]] = None,
-        dtype: Union[Type[np.floating[Any]], Type[np.integer[Any]]] = np.float_,
+        low: SupportsFloat | ArrayLike,
+        high: SupportsFloat | ArrayLike,
+        shape: Sequence[int] | None = None,
+        dtype: type[np.floating[Any]] | type[np.integer[Any]] = np.float_,
         *,
-        rng: Optional[Generator] = None,
+        rng: Generator | None = None,
     ) -> None:
         """Initialize a ``Box`` space, i.e., a possibly open-ended interval in $n$
         dimensions.
@@ -45,5 +46,9 @@ class Box(gymnasium.spaces.Box):
         :param rng: Random number generator to be used in this space, if ``None`` a new
             one will be constructed.
         """
+        if not isinstance(low, Integral):
+            low = low.__float__() if hasattr(low, "__float__") else np.asarray(low)
+        if not isinstance(high, Integral):
+            high = high.__float__() if hasattr(high, "__float__") else np.asarray(high)
         super().__init__(low, high, shape=shape, dtype=dtype)
         self._np_random = rng  # this overrides the default behaviour of the gym space

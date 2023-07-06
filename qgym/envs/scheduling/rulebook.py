@@ -22,7 +22,9 @@ Example:
         rulebook.add_rule(rulebook)
 
 """
-from typing import Callable, List
+from __future__ import annotations
+
+from typing import Callable
 
 import numpy as np
 from numpy.typing import NDArray
@@ -41,13 +43,13 @@ class CommutationRulebook:
             same commute. If ``False``, then no rules will be initialized.
         """
 
-        self._rules: List[Callable[[Gate, Gate], bool]]
+        self._rules: list[Callable[[Gate, Gate], bool]]
         if default_rules:
             self._rules = [disjoint_qubits, same_gate]
         else:
             self._rules = []
 
-    def make_blocking_matrix(self, circuit: List[Gate]) -> NDArray[np.int_]:
+    def make_blocking_matrix(self, circuit: list[Gate]) -> NDArray[np.int_]:
         """Make a square array of shape (len(circuit), len(circuit)), with dependencies
         based on the given commutation rules.
 

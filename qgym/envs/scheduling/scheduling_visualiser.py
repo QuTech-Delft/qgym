@@ -1,5 +1,7 @@
 """This module contains a class used for rendering the ``Scheduling`` environment."""
-from typing import Dict, Union, cast
+from __future__ import annotations
+
+from typing import Dict, cast
 
 import numpy as np
 import pygame
@@ -56,7 +58,7 @@ class SchedulingVisualiser(Visualiser):
         # define attributes that are set later
         self._cycle_width = 0.0
 
-    def render(self, state: SchedulingState) -> Union[None, NDArray[np.int_]]:
+    def render(self, state: SchedulingState) -> None | NDArray[np.int_]:
         """Render the current state using pygame.
 
         :raise ValueError: If an unsupported mode is provided.
@@ -148,7 +150,7 @@ class SchedulingVisualiser(Visualiser):
             color=self.colors["gate_text"],
         )
 
-    def _start_font(self) -> Dict[str, Font]:
+    def _start_font(self) -> dict[str, Font]:
         """Start the pygame fonts for the gate and axis font.
 
         :return: pygame fonts for the gate and axis font.

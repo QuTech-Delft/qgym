@@ -2,14 +2,16 @@
 
 All rewarders should inherit from ``Rewarder``.
 """
+from __future__ import annotations
+
 from abc import abstractmethod
-from typing import Any, Tuple
+from typing import Any
 
 
 class Rewarder:
     """RL Rewarder, for computing rewards on a state."""
 
-    _reward_range: Tuple[float, float]
+    _reward_range: tuple[float, float]
 
     @abstractmethod
     def compute_reward(self, *, old_state: Any, action: Any, new_state: Any) -> float:
@@ -23,7 +25,7 @@ class Rewarder:
         raise NotImplementedError
 
     @property
-    def reward_range(self) -> Tuple[float, float]:
+    def reward_range(self) -> tuple[float, float]:
         """Reward range of the rewarder. I.e., range that rewards can lie in."""
         return self._reward_range
 

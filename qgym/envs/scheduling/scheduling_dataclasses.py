@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Set
 
 import numpy as np
 from numpy.typing import NDArray
@@ -28,7 +27,7 @@ class GateInfo:
     """Info of a specific gate used in the ``Scheduling`` environment."""
 
     cycle_length: int
-    not_in_same_cycle: Set[int]
+    not_in_same_cycle: set[int]
     exclude: int = 0
     exclude_next_cycle: bool = False
 
@@ -48,7 +47,7 @@ class GateInfo:
 class CircuitInfo:
     """Info of the circuit of the current episode of ``Scheduling`` environment."""
 
-    encoded: List[Gate]
+    encoded: list[Gate]
     names: NDArray[np.int_]
     acts_on: NDArray[np.int_]
     legal: NDArray[np.int8]
@@ -56,9 +55,7 @@ class CircuitInfo:
     schedule: NDArray[np.int_]
     blocking_matrix: NDArray[np.int_]
 
-    def reset(
-        self, circuit: Optional[List[Gate]], utils: SchedulingUtils
-    ) -> CircuitInfo:
+    def reset(self, circuit: list[Gate] | None, utils: SchedulingUtils) -> CircuitInfo:
         """Reset the object.
 
         To be used in the reset function of the ``Scheduling`` environment.

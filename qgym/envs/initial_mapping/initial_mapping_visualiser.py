@@ -1,5 +1,7 @@
 """This module contains a class used for rendering a ``InitialMapping`` environment."""
-from typing import Any, Dict, Tuple, Union
+from __future__ import annotations
+
+from typing import Any
 
 import networkx as nx
 import numpy as np
@@ -67,7 +69,7 @@ class InitialMappingVisualiser(Visualiser):
 
     def _init_subscreen_rectangles(
         self, padding: int = 20
-    ) -> Tuple[pygame.Rect, pygame.Rect, pygame.Rect]:
+    ) -> tuple[pygame.Rect, pygame.Rect, pygame.Rect]:
         """Initialize the ``pygame.Rect`` objects used for drawing the subscreens.
 
         :param padding: The padding to be used inbetween the subscreens.
@@ -89,7 +91,7 @@ class InitialMappingVisualiser(Visualiser):
         subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
         return subscreen1, subscreen2, subscreen3
 
-    def render(self, state: InitialMappingState) -> Union[None, NDArray[np.int_]]:
+    def render(self, state: InitialMappingState) -> None | NDArray[np.int_]:
         """Render the current state using ``pygame``. The upper left screen shows the
         connection graph. The lower left screen the interaction graph. The right screen
         shows the mapped graph. Gray edges are unused, green edges are mapped correctly
@@ -119,7 +121,7 @@ class InitialMappingVisualiser(Visualiser):
         return self._display()
 
     def _get_mapped_graph(
-        self, mapping: Dict[int, int], interaction_graph_matrix: NDArray[np.float_]
+        self, mapping: dict[int, int], interaction_graph_matrix: NDArray[np.float_]
     ) -> nx.Graph:
         """Construct a mapped graph. In this graph gray edges are unused, green edges
         are mapped correctly and red edges need at least on swap. This function is used
@@ -156,7 +158,7 @@ class InitialMappingVisualiser(Visualiser):
         self,
         graph: nx.Graph,
         mapped_adjacency_matrix: NDArray[np.float_],
-        edge: Tuple[int, int],
+        edge: tuple[int, int],
     ) -> None:
         """Give an edge of the graph a color based on the mapping. Gray edges are
         unused, green edges are mapped correctly and red edges need at least on swap.
@@ -249,7 +251,7 @@ class InitialMappingVisualiser(Visualiser):
     @staticmethod
     def _get_render_positions(
         graph: nx.Graph, subscreen: pygame.Rect
-    ) -> Dict[Any, NDArray[np.float_]]:
+    ) -> dict[Any, NDArray[np.float_]]:
         """Give the positions of the nodes of a graph on a given subscreen.
 
         :param graph: Graph of which the node positions must be determined.
@@ -257,7 +259,7 @@ class InitialMappingVisualiser(Visualiser):
         :return: a dictionary where the keys are the names of the nodes, and the
             values are the coordinates of these nodes.
         """
-        node_positions: Dict[Any, NDArray[np.float_]]
+        node_positions: dict[Any, NDArray[np.float_]]
         node_positions = nx.spring_layout(graph, threshold=1e-6)
 
         # Scale and move the node positions to be centered on the subscreen
@@ -266,7 +268,7 @@ class InitialMappingVisualiser(Visualiser):
 
         return node_positions
 
-    def _start_font(self) -> Dict[str, Font]:
+    def _start_font(self) -> dict[str, Font]:
         """Start the pygame font.
 
         :return: pygame fonts for the gate and axis font.

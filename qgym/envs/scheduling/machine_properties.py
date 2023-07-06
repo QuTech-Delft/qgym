@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import warnings
 from copy import deepcopy
-from typing import Any, Dict, Iterable, Mapping, Set, Tuple, Union
+from typing import Any, Iterable, Mapping
 
 from qgym.utils import GateEncoder
 from qgym.utils.input_validation import check_instance, check_int, check_string
@@ -44,9 +44,9 @@ class MachineProperties:
         :param n_qubits: Number of qubits of the machine.
         """
         self._n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
-        self._gates: Dict[Any, int] = {}
-        self._same_start: Set[Any] = set()
-        self._not_in_same_cycle: Dict[Any, Set[Any]] = {}
+        self._gates: dict[Any, int] = {}
+        self._same_start: set[Any] = set()
+        self._not_in_same_cycle: dict[Any, set[Any]] = {}
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
@@ -109,7 +109,7 @@ class MachineProperties:
         return self
 
     def add_not_in_same_cycle(
-        self, gates: Iterable[Tuple[str, str]]
+        self, gates: Iterable[tuple[str, str]]
     ) -> MachineProperties:
         """Add gates that should not start in the same cycle.
 
@@ -163,7 +163,7 @@ class MachineProperties:
         return self._n_qubits
 
     @property
-    def gates(self) -> Union[Dict[str, int], Dict[int, int]]:
+    def gates(self) -> dict[str, int] | dict[int, int]:
         """Return a``Dict`` with the gate names the machine can perform as keys, and the
         number of machine cycles (time) as values.
         """
@@ -175,21 +175,21 @@ class MachineProperties:
         return len(self._gates)
 
     @property
-    def same_start(self) -> Union[Set[str], Set[int]]:
+    def same_start(self) -> set[str] | set[int]:
         """Set of gate names that should start in the same cycle, or wait till the
         previous gate is done.
         """
         return self._same_start
 
     @property
-    def not_in_same_cycle(self) -> Union[Dict[str, Set[str]], Dict[int, Set[int]]]:
+    def not_in_same_cycle(self) -> dict[str, set[str]] | dict[int, set[int]]:
         """Gates that can not start in the same cycle."""
         return self._not_in_same_cycle
 
     @staticmethod
     def _check_machine_properties_mapping(
         machine_properties: Mapping[str, Any]
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Check if the given machine properties ``Mapping`` is a valid descriptions of
         the machine properties and returns a ``Dict`` to easily initialize a
         ``MachineProperties`` object.

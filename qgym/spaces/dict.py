@@ -14,8 +14,10 @@ Usage:
      [1. 1.]
      [1. 1.]], (3, 2), float64))
 """
+from __future__ import annotations
+
 import typing
-from typing import Any, Optional, Sequence, Tuple, Union
+from typing import Any, Sequence
 
 import gymnasium.spaces
 from numpy.random import Generator
@@ -26,15 +28,12 @@ class Dict(gymnasium.spaces.Dict):
 
     def __init__(
         self,
-        spaces: Optional[
-            Union[
-                typing.Dict[str, gymnasium.Space[Any]],
-                Sequence[Tuple[str, gymnasium.Space[Any]]],
-            ]
-        ] = None,
+        spaces: typing.Dict[str, gymnasium.Space[Any]]
+        | Sequence[tuple[str, gymnasium.Space[Any]]]
+        | None = None,
         *,
-        rng: Optional[Generator] = None,
-        **spaces_kwargs: gymnasium.Space[Any]
+        rng: Generator | None = None,
+        **spaces_kwargs: gymnasium.Space[Any],
     ) -> None:
         """Initialize a ``Dict`` space, with string valued keys and spaces inheriting
         from ``gym.Space`` as values.

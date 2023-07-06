@@ -2,9 +2,11 @@
 
 All environments should inherit from ``Environment``.
 """
+from __future__ import annotations
+
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Mapping, Optional, Tuple, Union
+from typing import Any, Mapping
 
 import gymnasium
 import numpy as np
@@ -33,17 +35,17 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
     # --- These attributes should be set in any subclass ---
     action_space: Space[Any]
     observation_space: Space[Any]
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     _state: State[ObservationT, ActionT]
     _rewarder: Rewarder
-    _visualiser: Optional[Visualiser] = None
+    _visualiser: Visualiser | None = None
 
     # --- Other attributes ---
-    _rng: Optional[Generator] = None
+    _rng: Generator | None = None
 
     def step(
         self, action: ActionT
-    ) -> Tuple[ObservationT, float, bool, bool, Dict[Any, Any]]:
+    ) -> tuple[ObservationT, float, bool, bool, dict[Any, Any]]:
         """Update the state based on the input action. Return observation, reward,
         done-indicator and (optional) debugging info based on the updated state.
 
@@ -74,8 +76,8 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
 
     @abstractmethod
     def reset(
-        self, *, seed: Optional[int] = None, options: Optional[Mapping[str, Any]] = None
-    ) -> Tuple[ObservationT, Dict[str, Any]]:
+        self, *, seed: int | None = None, options: Mapping[str, Any] | None = None
+    ) -> tuple[ObservationT, dict[str, Any]]:
         """Reset the environment and load a new random initial state. To be used after
         an episode is finished. Optionally, one can provide additional options to
         configure the reset.
@@ -93,7 +95,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         self.render()
         return self._state.obtain_observation(), self._state.obtain_info()
 
-    def render(self) -> Union[None, NDArray[np.int_]]:  # type: ignore[override]
+    def render(self) -> None | NDArray[np.int_]:  # type: ignore[override]
         """Render the current state using pygame.
 
         :return: Result of rendering.
@@ -145,7 +147,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         old_state: State[ObservationT, ActionT],
         action: ActionT,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> float:
         """Ask the ``Rewarder`` to compute a reward, based on the given old state, the
         given action and the updated state.

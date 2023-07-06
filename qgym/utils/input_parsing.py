@@ -3,9 +3,11 @@
 With parsing we mean that the user input is validated and transformed to a predictable
 format. In this way, user can give different input formats, but internally we are 
 assured that the data has the same format."""
+from __future__ import annotations
+
 import warnings
 from copy import deepcopy
-from typing import Any, Iterable, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Iterable, Type
 
 import networkx as nx
 from numpy.typing import ArrayLike
@@ -18,10 +20,11 @@ from qgym.utils.input_validation import (
     check_string,
 )
 
-Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
+if TYPE_CHECKING:
+    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
 
 
-def parse_rewarder(rewarder: Optional[Rewarder], default: Type[Rewarder]) -> Rewarder:
+def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Rewarder:
     """Parse a `rewarder` given by the user.
 
     :param rewarder: ``Rewarder`` to use for the environment. If ``None``, then a new
@@ -38,8 +41,8 @@ def parse_rewarder(rewarder: Optional[Rewarder], default: Type[Rewarder]) -> Rew
 
 
 def parse_visualiser(
-    render_mode: Optional[str], vis_type: Type[Visualiser], args: List[Any]
-) -> Union[None, Visualiser]:
+    render_mode: str | None, vis_type: Type[Visualiser], args: list[Any]
+) -> None | Visualiser:
     """Parse a `Visualiser` by the render mode.
 
     :param render_mode: If ``None`` return ``None``. Otherwise return a ``Visualiser``
@@ -58,9 +61,9 @@ def parse_visualiser(
 
 
 def parse_connection_graph(
-    graph: Optional[nx.Graph] = None,
-    matrix: Optional[ArrayLike] = None,
-    grid_size: Optional[Gridspecs] = None,
+    graph: nx.Graph | None = None,
+    matrix: ArrayLike | None = None,
+    grid_size: Gridspecs | None = None,
 ) -> nx.Graph:
     """Parse the user input (given in ``__init__``) to create a connection graph.
 

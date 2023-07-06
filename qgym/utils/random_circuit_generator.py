@@ -1,7 +1,7 @@
 """This module contains the ``RandomCircuitGenerator``, which can be used to generate
 random circuits. Here, a quantum circuit is a ``List`` with ``Gate`` objects.
 """
-from typing import List, Optional, Union
+from __future__ import annotations
 
 import numpy as np
 from numpy.random import Generator, default_rng
@@ -17,7 +17,7 @@ class RandomCircuitGenerator:
     """
 
     def __init__(
-        self, n_qubits: int, max_gates: int, rng: Optional[Generator] = None
+        self, n_qubits: int, max_gates: int, rng: Generator | None = None
     ) -> None:
         """Initialize the ``RandomCircuitGenerator``.
 
@@ -46,8 +46,8 @@ class RandomCircuitGenerator:
         self._rng = rng
 
     def generate_circuit(
-        self, n_gates: Union[str, int] = "random", mode: str = "default"
-    ) -> List[Gate]:
+        self, n_gates: str | int = "random", mode: str = "default"
+    ) -> list[Gate]:
         """Generate a random quantum circuit.
 
         :param n_gates: If "random", then a circuit of random length will be made. If
@@ -61,7 +61,7 @@ class RandomCircuitGenerator:
         """
         n_gates = self._parse_n_gates(n_gates)
 
-        circuit: List[Gate] = [Gate("", -1, -1)] * n_gates
+        circuit: list[Gate] = [Gate("", -1, -1)] * n_gates
 
         if mode.lower() == "default":
             gate_names = ["x", "y", "z", "cnot", "measure"]
@@ -92,7 +92,7 @@ class RandomCircuitGenerator:
 
         return circuit
 
-    def _parse_n_gates(self, n_gates: Union[int, str]) -> int:
+    def _parse_n_gates(self, n_gates: int | str) -> int:
         """Parse `n_gates`.
 
         :param n_gates: If n_gates is "random", generate a number between 1 and

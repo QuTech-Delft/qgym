@@ -1,5 +1,7 @@
 """This module contains a class used for rendering a ``Routing`` environment."""
-from typing import Any, Deque, Dict, Tuple, Union
+from __future__ import annotations
+
+from typing import Any, Sequence
 
 import networkx as nx
 import numpy as np
@@ -63,7 +65,7 @@ class RoutingVisualiser(Visualiser):
 
     def _start_subscreens(
         self, screen: Surface, padding: int = 20
-    ) -> Tuple[Surface, Surface]:
+    ) -> tuple[Surface, Surface]:
         """Initialize the subscreens.
 
         :param screen: The parent screen.
@@ -82,7 +84,7 @@ class RoutingVisualiser(Visualiser):
         subscreen_graph = screen.subsurface(rect_graph)
         return subscreen_circuit, subscreen_graph
 
-    def render(self, state: RoutingState) -> Union[None, NDArray[np.int_]]:
+    def render(self, state: RoutingState) -> None | NDArray[np.int_]:
         """Render the current state using ``pygame``.
 
         :param state: State to render.
@@ -275,10 +277,10 @@ class RoutingVisualiser(Visualiser):
         self,
         *,
         mapping: NDArray[np.int_],
-        swap_gates_inserted: Deque[Tuple[int, int, int]],
+        swap_gates_inserted: Sequence[tuple[int, int, int]],
         position: int,
         starting_idx: int = 0,
-    ) -> Tuple[int, NDArray[np.int_], int]:
+    ) -> tuple[int, NDArray[np.int_], int]:
         """Update the mapping to conform to the current position.
 
         :param mapping: Mapping of the previous position
@@ -332,7 +334,7 @@ class RoutingVisualiser(Visualiser):
 
     def _get_render_positions(
         self, graph: nx.Graph, padding: int = 20
-    ) -> Dict[Any, NDArray[np.float_]]:
+    ) -> dict[Any, NDArray[np.float_]]:
         """Give the positions of the nodes of a graph on a given screen.
 
         :param graph: Graph of which the node positions must be determined.
@@ -340,7 +342,7 @@ class RoutingVisualiser(Visualiser):
         :return: a dictionary where the keys are the names of the nodes, and the
             values are the coordinates of these nodes.
         """
-        node_positions: Dict[Any, NDArray[np.float_]]
+        node_positions: dict[Any, NDArray[np.float_]]
         node_positions = nx.spring_layout(graph, threshold=1e-6)
 
         # Scale and move the node positions to be centered on the graph subscreen
@@ -352,7 +354,7 @@ class RoutingVisualiser(Visualiser):
 
         return node_positions
 
-    def _setup_fonts(self) -> Dict[str, Font]:
+    def _setup_fonts(self) -> dict[str, Font]:
         """Setup the fonts for rendering with pygame."""
         pygame.font.init()
         return {
