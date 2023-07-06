@@ -9,7 +9,7 @@ Usage:
 """
 from __future__ import annotations
 
-from typing import Any, List, Optional, Type, Union
+from typing import Any, Optional, Type, Union
 
 import gymnasium.spaces
 import numpy as np
