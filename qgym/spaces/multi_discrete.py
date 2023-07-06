@@ -9,7 +9,7 @@ Usage:
 """
 from __future__ import annotations
 
-from typing import Any, Optional, Type, Union
+from typing import Any, Type
 
 import gymnasium.spaces
 import numpy as np
@@ -23,9 +23,9 @@ class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
     def __init__(
         self,
         nvec: ArrayLike,
-        dtype: Union[str, Type[np.integer[Any]]] = np.int_,
+        dtype: str | Type[np.integer[Any]] = np.int_,
         *,
-        rng: Optional[Generator] = None,
+        rng: Generator | None = None,
     ) -> None:
         """Initialize a multi-discrete space, i.e., multiple discrete intervals of given
         sizes.
