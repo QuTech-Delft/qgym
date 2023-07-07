@@ -21,9 +21,10 @@ class RandomCircuitGenerator:
     ) -> None:
         """Initialize the ``RandomCircuitGenerator``.
 
-        :param n_qubits: Number of qubits of the circuit.
-        :param max_gates: Maximum number of gates that a circuit may have.
-        :param rng: Optional random number generator.
+        Args:
+            n_qubits: Number of qubits of the circuit.
+            max_gates: Maximum number of gates that a circuit may have.
+            rng: Optional random number generator.
         """
         self.n_qubits = n_qubits
         self.max_gates = max_gates
@@ -31,11 +32,10 @@ class RandomCircuitGenerator:
 
     @property
     def rng(self) -> Generator:
-        """Return the random number generator of this ``RandomCircuitGenerator``. If
-        none is set yet, this will generate a new one, using
-        ``numpy.random.default_rng``.
+        """Return the random number generator of this ``RandomCircuitGenerator``.
 
-        :return: Random number generator.
+        If none is set yet, this will generate a new one, using
+        ``numpy.random.default_rng``.
         """
         if self._rng is None:
             self._rng = default_rng()
@@ -50,14 +50,17 @@ class RandomCircuitGenerator:
     ) -> list[Gate]:
         """Generate a random quantum circuit.
 
-        :param n_gates: If "random", then a circuit of random length will be made. If
-            an ``int`` is given, a circuit of length ``min(n_gates, max_gates)`` will
-            be made.
-        :param mode: If mode is "default", a circuit will be generated containing the
-            'prep', 'x', 'y', 'z', 'cnot' and 'measure' gates. If mode is "workshop",
-            a simpler circuit containing just 'h', 'cnot' and `measure` gates will be
-            generated.
-        :return: A randomly generated quantum circuit.
+        Args:
+            n_gates: If "random", then a circuit of random length will be made. If an
+                ``int`` is given, a circuit of length ``min(n_gates, max_gates)`` will
+                be made.
+            mode: If mode is "default", a circuit will be generated containing the
+                'prep', 'x', 'y', 'z', 'cnot' and 'measure' gates. If mode is
+                "workshop", a simpler circuit containing just 'h', 'cnot' and `measure`
+                gates will be generated.
+
+        Returns:
+            A randomly generated quantum circuit.
         """
         n_gates = self._parse_n_gates(n_gates)
 
@@ -95,9 +98,10 @@ class RandomCircuitGenerator:
     def _parse_n_gates(self, n_gates: int | str) -> int:
         """Parse `n_gates`.
 
-        :param n_gates: If n_gates is "random", generate a number between 1 and
-            `max_gates`. If n_gates is an ``int``, return the minimum of `n_gates` and
-            `max_gates`.
+        Args:
+            n_gates: If n_gates is "random", generate a number between 1 and
+                `max_gates`. If n_gates is an ``int``, return the minimum of `n_gates`
+                and `max_gates`.
         """
         if isinstance(n_gates, str):
             if n_gates.lower().strip() == "random":

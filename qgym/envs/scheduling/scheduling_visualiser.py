@@ -21,11 +21,12 @@ class SchedulingVisualiser(Visualiser):
     def __init__(self, render_mode: str, initial_state: SchedulingState) -> None:
         """Init of the ``SchedulingVisualiser``.
 
-        :param initial_state: ``SchedulingState`` object containing the initial state of
-            the environment to visualise.
-        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
-            each step. If 'rgb_array', return an RGB array encoding of the rendered
-            on the render call.
+        Args:
+            initial_state: ``SchedulingState`` object containing the initial state of
+                the environment to visualise.
+            render_mode: If 'human' open a ``pygame screen`` visualizing the each step.
+                If 'rgb_array', return an RGB array encoding of the rendered on the
+                render call.
         """
         # Rendering data
         self.offset = {"x-axis": 100, "y-axis": 0}
@@ -61,8 +62,14 @@ class SchedulingVisualiser(Visualiser):
     def render(self, state: SchedulingState) -> None | NDArray[np.int_]:
         """Render the current state using pygame.
 
-        :raise ValueError: If an unsupported mode is provided.
-        :return: Result of rendering.
+        Args:
+            state: State to render.
+
+        Raises:
+            ValueError: If an unsupported mode is provided.
+
+        Returns:
+            Result of rendering, based on `render_mode`.
         """
         pygame.time.delay(50)
 
@@ -89,7 +96,8 @@ class SchedulingVisualiser(Visualiser):
     def _draw_y_axis(self, n_qubits: int) -> None:
         """Draw the y-axis of the display.
 
-        :param n_qubits: Number of qubits of the machine.
+        Args:
+            n_qubits: Number of qubits of the machine.
         """
         screen = self.screen
         for i in range(n_qubits):
@@ -104,10 +112,11 @@ class SchedulingVisualiser(Visualiser):
     ) -> None:
         """Draw a gate on the screen.
 
-        :param gate: Gate to draw.
-        :param scheduled_cycle: Cycle the gate is scheduled.
-        :param gate_cycle_length: Length of the gat in machine cycles.
-        :param gate_name: Name of the gate.
+        Args:
+            gate: Gate to draw.
+            scheduled_cycle: Cycle the gate is scheduled.
+            gate_cycle_length: Length of the gat in machine cycles.
+            gate_name: Name of the gate.
         """
         self._draw_gate_block(gate_name, gate_cycle_length, gate.q1, scheduled_cycle)
         if gate.q1 != gate.q2:
@@ -120,10 +129,11 @@ class SchedulingVisualiser(Visualiser):
     ) -> None:
         """Draw a single block of a gate (gates can consist of 1 or 2 blocks).
 
-        :param gate_name: Name of the gate.
-        :param gate_cycle_length: Length of the gat in machine cycles.
-        :param qubit: Qubit in which the gate acts.
-        :param scheduled_cycle: Cycle in which the gate is scheduled.
+        Args:
+            gate_name: Name of the gate.
+            gate_cycle_length: Length of the gat in machine cycles.
+            qubit: Qubit in which the gate acts.
+            scheduled_cycle: Cycle in which the gate is scheduled.
         """
         screen = self.screen
         gate_width = self._cycle_width * gate_cycle_length
@@ -151,9 +161,10 @@ class SchedulingVisualiser(Visualiser):
         )
 
     def _start_font(self) -> dict[str, Font]:
-        """Start the pygame fonts for the gate and axis font.
+        """Start the ``pygame`` fonts for the gate and axis font.
 
-        :return: pygame fonts for the gate and axis font.
+        Returns:
+            ``pygame`` fonts for the gate and axis font.
         """
         pygame.font.init()
         return {

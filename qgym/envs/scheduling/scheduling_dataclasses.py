@@ -36,7 +36,8 @@ class GateInfo:
 
         To be used in the reset function of the ``Scheduling`` environment.
 
-        :returns: Self.
+        Returns:
+            Self.
         """
         self.exclude = 0
         self.exclude_next_cycle = False
@@ -60,7 +61,8 @@ class CircuitInfo:
 
         To be used in the reset function of the ``Scheduling`` environment.
 
-        :returns: Self.
+        Returns:
+            Self.
         """
         if circuit is None:
             circuit = utils.random_circuit_generator.generate_circuit(

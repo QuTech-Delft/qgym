@@ -38,11 +38,12 @@ class Dict(gymnasium.spaces.Dict):
         """Initialize a ``Dict`` space, with string valued keys and spaces inheriting
         from ``gym.Space`` as values.
 
-        :param spaces: Dictionary containing string valued keys and spaces that are to
-            form this ``Dict`` space.
-        :param rng: Random number generator to be used in this space, if ``None`` a new
-            one will be constructed.
-        :param spaces_kwargs: Spaces that are to form this ``Dict`` space.
+        Args:
+            spaces: Dictionary containing string valued keys and spaces that are to form
+            this ``Dict`` space.
+            rng: Random number generator to be used in this space, if ``None`` a new one
+                will be constructed.
+            spaces_kwargs: Spaces that are to form this ``Dict`` space.
         """
         super().__init__(spaces, seed=None, **spaces_kwargs)
         for space in self.spaces.values():

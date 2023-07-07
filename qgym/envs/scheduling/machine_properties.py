@@ -41,7 +41,8 @@ class MachineProperties:
         """
         Init of the MachineProperties class.
 
-        :param n_qubits: Number of qubits of the machine.
+        Args:
+            n_qubits: Number of qubits of the machine.
         """
         self._n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
         self._gates: dict[Any, int] = {}
@@ -53,9 +54,12 @@ class MachineProperties:
         """Initialize the ``MachineProperties`` class from a ``Mapping`` containing
         valid machines properties.
 
-        :param machine_properties: ``Mapping`` containing valid machine properties.
-        :return: Initialized ``MachineProperties`` object with the properties described
-            in the `machine_properties` ``Mapping``.
+        Args:
+            machine_properties: ``Mapping`` containing valid machine properties.
+
+        Returns:
+            Initialized ``MachineProperties`` object with the properties described in
+            the `machine_properties` ``Mapping``.
         """
         checked_mp = cls._check_machine_properties_mapping(machine_properties)
 
@@ -75,9 +79,12 @@ class MachineProperties:
     def add_gates(self, gates: Mapping[str, int]) -> MachineProperties:
         """Add gates to the machine properties that should be supported.
 
-        :param gates: ``Mapping`` of gates that the machine can perform as keys, and the
-            number of machine cycles (time) as values.
-        :return: The ``MachineProperties`` with the added gates.
+        Args:
+            gates: ``Mapping`` of gates that the machine can perform as keys, and the
+                number of machine cycles (time) as values.
+
+        Returns:
+            The ``MachineProperties`` with the added gates.
         """
         check_instance(gates, "gates", Mapping)
 
@@ -96,8 +103,11 @@ class MachineProperties:
         """Add gates that should start in the same cycle, or wait till the previous gate
         is done.
 
-        :param gates: ``Iterable`` of gate names that should start in the same cycle.
-        :return: The ``MachineProperties`` with the same start gates.
+        Args:
+            gates: ``Iterable`` of gate names that should start in the same cycle.
+
+        Returns:
+            The ``MachineProperties`` with the same start gates.
         """
         check_instance(gates, "gates", Iterable)
 
@@ -113,11 +123,14 @@ class MachineProperties:
     ) -> MachineProperties:
         """Add gates that should not start in the same cycle.
 
-        :param gates: ``Iterable`` of tuples of gate names that should not start in the
-            same cycle.
-        :return: The ``MachineProperties`` with an updated ``not_in_same_cycle``
-            property. The ``not_in_same_cycle`` property is updated according to the
-            input `gates`.
+        Args:
+            gates: ``Iterable`` of tuples of gate names that should not start in the
+                same cycle.
+
+        Returns:
+            The ``MachineProperties`` with an updated ``not_in_same_cycle`` property.
+            The ``not_in_same_cycle`` property is updated according to the input
+            `gates`.
         """
         check_instance(gates, "gates", Iterable)
         for gate1, gate2 in gates:
@@ -137,9 +150,10 @@ class MachineProperties:
     def encode(self) -> GateEncoder:
         """Encode the gates in the machine properties to integer values.
 
-        :return: The GateEncoder used to encode the gates. This GateEncoder can be used
-            to decode the gates or encode quantum circuits containing the same gate
-            names as in this ``MachineProperties`` object.
+        Returns:
+            The GateEncoder used to encode the gates. This GateEncoder can be used to
+            decode the gates or encode quantum circuits containing the same gate names
+            as in this ``MachineProperties`` object.
         """
         if (
             any(not isinstance(gate, str) for gate in self._gates)
@@ -194,9 +208,15 @@ class MachineProperties:
         the machine properties and returns a ``Dict`` to easily initialize a
         ``MachineProperties`` object.
 
-        :param machine_properties: ``Mapping`` containing the machine properties.
-        :raises ValueError: If there are missing keys in the ``Mapping``.
-        :return: ``Dict`` to easily initialize a ``MachineProperties`` object.
+        Args:
+            machine_properties: ``Mapping`` containing the machine properties.
+
+        Raises:
+            TypeError: If ``machine_properties`` is not a ``Mapping``.
+            ValueError: If there are missing keys in the ``Mapping``.
+
+        Returns:
+            ``Dict`` to easily initialize a ``MachineProperties`` object.
         """
         check_instance(machine_properties, "machine_properties", Mapping)
         keys = ["n_qubits", "gates", "machine_restrictions"]

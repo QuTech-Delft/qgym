@@ -164,24 +164,26 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
         The supported render modes of this environment are "human" and "rgb_array".
 
-        :param interaction_graph_edge_probability: Probability that an edge between any
-            pair of qubits in the random interaction graph exists. The interaction
-            graph will have the same amount of nodes as the connection graph. Nodes
-            without any interactions can be seen as 'null' nodes. Must be a value in the
-            range [0,1].
-        :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each node represents a connection
-            in the QPU topology.
-        :param connection_graph_matrix: Adjacency matrix representation of the QPU
-            topology.
-        :param connection_grid_size: Size of the connection graph when the connection
-            graph has a grid topology. For more information on the allowed values and
-            types, see ``networkx`` `grid_graph`_ documentation.
-        :param rewarder: Rewarder to use for the environment. Must inherit from
-            ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is used.
-        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
-            each step. If 'rgb_array', return an RGB array encoding of the rendered
-            on the render call.
+        Args:
+            interaction_graph_edge_probability: Probability that an edge between any
+                pair of qubits in the random interaction graph exists. The interaction
+                graph will have the same amount of nodes as the connection graph. Nodes
+                without any interactions can be seen as 'null' nodes. Must be a value in
+                the range [0,1].
+            connection_graph: ``networkx`` graph representation of the QPU topology.
+                Each node represents a physical qubit and each node represents a
+                connection in the QPU topology.
+            connection_graph_matrix: Adjacency matrix representation of the QPU
+                topology.
+            connection_grid_size: Size of the connection graph when the connection graph
+                has a grid topology. For more information on the allowed values and
+                types, see ``networkx`` `grid_graph`_ documentation.
+            rewarder: Rewarder to use for the environment. Must inherit from
+                ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is
+                used.
+            render_mode: If 'human' open a ``pygame screen`` visualizing each step. If
+                'rgb_array', return an RGB array encoding of the rendered on the render
+                call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -224,13 +226,16 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
         To be used after an episode is finished.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call i.e., before any learning is done.
-        :param return_info: Whether to receive debugging info. Default is ``False``.
-        :param options: Mapping with keyword arguments with addition options for the
-            reset. Keywords can be found in the description of
-            ``InitialMappingState.reset()``
-        :return: Initial observation and debugging info.
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call i.e., before any learning is done.
+            return_info: Whether to receive debugging info. Default is ``False``.
+            options: Mapping with keyword arguments with addition options for the reset.
+                Keywords can be found in the description of
+                ``InitialMappingState.reset()``
+
+        Returns:
+            Initial observation and debugging info.
         """
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, options=options)

@@ -27,11 +27,11 @@ class RoutingVisualiser(Visualiser):
     def __init__(self, render_mode: str, connection_graph: Graph) -> None:
         """Init of the ``RoutingVisualiser``.
 
-        :param connection_graph: ``networkx.Graph`` representation of the connection
-            graph.
-        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
-            each step. If 'rgb_array', return an RGB array encoding of the rendered
-            on the render call.
+        Args:
+            connection_graph: ``networkx.Graph`` representation of the connection graph.
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered on the render
+                call.
         """
         # Rendering data
         colors = {
@@ -68,8 +68,9 @@ class RoutingVisualiser(Visualiser):
     ) -> tuple[Surface, Surface]:
         """Initialize the subscreens.
 
-        :param screen: The parent screen.
-        :param padding: The padding to be used in between the subscreens.
+        Args:
+            screen: The parent screen.
+            padding: The padding to be used in between the subscreens.
         """
         position_circuit = (0, self.header_spacing)
         width_circuit = self.screen_width * 0.75 - 0.5 * padding
@@ -87,13 +88,17 @@ class RoutingVisualiser(Visualiser):
     def render(self, state: RoutingState) -> None | NDArray[np.int_]:
         """Render the current state using ``pygame``.
 
-        :param state: State to render.
-        :raise ValueError: When an invalid mode is provided.
-        :return: If `render_mode` is 'human' returns show the current step at using a
-            pygame screen. If `render_mode` is 'rgb_array' returns a RGB array encoding
-            of the rendered image.
-        """
+        Args:
+            state: State to render.
 
+        Raises:
+            ValueError: When an invalid mode is provided.
+
+        Returns:
+            If `render_mode` is 'human' returns show the current step at using a
+            ``pygame`` screen. If `render_mode` is 'rgb_array' returns a RGB array
+            encoding of the rendered image.
+        """
         self.screen.fill(self.colors["background"])
 
         self._draw_connection_graph(self.subscreens[1])
@@ -107,8 +112,9 @@ class RoutingVisualiser(Visualiser):
     def _draw_interaction_circuit(self, state: RoutingState, screen: Surface) -> None:
         """Draw the interaction circuit on the interaction circuit subscreen.
 
-        :param state: Current state.
-        :param screen: (Sub)screen to draw the circuit on.
+        Args:
+            state: Current state.
+            screen: (Sub)screen to draw the circuit on.
         """
         x_text = screen.get_width() * 0.05
         x_left = screen.get_width() * 0.1
@@ -140,11 +146,12 @@ class RoutingVisualiser(Visualiser):
     ) -> None:
         """Draw the circuit lines on the 'circuit' screen and label them.
 
-        :param screen: (Sub)screen to draw the circuit lines on.
-        :param x_text: x coordinate of the labels of the circuit lines.
-        :param x_left: Left most x coordinate of the circuit lines.
-        :param x_right: Right most x coordinate of the circuit lines.
-        :param y_lines: Array of y coordinates of the circuit lines.
+        Args:
+            screen: (Sub)screen to draw the circuit lines on.
+            x_text: x coordinate of the labels of the circuit lines.
+            x_left: Left most x coordinate of the circuit lines.
+            x_right: Right most x coordinate of the circuit lines.
+            y_lines: Array of y coordinates of the circuit lines.
         """
         for qubit_idx, y_line in enumerate(y_lines):
             draw_wide_line(
@@ -171,10 +178,11 @@ class RoutingVisualiser(Visualiser):
     ) -> None:
         """Draw the interaction gates on the 'circuit' screen.
 
-        :param screen: (Sub)screen to draw the interactions on.
-        :param state: ``RoutingState`` to draw the interaction gates.
-        :param x_gates: Array of x coordinates of the swap gates.
-        :param y_lines: Array of y coordinates of the circuit lines.
+        Args:
+            screen: (Sub)screen to draw the interactions on.
+            state: ``RoutingState`` to draw the interaction gates.
+            x_gates: Array of x coordinates of the swap gates.
+            y_lines: Array of y coordinates of the circuit lines.
         """
         for i, (qubit1, qubit2) in enumerate(state.interaction_circuit):
             physical_qubit1, physical_qubit2 = state.mapping[[qubit1, qubit2]]
@@ -196,10 +204,11 @@ class RoutingVisualiser(Visualiser):
     ) -> None:
         """Draw shades on the 'circuit' screen to show the observation size.
 
-        :param screen: (Sub)screen to draw the observation reach on.
-        :param state: Current state to draw the observation reach of.
-        :param x_left: Left most x coordinate of the circuit lines.
-        :param x_right: Right most x coordinate of the circuit lines.
+        Args:
+            screen: (Sub)screen to draw the observation reach on.
+            state: Current state to draw the observation reach of.
+            x_left: Left most x coordinate of the circuit lines.
+            x_right: Right most x coordinate of the circuit lines.
         """
         dx_gates = (x_right - x_left) / state.max_interaction_gates
 
@@ -235,10 +244,11 @@ class RoutingVisualiser(Visualiser):
     ) -> None:
         """Draw the mapping on the 'circuit' screen.
 
-        :param screen: (Sub)screen to draw the mapping on.
-        :param state: ``RoutingState`` to draw the mapping of.
-        :param x_gates: Array of x coordinates of the swap gates.
-        :param y_lines: Array of y coordinates of the circuit lines.
+        Args:
+            screen: (Sub)screen to draw the mapping on.
+            state: ``RoutingState`` to draw the mapping of.
+            x_gates: Array of x coordinates of the swap gates.
+            y_lines: Array of y coordinates of the circuit lines.
         """
         dx_gates = x_gates[1] - x_gates[0]
         mapping = np.arange(state.n_qubits, dtype=int)
@@ -283,12 +293,16 @@ class RoutingVisualiser(Visualiser):
     ) -> tuple[int, NDArray[np.int_], int]:
         """Update the mapping to conform to the current position.
 
-        :param mapping: Mapping of the previous position
-        :param swap_gates_inserted: List of swap gates inserted.
-        :position: Position in the interaction circuit where the mapping must be made.
-        :starting_idx: Index of the last swap gate of the previous position.
-        :returns: Tuple with a starting index for the next position, the updated
-            mapping and number of swap gates used since the last mapping.
+        Args:
+            mapping: Mapping of the previous position
+            swap_gates_inserted: List of swap gates inserted.
+            position: Position in the interaction circuit where the mapping must be
+                made.
+            starting_idx: Index of the last swap gate of the previous position.
+
+        Returns:
+            Tuple with a starting index for the next position, the updated mapping and
+            number of swap gates used since the last mapping.
         """
         n_swaps = 0
         if starting_idx >= len(swap_gates_inserted):
@@ -306,7 +320,8 @@ class RoutingVisualiser(Visualiser):
     def _draw_connection_graph(self, screen: Surface) -> None:
         """Draw the connection graph on the graph subscreen.
 
-        :param screen: (Sub)screen to draw the connection graph on.
+        Args:
+            screen: (Sub)screen to draw the connection graph on.
         """
         for node_u, node_v in self.graph["edges"]:
             pos_u = self.graph["render_positions"][node_u]
@@ -322,8 +337,9 @@ class RoutingVisualiser(Visualiser):
     def _draw_header(self, text: str, screen: Surface) -> None:
         """Draw a header above a subscreen.
 
-        :param text: Text of the header.
-        :param screen: Subscreen to draw the header of.
+        Args:
+            text: Text of the header.
+            screen: Subscreen to draw the header of.
         """
         pygame_text = self.font["header"].render(text, True, self.colors["text"])
         offset = screen.get_offset()
@@ -337,10 +353,13 @@ class RoutingVisualiser(Visualiser):
     ) -> dict[Any, NDArray[np.float_]]:
         """Give the positions of the nodes of a graph on a given screen.
 
-        :param graph: Graph of which the node positions must be determined.
-        :param screen: the subscreen on which the graph will be drawn.
-        :return: a dictionary where the keys are the names of the nodes, and the
-            values are the coordinates of these nodes.
+        Args:
+            graph: Graph of which the node positions must be determined.
+            screen: the subscreen on which the graph will be drawn.
+
+        Returns:
+            Dictionary where the keys are the names of the nodes, and the values are the
+            coordinates of these nodes.
         """
         node_positions: dict[Any, NDArray[np.float_]]
         node_positions = nx.spring_layout(graph, threshold=1e-6)

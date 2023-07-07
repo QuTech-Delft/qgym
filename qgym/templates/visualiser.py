@@ -43,14 +43,7 @@ class RenderData:
 
 
 class Visualiser:
-    """Visualizer for the the current state of the problem.
-
-    Each subclass should set at least the following attributes:
-
-    :ivar screen: Pygame screen. Can be ``None`` if no screen is open.
-    :ivar screen_dimensions: Tuple containing the width height of the screen.
-    :ivar font: Dictionary with different pygame fonts.
-    """
+    """Visualizer for the the current state of the problem."""
 
     # --- These attributes should be set in any subclass ---
     render_data: RenderData
@@ -67,7 +60,11 @@ class Visualiser:
     def step(self, state: Any) -> None:
         """To be used during a step of the environment.
 
-        Renders the display if `render_mode` is 'human', does nothing otherwise."""
+        Renders the display if `render_mode` is 'human', does nothing otherwise.
+
+        Args:
+            state: State to render if `render_mode` is 'human'.
+        """
         if self.render_data.render_mode == "human":
             self.render(state)
 
@@ -76,8 +73,11 @@ class Visualiser:
 
         The render function should call this method at the end.
 
-        :raise ValueError: When an invalid mode is provided.
-        :return: If 'human' mode returns a boolean value encoding whether the ``pygame``
+        Raises:
+            ValueError: When an invalid mode is provided.
+
+        Returns:
+            If 'human' mode returns a boolean value encoding whether the ``pygame``
             screen is open. In 'rgb_array' mode returns an RGB array encoding of the
             rendered image.
         """
@@ -100,11 +100,16 @@ class Visualiser:
     ) -> Surface:
         """Start a pygame screen in the given mode.
 
-        :param screen_name: Name of the screen.
-        :param render_mode: The render mode to use. Choose from 'human' or 'rgb_array'.
-        :param screen_dimension: Width and height of the screen.
-        :raise ValueError: When an invalid mode is provided.
-        :return: The initialized screen.
+        Args:
+            screen_name: Name of the screen.
+            render_mode: The render mode to use. Choose from 'human' or 'rgb_array'.
+            screen_dimension: Width and height of the screen.
+
+        Raises:
+            ValueError: When an invalid mode is provided.
+
+        Returns:
+            The initialized screen.
         """
         if not isinstance(render_mode, str):
             raise TypeError(
@@ -130,12 +135,12 @@ class Visualiser:
 
     @property
     def screen_width(self) -> int:
-        """Screen width. Alias for ``self.screen_dimensions[0]``."""
+        """Screen width of  the main screen."""
         return self.render_data.screen_width
 
     @property
     def screen_height(self) -> int:
-        """Screen height. Alias for ``self.screen_dimensions[1]``."""
+        """Screen height of the main screen."""
         return self.render_data.screen_height
 
     @property

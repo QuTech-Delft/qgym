@@ -27,11 +27,13 @@ if TYPE_CHECKING:
 def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Rewarder:
     """Parse a `rewarder` given by the user.
 
-    :param rewarder: ``Rewarder`` to use for the environment. If ``None``, then a new
-        instance of the `default` rewarder will be returned.
-    :param default: Type of the desired default rewarder to used when no rewarder is
-        given.
-    :return: A deepcopy of the given `rewarder` or a new instance of type `default` if
+    Args:
+        rewarder: ``Rewarder`` to use for the environment. If ``None``, then a new
+            instance of the `default` rewarder will be returned.
+        default: Type of the desired default rewarder to used when no rewarder is given.
+
+    Returns:
+        A deepcopy of the given `rewarder` or a new instance of type `default` if
         `rewarder` is ``None``.
     """
     if rewarder is None:
@@ -45,13 +47,16 @@ def parse_visualiser(
 ) -> None | Visualiser:
     """Parse a `Visualiser` by the render mode.
 
-    :param render_mode: If ``None`` return ``None``. Otherwise return a ``Visualiser``
+    Args:
+        render_mode: If ``None`` return ``None``. Otherwise return a ``Visualiser`` of
+            type `vis_type` with optional arguments given in `args`.
+        vis_type: Type of ``Visualiser`` to make if `render_mode` is not ``None``.
+        args: Additional argument to give to the init of the ``Visualiser`` if
+            `vis_type` is not ``None``.
+
+    Returns:
+        If `render_mode` is ``None`` return ``None``. Otherwise return a ``Visualiser``
         of type `vis_type` with optional arguments given in `args`.
-    :param vis_type: Type of ``Visualiser`` to make if `render_mode` is not ``None``.
-    :param args: Additional argument to give to the init of the ``Visualiser`` if
-        `vis_type` is not ``None``.
-    :return: If `render_mode` is ``None`` return ``None``. Otherwise return a
-        ``Visualiser`` of type `vis_type` with optional arguments given in `args`.
     """
     if render_mode is None:
         return None
@@ -67,11 +72,16 @@ def parse_connection_graph(
 ) -> nx.Graph:
     """Parse the user input (given in ``__init__``) to create a connection graph.
 
-    :param graph: ``networkx.Graph`` representation of the QPU topology.
-    :param matrix: Adjacency matrix representation of the QPU topology.
-    :param size: Size of the connection graph when the topology is a grid.
-    :raise ValueError: When `graph`, `matrix` and `grid_size` are all ``None``.
-    :return: Connection graph as a ``networkx.Graph``.
+    Args:
+        graph: ``networkx.Graph`` representation of the QPU topology.
+        matrix: Adjacency matrix representation of the QPU topology.
+        size: Size of the connection graph when the topology is a grid.
+
+    Raises:
+        ValueError: When `graph`, `matrix` and `grid_size` are all ``None``.
+
+    Returns:
+        Connection graph as a ``networkx.Graph``.
     """
     if graph is not None:
         if matrix is not None:

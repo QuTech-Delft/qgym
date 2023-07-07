@@ -51,17 +51,18 @@ class BasicRewarder(Rewarder):
     ) -> None:
         """Initialize the reward range and set the rewards and penalties.
 
-        :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if the action contains a virtual or physical qubit that
-            has already been mapped. This value should be negative (but is not required)
-            and defaults to -100.
-        :param reward_per_edge: Reward gained per 'good' edge in the interaction graph.
-            An edge is 'good' if the mapped edge overlaps with an edge of the
-            connection graph. This value should be positive (but is not required) and
-            defaults to 5.
-        :param penalty_per_edge: Penalty given per 'bad' edge in the interaction graph.
-            An edge is 'bad' if the edge is mapped and is not 'good'. This value should
-            be negative (but is not required) and defaults to -1.
+        Args:
+            illegal_action_penalty: Penalty for performing an illegal action. An action
+                is illegal if the action contains a virtual or physical qubit that has
+                already been mapped. This value should be negative (but is not required)
+                and defaults to -100.
+            reward_per_edge: Reward gained per 'good' edge in the interaction graph. An
+                edge is 'good' if the mapped edge overlaps with an edge of the
+                connection graph. This value should be positive (but is not required)
+                and defaults to 5.
+            penalty_per_edge: Penalty given per 'bad' edge in the interaction graph. An
+                edge is 'bad' if the edge is mapped and is not 'good'. This value should
+                be negative (but is not required) and defaults to -1.
         """
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
@@ -81,16 +82,20 @@ class BasicRewarder(Rewarder):
         action: NDArray[np.int_],
         new_state: InitialMappingState,
     ) -> float:
-        """Compute a reward, based on the new state, and the given action. Specifically
-        the connection graph, interaction graphs and mapping are used.
+        """Compute a reward, based on the new state, and the given action.
 
-        :param old_state: State of the ``InitialMapping`` before the current action.
-        :param action: Action that has just been taken.
-        :param new_state: Updated state of the ``InitialMapping``.
-        :return reward: The reward for this action. If the action is illegal, then the
-            reward is `illegal_action_penalty`. If the action is legal, then the reward
-            is the *total* number of 'good' edges times `reward_per_edge` plus the
-            *total* number of 'bad' edges times `penalty_per_edge`.
+        Specifically the connection graph, interaction graphs and mapping are used.
+
+        Args:
+            old_state: State of the ``InitialMapping`` before the current action.
+            action: Action that has just been taken.
+            new_state: Updated state of the ``InitialMapping``.
+
+        Returns:
+            The reward for this action. If the action is illegal, then the reward is
+            `illegal_action_penalty`. If the action is legal, then the reward is the
+            *total* number of 'good' edges times `reward_per_edge` plus the *total*
+            number of 'bad' edges times `penalty_per_edge`.
         """
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
@@ -100,8 +105,11 @@ class BasicRewarder(Rewarder):
     def _compute_state_reward(self, state: InitialMappingState) -> float:
         """Compute the value of the mapping defined by the input state.
 
-        :param state: The state to compute the value of.
-        :return: The reward value of this state.
+        Args:
+            state: The state to compute the value of.
+
+        Returns:
+            The reward value of this state.
         """
         reward = 0.0
         for flat_idx in state.graphs["interaction"]["matrix"].nonzero()[0]:
@@ -121,12 +129,16 @@ class BasicRewarder(Rewarder):
 
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: InitialMappingState) -> bool:
-        """Check if the given action is illegal i.e., checks if qubits are mapped
-        multiple times.
+        """Check if the given action is illegal.
 
-        :param action: Action that has just been taken.
-        :param old_state: State of the ``InitialMapping`` before the current action.
-        :return: Whether this action is valid for the given state.
+        An action is considered illegal if qubits are mapped multiple times.
+
+        Args:
+            action: Action that has just been taken.
+            old_state: State of the ``InitialMapping`` before the current action.
+
+        Returns:
+            Whether this action is valid for the given state.
         """
         return (
             action[0] in old_state.mapped_qubits["physical"]
@@ -166,16 +178,20 @@ class SingleStepRewarder(BasicRewarder):
         action: NDArray[np.int_],
         new_state: InitialMappingState,
     ) -> float:
-        """Compute a reward, based on the new state, and the given action. Specifically
-        the connection graph, interaction graphs and mapping are used.
+        """Compute a reward, based on the new state, and the given action.
 
-        :param old_state: State of the ``InitialMapping`` before the current action.
-        :param action: Action that has just been taken.
-        :param new_state: Updated state of the ``InitialMapping``.
-        :return reward: The reward for this action. If the action is illegal, then the
-            reward is `illegal_action_penalty`. If the action is legal, then the reward
-            is the number of 'good' edges times `reward_per_edge` plus the number of
-            'bad' edges times `penalty_per_edge` created by the *this* action.
+        Specifically the connection graph, interaction graphs and mapping are used.
+
+        Args:
+            old_state: State of the ``InitialMapping`` before the current action.
+            action: Action that has just been taken.
+            new_state: Updated state of the ``InitialMapping``.
+
+        Returns:
+            The reward for this action. If the action is illegal, then the reward is
+            `illegal_action_penalty`. If the action is legal, then the reward is the
+            number of 'good' edges times `reward_per_edge` plus the number of 'bad'
+            edges times `penalty_per_edge` created by the *this* action.
         """
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
@@ -197,16 +213,20 @@ class EpisodeRewarder(BasicRewarder):
         action: NDArray[np.int_],
         new_state: InitialMappingState,
     ) -> float:
-        """Compute a reward, based on the new state, and the given action. Specifically
-        the connection graph, interaction graphs and mapping are used.
+        """Compute a reward, based on the new state, and the given action.
 
-        :param old_state: State of the ``InitialMapping`` before the current action.
-        :param action: Action that has just been taken.
-        :param new_state: Updated state of the ``InitialMapping``.
-        :return reward: The reward for this action. If the action is illegal, then the
-            reward is `illegal_action_penalty`. If the action is legal, but the mapping
-            is not yet finished, then the reward is 0. If the action is legal, and the
-            mapping is finished, then the reward is the number of 'good' edges times
+        Specifically the connection graph, interaction graphs and mapping are used.
+
+        Args:
+            old_state: State of the ``InitialMapping`` before the current action.
+            action: Action that has just been taken.
+            new_state: Updated state of the ``InitialMapping``.
+
+        Returns:
+            The reward for this action. If the action is illegal, then the reward is
+            `illegal_action_penalty`. If the action is legal, but the mapping is not yet
+            finished, then the reward is 0. If the action is legal, and the mapping is
+            finished, then the reward is the number of 'good' edges times
             `reward_per_edge` plus the number of 'bad' edges times `penalty_per_edge`.
         """
         if self._is_illegal(action, old_state):

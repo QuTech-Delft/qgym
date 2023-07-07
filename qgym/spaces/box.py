@@ -37,14 +37,15 @@ class Box(gymnasium.spaces.Box):
         """Initialize a ``Box`` space, i.e., a possibly open-ended interval in $n$
         dimensions.
 
-        :param low: Either one lower bound for all intervals, or an ``NDArray`` with the
-            shape given in `shape` with unique lower bounds for each interval.
-        :param high: Either one upper bound for all intervals, or an ``NDArray`` with
-            the shape given in `shape` with unique upper bounds for each interval.
-        :param shape: ``Tuple`` containing the shape of the ``Box`` space.
-        :param dtype: Type of the values in each interval.
-        :param rng: Random number generator to be used in this space, if ``None`` a new
-            one will be constructed.
+        Args:
+            low: Either one lower bound for all intervals, or an ``NDArray`` with the
+                shape given in `shape` with unique lower bounds for each interval.
+            high: Either one upper bound for all intervals, or an ``NDArray`` with the
+                shape given in `shape` with unique upper bounds for each interval.
+            shape: ``Tuple`` containing the shape of the ``Box`` space.
+            dtype: Type of the values in each interval.
+            rng: Random number generator to be used in this space, if ``None`` a new one
+                will be constructed.
         """
         if not isinstance(low, Integral):
             low = low.__float__() if hasattr(low, "__float__") else np.asarray(low)

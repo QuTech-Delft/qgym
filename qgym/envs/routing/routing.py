@@ -131,34 +131,36 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         The supported render modes of this environment are "human" and "rgb_array".
 
-        :param max_interaction_gates: Sets the maximum amount of gates in the
-            `interaction_circuit`, when a new `interaction_circuit` is generated.
-        :param max_observation_reach: Sets a cap on the maximum amount of gates the
-            agent can see ahead when making an observation. When bigger than
-            `max_interaction_gates` the agent will always see all gates ahead in an
-            observation
-        :param observe_legal_surpasses: If ``True`` a boolean array of length
-            observation_reach indicating whether the gates ahead can be executed, will
-            be added to the `observation_space`.
-        :param observe_connection_graph: If ``True``, the connection_graph will be
-            incorporated in the observation_space. Reason to set it ``False`` is:
-            QPU-topology practically doesn't change a lot for one machine, hence an
-            agent is typically trained for just one QPU-topology which can be learned
-            implicitly by rewards and/or the booleans if they are shown, depending on
-            the other flag above.
-        :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each node represents a connection
-            in the QPU topology.
-        :param connection_graph_matrix: Adjacency matrix representation of the QPU
-            topology.
-        :param connection_grid_size: Size of the connection graph when the connection
-            graph has a grid topology. For more information on the allowed values and
-            types, see ``networkx`` `grid_graph`_ documentation.
-        :param rewarder: Rewarder to use for the environment. Must inherit from
-            ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is used.
-        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
-            each step. If 'rgb_array', return an RGB array encoding of the rendered
-            on the render call.
+        Args:
+            max_interaction_gates: Sets the maximum amount of gates in the
+                `interaction_circuit`, when a new `interaction_circuit` is generated.
+            max_observation_reach: Sets a cap on the maximum amount of gates the agent
+                can see ahead when making an observation. When bigger that
+                `max_interaction_gates` the agent will always see all gates ahead in an
+                observation
+            observe_legal_surpasses: If ``True`` a boolean array of length
+                `observation_reach` indicating whether the gates ahead can be executed,
+                will be added to the `observation_space`.
+            observe_connection_graph: If ``True``, the connection_graph will be
+                incorporated in the observation_space. Reason to set it ``False`` is:
+                QPU-topology practically doesn't change a lot for one machine, hence an
+                agent is typically trained for just one QPU-topology which can be
+                learned implicitly by rewards and/or the booleans if they are shown,
+                depending on the other flag above.
+            connection_graph: ``networkx`` graph representation of the QPU topology.
+                Each node represents a physical qubit and each node represents a
+                connection in the QPU topology.
+            connection_graph_matrix: Adjacency matrix representation of the QPU
+                topology.
+            connection_grid_size: Size of the connection graph when the connection graph
+                has a grid topology. For more information on the allowed values and
+                types, see ``networkx`` `grid_graph`_ documentation.
+            rewarder: Rewarder to use for the environment. Must inherit from
+                ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is
+                used.
+            render_mode: If 'human' open a ``pygame screen`` visualizing each step. If
+                'rgb_array', return an RGB array encoding of the rendered on the render
+                call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -221,11 +223,14 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         To be used after an episode is finished.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call i.e., before any learning is done.
-        :param options: Mapping with keyword arguments with addition options for the
-            reset. Keywords can be found in the description of ``RoutingState.reset()``
-        :return: Initial observation and debugging info.
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call i.e., before any learning is done.
+            options: Mapping with keyword arguments with addition options for the reset.
+                Keywords can be found in the description of ``RoutingState.reset()``
+
+        Returns:
+            Initial observation and debugging info.
         """
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, options=options)

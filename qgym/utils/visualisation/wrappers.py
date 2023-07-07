@@ -12,10 +12,11 @@ from qgym.utils.visualisation.typing import Color, Font, Surface
 def draw_point(screen: Surface, pos: ArrayLike, color: Color, r: int = 10) -> None:
     """Draw a point on the screen.
 
-    :param screen: Screen to add the point to.
-    :param pos: ``ArrayLike`` containing the x and y coordinates of the point. Non
-        integer values will be rounded down to the nearest integer.
-    :param r: Radius of the point (in pixels). Defaults to 10.
+    Args:
+        screen: Screen to add the point to.
+        pos: ``ArrayLike`` containing the x and y coordinates of the point. Non integer
+            values will be rounded down to the nearest integer.
+        r: Radius of the point (in pixels). Defaults to 10.
     """
     pos_x, pos_y = np.asarray(pos, dtype=int)
     gfxdraw.aacircle(screen, pos_x, pos_y, r, color)
@@ -32,11 +33,12 @@ def draw_wide_line(
 ) -> None:
     """Draw a wide line on the screen.
 
-    :param screen: Screen to draw the line on.
-    :param color: Color of the line.
-    :param point1: Coordinates of the starting point of the line.
-    :param point2: Coordinates of the end point of the line.
-    :param width: Width of the line. Defaults to 2.
+    Args:
+        screen: Screen to draw the line on.
+        color: Color of the line.
+        point1: Coordinates of the starting point of the line.
+        point2: Coordinates of the end point of the line.
+        width: Width of the line. Defaults to 2.
     """
     # distance between the points
     p1 = np.asarray(point1)
@@ -59,11 +61,12 @@ def write_text(
 ) -> None:
     """Write text, centered around the given point.
 
-    :param screen: Screen to write the text on.
-    :param font: Font to use.
-    :param text: Text to write.
-    :param pos: x and y coordinates of the center of the text.
-    :param color: Color of the text.
+    Args:
+        screen: Screen to write the text on.
+        font: Font to use.
+        text: Text to write.
+        pos: x and y coordinates of the center of the text.
+        color: Color of the text.
     """
     pos_x, pos_y = np.asarray(pos, dtype=int)
     pygame_text = font.render(text, True, color)
@@ -76,11 +79,12 @@ def shade_rect(
 ) -> None:
     """Shade a rectangular area.
 
-    :param screen: Screen to draw the shade on.
-    :param size: Width and height of the rectangular area.
-    :param pos: The x,y-coordinates of the lower left corner of the rectangle.
-    :param color: Color of the shaded area.
-    :param alpha: Alpha of the shade.
+    Args:
+        screen: Screen to draw the shade on.
+        size: Width and height of the rectangular area.
+        pos: The x,y-coordinates of the lower left corner of the rectangle.
+        color: Color of the shaded area.
+        alpha: Alpha of the shade.
     """
     rect_width, rect_height = np.asarray(size, dtype=int)
     pos_x, pos_y = np.asarray(pos, dtype=int)

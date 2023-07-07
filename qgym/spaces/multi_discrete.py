@@ -30,11 +30,12 @@ class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
         """Initialize a multi-discrete space, i.e., multiple discrete intervals of given
         sizes.
 
-        :param nvec: Vector containing the upper bound of each discrete interval. The
-            lower bound is always set to 0.
-        :param dtype: Type of the values in each interval (default np.int64).
-        :param rng: Random number generator to be used in this space, if ``None`` a new
-            random number generator will be constructed.
+        Args:
+            nvec: Vector containing the upper bound of each discrete interval. The lower
+                bound is always set to 0.
+            dtype: Type of the values in each interval (default np.int64).
+            rng: Random number generator to be used in this space, if ``None`` a new
+                random number generator will be constructed.
         """
         super().__init__(nvec=np.asarray(nvec), dtype=dtype)
         self._np_random = rng  # this overrides the default behaviour of the gym space

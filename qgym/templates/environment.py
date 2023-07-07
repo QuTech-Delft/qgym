@@ -23,22 +23,21 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
     """RL Environment containing the current state of the problem.
 
     Each subclass should set at least the following attributes:
-
-    :ivar action_space: The action space of this environment.
-    :ivar observation_space: The observation space of this environment.
-    :ivar metadat: Additional metadata of this environment.
-    :ivar _state: The state space of this environment.
-    :ivar _rewarder: The rewarder of this environment.
-    :ivar _visualiser: The visualiser of this environment.
     """
 
     # --- These attributes should be set in any subclass ---
     action_space: Space[Any]
+    """The action space of this environment."""
     observation_space: Space[Any]
+    """The observation space of this environment."""
     metadata: dict[str, Any]
+    """Additional metadata of this environment."""
     _state: State[ObservationT, ActionT]
+    """The state space of this environment."""
     _rewarder: Rewarder
+    """The rewarder of this environment."""
     _visualiser: Visualiser | None = None
+    """The visualiser of this environment."""
 
     # --- Other attributes ---
     _rng: Generator | None = None
@@ -46,12 +45,16 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
     def step(
         self, action: ActionT
     ) -> tuple[ObservationT, float, bool, bool, dict[Any, Any]]:
-        """Update the state based on the input action. Return observation, reward,
-        done-indicator and (optional) debugging info based on the updated state.
+        """Update the state based on the input action.
 
-        :param action: Action to be performed.
-        :param return_info: Whether to receive debugging info. Defaults to ``False``.
-        :return: A tuple containing three/four entries
+        Return observation, reward, done-indicator, terminated-indicator and debugging
+        info based on the updated state.
+
+        Args:
+            action: Action to be performed.
+
+        Returns:
+            A tuple containing three/four entries
 
             1. The updated state;
             2. Reward for the given action;
@@ -78,16 +81,18 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
     def reset(
         self, *, seed: int | None = None, options: Mapping[str, Any] | None = None
     ) -> tuple[ObservationT, dict[str, Any]]:
-        """Reset the environment and load a new random initial state. To be used after
-        an episode is finished. Optionally, one can provide additional options to
-        configure the reset.
+        """Reset the environment and load a new random initial state.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e., before any learning is done.
-        :param return_info: Whether to receive debugging info. Defaults to ``False``.
-        :param _kwargs: Additional keyword arguments to configure the reset. To be
-            defined for a specific environment.
-        :return: Initial observation and optionally also debugging info.
+        To be used after an episode is finished. Optionally, one can provide additional
+        options to configure the reset.
+
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call, i.e., before any learning is done.
+            options: Dictionary containing keyword argument paris to configure the reset.
+
+        Returns:
+            Initial observation and optionally also debugging info.
         """
         super().reset(seed=seed)
         options = {} if options is None else options
@@ -98,7 +103,8 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
     def render(self) -> None | NDArray[np.int_]:  # type: ignore[override]
         """Render the current state using pygame.
 
-        :return: Result of rendering.
+        Returns:
+            Result of rendering.
         """
         if self._visualiser is not None:
             return self._visualiser.render(self._state)
@@ -112,10 +118,9 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
 
     @property
     def rewarder(self) -> Rewarder:
-        """Return the rewarder that is set for this environment. Used to compute rewards
-        after each step.
+        """Return the rewarder that is set for this environment.
 
-        :returns: Rewarder of this ``Environment``.
+        Used to compute rewards after each step.
         """
         return self._rewarder
 
@@ -126,10 +131,10 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
 
     @property
     def rng(self) -> Generator:
-        """Return the random number generator of this environment. If none is set yet,
-        this will generate a new one using ``numpy.random.default_rng``.
+        """Return the random number generator of this environment.
 
-        :returns: Random number generator used by this ``Environment``.
+        If none is set yet, this will generate a new one using
+        ``numpy.random.default_rng``.
         """
         if self._rng is None:
             self._rng = default_rng()
@@ -152,10 +157,11 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         """Ask the ``Rewarder`` to compute a reward, based on the given old state, the
         given action and the updated state.
 
-        :param old_state: The state of the ``Environment`` before the action was taken.
-        :param action: Action that was taken.
-        :param args: Optional arguments for the ``Rewarder``.
-        :param kwargs: Optional keyword-arguments for the ``Rewarder``.
+        Args:
+            old_state: The state of the ``Environment`` before the action was taken.
+            action: Action that was taken.
+            args: Optional arguments for the ``Rewarder``.
+            kwargs: Optional keyword-arguments for the ``Rewarder``.
         """
         return self._rewarder.compute_reward(
             *args, old_state=old_state, action=action, new_state=self._state, **kwargs

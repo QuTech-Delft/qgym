@@ -34,9 +34,12 @@ class GateEncoder:
         """Learns the gates names from an ``Iterable`` and creates a mapping from unique
         gate names to integers and back.
 
-        :param gates: An ``Iterable`` containing the names of the gates that should be
-            learned. The ``Iterable`` can contain duplicate names.
-        :returns: Self.
+        Args:
+            gates: ``Iterable`` containing the names of the gates that should be
+                learned. The ``Iterable`` can contain duplicate names.
+
+        Returns:
+            Self.
         """
         self.n_gates = 0
         for idx, gate_name in enumerate(gates, 1):
@@ -82,11 +85,15 @@ class GateEncoder:
         """Encode the gate names (of type ``str``) in `gates` to integers, based on the
         gates seen in ``learn_gates``.
 
-        :param gates: Gates to encode. The input type determines the return type.
-        :return: Integer encoded version of gates. The output structure should resemble
+        Args:
+            gates: Gates to encode. The input type determines the return type.
+
+        Raises:
+            TypeError: When an unsupported type is given.
+
+        Returns: Integer encoded version of gates. The output structure should resemble
             the input structure. So a ``Mapping`` will return a ``Dict``, while a single
             ``str`` will return an ``int``.
-        :raise TypeError: When an unsupported type is given.
         """
         if isinstance(gates, str):
             encoded_str = self._encoding_dct[gates]
@@ -125,7 +132,8 @@ class GateEncoder:
     def _encode_mapping(self, mapping: Mapping[str, Any]) -> dict[int, Any]:
         """Encode a mapping with gate names.
 
-        :raise ValueError: For unknown mappings.
+        Raises:
+            ValueError: For unknown mappings.
         """
         encoded_dict: dict[int, Any] = {}
         gate_name: str
@@ -174,12 +182,17 @@ class GateEncoder:
         """Decode integer encoded gate names to the original gate names based on the
         gates seen in ``learn_gates``.
 
-        :param encoded_gates: Encoded gates that are to be decoded. The input type
+        Args:
+            encoded_gates: Encoded gates that are to be decoded. The input type
             determines the return type.
-        :return: Decoded version of encoded_gates. The output structure should resemble
-            the input structure. So a ``Mapping`` will return a ``Dict``, while a single
+
+        Raises:
+            TypeError: When an unsupported type is given
+
+        Returns:
+            Decoded version of encoded_gates. The output structure should resemble the
+            input structure. So a ``Mapping`` will return a ``Dict``, while a single
             ``int`` will return a ``str``.
-        :raise TypeError: When an unsupported type is given
         """
         if isinstance(encoded_gates, int):
             decoded_int = self._decoding_dct[encoded_gates]

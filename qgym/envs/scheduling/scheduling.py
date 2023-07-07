@@ -184,23 +184,24 @@ class Scheduling(
         """Initialize the action space, observation space, and initial states for the
         scheduling environment.
 
-        :param machine_properties: A ``MachineProperties`` object, a ``Mapping``
-            containing machine properties or a string with a filename for a file
-            containing the machine properties.
-        :param max_gates: Maximum number of gates allowed in a circuit. Defaults to 200.
-        :param dependency_depth: Number of dependencies given in the observation.
-            Determines the shape of the `dependencies` observation, which has the shape
-            (dependency_depth, max_gates). Defaults to 1.
-        :random_circuit_mode: Mode for the random circuit generator. The mode can be
-            'default' or 'workshop'. Defaults to 'default'.
-        :param rulebook: ``CommutationRulebook`` describing the commutation rules. If
-            ``None`` (default) is given, a default ``CommutationRulebook`` will be used.
-            (See ``CommutationRulebook`` for more info on the default rules.)
-        :param rewarder: Rewarder to use for the environment. If ``None`` (default),
-            then a default ``BasicRewarder`` is used.
-        :param render_mode: If 'human' open a ``pygame screen`` visualizing the
-            each step. If 'rgb_array', return an RGB array encoding of the rendered
-            on the render call.
+        Args:
+            machine_properties: A ``MachineProperties`` object, a ``Mapping`` containing
+                machine properties or a string with a filename for a file containing the
+                machine properties.
+            max_gates: Maximum number of gates allowed in a circuit. Defaults to 200.
+            dependency_depth: Number of dependencies given in the observation.
+                Determines the shape of the `dependencies` observation, which has the
+                shape (dependency_depth, max_gates). Defaults to 1.
+            random_circuit_mode: Mode for the random circuit generator. The mode can be
+                'default' or 'workshop'. Defaults to 'default'.
+            rulebook: ``CommutationRulebook`` describing the commutation rules. If
+                ``None`` (default) is given, a default ``CommutationRulebook`` will be
+                used. (See ``CommutationRulebook`` for more info on the default rules.)
+            rewarder: Rewarder to use for the environment. If ``None`` (default), then a
+                default ``BasicRewarder`` is used.
+            render_mode: If 'human' open a ``pygame screen`` visualizing each step. If
+                'rgb_array', return an RGB array encoding of the rendered on the render
+                call.
         """
         self.metadata = {
             "render.modes": ["human", "rgb_array"],
@@ -234,28 +235,34 @@ class Scheduling(
         seed: int | None = None,
         options: Mapping[str, Any] | None = None,
     ) -> tuple[dict[str, NDArray[np.int_] | NDArray[np.int8]], dict[str, Any]]:
-        """Reset the state, action space and step number.and load a new (random) initial
-        state. To be used after an episode is finished.
+        """Reset the state, action space and load a new (random) initial state.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e., before any learning is done.
-        :param return_info: Whether to receive debugging info.
-        :return: Initial observation and optionally debugging info.
-        :param options: Mapping with keyword arguments with addition options for the
-            reset. Keywords can be found in the description of
-            ``SchedulingState.reset()``
-        :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and also debugging info.
+        To be used after an episode is finished.
+
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call, i.e., before any learning is done.
+            return_info: Whether to receive debugging info.
+            options: Mapping with keyword arguments with addition options for the reset.
+                Keywords can be found in the description of``SchedulingState.reset()``
+            _kwargs: Additional options to configure the reset.
+
+        Returns:
+            Initial observation and debugging info.
         """
-        # call super method for dealing with the general stuff
         return super().reset(seed=seed, options=options)
 
     def get_circuit(self, mode: str = "human") -> list[Gate]:
         """Return the quantum circuit of this episode.
 
-        :param mode: Choose from be 'human' or 'encoded'. Defaults to 'human'.
-        :raise ValueError: If an unsupported mode is provided.
-        :return: Human or encoded quantum circuit.
+        Args:
+            mode: Choose from be 'human' or 'encoded'. Defaults to 'human'.
+
+        Raises:
+            ValueError: If an unsupported mode is provided.
+
+        Returns:
+            Human or encoded quantum circuit.
         """
         mode = check_string(mode, "mode", lower=True)
         state = cast(SchedulingState, self._state)
@@ -277,11 +284,15 @@ class Scheduling(
         Parse the machine_properties given by the user and return a
         ``MachineProperties`` object.
 
-        :param machine_properties: A ``MachineProperties`` object, a ``Mapping`` of
-            machine or a string with a filename for a file containing the machine
-            properties.
-        :raise TypeError: If the given type is not supported.
-        :return: ``MachineProperties`` object with the given machine properties.
+        Args:
+            machine_properties: A ``MachineProperties`` object, a ``Mapping`` of machine
+            or a string with a filename for a file containing the machine properties.
+
+        Raises:
+            TypeError: If the given type is not supported.
+
+        Returns:
+            ``MachineProperties`` object with the given machine properties.
         """
         if isinstance(machine_properties, str):
             return MachineProperties.from_file(machine_properties)
@@ -298,10 +309,15 @@ class Scheduling(
     def _parse_random_circuit_mode(random_circuit_mode: str) -> str:
         """Parse the `random_circuit_mode` given by the user.
 
-        :param random_circuit_mode: Mode for the random circuit generator. The mode
-            can be 'default' or 'workshop'.
-        :raise ValueError: If the given mode is not supported.
-        :return: Valid random circuit mode.
+        Args:
+            random_circuit_mode: Mode for the random circuit generator. The mode can be
+            'default' or 'workshop'.
+
+        Raises:
+            ValueError: If the given mode is not supported.
+
+        Returns:
+            Valid random circuit mode.
         """
         random_circuit_mode = check_string(
             random_circuit_mode, "random_circuit_mode", lower=True
@@ -315,10 +331,13 @@ class Scheduling(
     def _parse_rulebook(rulebook: CommutationRulebook | None) -> CommutationRulebook:
         """Parse the `rulebook` given by the user.
 
-        :param rulebook: Rulebook describing the commutation rules. If ``None`` is
-            given, a default ``CommutationRulebook`` will be used. (See
-            ``CommutationRulebook`` for more info on the default rules.)
-        :return: ``CommutationRulebook``.
+        Args:
+            rulebook: Rulebook describing the commutation rules. If ``None`` is given, a
+                default ``CommutationRulebook`` will be used. (See
+                ``CommutationRulebook`` for more info on the default rules.)
+
+        Returns:
+            ``CommutationRulebook``.
         """
         if rulebook is None:
             return CommutationRulebook()

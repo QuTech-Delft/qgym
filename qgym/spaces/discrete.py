@@ -26,10 +26,11 @@ class Discrete(gymnasium.spaces.Discrete):
     ) -> None:
         """Initialize a Discrete space,  i.e., a range of integers.
 
-        :param n: The number of integer values in the Discrete space.
-        :param start: The smallest element is the Discrete Space.
-        :param rng: Random number generator to be used in this space, if ``None`` a new
-            random number generator will be constructed.
+        Args:
+            n: The number of integer values in the Discrete space.
+            start: The smallest element is the Discrete Space.
+            rng: Random number generator to be used in this space, if ``None`` a new
+                random number generator will be constructed.
         """
         super().__init__(n=n, start=start)
         self._np_random = rng  # this overrides the default behaviour of the gym space

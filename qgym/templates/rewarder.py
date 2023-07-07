@@ -17,10 +17,13 @@ class Rewarder:
     def compute_reward(self, *, old_state: Any, action: Any, new_state: Any) -> float:
         """Compute a reward, based on the old state, new state, and the given action.
 
-        :param old_state: State of the ``Environment`` before the current action.
-        :param action: Action that has just been taken.
-        :param new_state: Updated state of the ``Environment``.
-        :return reward: The reward for this action.
+        Args:
+            old_state: State of the ``Environment`` before the current action.
+            action: Action that has just been taken.
+            new_state: Updated state of the ``Environment``.
+
+        Returns:
+            The reward for this action.
         """
         raise NotImplementedError
 
@@ -36,7 +39,8 @@ class Rewarder:
         same type. Afterwards, all slots (if any) are equal and if all attributes are
         equal.
 
-        returns: a boolean.
+        Returns:
+            Boolean stating wether other is equal to self.
         """
         if type(self) is not type(other):
             return False

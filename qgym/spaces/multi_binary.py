@@ -26,10 +26,11 @@ class MultiBinary(gymnasium.spaces.MultiBinary):
         """Initialize a multi-discrete space, i.e., multiple discrete intervals of given
         sizes.
 
-        :param n: ArrayLike containing integers representing the number of elements in
-            the space.
-        :param rng: Random number generator to be used in this space. If ``None``, a new
-            random number generator will be constructed.
+        Args:
+            n: ArrayLike containing integers representing the number of elements in the
+                space.
+            rng: Random number generator to be used in this space. If ``None``, a new
+                random number generator will be constructed.
         """
         if isinstance(n, int):
             super().__init__(n)
