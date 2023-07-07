@@ -89,7 +89,8 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         Args:
             seed: Seed for the random number generator, should only be provided
                 (optionally) on the first reset call, i.e., before any learning is done.
-            options: Dictionary containing keyword argument paris to configure the reset.
+            options: Dictionary containing keyword-argument pairs to configure the
+                reset.
 
         Returns:
             Initial observation and optionally also debugging info.

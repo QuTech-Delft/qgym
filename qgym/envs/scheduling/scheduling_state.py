@@ -53,7 +53,7 @@ class SchedulingState(
         self.cycle = 0
         """Current 'machine' cycle."""
         self.machine_properties = machine_properties
-        """``MachineProperties`` object containing machine properties and limitations."""
+        """``MachineProperties`` class containing machine properties and limitations."""
         self.utils = SchedulingUtils(
             random_circuit_generator=RandomCircuitGenerator(
                 machine_properties.n_qubits, max_gates, rng=self.rng
