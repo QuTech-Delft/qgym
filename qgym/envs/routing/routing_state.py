@@ -30,6 +30,7 @@ from qgym.templates.state import State
 
 class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """The ``RoutingState`` class.
+
     :ivar steps_done: Number of steps done since the last reset.
     :ivar connection_graph: ``networkx`` graph representation of the QPU topology.
             Each node represents a physical qubit and each edge represents a connection

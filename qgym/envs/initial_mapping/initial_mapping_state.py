@@ -36,8 +36,8 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         mapped to the physical qubit yet.
     :ivar mapping_dict: Dictionary that maps logical qubits (keys) to physical qubits
         (values).
-    :ivar mapped_qubits: Dictionary with a two ``Set``s containing all mapped physical
-        and logical qubits.
+    :ivar mapped_qubits: Dictionary with a two sets containing all mapped physical and
+        logical qubits.
     """
 
     __slots__ = (

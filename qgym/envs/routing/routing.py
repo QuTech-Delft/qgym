@@ -55,12 +55,11 @@ State Space:
       added to the observation space. The list `boolean_flags` has length
       `observation_reach` and containing Boolean values indicating whether the gates
       ahead can be executed.
-    * `observe_connection_graph`: If ``True``, the connection_graph will be
-        incorporated in the observation_space.
-    * `swap_gates_inserted`: A list of 3-tuples of integers, to register which gates
-        to insert and where. Every tuple (g, q1, q2) represents the insertion of a
-        SWAP-gate acting on logical qubits q1 and q2 before gate g in the
-        interaction_circuit.
+    * `observe_connection_graph`: If ``True``, the connection_graph will be incorporated
+      in the observation_space.
+    * `swap_gates_inserted`: A list of 3-tuples of integers, to register which gates to
+      insert and where. Every tuple (g, q1, q2) represents the insertion of a SWAP-gate
+      acting on logical qubits q1 and q2 before gate g in the interaction_circuit.
 
 Observation Space:
     The observation space is a ``qgym.spaces.Dict`` with 2-4 entries:
@@ -77,10 +76,11 @@ Action Space:
     the agent wants to surpass the current gate and move on to the next gate. If $i$ is 
     0, then a SWAP gate is inserted at the current position between qubits $j$ and $k$.
     Only legal actions will be executed, an action is legal when:
+
     #. $i=1$ and the next gate can be executed.
     #. $i=0$ and physical qubit $j$ does not equal physical qubit $k$.
     #. $i=0$ and physical qubits $j$ and $k$ have a connection between them in the
-      connection graph.
+       connection graph.
 
 
 # TODO: create Examples

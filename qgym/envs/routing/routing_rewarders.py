@@ -44,6 +44,7 @@ class BasicRewarder(Rewarder):
         reward_per_surpass: float = 10,
     ) -> None:
         """Set the rewards and penalties.
+
         :param illegal_action_penalty: Penalty for performing an illegal action. An
             action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
             This value should be negative (but is not required) and defaults to -50.
@@ -134,6 +135,7 @@ class SwapQualityRewarder(BasicRewarder):
         good_swap_reward: float = 5,
     ) -> None:
         """Set the rewards and penalties and a flag.
+
         :param illegal_action_penalty: Penalty for performing an illegal action. An
             action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
             This value should be negative (but is not required) and defaults to -50.
