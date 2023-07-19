@@ -80,11 +80,11 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         specified, gate acting on the two qubits labeled by the integers in the tuples.
         """
         self.mapping = np.arange(self.n_qubits)
-        """List of which the index represents a logical qubit, and the value a physical
-        qubit.
+        """Array of which each index represents a logical qubit and each value
+        represents a physical qubit.
         """
         self.position: int = 0
-        """An integer representing the before which gate in the interaction_circuit the
+        """An integer representing before which gate in the interaction_circuit the
         agent currently is.
         """
         self.max_observation_reach = max_observation_reach
@@ -301,7 +301,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Checks whether a swap of two logical qubits is legal.
 
         Returns:
-            Boolean value state wether the swap is allowed in the connection graph..
+            Boolean value state whether the swap is allowed in the connection graph..
         """
         physical_qubit1 = self.mapping[logical_qubit1]
         physical_qubit2 = self.mapping[logical_qubit2]
@@ -321,7 +321,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             logical_qubit2: Second qubit of the logical interaction.
 
         Returns:
-            A boolean value stating wether a connection gate with the two qubits can be
+            A boolean value stating whether a connection gate with the two qubits can be
             executed with the current mapping and connection graph.
         """
         try:

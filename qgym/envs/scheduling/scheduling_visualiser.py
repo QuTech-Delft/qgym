@@ -24,8 +24,8 @@ class SchedulingVisualiser(Visualiser):
         Args:
             initial_state: ``SchedulingState`` object containing the initial state of
                 the environment to visualise.
-            render_mode: If 'human' open a ``pygame screen`` visualizing the each step.
-                If 'rgb_array', return an RGB array encoding of the rendered on the
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered frame on each
                 render call.
         """
         # Rendering data
@@ -115,7 +115,7 @@ class SchedulingVisualiser(Visualiser):
         Args:
             gate: Gate to draw.
             scheduled_cycle: Cycle the gate is scheduled.
-            gate_cycle_length: Length of the gat in machine cycles.
+            gate_cycle_length: Length of the gate in terms of machine cycles.
             gate_name: Name of the gate.
         """
         self._draw_gate_block(gate_name, gate_cycle_length, gate.q1, scheduled_cycle)
@@ -131,7 +131,7 @@ class SchedulingVisualiser(Visualiser):
 
         Args:
             gate_name: Name of the gate.
-            gate_cycle_length: Length of the gat in machine cycles.
+            gate_cycle_length: Length of the gate in terms of machine cycles.
             qubit: Qubit in which the gate acts.
             scheduled_cycle: Cycle in which the gate is scheduled.
         """

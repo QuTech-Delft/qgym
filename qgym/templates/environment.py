@@ -54,7 +54,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
             action: Action to be performed.
 
         Returns:
-            A tuple containing three/four entries
+            A tuple containing five entries
 
             1. The updated state;
             2. Reward for the given action;
@@ -93,7 +93,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
                 reset.
 
         Returns:
-            Initial observation and optionally also debugging info.
+            Initial observation and a dictionary containing debugging information.
         """
         super().reset(seed=seed)
         options = {} if options is None else options

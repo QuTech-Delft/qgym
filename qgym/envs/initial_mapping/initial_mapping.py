@@ -181,9 +181,9 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             rewarder: Rewarder to use for the environment. Must inherit from
                 ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is
                 used.
-            render_mode: If 'human' open a ``pygame screen`` visualizing each step. If
-                'rgb_array', return an RGB array encoding of the rendered on the render
-                call.
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered frame on each
+                render call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -230,8 +230,8 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             seed: Seed for the random number generator, should only be provided
                 (optionally) on the first reset call i.e., before any learning is done.
             return_info: Whether to receive debugging info. Default is ``False``.
-            options: Mapping with keyword arguments with addition options for the reset.
-                Keywords can be found in the description of
+            options: Mapping with keyword arguments with additional options for the
+                reset. Keywords can be found in the description of
                 ``InitialMappingState.reset()``
 
         Returns:

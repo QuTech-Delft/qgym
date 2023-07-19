@@ -58,7 +58,7 @@ class CommutationRulebook:
             circuit: Circuit to check dependencies for.
 
         Returns:
-            Dependencies matrix of the circuit bases on the rules and scheduling from
+            Dependencies matrix of the circuit based on the rules and scheduling from
             right to left.
         """
         blocking_matrix = np.zeros((len(circuit), len(circuit)), dtype=bool)
@@ -80,7 +80,7 @@ class CommutationRulebook:
             gate2: Gate to check gate1 against.
 
         Returns:
-            Boolean value whether gate1 commutes with gate2.
+            Boolean value indicating whether `gate1` commutes with `gate2`.
         """
         for rule in self._rules:
             if rule(gate1, gate2):

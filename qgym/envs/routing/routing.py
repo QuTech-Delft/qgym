@@ -68,11 +68,11 @@ Observation Space:
       gates in the quantum circuit.
     * `mapping`: The current state of the mapping.
     * (Optional)`connection_graph`: Adjacency matrix of the connection graph.
-    * (Optional)`is_legal_surpass_booleans`: Array with boolean values stating wether a
+    * (Optional)`is_legal_surpass_booleans`: Array with boolean values stating whether a
       connection gate can be surpassed with the current mapping.
 
 Action Space:
-    A valid action is a tuple of integers  $(i,j,k)$. The integer $i$ indicates wether
+    A valid action is a tuple of integers  $(i,j,k)$. The integer $i$ indicates whether
     the agent wants to surpass the current gate and move on to the next gate. If $i$ is 
     0, then a SWAP gate is inserted at the current position between qubits $j$ and $k$.
     Only legal actions will be executed, an action is legal when:
@@ -158,9 +158,9 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             rewarder: Rewarder to use for the environment. Must inherit from
                 ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is
                 used.
-            render_mode: If 'human' open a ``pygame screen`` visualizing each step. If
-                'rgb_array', return an RGB array encoding of the rendered on the render
-                call.
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered frame on each
+                render call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -226,8 +226,9 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         Args:
             seed: Seed for the random number generator, should only be provided
                 (optionally) on the first reset call i.e., before any learning is done.
-            options: Mapping with keyword arguments with addition options for the reset.
-                Keywords can be found in the description of ``RoutingState.reset()``
+            options: Mapping with keyword arguments with additional options for the
+                reset. Keywords can be found in the description of
+                ``RoutingState.reset()``
 
         Returns:
             Initial observation and debugging info.

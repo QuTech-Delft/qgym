@@ -199,9 +199,9 @@ class Scheduling(
                 used. (See ``CommutationRulebook`` for more info on the default rules.)
             rewarder: Rewarder to use for the environment. If ``None`` (default), then a
                 default ``BasicRewarder`` is used.
-            render_mode: If 'human' open a ``pygame screen`` visualizing each step. If
-                'rgb_array', return an RGB array encoding of the rendered on the render
-                call.
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered frame on each
+                render call.
         """
         self.metadata = {
             "render.modes": ["human", "rgb_array"],
@@ -243,8 +243,9 @@ class Scheduling(
             seed: Seed for the random number generator, should only be provided
                 (optionally) on the first reset call, i.e., before any learning is done.
             return_info: Whether to receive debugging info.
-            options: Mapping with keyword arguments with addition options for the reset.
-                Keywords can be found in the description of``SchedulingState.reset()``
+            options: Mapping with keyword arguments with additional options for the
+                reset. Keywords can be found in the description of
+                ``SchedulingState.reset()``
             _kwargs: Additional options to configure the reset.
 
         Returns:

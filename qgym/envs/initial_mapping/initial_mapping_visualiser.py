@@ -26,9 +26,9 @@ class InitialMappingVisualiser(Visualiser):
 
         Args:
             connection_graph: ``networkx.Graph`` representation of the connection graph.
-            render_mode: If 'human' open a ``pygame screen`` visualizing each step. If
-                'rgb_array', return an RGB array encoding of the rendered on the render
-                call.
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered frame on each
+                render call.
         """
         # Rendering data
         colors = {

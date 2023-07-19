@@ -30,8 +30,8 @@ class RoutingVisualiser(Visualiser):
         Args:
             connection_graph: ``networkx.Graph`` representation of the connection graph.
             render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
-                'rgb_array', return an RGB array encoding of the rendered on the render
-                call.
+                'rgb_array', return an RGB array encoding of the rendered frame on each
+                render call.
         """
         # Rendering data
         colors = {
@@ -298,7 +298,8 @@ class RoutingVisualiser(Visualiser):
             swap_gates_inserted: List of swap gates inserted.
             position: Position in the interaction circuit where the mapping must be
                 made.
-            starting_idx: Index of the last swap gate of the previous position.
+            starting_idx: Index of the last swap gate of the previous position, i.e., 
+                position in the `swap_gates_inserted` sequence.
 
         Returns:
             Tuple with a starting index for the next position, the updated mapping and

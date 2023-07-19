@@ -98,7 +98,7 @@ class BasicRewarder(Rewarder):
         """Checks whether an action chosen by the agent is illegal.
 
         Returns:
-            Boolean value stating wether the action was illegal or not.
+            Boolean value stating whether the action was illegal or not.
         """
         if action[0]:
             qubit1, qubit2 = old_state.interaction_circuit[old_state.position]
