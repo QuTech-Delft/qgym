@@ -298,7 +298,7 @@ class RoutingVisualiser(Visualiser):
             swap_gates_inserted: List of swap gates inserted.
             position: Position in the interaction circuit where the mapping must be
                 made.
-            starting_idx: Index of the last swap gate of the previous position, i.e., 
+            starting_idx: Index of the last swap gate of the previous position, i.e.,
                 position in the `swap_gates_inserted` sequence.
 
         Returns:
