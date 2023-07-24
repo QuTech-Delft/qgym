@@ -1,11 +1,10 @@
 """This module contains the ``SchedulingState`` class.
 
 This ``SchedulingState``represents the ``State`` of the ``Scheduling`` environment.
-#TODO: Usage example?!
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Set, Union, cast
+from typing import Any, Dict, Set, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -26,20 +25,7 @@ from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 class SchedulingState(
     State[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
 ):
-    """The ``SchedulingState`` class.
-
-    :ivar machine_properties: ``MachineProperties`` object containing machine properties
-        and limitations.
-    :ivar utils: ``SchedulingUtils`` dataclass with a random circuit generator,
-        commutation rulebook and a gate encoder.
-    :ivar gates: Dictionary with gate names as keys and ``GateInfo`` dataclasses as
-        values.
-    :ivar steps_done: Number of steps done since the last reset.
-    :ivar cycle: Current 'machine' cycle.
-    :ivar busy: Used internally for the hardware limitations.
-    :ivar circuit_info: ``CircuitInfo`` dataclass containing the encoded circuit and
-        attributes used to update the state.
-    """
+    """The ``SchedulingState`` class."""
 
     def __init__(
         self,
@@ -50,11 +36,24 @@ class SchedulingState(
         random_circuit_mode: str,
         rulebook: CommutationRulebook,
     ) -> None:
+        """Init of the ``SchedulingState`` class.
+
+        Args:
+            machine_properties: A ``MachineProperties`` object.
+            max_gates: Maximum number of gates allowed in a circuit.
+            dependency_depth: Number of dependencies given in the observation.
+                Determines the shape of the `dependencies` observation, which has the
+                shape (dependency_depth, max_gates).
+            random_circuit_mode: Mode for the random circuit generator. The mode can be
+                'default' or 'workshop'.
+            rulebook: ``CommutationRulebook`` describing the commutation rules.
+        """
         self.steps_done = 0
+        """Number of steps done since the last reset."""
         self.cycle = 0
-
+        """Current 'machine' cycle."""
         self.machine_properties = machine_properties
-
+        """``MachineProperties`` class containing machine properties and limitations."""
         self.utils = SchedulingUtils(
             random_circuit_generator=RandomCircuitGenerator(
                 machine_properties.n_qubits, max_gates, rng=self.rng
@@ -63,6 +62,9 @@ class SchedulingState(
             rulebook=rulebook,
             gate_encoder=machine_properties.encode(),
         )
+        """``SchedulingUtils`` dataclass with a random circuit generator, commutation
+        rulebook and a gate encoder.
+        """
 
         # At the start no gates should be excluded
         gate_cycle_lengths = cast(Dict[int, int], machine_properties.gates)
@@ -76,9 +78,11 @@ class SchedulingState(
             )
             for gate_name in gate_cycle_lengths
         }
-
-        # Amount of cycles that a qubit is still busy (zero if available)
+        """Dictionary with gate names as keys and ``GateInfo`` dataclasses as values."""
         self.busy = np.zeros(machine_properties.n_qubits, dtype=int)
+        """Amount of cycles that a qubit is still busy (zero if available). Used
+        internally for the hardware limitations.
+        """
 
         # Generate a circuit
         circuit = self.utils.random_circuit_generator.generate_circuit(
@@ -94,6 +98,9 @@ class SchedulingState(
             schedule=np.full(len(circuit), -1, dtype=int),
             blocking_matrix=self.utils.rulebook.make_blocking_matrix(circuit),
         )
+        """``CircuitInfo`` dataclass containing the encoded circuit and attributes used
+        to update the state.
+        """
 
         self._update_dependencies()
         self._update_episode_constant_observations()
@@ -157,8 +164,8 @@ class SchedulingState(
     def create_observation_space(self) -> qgym.spaces.Dict:
         """Create the corresponding observation space.
 
-        :returns: Observation space in the form of a ``qgym.spaces.Dict`` space
-            containing:
+        Returns:
+            Observation space in the form of a ``qgym.spaces.Dict`` space containing:
 
             * ``qgym.spaces.MultiBinary`` space representing the legal actions. If
               the value at index $i$ determines if gate number $i$ can be scheduled
@@ -197,8 +204,12 @@ class SchedulingState(
 
     def obtain_observation(
         self,
-    ) -> Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]]:
-        """:return: Observation based on the current state."""
+    ) -> dict[str, NDArray[np.int_] | NDArray[np.int8]]:
+        """Obtain an observation based on the current state.
+
+        Returns:
+            Observation based on the current state.
+        """
         return {
             "gate_names": self.circuit_info.names,
             "acts_on": self.circuit_info.acts_on.flatten(),
@@ -207,11 +218,19 @@ class SchedulingState(
         }
 
     def is_done(self) -> bool:
-        """:return: Boolean value stating whether we are in a final state."""
+        """Determine if the state is done or not.
+
+        Returns:
+            Boolean value stating whether we are in a final state.
+        """
         return all(self.circuit_info.schedule != -1)
 
-    def obtain_info(self) -> Dict[str, Union[int, NDArray[np.int_]]]:
-        """:return: Optional debugging info for the current state."""
+    def obtain_info(self) -> dict[str, int | NDArray[np.int_]]:
+        """Obtain additional information.
+
+        Returns:
+            Optional debugging info for the current state.
+        """
         return {
             "Steps done": self.steps_done,
             "Cycle": self.cycle,
@@ -221,9 +240,12 @@ class SchedulingState(
     def update_state(self, action: NDArray[np.int_]) -> SchedulingState:
         """Update the state of this environment using the given action.
 
-        :param action: First entry determines a gate to schedule, the second entry
-            increases the cycle if nonzero.
-        :return: Updated state.
+        Args:
+            action: First entry determines a gate to schedule, the second entry
+                increases the cycle if nonzero.
+
+        Returns:
+            Self.
         """
         # Increase the step number
         self.steps_done += 1
@@ -242,23 +264,25 @@ class SchedulingState(
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        circuit: Optional[List[Gate]] = None,
+        seed: int | None = None,
+        circuit: list[Gate] | None = None,
         **_kwargs: Any,
     ) -> SchedulingState:
         """Reset the state and load a new (random) initial state.
 
         To be used after an episode is finished.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e., before any learning is done.
-        :param circuit: Optional list of a circuit for the next episode, each entry in
-            the list should be a ``Gate``. When a circuit is give, no random circuit
-            will be generated.
-        :param _kwargs: Additional options to configure the reset.
-        :return: Self.
-        """
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call, i.e., before any learning is done.
+            circuit: Optional list of a circuit for the next episode, each entry in the
+                list should be a ``Gate``. When a circuit is give, no random circuit
+                will be generated.
+            _kwargs: Additional options to configure the reset.
 
+        Returns:
+            Self.
+        """
         if seed is not None:
             self.seed(seed)
 
@@ -306,7 +330,8 @@ class SchedulingState(
     def _exclude_gate(self, gate_name: int) -> None:
         """Exclude a gate from the 'legal_actions' for 'gate_cycle_length' cycles.
 
-        :param gate_name: integer encoding of the name of the gate.
+        Args:
+            gate_name: integer encoding of the name of the gate.
         """
         gate_cycle_length = self.gates[gate_name].cycle_length
         self.gates[gate_name].exclude = gate_cycle_length
@@ -314,7 +339,8 @@ class SchedulingState(
     def _schedule_gate(self, gate_idx: int) -> None:
         """Schedule a gate in the current cycle and update the state accordingly.
 
-        :param gate_idx: Index of the gate to schedule.
+        Args:
+            gate_idx: Index of the gate to schedule.
         """
         gate = self.circuit_info.encoded[gate_idx]
 

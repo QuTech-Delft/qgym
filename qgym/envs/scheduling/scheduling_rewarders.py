@@ -45,15 +45,16 @@ class BasicRewarder(Rewarder):
     ) -> None:
         """Initialize the reward range and set the rewards and penalties.
 
-        :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
-            This value should be negative (but is not required) and defaults to -5.
-        :param update_cycle_penalty: Penalty given for incrementing a cycle. Since the
-            ``Scheduling`` environment wats to create the shortest schedules,
-            incrementing the cycle should be penalized. This value should
-            be negative (but is not required) and defaults to -1.
-        :param schedule_gate_bonus: Reward gained for successfully scheduling a gate.
-            This value should be positive (but is not required) and defaults to 0.
+        Args:
+            illegal_action_penalty: Penalty for performing an illegal action. An action
+                is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
+                value should be negative (but is not required) and defaults to -5.
+            update_cycle_penalty: Penalty given for incrementing a cycle. Since the
+                ``Scheduling`` environment wats to create the shortest schedules,
+                incrementing the cycle should be penalized. This value should be
+                negative (but is not required) and defaults to -1.
+            schedule_gate_bonus: Reward gained for successfully scheduling a gate. This
+                value should be positive (but is not required) and defaults to 0.
         """
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
@@ -80,14 +81,17 @@ class BasicRewarder(Rewarder):
         """Compute a reward, based on the new state, and the given action. Specifically
         the 'legal_actions' actions array.
 
-        :param old_state: State of the ``Scheduling`` environment before the current
-            action.
-        :param action: Action that has just been taken.
-        :param new_state: Updated state of the ``Scheduling`` environment.
-        :return reward: The reward for this action. If the action is illegal, then the
-            reward is `illegal_action_penalty`. If the action is legal, and increments
-            the cycle, then the reward is `update_cycle_penalty`. Otherwise, the reward
-            is `schedule_gate_bonus`.
+        Args:
+            old_state: State of the ``Scheduling`` environment before the current
+                action.
+            action: Action that has just been taken.
+            new_state: Updated state of the ``Scheduling`` environment.
+
+        Returns:
+            The reward for this action. If the action is illegal, then the reward is
+            `illegal_action_penalty`. If the action is legal, and increments the cycle,
+            then the reward is `update_cycle_penalty`. Otherwise, the reward is
+            `schedule_gate_bonus`.
         """
         if action[1] != 0:
             return self._update_cycle_penalty
@@ -102,9 +106,12 @@ class BasicRewarder(Rewarder):
         """Check if the given action is illegal. An action is illegal if ``action[0]``
         is not in ``old_state["legal_actions"]``.
 
-        :param action: Action that has just been taken.
-        :param old_state: State of the ``Scheduling`` before the current action.
-        :return: Boolean value stating whether this action was illegal.
+        Args:
+            action: Action that has just been taken.
+            old_state: State of the ``Scheduling`` before the current action.
+
+        Returns:
+            Boolean value stating whether this action was illegal.
         """
         gate_to_schedule = action[0]
         return not old_state.circuit_info.legal[gate_to_schedule]
@@ -140,13 +147,14 @@ class EpisodeRewarder(Rewarder):
     ) -> None:
         """Initialize the reward range and set the rewards and penalties.
 
-        :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
-            This value should be negative (but is not required) and defaults to -5.
-        :param update_cycle_penalty: Penalty given for incrementing a cycle. Since the
-            ``Scheduling`` environment wats to create the shortest schedules,
-            incrementing the cycle should be penalized. This value should
-            be negative (but is not required) and defaults to -1.
+        Args:
+            illegal_action_penalty: Penalty for performing an illegal action. An action
+                is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
+                value should be negative (but is not required) and defaults to -5.
+            update_cycle_penalty: Penalty given for incrementing a cycle. Since the
+                ``Scheduling`` environment wats to create the shortest schedules,
+                incrementing the cycle should be penalized. This value should be
+                negative (but is not required) and defaults to -1.
         """
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
@@ -168,13 +176,16 @@ class EpisodeRewarder(Rewarder):
     ) -> float:
         """Compute a reward, based on the new state, and the given action.
 
-        :param old_state: State of the ``Scheduling`` environment before the current
-            action.
-        :param action: Action that has just been taken.
-        :param new_state: Updated state of the ``Scheduling`` environment.
-        :return reward: The reward for this action. If the action is illegal, then the
-            reward is `illegal_action_penalty`. If the action is legal, but the episode
-            is not yet done, then the reward is 0. Otherwise, the reward is
+        Args:
+            old_state: State of the ``Scheduling`` environment before the current
+                action.
+            action: Action that has just been taken.
+            new_state: Updated state of the ``Scheduling`` environment.
+
+        Returns:
+            The reward for this action. If the action is illegal, then the reward is
+            `illegal_action_penalty`. If the action is legal, but the episode is not yet
+            done, then the reward is 0. Otherwise, the reward is
             `update_cycle_penalty`x`current cycle`.
         """
         if action[1] == 0 and self._is_illegal(action, old_state):
@@ -196,9 +207,12 @@ class EpisodeRewarder(Rewarder):
         """Check if the given action is illegal. An action is illegal if ``action[0]``
         is not in ``old_state["legal_actions"]``.
 
-        :param action: Action that has just been taken.
-        :param old_state: State of the ``Scheduling`` before the current action.
-        :return: Boolean value stating whether this action was illegal.
+        Args:
+            action: Action that has just been taken.
+            old_state: State of the ``Scheduling`` before the current action.
+
+        Returns:
+            Boolean value stating whether this action was illegal.
         """
         gate_to_schedule = action[0]
         return not old_state.circuit_info.legal[gate_to_schedule]

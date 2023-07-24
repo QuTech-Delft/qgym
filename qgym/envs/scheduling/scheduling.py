@@ -145,8 +145,10 @@ Example 2:
 
 
 """
+from __future__ import annotations
+
 from copy import deepcopy
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Union, cast
+from typing import Any, Dict, Mapping, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -159,7 +161,7 @@ from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_parsing import parse_rewarder
+from qgym.utils.input_parsing import parse_rewarder, parse_visualiser
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
@@ -170,31 +172,36 @@ class Scheduling(
 
     def __init__(
         self,
-        machine_properties: Union[Mapping[str, Any], str, MachineProperties],
+        machine_properties: Mapping[str, Any] | str | MachineProperties,
         *,
         max_gates: int = 200,
         dependency_depth: int = 1,
         random_circuit_mode: str = "default",
-        rulebook: Optional[CommutationRulebook] = None,
-        rewarder: Optional[Rewarder] = None,
+        rulebook: CommutationRulebook | None = None,
+        rewarder: Rewarder | None = None,
+        render_mode: str | None = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states for the
         scheduling environment.
 
-        :param machine_properties: A ``MachineProperties`` object, a ``Mapping``
-            containing machine properties or a string with a filename for a file
-            containing the machine properties.
-        :param max_gates: Maximum number of gates allowed in a circuit. Defaults to 200.
-        :param dependency_depth: Number of dependencies given in the observation.
-            Determines the shape of the `dependencies` observation, which has the shape
-            (dependency_depth, max_gates). Defaults to 1.
-        :random_circuit_mode: Mode for the random circuit generator. The mode can be
-            'default' or 'workshop'. Defaults to 'default'.
-        :param rulebook: ``CommutationRulebook`` describing the commutation rules. If
-            ``None`` (default) is given, a default ``CommutationRulebook`` will be used.
-            (See ``CommutationRulebook`` for more info on the default rules.)
-        :param rewarder: Rewarder to use for the environment. If ``None`` (default),
-            then a default ``BasicRewarder`` is used.
+        Args:
+            machine_properties: A ``MachineProperties`` object, a ``Mapping`` containing
+                machine properties or a string with a filename for a file containing the
+                machine properties.
+            max_gates: Maximum number of gates allowed in a circuit. Defaults to 200.
+            dependency_depth: Number of dependencies given in the observation.
+                Determines the shape of the `dependencies` observation, which has the
+                shape (dependency_depth, max_gates). Defaults to 1.
+            random_circuit_mode: Mode for the random circuit generator. The mode can be
+                'default' or 'workshop'. Defaults to 'default'.
+            rulebook: ``CommutationRulebook`` describing the commutation rules. If
+                ``None`` (default) is given, a default ``CommutationRulebook`` will be
+                used. (See ``CommutationRulebook`` for more info on the default rules.)
+            rewarder: Rewarder to use for the environment. If ``None`` (default), then a
+                default ``BasicRewarder`` is used.
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered frame on each
+                render call.
         """
         self.metadata = {
             "render.modes": ["human", "rgb_array"],
@@ -218,41 +225,45 @@ class Scheduling(
         self.observation_space = self._state.create_observation_space()
         self.action_space = qgym.spaces.MultiDiscrete([max_gates, 2], rng=self.rng)
 
-        self._visualiser = SchedulingVisualiser(self._state)
+        self._visualiser = parse_visualiser(
+            render_mode, SchedulingVisualiser, [self._state]
+        )
 
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        return_info: bool = False,
-        circuit: Optional[List[Gate]] = None,
-        **_kwargs: Any,
-    ) -> Union[
-        Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]],
-        Tuple[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], Dict[Any, Any]],
-    ]:
-        """Reset the state, action space and step number.and load a new (random) initial
-        state. To be used after an episode is finished.
+        seed: int | None = None,
+        options: Mapping[str, Any] | None = None,
+    ) -> tuple[dict[str, NDArray[np.int_] | NDArray[np.int8]], dict[str, Any]]:
+        """Reset the state, action space and load a new (random) initial state.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e., before any learning is done.
-        :param return_info: Whether to receive debugging info.
-        :return: Initial observation and optionally debugging info.
-        :param circuit: Optional list of a circuit for the next episode, each entry in
-            the list should be a ``Gate``. When a circuit is give, no random circuit
-            will be generated.
-        :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optionally also debugging info.
+        To be used after an episode is finished.
+
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call, i.e., before any learning is done.
+            return_info: Whether to receive debugging info.
+            options: Mapping with keyword arguments with additional options for the
+                reset. Keywords can be found in the description of
+                ``SchedulingState.reset()``
+            _kwargs: Additional options to configure the reset.
+
+        Returns:
+            Initial observation and debugging info.
         """
-        # call super method for dealing with the general stuff
-        return super().reset(seed=seed, return_info=return_info, circuit=circuit)
+        return super().reset(seed=seed, options=options)
 
-    def get_circuit(self, mode: str = "human") -> List[Gate]:
+    def get_circuit(self, mode: str = "human") -> list[Gate]:
         """Return the quantum circuit of this episode.
 
-        :param mode: Choose from be 'human' or 'encoded'. Defaults to 'human'.
-        :raise ValueError: If an unsupported mode is provided.
-        :return: Human or encoded quantum circuit.
+        Args:
+            mode: Choose from be 'human' or 'encoded'. Defaults to 'human'.
+
+        Raises:
+            ValueError: If an unsupported mode is provided.
+
+        Returns:
+            Human or encoded quantum circuit.
         """
         mode = check_string(mode, "mode", lower=True)
         state = cast(SchedulingState, self._state)
@@ -268,17 +279,21 @@ class Scheduling(
 
     @staticmethod
     def _parse_machine_properties(
-        machine_properties: Union[Mapping[str, Any], str, MachineProperties]
+        machine_properties: Mapping[str, Any] | str | MachineProperties
     ) -> MachineProperties:
         """
         Parse the machine_properties given by the user and return a
         ``MachineProperties`` object.
 
-        :param machine_properties: A ``MachineProperties`` object, a ``Mapping`` of
-            machine or a string with a filename for a file containing the machine
-            properties.
-        :raise TypeError: If the given type is not supported.
-        :return: ``MachineProperties`` object with the given machine properties.
+        Args:
+            machine_properties: A ``MachineProperties`` object, a ``Mapping`` of machine
+            or a string with a filename for a file containing the machine properties.
+
+        Raises:
+            TypeError: If the given type is not supported.
+
+        Returns:
+            ``MachineProperties`` object with the given machine properties.
         """
         if isinstance(machine_properties, str):
             return MachineProperties.from_file(machine_properties)
@@ -295,10 +310,15 @@ class Scheduling(
     def _parse_random_circuit_mode(random_circuit_mode: str) -> str:
         """Parse the `random_circuit_mode` given by the user.
 
-        :param random_circuit_mode: Mode for the random circuit generator. The mode
-            can be 'default' or 'workshop'.
-        :raise ValueError: If the given mode is not supported.
-        :return: Valid random circuit mode.
+        Args:
+            random_circuit_mode: Mode for the random circuit generator. The mode can be
+            'default' or 'workshop'.
+
+        Raises:
+            ValueError: If the given mode is not supported.
+
+        Returns:
+            Valid random circuit mode.
         """
         random_circuit_mode = check_string(
             random_circuit_mode, "random_circuit_mode", lower=True
@@ -309,15 +329,16 @@ class Scheduling(
         return random_circuit_mode
 
     @staticmethod
-    def _parse_rulebook(
-        rulebook: Union[CommutationRulebook, None]
-    ) -> CommutationRulebook:
+    def _parse_rulebook(rulebook: CommutationRulebook | None) -> CommutationRulebook:
         """Parse the `rulebook` given by the user.
 
-        :param rulebook: Rulebook describing the commutation rules. If ``None`` is
-            given, a default ``CommutationRulebook`` will be used. (See
-            ``CommutationRulebook`` for more info on the default rules.)
-        :return: ``CommutationRulebook``.
+        Args:
+            rulebook: Rulebook describing the commutation rules. If ``None`` is given, a
+                default ``CommutationRulebook`` will be used. (See
+                ``CommutationRulebook`` for more info on the default rules.)
+
+        Returns:
+            ``CommutationRulebook``.
         """
         if rulebook is None:
             return CommutationRulebook()

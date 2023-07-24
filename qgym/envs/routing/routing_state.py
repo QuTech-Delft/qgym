@@ -1,4 +1,5 @@
 """This module contains the ``RoutingState`` class.
+
 This ``RoutingState``represents the ``State`` of the ``Routing`` environment.
 
 Usage:
@@ -16,7 +17,7 @@ Usage:
 from __future__ import annotations
 
 from collections import deque
-from typing import Any, Deque, Dict, Optional, Tuple, Union
+from typing import Any, Dict
 
 import networkx as nx
 import numpy as np
@@ -29,30 +30,7 @@ from qgym.templates.state import State
 
 
 class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
-    """The ``RoutingState`` class.
-    :ivar steps_done: Number of steps done since the last reset.
-    :ivar connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each edge represents a connection
-            in the QPU topology.
-    :ivar n_qubits: Number of qubits in the connection_graph
-    :ivar max_interaction_gates: Sets the maximum amount of gates in the
-            interaction_circuit, when a new interaction_circuit is generated.
-    :ivar interaction_circuit: An array of 2-tuples of integers, where every tuple
-        represents a, not specified, gate acting on the two qubits labeled by the
-        integers in the tuples.
-    :ivar mapping: List of which the index represents a logical qubit, and the
-        value a physical qubit.
-    :ivar position: An integer representing the before which gate in the
-        interaction_circuit the agent currently is.
-    :ivar max_observation_reach: An integer that sets a cap on the maximum amount of
-        gates the agent can see ahead when making an observation. When bigger than
-        max_interaction_gates the agent will always see all gates ahead in an
-        observation.
-    :ivar swap_gates_inserted: A deque of 3-tuples of integers, to register which gates
-        to insert and where. Every tuple (g, q1, q2) represents the insertion of a
-        SWAP-gate acting on logical qubits q1 and q2 before gate g in the
-        interaction_circuit.
-    """
+    """The ``RoutingState`` class."""
 
     def __init__(
         self,
@@ -65,67 +43,89 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     ) -> None:
         """Init of the ``RoutingState`` class.
 
-        :param max_interaction_gates: Sets the maximum amount of gates in the
-            interaction_circuit, when a new interaction_circuit is generated.
-        :param max_observation_reach: Sets a cap on the maximum amount of gates the
-            agent can see ahead when making an observation. When bigger than
-            max_interaction_gates the agent will always see all gates ahead in an
-            observation
-        :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each edge represents a connection
-            in the QPU topology.
-        :param observe_legal_surpasses: If ``True`` a boolean array of length
-            max_observation_reach indicating whether the gates ahead can be executed, 
-            will be added to the `observation_space`.
-        :param observe_connection_graph: If ``True``, the connection_graph will be
-            incorporated in the `observation_space`. Reason to set it ``False`` is:
-            QPU-topology doesn't change, hence an agent could infer the topology from
-            the training data without needing to explicitly add it to the observations.
-            This reduced the size `observation_space`.
+        Args:
+            max_interaction_gates: Sets the maximum amount of gates in the
+                interaction_circuit, when a new interaction_circuit is generated.
+            max_observation_reach: Sets a cap on the maximum amount of gates the agent
+                can see ahead when making an observation. When bigger than
+                max_interaction_gates the agent will always see all gates ahead in an
+                observation
+            connection_graph: ``networkx`` graph representation of the QPU topology.
+                Each node represents a physical qubit and each edge represents a
+                connection in the QPU topology.
+            observe_legal_surpasses: If ``True`` a boolean array of length
+                max_observation_reach indicating whether the gates ahead can be
+                executed, will be added to the `observation_space`.
+            observe_connection_graph: If ``True``, the connection_graph will be
+                incorporated in the `observation_space`. Reason to set it ``False`` is:
+                QPU-topology doesn't change, hence an agent could infer the topology
+                from the training data without needing to explicitly add it to the
+                observations. This reduced the size `observation_space`.
         """
         self.steps_done = 0
-
-        # topology
+        """Number of steps done since the last reset."""
         self.connection_graph = connection_graph
-
-        # interaction circuit + mapping
+        """``networkx`` graph representation of the QPU topology. Each node represents a
+        physical qubit and each edge represents a connection in the QPU topology.
+        """
         self.max_interaction_gates = max_interaction_gates
+        """Sets the maximum amount of gates in the interaction_circuit, when a new
+        interaction_circuit is generated.
+        """
         number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
         self.interaction_circuit = self.generate_random_interaction_circuit(
             number_of_gates
         )
+        """An array of 2-tuples of integers, where every tuple represents a, not
+        specified, gate acting on the two qubits labeled by the integers in the tuples.
+        """
         self.mapping = np.arange(self.n_qubits)
-
-        # Observation attributes
+        """Array of which each index represents a logical qubit and each value
+        represents a physical qubit.
+        """
         self.position: int = 0
+        """An integer representing before which gate in the interaction_circuit the
+        agent currently is.
+        """
         self.max_observation_reach = max_observation_reach
-
+        """An integer that sets a cap on the maximum amount of gates the agent can see
+        ahead when making an observation. When bigger than max_interaction_gates the
+        agent will always see all gates ahead in an observation.
+        """
         self.observe_legal_surpasses = observe_legal_surpasses
+
         if observe_connection_graph:
             self.connection_matrix = nx.to_numpy_array(
                 connection_graph, dtype=np.int_
             ).flatten()
 
         # Keep track of at what position which swap_gate is inserted
-        self.swap_gates_inserted: Deque[Tuple[int, int, int]] = deque()
+        self.swap_gates_inserted: deque[tuple[int, int, int]] = deque()
+        """A deque of 3-tuples of integers, to register which gates to insert and where.
+        Every tuple (g, q1, q2) represents the insertion of a SWAP-gate acting on
+        logical qubits q1 and q2 before gate g in the interaction_circuit.
+        """
 
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        interaction_circuit: Optional[NDArray[np.int_]] = None,
+        seed: int | None = None,
+        interaction_circuit: NDArray[np.int_] | None = None,
         **_kwargs: Any,
     ) -> RoutingState:
-        """Reset the state and load a new (random) initial state.
+        """Reset the state (in place) and load a new (random) initial state.
 
         To be used after an episode is finished.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e., before any learning is done.
-        :param circuit: Optional list of tuples of ints that the interaction gates
-            via the qubits the gates are acting on.
-        :param _kwargs: Additional options to configure the reset.
-        :return: Self.
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call, i.e., before any learning is done.
+            circuit: Optional list of tuples of ints that the interaction gates via the
+                qubits the gates are acting on.
+            _kwargs: Additional options to configure the reset.
+
+        Returns:
+            Self.
         """
         if seed is not None:
             self.seed(seed)
@@ -136,6 +136,18 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 number_of_gates
             )
         else:
+            interaction_circuit = np.array(interaction_circuit)
+            max_gates = self.max_interaction_gates
+            if (
+                interaction_circuit.ndim != 2
+                or interaction_circuit.shape[0] > max_gates
+                or interaction_circuit.shape[1] != 2
+            ):
+                msg = "'interaction_circuit' should have be an ArrayLike with shape "
+                msg += (
+                    "(n_interactions,2), where n_interactions<=max_interaction_gates."
+                )
+                raise ValueError(msg)
             self.interaction_circuit = interaction_circuit
 
         # Reset position, counters
@@ -150,8 +162,12 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def obtain_info(
         self,
-    ) -> Dict[str, Union[int, Deque[Tuple[int, int, int]], NDArray[np.int_]]]:
-        """:return: Optional debugging info for the current state."""
+    ) -> dict[str, int | deque[tuple[int, int, int]] | NDArray[np.int_]]:
+        """Obtain additional information of the current state.
+
+        Returns:
+            Dictionary containing optional debugging info for the current state.
+        """
         return {
             "Steps done": self.steps_done,
             "Position": self.position,
@@ -166,12 +182,15 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         }
 
     def update_state(self, action: NDArray[np.int_]) -> RoutingState:
-        """Update the state of this environment using the given action.
+        """Update the state (in place) of this environment using the given action.
 
-        :param action: If action[0]==0 a SWAP-gate applied to qubits action[1],
-            action[2] will be registered in the swap_gates_inserted-deque at the current
-            position, if action[0]==1 the first observed gate will be surpassed.
-        :return: self
+        Args:
+            action: If action[0]==0 a SWAP-gate applied to qubits action[1], action[2]
+                will be registered in the swap_gates_inserted-deque at the current
+                position, if action[0]==1 the first observed gate will be surpassed.
+
+        Returns:
+            Self.
         """
         # Increase the step number
         self.steps_done += 1
@@ -191,19 +210,20 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     def create_observation_space(self) -> qgym.spaces.Dict:
         """Create the corresponding observation space.
 
-        :returns: Observation space in the form of a ``qgym.spaces.Dict`` space
-            containing:
+        Returns:
+            Observation space in the form of a ``qgym.spaces.Dict`` space containing:
 
             * ``qgym.spaces.MultiDiscrete`` space representing the interaction gates
-                ahead of current position.
+              ahead of current position.
             * ``qgym.spaces.MultiDiscrete`` space representing the current mapping of
-                logical onto physical qubits
+              logical onto physical qubits
         """
         interaction_gates_ahead = qgym.spaces.MultiDiscrete(
             np.full(2 * self.max_observation_reach, self.n_qubits + 1)
         )
         mapping = qgym.spaces.MultiDiscrete(np.full(self.n_qubits, self.n_qubits))
 
+        observation_kwargs: dict[str, Any]
         observation_kwargs = {
             "interaction_gates_ahead": interaction_gates_ahead,
             "mapping": mapping,
@@ -222,12 +242,16 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 self.max_observation_reach
             )
 
-        return qgym.spaces.Dict(**observation_kwargs)
+        return qgym.spaces.Dict(observation_kwargs)
 
     def obtain_observation(
         self,
-    ) -> Dict[str, NDArray[np.int_]]:
-        """:return: Observation based on the current state."""
+    ) -> dict[str, NDArray[np.int_]]:
+        """Observe the current state.
+
+        Returns:
+            Observation based on the current state.
+        """
         # construct interaction_gates_ahead
         gate_slice = slice(self.position, self.position + self.max_observation_reach)
         interaction_gates_ahead = self.interaction_circuit[gate_slice]
@@ -255,7 +279,10 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         return observation
 
     def is_done(self) -> bool:
-        """:return: Boolean value stating whether we are in a final state."""
+        """Checks if the current state is in a final state.
+
+        Returs: Boolean value stating whether we are in a final state.
+        """
         return self.position == len(self.interaction_circuit)
 
     def _place_swap_gate(
@@ -272,7 +299,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit2: int,
     ) -> bool:
         """Checks whether a swap of two logical qubits is legal.
-        returns: a boolean.
+
+        Returns:
+            Boolean value state whether the swap is allowed in the connection graph..
         """
         physical_qubit1 = self.mapping[logical_qubit1]
         physical_qubit2 = self.mapping[logical_qubit2]
@@ -286,7 +315,14 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit2: int,
     ) -> bool:
         """Checks whether a surpass of the current gate ahead is legal.
-        returns: a boolean.
+
+        Args:
+            logical_qubit1: First qubit of the interaction.
+            logical_qubit2: Second qubit of the logical interaction.
+
+        Returns:
+            A boolean value stating whether a connection gate with the two qubits can be
+            executed with the current mapping and connection graph.
         """
         try:
             physical_connection = self.mapping[[logical_qubit1, logical_qubit2]]
@@ -300,16 +336,15 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         logical_qubit1: int,
         logical_qubit2: int,
     ) -> None:
-        """Updates mapping for a swap of two qubits.
-        returns: a boolean.
-        """
+        """Updates mapping for a swap of two qubits."""
         physical_qubits = self.mapping[[logical_qubit1, logical_qubit2]]
         self.mapping[[logical_qubit2, logical_qubit1]] = physical_qubits
 
     def generate_random_interaction_circuit(self, n_gates: int) -> NDArray[np.int_]:
         """Generate a random interaction circuit.
 
-        :return: A randomly generated interaction circuit.
+        Returns:
+            A randomly generated interaction circuit.
         """
         circuit = np.zeros((n_gates, 2), dtype=int)
         for idx in range(n_gates):
@@ -321,5 +356,5 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     @property
     def n_qubits(self) -> int:
-        """:return: Number of qubits in the `connection_graph`."""
+        """Number of qubits in the `connection_graph`."""
         return int(self.connection_graph.number_of_nodes())

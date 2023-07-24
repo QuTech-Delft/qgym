@@ -3,31 +3,37 @@
 With parsing we mean that the user input is validated and transformed to a predictable
 format. In this way, user can give different input formats, but internally we are 
 assured that the data has the same format."""
+from __future__ import annotations
+
 import warnings
 from copy import deepcopy
-from typing import Iterable, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Iterable, Type
 
 import networkx as nx
 from numpy.typing import ArrayLike
 
-from qgym.templates import Rewarder
+from qgym.templates import Rewarder, Visualiser
 from qgym.utils.input_validation import (
     check_adjacency_matrix,
     check_graph_is_valid_topology,
     check_instance,
+    check_string,
 )
 
-Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
+if TYPE_CHECKING:
+    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
 
 
-def parse_rewarder(rewarder: Optional[Rewarder], default: Type[Rewarder]) -> Rewarder:
+def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Rewarder:
     """Parse a `rewarder` given by the user.
 
-    :param rewarder: ``Rewarder`` to use for the environment. If ``None``, then a new
-        instance of the `default` rewarder will be returned.
-    :param default: Type of the desired default rewarder to used when no rewarder is
-        given.
-    :return: A deepcopy of the given `rewarder` or a new instance of type `default` if
+    Args:
+        rewarder: ``Rewarder`` to use for the environment. If ``None``, then a new
+            instance of the `default` rewarder will be returned.
+        default: Type of the desired default rewarder to used when no rewarder is given.
+
+    Returns:
+        A deepcopy of the given `rewarder` or a new instance of type `default` if
         `rewarder` is ``None``.
     """
     if rewarder is None:
@@ -36,18 +42,46 @@ def parse_rewarder(rewarder: Optional[Rewarder], default: Type[Rewarder]) -> Rew
     return deepcopy(rewarder)
 
 
+def parse_visualiser(
+    render_mode: str | None, vis_type: Type[Visualiser], args: list[Any]
+) -> None | Visualiser:
+    """Parse a `Visualiser` by the render mode.
+
+    Args:
+        render_mode: If ``None`` return ``None``. Otherwise return a ``Visualiser`` of
+            type `vis_type` with optional arguments given in `args`.
+        vis_type: Type of ``Visualiser`` to make if `render_mode` is not ``None``.
+        args: Additional argument to give to the init of the ``Visualiser`` if
+            `vis_type` is not ``None``.
+
+    Returns:
+        If `render_mode` is ``None`` return ``None``. Otherwise return a ``Visualiser``
+        of type `vis_type` with optional arguments given in `args`.
+    """
+    if render_mode is None:
+        return None
+
+    render_mode = check_string(render_mode, "render_mode", lower=True)
+    return vis_type(render_mode, *args)
+
+
 def parse_connection_graph(
-    graph: Optional[nx.Graph] = None,
-    matrix: Optional[ArrayLike] = None,
-    grid_size: Optional[Gridspecs] = None,
+    graph: nx.Graph | None = None,
+    matrix: ArrayLike | None = None,
+    grid_size: Gridspecs | None = None,
 ) -> nx.Graph:
     """Parse the user input (given in ``__init__``) to create a connection graph.
 
-    :param graph: ``networkx.Graph`` representation of the QPU topology.
-    :param matrix: Adjacency matrix representation of the QPU topology.
-    :param size: Size of the connection graph when the topology is a grid.
-    :raise ValueError: When `graph`, `matrix` and `grid_size` are all ``None``.
-    :return: Connection graph as a ``networkx.Graph``.
+    Args:
+        graph: ``networkx.Graph`` representation of the QPU topology.
+        matrix: Adjacency matrix representation of the QPU topology.
+        size: Size of the connection graph when the topology is a grid.
+
+    Raises:
+        ValueError: When `graph`, `matrix` and `grid_size` are all ``None``.
+
+    Returns:
+        Connection graph as a ``networkx.Graph``.
     """
     if graph is not None:
         if matrix is not None:

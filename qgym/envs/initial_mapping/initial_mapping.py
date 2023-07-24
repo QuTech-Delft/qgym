@@ -110,7 +110,9 @@ Example 2:
 
 
 """
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping, cast
 
 import networkx as nx
 import numpy as np
@@ -123,10 +125,15 @@ from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_parsing import parse_connection_graph, parse_rewarder
+from qgym.utils.input_parsing import (
+    parse_connection_graph,
+    parse_rewarder,
+    parse_visualiser,
+)
 from qgym.utils.input_validation import check_real
 
-Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
+if TYPE_CHECKING:
+    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
 
 
 class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
@@ -145,10 +152,11 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         self,
         interaction_graph_edge_probability: float,
         *,
-        connection_graph: Optional[nx.Graph] = None,
-        connection_graph_matrix: Optional[ArrayLike] = None,
-        connection_grid_size: Optional[Gridspecs] = None,
-        rewarder: Optional[Rewarder] = None,
+        connection_graph: nx.Graph | None = None,
+        connection_graph_matrix: ArrayLike | None = None,
+        connection_grid_size: Gridspecs | None = None,
+        rewarder: Rewarder | None = None,
+        render_mode: str | None = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states.
         Furthermore, the connection graph and edge probability for the random
@@ -156,21 +164,26 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
         The supported render modes of this environment are "human" and "rgb_array".
 
-        :param interaction_graph_edge_probability: Probability that an edge between any
-            pair of qubits in the random interaction graph exists. The interaction
-            graph will have the same amount of nodes as the connection graph. Nodes
-            without any interactions can be seen as 'null' nodes. Must be a value in the
-            range [0,1].
-        :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each node represents a connection
-            in the QPU topology.
-        :param connection_graph_matrix: Adjacency matrix representation of the QPU
-            topology.
-        :param connection_grid_size: Size of the connection graph when the connection
-            graph has a grid topology. For more information on the allowed values and
-            types, see ``networkx`` `grid_graph`_ documentation.
-        :param rewarder: Rewarder to use for the environment. Must inherit from
-            ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is used.
+        Args:
+            interaction_graph_edge_probability: Probability that an edge between any
+                pair of qubits in the random interaction graph exists. The interaction
+                graph will have the same amount of nodes as the connection graph. Nodes
+                without any interactions can be seen as 'null' nodes. Must be a value in
+                the range [0,1].
+            connection_graph: ``networkx`` graph representation of the QPU topology.
+                Each node represents a physical qubit and each node represents a
+                connection in the QPU topology.
+            connection_graph_matrix: Adjacency matrix representation of the QPU
+                topology.
+            connection_grid_size: Size of the connection graph when the connection graph
+                has a grid topology. For more information on the allowed values and
+                types, see ``networkx`` `grid_graph`_ documentation.
+            rewarder: Rewarder to use for the environment. Must inherit from
+                ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is
+                used.
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered frame on each
+                render call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -199,36 +212,33 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
-
-        self._visualiser = InitialMappingVisualiser(connection_graph)
+        self._visualiser = parse_visualiser(
+            render_mode, InitialMappingVisualiser, [connection_graph]
+        )
 
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        return_info: bool = False,
-        interaction_graph: Optional[nx.Graph] = None,
-        **_kwargs: Any,
-    ) -> Union[
-        Dict[str, NDArray[np.int_]],
-        Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]],
-    ]:
+        seed: int | None = None,
+        options: Mapping[str, Any] | None = None,
+    ) -> tuple[dict[str, NDArray[np.int_]], dict[str, Any]]:
         """Reset the state and set a new interaction graph.
 
         To be used after an episode is finished.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call i.e., before any learning is done.
-        :param return_info: Whether to receive debugging info. Default is ``False``.
-        :param interaction_graph: Interaction graph to be used for the next iteration,
-            if ``None`` a random interaction graph will be created.
-        :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optionally debugging info.
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call i.e., before any learning is done.
+            return_info: Whether to receive debugging info. Default is ``False``.
+            options: Mapping with keyword arguments with additional options for the
+                reset. Keywords can be found in the description of
+                ``InitialMappingState.reset()``
+
+        Returns:
+            Initial observation and debugging info.
         """
         # call super method for dealing with the general stuff
-        return super().reset(
-            seed=seed, return_info=return_info, interaction_graph=interaction_graph
-        )
+        return super().reset(seed=seed, options=options)
 
     def add_random_edge_weights(self) -> None:
         """Add random weights to the connection graph and interaction graph."""

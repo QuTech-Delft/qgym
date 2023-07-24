@@ -55,12 +55,11 @@ State Space:
       added to the observation space. The list `boolean_flags` has length
       `observation_reach` and containing Boolean values indicating whether the gates
       ahead can be executed.
-    * `observe_connection_graph`: If ``True``, the connection_graph will be
-        incorporated in the observation_space.
-    * `swap_gates_inserted`: A list of 3-tuples of integers, to register which gates
-        to insert and where. Every tuple (g, q1, q2) represents the insertion of a
-        SWAP-gate acting on logical qubits q1 and q2 before gate g in the
-        interaction_circuit.
+    * `observe_connection_graph`: If ``True``, the connection_graph will be incorporated
+      in the observation_space.
+    * `swap_gates_inserted`: A list of 3-tuples of integers, to register which gates to
+      insert and where. Every tuple (g, q1, q2) represents the insertion of a SWAP-gate
+      acting on logical qubits q1 and q2 before gate g in the interaction_circuit.
 
 Observation Space:
     The observation space is a ``qgym.spaces.Dict`` with 2-4 entries:
@@ -69,25 +68,28 @@ Observation Space:
       gates in the quantum circuit.
     * `mapping`: The current state of the mapping.
     * (Optional)`connection_graph`: Adjacency matrix of the connection graph.
-    * (Optional)`is_legal_surpass_booleans`: Array with boolean values stating wether a
+    * (Optional)`is_legal_surpass_booleans`: Array with boolean values stating whether a
       connection gate can be surpassed with the current mapping.
 
 Action Space:
-    A valid action is a tuple of integers  $(i,j,k)$. The integer $i$ indicates wether
+    A valid action is a tuple of integers  $(i,j,k)$. The integer $i$ indicates whether
     the agent wants to surpass the current gate and move on to the next gate. If $i$ is 
     0, then a SWAP gate is inserted at the current position between qubits $j$ and $k$.
     Only legal actions will be executed, an action is legal when:
+
     #. $i=1$ and the next gate can be executed.
     #. $i=0$ and physical qubit $j$ does not equal physical qubit $k$.
     #. $i=0$ and physical qubits $j$ and $k$ have a connection between them in the
-      connection graph.
+       connection graph.
 
 
 # TODO: create Examples
 
 
 """
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
 
 import networkx as nx
 import numpy as np
@@ -98,10 +100,15 @@ from qgym.envs.routing.routing_rewarders import BasicRewarder
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.envs.routing.routing_visualiser import RoutingVisualiser
 from qgym.templates import Environment, Rewarder
-from qgym.utils.input_parsing import parse_connection_graph, parse_rewarder
+from qgym.utils.input_parsing import (
+    parse_connection_graph,
+    parse_rewarder,
+    parse_visualiser,
+)
 from qgym.utils.input_validation import check_bool, check_int
 
-Gridspecs = Union[List[Union[int, Iterable[int]]], Tuple[Union[int, Iterable[int]]]]
+if TYPE_CHECKING:
+    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
 
 
 class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
@@ -114,40 +121,46 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         observe_legal_surpasses: bool = True,
         observe_connection_graph: bool = True,
         *,
-        connection_graph: Optional[nx.Graph] = None,
-        connection_graph_matrix: Optional[ArrayLike] = None,
-        connection_grid_size: Optional[Gridspecs] = None,
-        rewarder: Optional[Rewarder] = None,
+        connection_graph: nx.Graph | None = None,
+        connection_graph_matrix: ArrayLike | None = None,
+        connection_grid_size: Gridspecs | None = None,
+        rewarder: Rewarder | None = None,
+        render_mode: str | None = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states.
 
         The supported render modes of this environment are "human" and "rgb_array".
 
-        :param max_interaction_gates: Sets the maximum amount of gates in the
-            `interaction_circuit`, when a new `interaction_circuit` is generated.
-        :param max_observation_reach: Sets a cap on the maximum amount of gates the
-            agent can see ahead when making an observation. When bigger than
-            `max_interaction_gates` the agent will always see all gates ahead in an
-            observation
-        :param observe_legal_surpasses: If ``True`` a boolean array of length
-            observation_reach indicating whether the gates ahead can be executed, will
-            be added to the `observation_space`.
-        :param observe_connection_graph: If ``True``, the connection_graph will be
-            incorporated in the observation_space. Reason to set it ``False`` is:
-            QPU-topology practically doesn't change a lot for one machine, hence an
-            agent is typically trained for just one QPU-topology which can be learned
-            implicitly by rewards and/or the booleans if they are shown, depending on
-            the other flag above.
-        :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each node represents a connection
-            in the QPU topology.
-        :param connection_graph_matrix: Adjacency matrix representation of the QPU
-            topology.
-        :param connection_grid_size: Size of the connection graph when the connection
-            graph has a grid topology. For more information on the allowed values and
-            types, see ``networkx`` `grid_graph`_ documentation.
-        :param rewarder: Rewarder to use for the environment. Must inherit from
-            ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is used.
+        Args:
+            max_interaction_gates: Sets the maximum amount of gates in the
+                `interaction_circuit`, when a new `interaction_circuit` is generated.
+            max_observation_reach: Sets a cap on the maximum amount of gates the agent
+                can see ahead when making an observation. When bigger that
+                `max_interaction_gates` the agent will always see all gates ahead in an
+                observation
+            observe_legal_surpasses: If ``True`` a boolean array of length
+                `observation_reach` indicating whether the gates ahead can be executed,
+                will be added to the `observation_space`.
+            observe_connection_graph: If ``True``, the connection_graph will be
+                incorporated in the observation_space. Reason to set it ``False`` is:
+                QPU-topology practically doesn't change a lot for one machine, hence an
+                agent is typically trained for just one QPU-topology which can be
+                learned implicitly by rewards and/or the booleans if they are shown,
+                depending on the other flag above.
+            connection_graph: ``networkx`` graph representation of the QPU topology.
+                Each node represents a physical qubit and each node represents a
+                connection in the QPU topology.
+            connection_graph_matrix: Adjacency matrix representation of the QPU
+                topology.
+            connection_grid_size: Size of the connection graph when the connection graph
+                has a grid topology. For more information on the allowed values and
+                types, see ``networkx`` `grid_graph`_ documentation.
+            rewarder: Rewarder to use for the environment. Must inherit from
+                ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is
+                used.
+            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
+                'rgb_array', return an RGB array encoding of the rendered frame on each
+                render call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -196,44 +209,29 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}
-
-        self._visualiser = RoutingVisualiser(connection_graph)
+        self._visualiser = parse_visualiser(
+            render_mode, RoutingVisualiser, [connection_graph]
+        )
 
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        return_info: bool = False,
-        interaction_circuit: Optional[ArrayLike] = None,
-        **_kwargs: Any,
-    ) -> Union[
-        Dict[str, NDArray[np.int_]], Tuple[Dict[str, NDArray[np.int_]], Dict[str, Any]]
-    ]:
+        seed: int | None = None,
+        options: Mapping[str, Any] | None = None,
+    ) -> tuple[dict[str, NDArray[np.int_]], dict[str, Any]]:
         """Reset the state and set/create a new interaction circuit.
 
         To be used after an episode is finished.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call i.e., before any learning is done.
-        :param return_info: Whether to receive debugging info. Default is ``False``.
-        :param _kwargs: Additional options to configure the reset.
-        :return: Initial observation and optionally debugging info.
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call i.e., before any learning is done.
+            options: Mapping with keyword arguments with additional options for the
+                reset. Keywords can be found in the description of
+                ``RoutingState.reset()``
+
+        Returns:
+            Initial observation and debugging info.
         """
-        # parse interaction circuit
-        if interaction_circuit is not None:
-            interaction_circuit = np.array(interaction_circuit)
-            max_gates = cast(RoutingState, self._state).max_interaction_gates
-            if (
-                interaction_circuit.ndim != 2
-                or interaction_circuit.shape[0] > max_gates
-                or interaction_circuit.shape[1] != 2
-            ):
-                msg = "'interaction_circuit' should have be an ArrayLike with shape "
-                msg += (
-                    "(n_interactions,2), where n_interactions<=max_interaction_gates."
-                )
-                raise ValueError(msg)
         # call super method for dealing with the general stuff
-        return super().reset(
-            seed=seed, return_info=return_info, interaction_circuit=interaction_circuit
-        )
+        return super().reset(seed=seed, options=options)

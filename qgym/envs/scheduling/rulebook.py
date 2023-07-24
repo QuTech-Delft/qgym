@@ -22,7 +22,9 @@ Example:
         rulebook.add_rule(rulebook)
 
 """
-from typing import Callable, List
+from __future__ import annotations
+
+from typing import Callable
 
 import numpy as np
 from numpy.typing import NDArray
@@ -36,24 +38,28 @@ class CommutationRulebook:
     def __init__(self, default_rules: bool = True) -> None:
         """Init of the ``CommutationRulebook``.
 
-        :param default_rules: If ``True``, default rules are used. Default rules dictate
-            that gates with disjoint qubits commute and that gates that are exactly the
-            same commute. If ``False``, then no rules will be initialized.
+        Args:
+            default_rules: If ``True``, default rules are used. Default rules dictate
+                that gates with disjoint qubits commute and that gates that are exactly
+                the same commute. If ``False``, then no rules will be initialized.
         """
 
-        self._rules: List[Callable[[Gate, Gate], bool]]
+        self._rules: list[Callable[[Gate, Gate], bool]]
         if default_rules:
             self._rules = [disjoint_qubits, same_gate]
         else:
             self._rules = []
 
-    def make_blocking_matrix(self, circuit: List[Gate]) -> NDArray[np.int_]:
+    def make_blocking_matrix(self, circuit: list[Gate]) -> NDArray[np.int_]:
         """Make a square array of shape (len(circuit), len(circuit)), with dependencies
         based on the given commutation rules.
 
-        :param circuit: Circuit to check dependencies for.
-        :return: Dependencies matrix of the circuit bases on the rules and scheduling
-            from right to left.
+        Args:
+            circuit: Circuit to check dependencies for.
+
+        Returns:
+            Dependencies matrix of the circuit based on the rules and scheduling from
+            right to left.
         """
         blocking_matrix = np.zeros((len(circuit), len(circuit)), dtype=bool)
 
@@ -69,9 +75,12 @@ class CommutationRulebook:
     def commutes(self, gate1: Gate, gate2: Gate) -> bool:
         """Check if `gate1` and `gate2` commute according to the rules in the rulebook.
 
-        :param gate1: Gate to check the commutation.
-        :param gate2: Gate to check gate1 against.
-        :return: Boolean value whether gate1 commutes with gate2.
+        Args:
+            gate1: Gate to check the commutation.
+            gate2: Gate to check gate1 against.
+
+        Returns:
+            Boolean value indicating whether `gate1` commutes with `gate2`.
         """
         for rule in self._rules:
             if rule(gate1, gate2):
@@ -81,9 +90,10 @@ class CommutationRulebook:
     def add_rule(self, rule: Callable[[Gate, Gate], bool]) -> None:
         """Add a new commutation rule to the rulebook.
 
-        :param rule: Rule to add to the rulebook. A rule is a ``Callable`` which takes
-            as input two gates and returns a Boolean value that should be ``True`` if
-            two gates commute and ``False`` otherwise.
+        Args:
+            rule: Rule to add to the rulebook. A rule is a ``Callable`` which takes as
+                input two gates and returns a Boolean value that should be ``True`` if
+                two gates commute and ``False`` otherwise.
         """
         self._rules.append(rule)
 
@@ -102,9 +112,12 @@ class CommutationRulebook:
 def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     """Gates that have disjoint qubits commute.
 
-    :param gate1: Gate to check disjointness.
-    :param gate2: Gate to check disjointness against.
-    :return: Boolean value stating whether the gates are disjoint.
+    Args:
+        gate1: Gate to check disjointness.
+        gate2: Gate to check disjointness against.
+
+    Returns:
+        Boolean value stating whether the gates are disjoint.
     """
     return bool(
         gate1.q1 != gate2.q1
@@ -117,8 +130,11 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
 def same_gate(gate1: Gate, gate2: Gate) -> bool:
     """Gates that are equal commute.
 
-    :param gate1: Gate to check equality.
-    :param gate2: Gate to check equality against.
-    :return: Boolean value stating whether the gates are equal.
+    Args:
+        gate1: Gate to check equality.
+        gate2: Gate to check equality against.
+
+    Returns:
+        Boolean value stating whether the gates are equal.
     """
     return gate1 == gate2

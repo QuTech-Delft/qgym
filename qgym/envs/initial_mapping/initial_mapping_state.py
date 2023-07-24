@@ -13,7 +13,7 @@ Usage:
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, Optional, Set, cast
+from typing import Any, Dict, cast
 
 import networkx as nx
 import numpy as np
@@ -24,37 +24,30 @@ from qgym.templates.state import State
 
 
 class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
-    """The ``InitialMappingState`` class.
+    """The ``InitialMappingState`` class."""
 
-    :ivar steps_done: Number of steps done since the last reset.
-    :ivar n_nodes: Number of nodes in the connection graph. Represent the of physical
-        qubits.
-    :ivar graphs: Dictionary containing the graph and matrix representations of the
-        both the interaction graph and connection graph.
-    :ivar mapping: Array of which the index represents a physical qubit, and the value a
-        virtual qubit. A value of ``n_nodes + 1`` represents the case when nothing is
-        mapped to the physical qubit yet.
-    :ivar mapping_dict: Dictionary that maps logical qubits (keys) to physical qubits
-        (values).
-    :ivar mapped_qubits: Dictionary with a two ``Set``s containing all mapped physical
-        and logical qubits.
-    """
-
-    __slots__ = ("steps_done", "graphs", "mapping", "mapping_dict", "mapped_qubits")
+    __slots__ = (
+        "steps_done",
+        "graphs",
+        "mapping",
+        "mapping_dict",
+        "mapped_qubits",
+    )
 
     def __init__(
         self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
     ) -> None:
         """Init of the ``InitialMappingState`` class.
 
-        :param connection_graph: ``networkx`` graph representation of the QPU topology.
-            Each node represents a physical qubit and each edge represents a connection
-            in the QPU topology.
-        :param interaction_graph_edge_probability: Probability that an edge between any
-            pair of qubits in the random interaction graph exists. The interaction
-            graph will have the same amount of nodes as the connection graph. Nodes
-            without any interactions can be seen as 'null' nodes. Must be a value in the
-            range $[0,1]$.
+        Args:
+            connection_graph: ``networkx`` graph representation of the QPU topology.
+                Each node represents a physical qubit and each edge represents a
+                connection in the QPU topology.
+            interaction_graph_edge_probability: Probability that an edge between any
+                pair of qubits in the random interaction graph exists. The interaction
+                graph will have the same amount of nodes as the connection graph. Nodes
+                without any interactions can be seen as 'null' nodes. Must be a value in
+                the range $[0,1]$.
         """
         # Create a random connection graph with `n_nodes` and with edges existing with
         # probability `interaction_graph_edge_probability` (nodes without connections
@@ -64,7 +57,8 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             interaction_graph_edge_probability,
         )
 
-        self.steps_done = 0
+        self.steps_done: int = 0
+        """Number of steps done since the last reset."""
 
         self.graphs = {
             "connection": {
@@ -77,15 +71,24 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 "edge_probability": interaction_graph_edge_probability,
             },
         }
-        self.mapping = np.full(self.n_nodes, self.n_nodes)
-        self.mapping_dict: Dict[int, int] = {}
-        self.mapped_qubits: Dict[str, Set[int]] = {"physical": set(), "logical": set()}
+        """Dictionary containing the graph and matrix representations of the both the
+        interaction graph and connection graph.
+        """
+        self.mapping = np.full(self.n_nodes, self.n_nodes, dtype=np.int_)
+        """Array of which the index represents a physical qubit, and the value a virtual
+        qubit. A value of ``n_nodes + 1`` represents the case when nothing is mapped to
+        the physical qubit yet.
+        """
+        self.mapping_dict: dict[int, int] = {}
+        """Dictionary that maps logical qubits (keys) to physical qubits (values)."""
+        self.mapped_qubits: dict[str, set[int]] = {"physical": set(), "logical": set()}
+        """Dictionary with two sets containing mapped physical and logical qubits."""
 
     def create_observation_space(self) -> spaces.Dict:
         """Create the corresponding observation space.
 
-        :returns: Observation space in the form of a ``qgym.spaces.Dict`` space
-            containing:
+        Returns:
+            Observation space in the form of a ``qgym.spaces.Dict`` space containing:
 
             * ``qgym.spaces.MultiDiscrete`` space representing the mapping.
             * ``qgym.spaces.MultiBinary`` representing the interaction matrix.
@@ -103,20 +106,23 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     def reset(
         self,
         *,
-        seed: Optional[int] = None,
-        interaction_graph: Optional[nx.Graph] = None,
+        seed: int | None = None,
+        interaction_graph: nx.Graph | None = None,
         **_kwargs: Any,
     ) -> InitialMappingState:
         """Reset the state and set a new interaction graph.
 
         To be used after an episode is finished.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call i.e., before any learning is done.
-        :param interaction_graph: Interaction graph to be used for the next iteration,
-            if ``None`` a random interaction graph will be created.
-        :param _kwargs: Additional options to configure the reset.
-        :return: (self) New initial state.
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call i.e., before any learning is done.
+            interaction_graph: Interaction graph to be used for the next iteration, if
+            ``None`` a random interaction graph will be created.
+            _kwargs: Additional options to configure the reset.
+
+        Returns:
+            (self) New initial state.
         """
         if seed is not None:
             self.seed(seed)
@@ -157,9 +163,13 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         ).flatten()
 
     def update_state(self, action: NDArray[np.int_]) -> InitialMappingState:
-        """Update the state of this environment using the given action.
+        """Update the state (in place) of this environment using the given action.
 
-        :param action: Mapping action to be executed.
+        Args:
+            action: Mapping action to be executed.
+
+        Returns:
+            Self.
         """
         # Increase the step number
         self.steps_done += 1
@@ -179,22 +189,34 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.mapped_qubits["logical"].add(logical_qubit)
         return self
 
-    def obtain_observation(self) -> Dict[str, NDArray[np.int_]]:
-        """:return: Observation based on the current state."""
+    def obtain_observation(self) -> dict[str, NDArray[np.int_]]:
+        """Obtain an observation based on the current state.
+
+        Returns:
+            Observation based on the current state.
+        """
         return {
             "mapping": self.mapping,
             "interaction_matrix": self.graphs["interaction"]["matrix"],
         }
 
     def is_done(self) -> bool:
-        """:return: Boolean value stating whether we are in a final state."""
+        """Determine if the state is done or not.
+
+        Returns:
+            Boolean value stating whether we are in a final state.
+        """
         return bool(len(self.mapping_dict) == self.n_nodes)
 
-    def obtain_info(self) -> Dict[str, Any]:
-        """:return: Optional debugging info for the current state."""
+    def obtain_info(self) -> dict[str, Any]:
+        """Obtain additional information.
+
+        Returns:
+            Optional debugging info for the current state.
+        """
         return {"Steps done": self.steps_done}
 
     @property
     def n_nodes(self) -> int:
-        """:return: The number of physical qubits."""
+        """The number of physical qubits."""
         return cast(int, self.graphs["connection"]["graph"].number_of_nodes())

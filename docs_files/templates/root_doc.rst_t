@@ -5,7 +5,9 @@
 
 OpenQL Gym
 ===========
-This reinforcement learning gym can be used to train agents on problems specific to the compilation of gate-based quantum software. It uses the concepts of OpenQL as basis for the provided environments.
+This reinforcement learning gym can be used to train agents on problems specific to the
+compilation of gate-based quantum software. It uses the concepts of OpenQL as basis for
+the provided environments.
 
 .. _introduction:
 

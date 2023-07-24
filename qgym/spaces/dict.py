@@ -14,44 +14,38 @@ Usage:
      [1. 1.]
      [1. 1.]], (3, 2), float64))
 """
+from __future__ import annotations
+
 import typing
-from typing import List, Optional
+from typing import Any, Sequence
 
-import gym.spaces
-from numpy.random import Generator, default_rng
+import gymnasium.spaces
+from numpy.random import Generator
 
 
-class Dict(gym.spaces.Dict):
+class Dict(gymnasium.spaces.Dict):
     """Dictionary of other action/observation spaces for use in RL environments."""
 
     def __init__(
         self,
-        spaces: Optional[typing.Dict[str, gym.Space]] = None,
+        spaces: typing.Dict[str, gymnasium.Space[Any]]
+        | Sequence[tuple[str, gymnasium.Space[Any]]]
+        | None = None,
         *,
-        rng: Optional[Generator] = None,
-        **spaces_kwargs: gym.Space
+        rng: Generator | None = None,
+        **spaces_kwargs: gymnasium.Space[Any],
     ) -> None:
         """Initialize a ``Dict`` space, with string valued keys and spaces inheriting
         from ``gym.Space`` as values.
 
-        :param spaces: Dictionary containing string valued keys and spaces that are to
-            form this ``Dict`` space.
-        :param rng: Random number generator to be used in this space, if ``None`` a new
-            one will be constructed.
-        :param spaces_kwargs: Spaces that are to form this ``Dict`` space.
+        Args:
+            spaces: Dictionary containing string valued keys and spaces that are to form
+            this ``Dict`` space.
+            rng: Random number generator to be used in this space, if ``None`` a new one
+                will be constructed.
+            spaces_kwargs: Spaces that are to form this ``Dict`` space.
         """
-        super().__init__(spaces, **spaces_kwargs)
+        super().__init__(spaces, seed=None, **spaces_kwargs)
         for space in self.spaces.values():
             # override the default behaviour of the gym space
             space._np_random = rng  # pylint: disable=protected-access
-
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
-        """Seed the rng of this space, using ``numpy.random.default_rng``. The seed will
-        be applied to all spaces in the ``Dict`` space.
-
-        :param seed: Seed for the rng. Defaults to ``None``
-        :return: The used seeds.
-        """
-        for space in self.spaces.values():
-            space._np_random = default_rng(seed)  # pylint: disable=protected-access
-        return [seed]

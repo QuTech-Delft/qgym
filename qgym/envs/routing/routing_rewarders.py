@@ -44,15 +44,17 @@ class BasicRewarder(Rewarder):
         reward_per_surpass: float = 10,
     ) -> None:
         """Set the rewards and penalties.
-        :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
-            This value should be negative (but is not required) and defaults to -50.
-        :param penalty_per_swap: Penalty for placing a swap. In general, we want to have
-            as little swaps as possible. Therefore, this value should be negative and
-            defaults to -10.
-        :param reward_per_surpass: Reward given for surpassing a gate. In general, we
-            want to have go to the end of the circuit as fast as possible. Therefore,
-            this value should be positive and defaults to 10.
+
+        Args:
+            illegal_action_penalty: Penalty for performing an illegal action. An action
+                is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
+                value should be negative (but is not required) and defaults to -50.
+            penalty_per_swap: Penalty for placing a swap. In general, we want to have as
+                little swaps as possible. Therefore, this value should be negative and
+                defaults to -10.
+            reward_per_surpass: Reward given for surpassing a gate. In general, we want
+                to have go to the end of the circuit as fast as possible. Therefore,
+                this value should be positive and defaults to 10.
         """
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
@@ -74,10 +76,13 @@ class BasicRewarder(Rewarder):
     ) -> float:
         """Compute a reward, based on the old state, new state, and the given action.
 
-        :param old_state: ``RoutingState`` before the current action.
-        :param action: Action that has just been taken.
-        :param new_state: ``RoutingState`` after the current action.
-        :returns reward: The reward for this action.
+        Args:
+            old_state: ``RoutingState`` before the current action.
+            action: Action that has just been taken.
+            new_state: ``RoutingState`` after the current action.
+
+        Returns:
+            The reward for this action.
         """
 
         if self._is_illegal(action, old_state):
@@ -91,7 +96,9 @@ class BasicRewarder(Rewarder):
 
     def _is_illegal(self, action: NDArray[np.int_], old_state: RoutingState) -> bool:
         """Checks whether an action chosen by the agent is illegal.
-        returns: a boolean.
+
+        Returns:
+            Boolean value stating whether the action was illegal or not.
         """
         if action[0]:
             qubit1, qubit2 = old_state.interaction_circuit[old_state.position]
@@ -121,9 +128,10 @@ class BasicRewarder(Rewarder):
 
 
 class SwapQualityRewarder(BasicRewarder):
-    """Rewarder for the ``Routing`` environment, which has an adjusted reward w.r.t.
-    the BasicRewarder in the sense that good SWAPs give lower penalties and bad SWAPs
-    give higher penalties.
+    """Rewarder for the ``Routing`` environment which takes swap qualities into account.
+
+    The ``SwapQualityRewarder`` has an adjusted reward w.r.t. the ``BasicRewarder`` in
+    the sense that good SWAPs give lower penalties and bad SWAPs give higher penalties.
     """
 
     def __init__(
@@ -134,20 +142,23 @@ class SwapQualityRewarder(BasicRewarder):
         good_swap_reward: float = 5,
     ) -> None:
         """Set the rewards and penalties and a flag.
-        :param illegal_action_penalty: Penalty for performing an illegal action. An
-            action is illegal if ``action[0]`` is not in ``state["legal_actions"]``.
-            This value should be negative (but is not required) and defaults to -50.
-        :param penalty_per_swap: Penalty for placing a swap. In general, we want to have
-            as little swaps as possible. Therefore, this value should be negative and
-            defaults to -10.
-        :param reward_per_surpass: Reward given for surpassing a gate. In general, we
-            want to have go to the end of the circuit as fast as possible. Therefore,
-            this value should be positive and defaults to 10.
-        :param good_swap_reward: Reward given for placing a good swap. In general, we
-            want to place as little swaps as possible. However, when they are good, the
-            penalty for the placement should be surpressed. That happens with this
-            reward. So, the value should be positive and smaller than the
-            penalty_per_swap, in order not to get positive rewards for swaps, default=5.
+
+        Args:
+            illegal_action_penalty: Penalty for performing an illegal action. An action
+                is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
+                value should be negative (but is not required) and defaults to -50.
+            penalty_per_swap: Penalty for placing a swap. In general, we want to have as
+                little swaps as possible. Therefore, this value should be negative and
+                defaults to -10.
+            reward_per_surpass: Reward given for surpassing a gate. In general, we want
+                to have go to the end of the circuit as fast as possible. Therefore,
+                this value should be positive and defaults to 10.
+            good_swap_reward: Reward given for placing a good swap. In general, we want
+                to place as little swaps as possible. However, when they are good, the
+                penalty for the placement should be surpressed. That happens with this
+                reward. So, the value should be positive and smaller than the
+                penalty_per_swap, in order not to get positive rewards for swaps,
+                defaults to 5.
         """
         super().__init__(
             illegal_action_penalty=illegal_action_penalty,
@@ -170,14 +181,18 @@ class SwapQualityRewarder(BasicRewarder):
         new_state: RoutingState,
     ) -> float:
         """Compute a reward, based on the old state, the given action and the new state.
+
         Specifically, the change in observation reach is used.
 
-        :param old_state: ``RoutingState`` before the current action.
-        :param action: Action that has just been taken.
-        :param new_state: ``RoutingState`` after the current action.
-        :return reward: The reward for this action. If the action is illegal, then the
-            reward is `illegal_action_penalty`. If the action is legal, then the reward
-            for a surpass is just reward_per_surpass. But, for a legal swap the reward
+        Args:
+            old_state: ``RoutingState`` before the current action.
+            action: Action that has just been taken.
+            new_state: ``RoutingState`` after the current action.
+
+        Returns:
+            The reward for this action. If the action is illegal, then the reward is
+            `illegal_action_penalty`. If the action is legal, then the reward for a
+            surpass is just reward_per_surpass. But, for a legal swap the reward
             adjusted with respect to the BasicRewarder. Namely, the penalty of a swap is
             reduced if it increases the observation_reach and the penalty is increased
             if the observation_reach is decreases.
@@ -201,10 +216,13 @@ class SwapQualityRewarder(BasicRewarder):
     ) -> float:
         """Calculates the change of the observation reach as an effect of a swap.
 
-        :param old_state: ``RoutingState`` before the current action.
-        :param new_state: ``RoutingState`` after the current action.
-        :return float: A fraction that expresses the procentual improvement w.r.t the
-            old_state's observation.
+        Args:
+            old_state: ``RoutingState`` before the current action.
+            new_state: ``RoutingState`` after the current action.
+
+        Returns:
+            A fraction that expresses the procentual improvement w.r.t the `old_state`'s
+            observation.
         """
         try:
             is_legal_surpass = old_state.obtain_observation()["is_legal_surpass"]
@@ -262,8 +280,15 @@ class EpisodeRewarder(BasicRewarder):
     ) -> float:
         """Compute a reward, based on the new state, and the given action.
 
-        :param new_state: ``RoutingState`` after the current action.
-        :return reward: The reward calculated over the episode.
+        Args:
+            old_state: ``RoutingState`` before the current action.
+            action: Action that has just been taken.
+            new_state: ``RoutingState`` after the current action.
+
+        Returns:
+            If an action is illegal returns the `illegal_action_penalty`. If the episode
+            is finished returns the reward calculated over the episode, otherwise
+            returns 0.
         """
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty

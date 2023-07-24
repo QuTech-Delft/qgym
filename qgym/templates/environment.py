@@ -1,139 +1,127 @@
-"""Generic abstract base class for RL environments. All environments should inherit
-from ``Environment``.
+"""Generic abstract base class for RL environments.
+
+All environments should inherit from ``Environment``.
 """
+from __future__ import annotations
+
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Generic, List, Optional, Tuple, Union
+from typing import Any, Mapping
 
-import gym
+import gymnasium
 import numpy as np
-from gym import Space
+from gymnasium import Space
 from numpy.random import Generator, default_rng
 from numpy.typing import NDArray
 
 from qgym.templates.rewarder import Rewarder
 from qgym.templates.state import ActionT, ObservationT, State
 from qgym.templates.visualiser import Visualiser
-from qgym.utils.input_validation import check_string
 
 
-class Environment(Generic[ObservationT, ActionT], gym.Env):
+class Environment(gymnasium.Env[ObservationT, ActionT]):
     """RL Environment containing the current state of the problem.
 
     Each subclass should set at least the following attributes:
-
-    :ivar action_space: The action space of this environment.
-    :ivar observation_space: The observation space of this environment.
-    :ivar metadat: Additional metadata of this environment.
-    :ivar _state: The state space of this environment.
-    :ivar _rewarder: The rewarder of this environment.
-    :ivar _visualiser: The visualiser of this environment.
     """
 
     # --- These attributes should be set in any subclass ---
-    action_space: Space
-    observation_space: Space
-    metadata: Dict[str, Any]
+    action_space: Space[Any]
+    """The action space of this environment."""
+    observation_space: Space[Any]
+    """The observation space of this environment."""
+    metadata: dict[str, Any]
+    """Additional metadata of this environment."""
     _state: State[ObservationT, ActionT]
+    """The state space of this environment."""
     _rewarder: Rewarder
-    _visualiser: Visualiser
+    """The rewarder of this environment."""
+    _visualiser: Visualiser | None = None
+    """The visualiser of this environment."""
 
     # --- Other attributes ---
-    _rng: Optional[Generator] = None
+    _rng: Generator | None = None
 
     def step(
-        self, action: ActionT, *, return_info: bool = True
-    ) -> Union[
-        Tuple[ObservationT, float, bool],
-        Tuple[ObservationT, float, bool, Dict[Any, Any]],
-    ]:
-        """Update the state based on the input action. Return observation, reward,
-        done-indicator and (optional) debugging info based on the updated state.
+        self, action: ActionT
+    ) -> tuple[ObservationT, float, bool, bool, dict[Any, Any]]:
+        """Update the state based on the input action.
 
-        :param action: Action to be performed.
-        :param return_info: Whether to receive debugging info. Defaults to ``False``.
-        :return: A tuple containing three/four entries
+        Return observation, reward, done-indicator, terminated-indicator and debugging
+        info based on the updated state.
+
+        Args:
+            action: Action to be performed.
+
+        Returns:
+            A tuple containing five entries
 
             1. The updated state;
             2. Reward for the given action;
             3. Boolean value stating whether the new state is a final state (i.e., if
                we are done);
-            4. Optional additional (debugging) information. This entry is only given if
-               `return_info` is ``True``.
+            4. Boolean value stating whether the episode is truncated. Currently always
+               returns ``False``.
+            5. Additional (debugging) information.
         """
         old_state = deepcopy(self._state)
         self._state.update_state(action)
-        if return_info:
-            return (
-                self._state.obtain_observation(),
-                self._compute_reward(old_state, action),
-                self._state.is_done(),
-                self._state.obtain_info(),
-            )
+        if self._visualiser is not None:
+            self._visualiser.step(self._state)
+
         return (
             self._state.obtain_observation(),
             self._compute_reward(old_state, action),
             self._state.is_done(),
+            False,
+            self._state.obtain_info(),
         )
 
     @abstractmethod
     def reset(
-        self, *, seed: Optional[int] = None, return_info: bool = False, **_kwargs: Any
-    ) -> Union[ObservationT, Tuple[ObservationT, Dict[Any, Any]]]:
-        """Reset the environment and load a new random initial state. To be used after
-        an episode is finished. Optionally, one can provide additional options to
-        configure the reset.
+        self, *, seed: int | None = None, options: Mapping[str, Any] | None = None
+    ) -> tuple[ObservationT, dict[str, Any]]:
+        """Reset the environment and load a new random initial state.
 
-        :param seed: Seed for the random number generator, should only be provided
-            (optionally) on the first reset call, i.e., before any learning is done.
-        :param return_info: Whether to receive debugging info. Defaults to ``False``.
-        :param _kwargs: Additional keyword arguments to configure the reset. To be
-            defined for a specific environment.
-        :return: Initial observation and optionally also debugging info.
+        To be used after an episode is finished. Optionally, one can provide additional
+        options to configure the reset.
+
+        Args:
+            seed: Seed for the random number generator, should only be provided
+                (optionally) on the first reset call, i.e., before any learning is done.
+            options: Dictionary containing keyword-argument pairs to configure the
+                reset.
+
+        Returns:
+            Initial observation and a dictionary containing debugging information.
         """
-        if seed is not None:
-            self.seed(seed)
+        super().reset(seed=seed)
+        options = {} if options is None else options
+        self._state.reset(seed=seed, **options)
+        self.render()
+        return self._state.obtain_observation(), self._state.obtain_info()
 
-        self._state.reset(seed=seed, **_kwargs)
-
-        if return_info:
-            return self._state.obtain_observation(), self._state.obtain_info()
-        return self._state.obtain_observation()
-
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
-        """Seed the rng of this space, using ``numpy.random.default_rng``.
-
-        :param seed: Seed for the rng. Defaults to ``None``
-        :return: The used seeds.
-        """
-        self._rng = default_rng(seed)
-        return [seed]
-
-    def render(self, mode: str = "human") -> Union[bool, NDArray[np.int_]]:
+    def render(self) -> None | NDArray[np.int_]:  # type: ignore[override]
         """Render the current state using pygame.
 
-        :param mode: The mode to render with (supported modes are found in
-            `self.metadata`).
-        :raise ValueError: If an unsupported mode is provided.
-        :return: Result of rendering.
+        Returns:
+            Result of rendering.
         """
-        mode = check_string(mode, "mode", lower=True)
-        if mode not in self.metadata["render.modes"]:
-            raise ValueError("The given render mode is not supported.")
-
-        return self._visualiser.render(self._state, mode)
+        if self._visualiser is not None:
+            return self._visualiser.render(self._state)
+        return None
 
     def close(self) -> None:
         """Close the screen used for rendering."""
-        if hasattr(self, "_visualiser"):
+        if self._visualiser is not None:
             self._visualiser.close()
+        self._visualiser = None
 
     @property
     def rewarder(self) -> Rewarder:
-        """Return the rewarder that is set for this environment. Used to compute rewards
-        after each step.
+        """Return the rewarder that is set for this environment.
 
-        :returns: Rewarder of this ``Environment``.
+        Used to compute rewards after each step.
         """
         return self._rewarder
 
@@ -144,10 +132,10 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
 
     @property
     def rng(self) -> Generator:
-        """Return the random number generator of this environment. If none is set yet,
-        this will generate a new one using ``numpy.random.default_rng``.
+        """Return the random number generator of this environment.
 
-        :returns: Random number generator used by this ``Environment``.
+        If none is set yet, this will generate a new one using
+        ``numpy.random.default_rng``.
         """
         if self._rng is None:
             self._rng = default_rng()
@@ -165,15 +153,16 @@ class Environment(Generic[ObservationT, ActionT], gym.Env):
         old_state: State[ObservationT, ActionT],
         action: ActionT,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> float:
         """Ask the ``Rewarder`` to compute a reward, based on the given old state, the
         given action and the updated state.
 
-        :param old_state: The state of the ``Environment`` before the action was taken.
-        :param action: Action that was taken.
-        :param args: Optional arguments for the ``Rewarder``.
-        :param kwargs: Optional keyword-arguments for the ``Rewarder``.
+        Args:
+            old_state: The state of the ``Environment`` before the action was taken.
+            action: Action that was taken.
+            args: Optional arguments for the ``Rewarder``.
+            kwargs: Optional keyword-arguments for the ``Rewarder``.
         """
         return self._rewarder.compute_reward(
             *args, old_state=old_state, action=action, new_state=self._state, **kwargs

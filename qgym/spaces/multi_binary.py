@@ -6,47 +6,34 @@ Usage:
     MultiBinary(10)
 
 """
-from typing import List, Optional, Sequence, Union
+from __future__ import annotations
 
-import gym.spaces
+import gymnasium.spaces
 import numpy as np
-from numpy.random import Generator, default_rng
-from numpy.typing import NDArray
+from numpy.random import Generator
+from numpy.typing import ArrayLike
 
 
-class MultiBinary(gym.spaces.MultiBinary):
+class MultiBinary(gymnasium.spaces.MultiBinary):
     """Multi-binary action/observation space for use in RL environments."""
 
     def __init__(
         self,
-        n: Union[NDArray[np.int_], Sequence[int], int],
+        n: ArrayLike | int,
         *,
-        rng: Optional[Generator] = None,
+        rng: Generator | None = None,
     ) -> None:
         """Initialize a multi-discrete space, i.e., multiple discrete intervals of given
         sizes.
 
-        :param n: Number of elements in the space.
-        :param rng: Random number generator to be used in this space. If ``None``, a new
-            random number generator will be constructed.
+        Args:
+            n: ArrayLike containing integers representing the number of elements in the
+                space.
+            rng: Random number generator to be used in this space. If ``None``, a new
+                random number generator will be constructed.
         """
-        super().__init__(n)
+        if isinstance(n, int):
+            super().__init__(n)
+        else:
+            super().__init__(np.asarray(n))
         self._np_random = rng  # this overrides the default behaviour of the gym space
-
-    def seed(self, seed: Optional[int] = None) -> List[Optional[int]]:
-        """Seed the rng of this space, using ``numpy.random.default_rng``.
-
-        :param seed: Seed for the rng. Defaults to ``None``
-        :return: The used seeds.
-        """
-        self._np_random = default_rng(seed)
-        return [seed]
-
-    def sample(self) -> NDArray[np.int_]:
-        """Sample a random element from this space.
-
-        :return: ``NDArray`` of shape (n,) containing random binary values.
-        """
-        sample: NDArray[np.int_]
-        sample = self.np_random.integers(2, size=self.n, dtype=self.dtype)
-        return sample
