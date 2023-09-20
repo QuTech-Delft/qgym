@@ -266,7 +266,7 @@ class SwapQualityRewarder(BasicRewarder):
 
 class EpisodeRewarder(BasicRewarder):
     """Rewarder for the ``Routing`` environment, which only gives a reward after at
-    the end of a full episode. The reward is the lowest for the lowest amount of SWAPs.
+    the end of a full episode. The reward is the highest for the lowest amount of SWAPs.
     This could be improved for setting for taking into account the fidelity of edges and
     scoring good and looking at what edges the circuit is executed.
     """

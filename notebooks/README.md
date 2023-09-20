@@ -9,10 +9,14 @@ If this is not the case for an existing installation one can add `<path to pytho
 `<path to python folder>\Scripts` to the `PATH` environment variable. For a new installation remember to check 
 "Add Python to environment variables" (should be checked by default).
 
-The Python version should be either [3.8](https://www.python.org/downloads/release/python-3810/) or
-[3.9](https://www.python.org/downloads/release/python-3913/), other versions are currently not supported.
+The Python version should be either [3.7](https://www.python.org/downloads/release/python-379/),
+[3.8](https://www.python.org/downloads/release/python-3810/),
+[3.9](https://www.python.org/downloads/release/python-3913/), 
+[3.10](https://www.python.org/downloads/release/python-31011/) or
+[3.11](https://www.python.org/downloads/release/python-3115/)
+other versions are currently not supported.
 
-You can check your Python version with the command `python --version`(Windows)/`python3 --version`(Unix).
+You can check your Python version with the command `python --version` (Windows) or `python3 --version` (Unix).
 
 Subsequently, open a terminal inside the folder containing the notebooks and this README and execute the following
 commands. This will create a Python virtual environment and require the qgym package and its requirements in it.
@@ -20,17 +24,17 @@ commands. This will create a Python virtual environment and require the qgym pac
 Windows:
 ```commandline
 python -m venv venv
-.\venv\Script\activate
-pip install --upgrade pip setuptools wheel
-pip install .\qgym-0.1.0a0-py3-none-any.whl[tutorial]
+venv\Script\activate
+pip install --upgrade pip
+pip install qgym
 ```
 
 Unix:
 ```commandline
 python3 -m venv venv
 source venv/bin/activate
-pip install --upgrade pip setuptools wheel
-pip install ./qgym-0.1.0a0-py3-none-any.whl[tutorial]
+pip install --upgrade pip
+pip install qgym
 ```
 
 Finally, one starts a Jupyter notebook server by running the following command:
