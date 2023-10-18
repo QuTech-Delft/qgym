@@ -75,7 +75,7 @@ def parse_connection_graph(
     Args:
         graph: ``networkx.Graph`` representation of the QPU topology.
         matrix: Adjacency matrix representation of the QPU topology.
-        size: Size of the connection graph when the topology is a grid.
+        grid_size: Size of the connection graph when the topology is a grid.
 
     Raises:
         ValueError: When `graph`, `matrix` and `grid_size` are all ``None``.
