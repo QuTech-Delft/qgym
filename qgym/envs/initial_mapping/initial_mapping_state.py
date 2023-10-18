@@ -147,14 +147,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         return self
 
     def add_random_edge_weights(self) -> None:
-        """Add random weights to the connection graph and interaction graph."""
-        for node1, node2 in self.graphs["connection"]["graph"].edges():
-            weight = self.rng.gamma(2, 2) / 4
-            self.graphs["connection"]["graph"].edges[node1, node2]["weight"] = weight
-        self.graphs["connection"]["matrix"] = nx.to_numpy_array(
-            self.graphs["connection"]["graph"]
-        )
-
+        """Add random weights to the interaction graph."""
         for node1, node2 in self.graphs["interaction"]["graph"].edges():
             weight = self.rng.gamma(2, 2) / 4
             self.graphs["interaction"]["graph"].edges[node1, node2]["weight"] = weight
