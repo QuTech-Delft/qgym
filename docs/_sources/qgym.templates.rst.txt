@@ -1,0 +1,17 @@
+qgym.templates package
+======================
+
+.. automodule:: qgym.templates
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. toctree::
+   :maxdepth: 4
+
+
+   qgym.templates.environment
+   qgym.templates.rewarder
+   qgym.templates.state
+   qgym.templates.visualiser

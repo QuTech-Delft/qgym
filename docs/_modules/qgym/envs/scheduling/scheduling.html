@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qgym.envs.scheduling.scheduling &mdash; qgym</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            qgym
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../qgym.html">qgym package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.envs.html">qgym.envs package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMapping.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.action_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.add_random_edge_weights"><code class="docutils literal notranslate"><span class="pre">InitialMapping.add_random_edge_weights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.metadata"><code class="docutils literal notranslate"><span class="pre">InitialMapping.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.reset"><code class="docutils literal notranslate"><span class="pre">InitialMapping.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Routing.__init__"><code class="docutils literal notranslate"><span class="pre">Routing.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Routing.reset"><code class="docutils literal notranslate"><span class="pre">Routing.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Scheduling.__init__"><code class="docutils literal notranslate"><span class="pre">Scheduling.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Scheduling.get_circuit"><code class="docutils literal notranslate"><span class="pre">Scheduling.get_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Scheduling.reset"><code class="docutils literal notranslate"><span class="pre">Scheduling.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.initial_mapping.html">qgym.envs.initial_mapping.initial_mapping module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.initial_mapping_rewarders.html">qgym.envs.initial_mapping.initial_mapping_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.initial_mapping_state.html">qgym.envs.initial_mapping.initial_mapping_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.initial_mapping_visualiser.html">qgym.envs.initial_mapping.initial_mapping_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.routing.html">qgym.envs.routing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.RoutingState"><code class="docutils literal notranslate"><span class="pre">RoutingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.SwapQualityRewarder"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.routing.html">qgym.envs.routing.routing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.routing_rewarders.html">qgym.envs.routing.routing_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.routing_state.html">qgym.envs.routing.routing_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.routing_visualiser.html">qgym.envs.routing.routing_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.scheduling.html">qgym.envs.scheduling package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties"><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState"><code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.machine_properties.html">qgym.envs.scheduling.machine_properties module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.rulebook.html">qgym.envs.scheduling.rulebook module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling.html">qgym.envs.scheduling.scheduling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling_dataclasses.html">qgym.envs.scheduling.scheduling_dataclasses module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling_rewarders.html">qgym.envs.scheduling.scheduling_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling_state.html">qgym.envs.scheduling.scheduling_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling_visualiser.html">qgym.envs.scheduling.scheduling_visualiser module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.spaces.html">qgym.spaces package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Box.__init__"><code class="docutils literal notranslate"><span class="pre">Box.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Dict.__init__"><code class="docutils literal notranslate"><span class="pre">Dict.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Discrete.__init__"><code class="docutils literal notranslate"><span class="pre">Discrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.MultiBinary.__init__"><code class="docutils literal notranslate"><span class="pre">MultiBinary.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.MultiDiscrete.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.box.html">qgym.spaces.box module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.box.html#qgym.spaces.box.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.dict.html">qgym.spaces.dict module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.dict.html#qgym.spaces.dict.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.discrete.html">qgym.spaces.discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.discrete.html#qgym.spaces.discrete.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.multi_binary.html">qgym.spaces.multi_binary module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.multi_binary.html#qgym.spaces.multi_binary.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.multi_discrete.html">qgym.spaces.multi_discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.multi_discrete.html#qgym.spaces.multi_discrete.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.templates.html">qgym.templates package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.action_space"><code class="docutils literal notranslate"><span class="pre">Environment.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.close"><code class="docutils literal notranslate"><span class="pre">Environment.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.observation_space"><code class="docutils literal notranslate"><span class="pre">Environment.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.render"><code class="docutils literal notranslate"><span class="pre">Environment.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.reset"><code class="docutils literal notranslate"><span class="pre">Environment.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.rewarder"><code class="docutils literal notranslate"><span class="pre">Environment.rewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.rng"><code class="docutils literal notranslate"><span class="pre">Environment.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.step"><code class="docutils literal notranslate"><span class="pre">Environment.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Rewarder.__eq__"><code class="docutils literal notranslate"><span class="pre">Rewarder.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Rewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">Rewarder.compute_reward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Rewarder.reward_range"><code class="docutils literal notranslate"><span class="pre">Rewarder.reward_range</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.rng"><code class="docutils literal notranslate"><span class="pre">State.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.seed"><code class="docutils literal notranslate"><span class="pre">State.seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.steps_done"><code class="docutils literal notranslate"><span class="pre">State.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.update_state"><code class="docutils literal notranslate"><span class="pre">State.update_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.close"><code class="docutils literal notranslate"><span class="pre">Visualiser.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.colors"><code class="docutils literal notranslate"><span class="pre">Visualiser.colors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.font"><code class="docutils literal notranslate"><span class="pre">Visualiser.font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.is_open"><code class="docutils literal notranslate"><span class="pre">Visualiser.is_open</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.render"><code class="docutils literal notranslate"><span class="pre">Visualiser.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.render_data"><code class="docutils literal notranslate"><span class="pre">Visualiser.render_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.screen"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.screen_height"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.screen_width"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.step"><code class="docutils literal notranslate"><span class="pre">Visualiser.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.environment.html">qgym.templates.environment module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.environment.html#qgym.templates.environment.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.rewarder.html">qgym.templates.rewarder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.state.html">qgym.templates.state module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.state.html#qgym.templates.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.visualiser.html">qgym.templates.visualiser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData"><code class="docutils literal notranslate"><span class="pre">RenderData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.utils.html">qgym.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.__init__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.__repr__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.decode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.decode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.encode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.encode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.learn_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.learn_gates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator.generate_circuit"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.generate_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator.rng"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.rng</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.visualisation.html">qgym.utils.visualisation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.visualisation.colors.html">qgym.utils.visualisation.colors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.visualisation.typing.html">qgym.utils.visualisation.typing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.visualisation.wrappers.html">qgym.utils.visualisation.wrappers module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.gate_encoder.html">qgym.utils.gate_encoder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.input_validation.html">qgym.utils.input_validation module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">check_adjacency_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_bool"><code class="docutils literal notranslate"><span class="pre">check_bool()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_graph_is_valid_topology"><code class="docutils literal notranslate"><span class="pre">check_graph_is_valid_topology()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_instance"><code class="docutils literal notranslate"><span class="pre">check_instance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_int"><code class="docutils literal notranslate"><span class="pre">check_int()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_real"><code class="docutils literal notranslate"><span class="pre">check_real()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_string"><code class="docutils literal notranslate"><span class="pre">check_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_negative"><code class="docutils literal notranslate"><span class="pre">warn_if_negative()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_positive"><code class="docutils literal notranslate"><span class="pre">warn_if_positive()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.random_circuit_generator.html">qgym.utils.random_circuit_generator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.custom_types.html">qgym.custom_types module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.custom_types.html#qgym.custom_types.Gate"><code class="docutils literal notranslate"><span class="pre">Gate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.custom_types.html#qgym.custom_types.Gate.name"><code class="docutils literal notranslate"><span class="pre">Gate.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.custom_types.html#qgym.custom_types.Gate.q1"><code class="docutils literal notranslate"><span class="pre">Gate.q1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.custom_types.html#qgym.custom_types.Gate.q2"><code class="docutils literal notranslate"><span class="pre">Gate.q2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">qgym</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">qgym.envs.scheduling.scheduling</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for qgym.envs.scheduling.scheduling</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;This module contains an environment for training an RL agent on the quantum</span>
+<span class="sd">operation scheduling problem of OpenQL. The quantum operations scheduling problem is</span>
+<span class="sd">aimed at finding the shortest possible schedules of operations defined by a **quantum</span>
+<span class="sd">circuit**, whilst taking **hardware constraints** and **commutation rules** into</span>
+<span class="sd">account.</span>
+
+<span class="sd">Circuits:</span>
+<span class="sd">    The quantum operations scheduling problem consist of scheduling the operations</span>
+<span class="sd">    described by a quantum circuit. For the ``Scheduling`` environment in this module, a</span>
+<span class="sd">    quantum circuit is defined as a list of gates, where a gate is a ``namedtuple`` with</span>
+<span class="sd">    a &#39;name&#39;, &#39;q1&#39; and &#39;q2&#39;. For example, a c-not with control qubit 2 and target qubit</span>
+<span class="sd">    5 would be ``Gate(&quot;cnot&quot;, 2, 5)`` and an X gate acting on qubit 4 would be</span>
+<span class="sd">    ``Gate(&quot;x&quot;, 4, 4)``. In this representation, the circuit below can be created by:</span>
+
+<span class="sd">    &gt;&gt;&gt; from qgym.custom_types import Gate</span>
+<span class="sd">    &gt;&gt;&gt; circuit = [Gate(&quot;x&quot;, 1, 1), Gate(&quot;cnot&quot;, 0, 1), Gate(&quot;x&quot;, 0, 0), Gate(&quot;h&quot;,1,1)]</span>
+
+<span class="sd">    .. code-block:: console</span>
+
+<span class="sd">                  QUANTUM CIRCUIT</span>
+<span class="sd">               ┌───┐   ┌───┐   ┌───┐</span>
+<span class="sd">        |q1&gt;───┤ Y ├───┤ X ├───┤ H ├──</span>
+<span class="sd">               └───┘   └─┬─┘   └───┘</span>
+<span class="sd">                         │     ┌───┐</span>
+<span class="sd">        |q0&gt;─────────────┴─────┤ X ├──</span>
+<span class="sd">                               └───┘</span>
+
+
+<span class="sd">Hardware specifications:</span>
+<span class="sd">    Different operations defined by a quantum circuit have different operation times.</span>
+<span class="sd">    These operation times are defined in the unit of machine cycles. For example, an X</span>
+<span class="sd">    gate could take 2 machine cycles, whereas a measurement could take 15 cycles. These</span>
+<span class="sd">    different operation times must be taken into account, because the hardware (the</span>
+<span class="sd">    quantum computers) cannot perform multiple operations on the same qubit at the same</span>
+<span class="sd">    time.</span>
+
+<span class="sd">    Finding an optimal schedule with these restriction is already a difficult task.</span>
+<span class="sd">    However, to complicate matters there can be more limitations defined by the</span>
+<span class="sd">    hardware. To be more concrete, the ``Schdeuling`` environment can take two more</span>
+<span class="sd">    types of limitations into account:</span>
+
+<span class="sd">    #. Some gates must start at the same time, or must wait till the previous one is</span>
+<span class="sd">       finished. This is typically the case for measurements.</span>
+<span class="sd">    #. Some gates can&#39;t be executed in the same cycle. This for example happens often</span>
+<span class="sd">       with X, Y and Z gates.</span>
+
+<span class="sd">    The goal of the quantum operations scheduling problem is to find an optimal</span>
+<span class="sd">    schedule, which takes these hardware limitations into account, as well as some</span>
+<span class="sd">    optional commutation rules.</span>
+
+<span class="sd">State space:</span>
+<span class="sd">    The state space is described by a dictionary with the following structure:</span>
+
+<span class="sd">    * `machine_properties`: MachineProperties object containing machine properties</span>
+<span class="sd">      and limitations.</span>
+<span class="sd">    * `utils`: ``SchedulingUtils`` dataclass with a random circuit generator,</span>
+<span class="sd">      commutation rulebook and a gate encoder.</span>
+<span class="sd">    * `gates`: Dictionary with gate names as keys and ``GateInfo`` dataclasses as</span>
+<span class="sd">      values.</span>
+<span class="sd">    * `steps_done`: Number of steps done since the last reset.</span>
+<span class="sd">    * `cycle`: Current &#39;machine&#39; cycle.</span>
+<span class="sd">    * `busy`: Used internally for the hardware limitations.</span>
+<span class="sd">    * `circuit_info`: ``CircuitInfo`` dataclass containing the encoded circuit and</span>
+<span class="sd">      attributes used to update the state.</span>
+
+<span class="sd">Observation space:</span>
+<span class="sd">    Each element in the observation space is a dictionary with 4 entries:</span>
+
+<span class="sd">    * `gate_names`: Gate names of the encoded circuit.</span>
+<span class="sd">    * `acts_on`: q1 and q2 of each gate.</span>
+<span class="sd">    * `dependencies`: Shows the first $n$ gates that must be scheduled before this</span>
+<span class="sd">      gate.</span>
+<span class="sd">    * `legal_actions`: List of legal actions. If the value at index $i$ determines if</span>
+<span class="sd">      gate number $i$ can be scheduled or not.</span>
+
+<span class="sd">Action Space:</span>
+<span class="sd">    Performing a quantum operation takes a certain amount of time, which is measured in</span>
+<span class="sd">    (machine) cycles. Therefore, this environment aims to produce a schedule in terms</span>
+<span class="sd">    of cycles. To do this, the environment schedules the circuit from right to left,</span>
+<span class="sd">    so cycle zero in the schedule is the last operation to be performed in that</span>
+<span class="sd">    schedule. Based on this idea, a valid action is then a tuple of an integer</span>
+<span class="sd">    $i\in\{0,1,\ldots,max\_gates\}$ and a binary value $j$. The integer value $i$</span>
+<span class="sd">    schedules gate $i$ in the current cycle, and the binary value $j$ increment the</span>
+<span class="sd">    cycle number.</span>
+
+<span class="sd">    If the action is illegal (for example when we try to schedule a gate that has been</span>
+<span class="sd">    scheduled already), then the environment will do nothing, and the rewarder should</span>
+<span class="sd">    give a penalty for this.</span>
+
+<span class="sd">Example 1:</span>
+<span class="sd">    In this example we want to create an environment for a machine with the following</span>
+<span class="sd">    properties:</span>
+
+<span class="sd">    * The machine has two qubits.</span>
+<span class="sd">    * The machine supports the X, Y, C-NOT and Measure gates.</span>
+<span class="sd">    * Multiple Measure gates should start in the same cycle, or wait till the previous</span>
+<span class="sd">      one is done.</span>
+<span class="sd">    * The X and Y gates cannot be performed in the same cycle.</span>
+
+<span class="sd">    The code block below shows how a ``Scheduling`` environment for such a machine, were</span>
+<span class="sd">    the environment only allows for circuit with a maximum length of 5:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from qgym.envs.scheduling import Scheduling, MachineProperties</span>
+
+<span class="sd">        # Set up the hardware specifications</span>
+<span class="sd">        hardware_spec = MachineProperties(n_qubits=2)</span>
+<span class="sd">        hardware_spec.add_gates({&quot;x&quot;: 2, &quot;y&quot;: 2, &quot;cnot&quot;: 4, &quot;measure&quot;: 10})</span>
+<span class="sd">        hardware_spec.add_same_start([&quot;measure&quot;])</span>
+<span class="sd">        hardware_spec.add_not_in_same_cycle([(&quot;x&quot;, &quot;y&quot;)])</span>
+
+<span class="sd">        # Initialize the environment</span>
+<span class="sd">        env = Scheduling(hardware_spec, max_gates=5, random_circuit_mode=&quot;workshop&quot;)</span>
+
+
+<span class="sd">Example 2:</span>
+<span class="sd">    This example shows how to add a specified commutation rulebook, which can contain</span>
+<span class="sd">    costum commutation rules. For more information on implementing custom cummutation</span>
+<span class="sd">    rules, see the documentation of ``CommutationRulebook``. This example uses the same</span>
+<span class="sd">    machine properties as example 1. Costrum commutation rules can be added as shown in</span>
+<span class="sd">    the code block below:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from qgym.envs.scheduling import Scheduling, MachineProperties</span>
+<span class="sd">        from qgym.envs.scheduling.rulebook import CommutationRulebook</span>
+
+<span class="sd">        # Set up the hardware specifications</span>
+<span class="sd">        hardware_spec = MachineProperties(n_qubits=2)</span>
+<span class="sd">        hardware_spec.add_gates({&quot;x&quot;: 2, &quot;y&quot;: 2, &quot;cnot&quot;: 4, &quot;measure&quot;: 10})</span>
+<span class="sd">        hardware_spec.add_same_start([&quot;measure&quot;])</span>
+<span class="sd">        hardware_spec.add_not_in_same_cycle([(&quot;x&quot;, &quot;y&quot;)])</span>
+
+<span class="sd">        # Setup the rulebook</span>
+<span class="sd">        rulebook = CommutationRulebook()</span>
+
+<span class="sd">        # Initialize the environment</span>
+<span class="sd">        env_com = Scheduling(</span>
+<span class="sd">                            hardware_spec,</span>
+<span class="sd">                            max_gates=5,</span>
+<span class="sd">                            rulebook=rulebook,</span>
+<span class="sd">                            random_circuit_mode=&quot;workshop&quot;,</span>
+<span class="sd">                        )</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+
+<span class="kn">import</span> <span class="nn">qgym.spaces</span>
+<span class="kn">from</span> <span class="nn">qgym.custom_types</span> <span class="kn">import</span> <span class="n">Gate</span>
+<span class="kn">from</span> <span class="nn">qgym.envs.scheduling.machine_properties</span> <span class="kn">import</span> <span class="n">MachineProperties</span>
+<span class="kn">from</span> <span class="nn">qgym.envs.scheduling.rulebook</span> <span class="kn">import</span> <span class="n">CommutationRulebook</span>
+<span class="kn">from</span> <span class="nn">qgym.envs.scheduling.scheduling_rewarders</span> <span class="kn">import</span> <span class="n">BasicRewarder</span>
+<span class="kn">from</span> <span class="nn">qgym.envs.scheduling.scheduling_state</span> <span class="kn">import</span> <span class="n">SchedulingState</span>
+<span class="kn">from</span> <span class="nn">qgym.envs.scheduling.scheduling_visualiser</span> <span class="kn">import</span> <span class="n">SchedulingVisualiser</span>
+<span class="kn">from</span> <span class="nn">qgym.templates</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">Rewarder</span>
+<span class="kn">from</span> <span class="nn">qgym.utils.input_parsing</span> <span class="kn">import</span> <span class="n">parse_rewarder</span><span class="p">,</span> <span class="n">parse_visualiser</span>
+<span class="kn">from</span> <span class="nn">qgym.utils.input_validation</span> <span class="kn">import</span> <span class="n">check_instance</span><span class="p">,</span> <span class="n">check_int</span><span class="p">,</span> <span class="n">check_string</span>
+
+
+<div class="viewcode-block" id="Scheduling">
+<a class="viewcode-back" href="../../../../qgym.envs.scheduling.scheduling.html#qgym.envs.Scheduling">[docs]</a>
+<span class="k">class</span> <span class="nc">Scheduling</span><span class="p">(</span>
+    <span class="n">Environment</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">]]],</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">]]</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;RL environment for the scheduling problem.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Scheduling.__init__">
+<a class="viewcode-back" href="../../../../qgym.envs.scheduling.scheduling.html#qgym.envs.Scheduling.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">machine_properties</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">MachineProperties</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">max_gates</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">dependency_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">random_circuit_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">rulebook</span><span class="p">:</span> <span class="n">CommutationRulebook</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rewarder</span><span class="p">:</span> <span class="n">Rewarder</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">render_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the action space, observation space, and initial states for the</span>
+<span class="sd">        scheduling environment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            machine_properties: A ``MachineProperties`` object, a ``Mapping`` containing</span>
+<span class="sd">                machine properties or a string with a filename for a file containing the</span>
+<span class="sd">                machine properties.</span>
+<span class="sd">            max_gates: Maximum number of gates allowed in a circuit. Defaults to 200.</span>
+<span class="sd">            dependency_depth: Number of dependencies given in the observation.</span>
+<span class="sd">                Determines the shape of the `dependencies` observation, which has the</span>
+<span class="sd">                shape (dependency_depth, max_gates). Defaults to 1.</span>
+<span class="sd">            random_circuit_mode: Mode for the random circuit generator. The mode can be</span>
+<span class="sd">                &#39;default&#39; or &#39;workshop&#39;. Defaults to &#39;default&#39;.</span>
+<span class="sd">            rulebook: ``CommutationRulebook`` describing the commutation rules. If</span>
+<span class="sd">                ``None`` (default) is given, a default ``CommutationRulebook`` will be</span>
+<span class="sd">                used. (See ``CommutationRulebook`` for more info on the default rules.)</span>
+<span class="sd">            rewarder: Rewarder to use for the environment. If ``None`` (default), then a</span>
+<span class="sd">                default ``BasicRewarder`` is used.</span>
+<span class="sd">            render_mode: If &#39;human&#39; open a ``pygame`` screen visualizing the step. If</span>
+<span class="sd">                &#39;rgb_array&#39;, return an RGB array encoding of the rendered frame on each</span>
+<span class="sd">                render call.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;render.modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;human&quot;</span><span class="p">,</span> <span class="s2">&quot;rgb_array&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;random_circuit.mode&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="s2">&quot;workshop&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="n">machine_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_machine_properties</span><span class="p">(</span><span class="n">machine_properties</span><span class="p">)</span>
+        <span class="n">max_gates</span> <span class="o">=</span> <span class="n">check_int</span><span class="p">(</span><span class="n">max_gates</span><span class="p">,</span> <span class="s2">&quot;max_gates&quot;</span><span class="p">,</span> <span class="n">l_bound</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dependency_depth</span> <span class="o">=</span> <span class="n">check_int</span><span class="p">(</span><span class="n">dependency_depth</span><span class="p">,</span> <span class="s2">&quot;dependency_depth&quot;</span><span class="p">,</span> <span class="n">l_bound</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">random_circuit_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_random_circuit_mode</span><span class="p">(</span><span class="n">random_circuit_mode</span><span class="p">)</span>
+        <span class="n">rulebook</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_rulebook</span><span class="p">(</span><span class="n">rulebook</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rewarder</span> <span class="o">=</span> <span class="n">parse_rewarder</span><span class="p">(</span><span class="n">rewarder</span><span class="p">,</span> <span class="n">BasicRewarder</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state</span> <span class="o">=</span> <span class="n">SchedulingState</span><span class="p">(</span>
+            <span class="n">machine_properties</span><span class="o">=</span><span class="n">machine_properties</span><span class="p">,</span>
+            <span class="n">max_gates</span><span class="o">=</span><span class="n">max_gates</span><span class="p">,</span>
+            <span class="n">dependency_depth</span><span class="o">=</span><span class="n">dependency_depth</span><span class="p">,</span>
+            <span class="n">random_circuit_mode</span><span class="o">=</span><span class="n">random_circuit_mode</span><span class="p">,</span>
+            <span class="n">rulebook</span><span class="o">=</span><span class="n">rulebook</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observation_space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">create_observation_space</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_space</span> <span class="o">=</span> <span class="n">qgym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">MultiDiscrete</span><span class="p">([</span><span class="n">max_gates</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">rng</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rng</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visualiser</span> <span class="o">=</span> <span class="n">parse_visualiser</span><span class="p">(</span>
+            <span class="n">render_mode</span><span class="p">,</span> <span class="n">SchedulingVisualiser</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Scheduling.reset">
+<a class="viewcode-back" href="../../../../qgym.envs.scheduling.scheduling.html#qgym.envs.Scheduling.reset">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">options</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset the state, action space and load a new (random) initial state.</span>
+
+<span class="sd">        To be used after an episode is finished.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            seed: Seed for the random number generator, should only be provided</span>
+<span class="sd">                (optionally) on the first reset call, i.e., before any learning is done.</span>
+<span class="sd">            return_info: Whether to receive debugging info.</span>
+<span class="sd">            options: Mapping with keyword arguments with additional options for the</span>
+<span class="sd">                reset. Keywords can be found in the description of</span>
+<span class="sd">                ``SchedulingState.reset()``</span>
+<span class="sd">            _kwargs: Additional options to configure the reset.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Initial observation and debugging info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Scheduling.get_circuit">
+<a class="viewcode-back" href="../../../../qgym.envs.scheduling.scheduling.html#qgym.envs.Scheduling.get_circuit">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_circuit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;human&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Gate</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the quantum circuit of this episode.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mode: Choose from be &#39;human&#39; or &#39;encoded&#39;. Defaults to &#39;human&#39;.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If an unsupported mode is provided.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Human or encoded quantum circuit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="n">check_string</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">SchedulingState</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">)</span>
+        <span class="n">encoded_circuit</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">circuit_info</span><span class="o">.</span><span class="n">encoded</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;encoded&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">encoded_circuit</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;human&quot;</span><span class="p">:</span>
+            <span class="n">gate_encoder</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">gate_encoder</span>
+            <span class="k">return</span> <span class="n">gate_encoder</span><span class="o">.</span><span class="n">decode_gates</span><span class="p">(</span><span class="n">encoded_circuit</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mode must be &#39;human&#39; or &#39;encoded&#39;, but was </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_machine_properties</span><span class="p">(</span>
+        <span class="n">machine_properties</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">MachineProperties</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MachineProperties</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the machine_properties given by the user and return a</span>
+<span class="sd">        ``MachineProperties`` object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            machine_properties: A ``MachineProperties`` object, a ``Mapping`` of machine</span>
+<span class="sd">            or a string with a filename for a file containing the machine properties.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If the given type is not supported.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``MachineProperties`` object with the given machine properties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">machine_properties</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">MachineProperties</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">machine_properties</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">machine_properties</span><span class="p">,</span> <span class="n">MachineProperties</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">machine_properties</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">machine_properties</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">MachineProperties</span><span class="o">.</span><span class="n">from_mapping</span><span class="p">(</span><span class="n">machine_properties</span><span class="p">)</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">machine_properties</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not a supported type for &quot;</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;&#39;machine_properties&#39;&quot;</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_random_circuit_mode</span><span class="p">(</span><span class="n">random_circuit_mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the `random_circuit_mode` given by the user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            random_circuit_mode: Mode for the random circuit generator. The mode can be</span>
+<span class="sd">            &#39;default&#39; or &#39;workshop&#39;.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the given mode is not supported.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Valid random circuit mode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">random_circuit_mode</span> <span class="o">=</span> <span class="n">check_string</span><span class="p">(</span>
+            <span class="n">random_circuit_mode</span><span class="p">,</span> <span class="s2">&quot;random_circuit_mode&quot;</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">random_circuit_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="s2">&quot;workshop&quot;</span><span class="p">]:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">random_circuit_mode</span><span class="si">}</span><span class="s2">&#39; is not a supported random circuit mode&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">random_circuit_mode</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_rulebook</span><span class="p">(</span><span class="n">rulebook</span><span class="p">:</span> <span class="n">CommutationRulebook</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CommutationRulebook</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the `rulebook` given by the user.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rulebook: Rulebook describing the commutation rules. If ``None`` is given, a</span>
+<span class="sd">                default ``CommutationRulebook`` will be used. (See</span>
+<span class="sd">                ``CommutationRulebook`` for more info on the default rules.)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``CommutationRulebook``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">rulebook</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CommutationRulebook</span><span class="p">()</span>
+        <span class="n">check_instance</span><span class="p">(</span><span class="n">rulebook</span><span class="p">,</span> <span class="s2">&quot;rulebook&quot;</span><span class="p">,</span> <span class="n">CommutationRulebook</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">rulebook</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, QuTech &amp; TNO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

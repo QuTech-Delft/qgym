@@ -1,0 +1,7 @@
+qgym.envs.scheduling.rulebook module
+====================================
+
+.. automodule:: qgym.envs.scheduling.rulebook
+   :members:
+   :undoc-members:
+   :show-inheritance:

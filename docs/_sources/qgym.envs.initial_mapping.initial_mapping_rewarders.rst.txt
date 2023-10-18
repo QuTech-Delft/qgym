@@ -1,0 +1,7 @@
+qgym.envs.initial\_mapping.initial\_mapping\_rewarders module
+=============================================================
+
+.. automodule:: qgym.envs.initial_mapping.initial_mapping_rewarders
+   :members:
+   :undoc-members:
+   :show-inheritance:

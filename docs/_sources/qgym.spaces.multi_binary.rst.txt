@@ -1,0 +1,7 @@
+qgym.spaces.multi\_binary module
+================================
+
+.. automodule:: qgym.spaces.multi_binary
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qgym package &mdash; qgym</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="qgym.envs package" href="qgym.envs.html" />
+    <link rel="prev" title="OpenQL Gym" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            qgym
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">qgym package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.html">qgym.envs package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMapping.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.action_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.add_random_edge_weights"><code class="docutils literal notranslate"><span class="pre">InitialMapping.add_random_edge_weights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.metadata"><code class="docutils literal notranslate"><span class="pre">InitialMapping.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.reset"><code class="docutils literal notranslate"><span class="pre">InitialMapping.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing.__init__"><code class="docutils literal notranslate"><span class="pre">Routing.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing.reset"><code class="docutils literal notranslate"><span class="pre">Routing.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.__init__"><code class="docutils literal notranslate"><span class="pre">Scheduling.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.get_circuit"><code class="docutils literal notranslate"><span class="pre">Scheduling.get_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.reset"><code class="docutils literal notranslate"><span class="pre">Scheduling.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping.html">qgym.envs.initial_mapping.initial_mapping module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html">qgym.envs.initial_mapping.initial_mapping_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html">qgym.envs.initial_mapping.initial_mapping_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_visualiser.html">qgym.envs.initial_mapping.initial_mapping_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.html">qgym.envs.routing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState"><code class="docutils literal notranslate"><span class="pre">RoutingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.SwapQualityRewarder"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing.html">qgym.envs.routing.routing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_rewarders.html">qgym.envs.routing.routing_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_state.html">qgym.envs.routing.routing_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_visualiser.html">qgym.envs.routing.routing_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.html">qgym.envs.scheduling package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties"><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState"><code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html">qgym.envs.scheduling.machine_properties module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html">qgym.envs.scheduling.rulebook module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html">qgym.envs.scheduling.scheduling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html">qgym.envs.scheduling.scheduling_dataclasses module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html">qgym.envs.scheduling.scheduling_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html">qgym.envs.scheduling.scheduling_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html">qgym.envs.scheduling.scheduling_visualiser module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.html">qgym.spaces package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Box.__init__"><code class="docutils literal notranslate"><span class="pre">Box.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Dict.__init__"><code class="docutils literal notranslate"><span class="pre">Dict.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Discrete.__init__"><code class="docutils literal notranslate"><span class="pre">Discrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiBinary.__init__"><code class="docutils literal notranslate"><span class="pre">MultiBinary.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiDiscrete.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.box.html">qgym.spaces.box module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.box.html#qgym.spaces.box.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.dict.html">qgym.spaces.dict module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.dict.html#qgym.spaces.dict.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.discrete.html">qgym.spaces.discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.discrete.html#qgym.spaces.discrete.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.multi_binary.html">qgym.spaces.multi_binary module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.multi_binary.html#qgym.spaces.multi_binary.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.multi_discrete.html">qgym.spaces.multi_discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.multi_discrete.html#qgym.spaces.multi_discrete.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.html">qgym.templates package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.action_space"><code class="docutils literal notranslate"><span class="pre">Environment.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.close"><code class="docutils literal notranslate"><span class="pre">Environment.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.observation_space"><code class="docutils literal notranslate"><span class="pre">Environment.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.render"><code class="docutils literal notranslate"><span class="pre">Environment.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.reset"><code class="docutils literal notranslate"><span class="pre">Environment.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.rewarder"><code class="docutils literal notranslate"><span class="pre">Environment.rewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.rng"><code class="docutils literal notranslate"><span class="pre">Environment.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.step"><code class="docutils literal notranslate"><span class="pre">Environment.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.__eq__"><code class="docutils literal notranslate"><span class="pre">Rewarder.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">Rewarder.compute_reward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.reward_range"><code class="docutils literal notranslate"><span class="pre">Rewarder.reward_range</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.rng"><code class="docutils literal notranslate"><span class="pre">State.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.seed"><code class="docutils literal notranslate"><span class="pre">State.seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.steps_done"><code class="docutils literal notranslate"><span class="pre">State.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.update_state"><code class="docutils literal notranslate"><span class="pre">State.update_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.close"><code class="docutils literal notranslate"><span class="pre">Visualiser.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.colors"><code class="docutils literal notranslate"><span class="pre">Visualiser.colors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.font"><code class="docutils literal notranslate"><span class="pre">Visualiser.font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.is_open"><code class="docutils literal notranslate"><span class="pre">Visualiser.is_open</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.render"><code class="docutils literal notranslate"><span class="pre">Visualiser.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.render_data"><code class="docutils literal notranslate"><span class="pre">Visualiser.render_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen_height"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen_width"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.step"><code class="docutils literal notranslate"><span class="pre">Visualiser.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.environment.html">qgym.templates.environment module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.rewarder.html">qgym.templates.rewarder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.state.html">qgym.templates.state module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.visualiser.html">qgym.templates.visualiser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData"><code class="docutils literal notranslate"><span class="pre">RenderData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.html">qgym.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.__init__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.__repr__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.decode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.decode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.encode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.encode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.learn_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.learn_gates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.generate_circuit"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.generate_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.rng"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.rng</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.visualisation.html">qgym.utils.visualisation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.colors.html">qgym.utils.visualisation.colors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.typing.html">qgym.utils.visualisation.typing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.wrappers.html">qgym.utils.visualisation.wrappers module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.gate_encoder.html">qgym.utils.gate_encoder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html">qgym.utils.input_validation module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">check_adjacency_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_bool"><code class="docutils literal notranslate"><span class="pre">check_bool()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_graph_is_valid_topology"><code class="docutils literal notranslate"><span class="pre">check_graph_is_valid_topology()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_instance"><code class="docutils literal notranslate"><span class="pre">check_instance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_int"><code class="docutils literal notranslate"><span class="pre">check_int()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_real"><code class="docutils literal notranslate"><span class="pre">check_real()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_string"><code class="docutils literal notranslate"><span class="pre">check_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_negative"><code class="docutils literal notranslate"><span class="pre">warn_if_negative()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_positive"><code class="docutils literal notranslate"><span class="pre">warn_if_positive()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.random_circuit_generator.html">qgym.utils.random_circuit_generator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.custom_types.html">qgym.custom_types module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate"><code class="docutils literal notranslate"><span class="pre">Gate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.name"><code class="docutils literal notranslate"><span class="pre">Gate.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.q1"><code class="docutils literal notranslate"><span class="pre">Gate.q1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.q2"><code class="docutils literal notranslate"><span class="pre">Gate.q2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qgym</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">qgym package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/qgym.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-qgym">
+<span id="qgym-package"></span><h1>qgym package<a class="headerlink" href="#module-qgym" title="Link to this heading"></a></h1>
+<p>The qgym package consist of gyms and tools used for reinforcement learning (RL)
+environments in the Quantum domain. It’s main purpose is to easily create RL
+environments for the different passes of the OpenQL framework, by simply initializing an
+environment class. This abstraction of the environment allows RL developers to develop
+RL agents to improve the OpenQL framework, without requiring prior knowledge of OpenQL.</p>
+<p class="rubric">Example</p>
+<p>We want to create an environment for the OpenQL pass of initial mapping for a system
+with a QPU topology of 3x3. Using the <code class="docutils literal notranslate"><span class="pre">qgym</span></code> package this becomes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qgym.envs</span> <span class="kn">import</span> <span class="n">InitialMapping</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">InitialMapping</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">connection_grid_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We can then use the environment in the code block above to train a stable baseline
+RL agent using the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s2">&quot;MultiInputPolicy&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qgym.envs.html">qgym.envs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMapping.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.action_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.action_space</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.add_random_edge_weights"><code class="docutils literal notranslate"><span class="pre">InitialMapping.add_random_edge_weights()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.metadata"><code class="docutils literal notranslate"><span class="pre">InitialMapping.metadata</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.observation_space</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.reset"><code class="docutils literal notranslate"><span class="pre">InitialMapping.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing.__init__"><code class="docutils literal notranslate"><span class="pre">Routing.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing.reset"><code class="docutils literal notranslate"><span class="pre">Routing.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.__init__"><code class="docutils literal notranslate"><span class="pre">Scheduling.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.get_circuit"><code class="docutils literal notranslate"><span class="pre">Scheduling.get_circuit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.reset"><code class="docutils literal notranslate"><span class="pre">Scheduling.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder.__init__"><code class="docutils literal notranslate"><span class="pre">BasicRewarder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">BasicRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMapping.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping.action_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping.add_random_edge_weights"><code class="docutils literal notranslate"><span class="pre">InitialMapping.add_random_edge_weights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping.metadata"><code class="docutils literal notranslate"><span class="pre">InitialMapping.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping.observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping.reset"><code class="docutils literal notranslate"><span class="pre">InitialMapping.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.add_random_edge_weights"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.add_random_edge_weights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.create_observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.graphs"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.graphs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.is_done"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.mapped_qubits"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapped_qubits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.mapping"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.mapping_dict"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapping_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.n_nodes"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.n_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.obtain_info"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.obtain_observation"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.reset"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.steps_done"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.update_state"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.update_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping.html">qgym.envs.initial_mapping.initial_mapping module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping.html#qgym.envs.initial_mapping.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html">qgym.envs.initial_mapping.initial_mapping_rewarders module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html">qgym.envs.initial_mapping.initial_mapping_state module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_visualiser.html">qgym.envs.initial_mapping.initial_mapping_visualiser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_visualiser.html#qgym.envs.initial_mapping.initial_mapping_visualiser.InitialMappingVisualiser"><code class="docutils literal notranslate"><span class="pre">InitialMappingVisualiser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.routing.html">qgym.envs.routing package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.BasicRewarder.__init__"><code class="docutils literal notranslate"><span class="pre">BasicRewarder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.BasicRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">BasicRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.EpisodeRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.Routing.__init__"><code class="docutils literal notranslate"><span class="pre">Routing.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.Routing.reset"><code class="docutils literal notranslate"><span class="pre">Routing.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState"><code class="docutils literal notranslate"><span class="pre">RoutingState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.__init__"><code class="docutils literal notranslate"><span class="pre">RoutingState.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.connection_graph"><code class="docutils literal notranslate"><span class="pre">RoutingState.connection_graph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.create_observation_space"><code class="docutils literal notranslate"><span class="pre">RoutingState.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.generate_random_interaction_circuit"><code class="docutils literal notranslate"><span class="pre">RoutingState.generate_random_interaction_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.interaction_circuit"><code class="docutils literal notranslate"><span class="pre">RoutingState.interaction_circuit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.is_done"><code class="docutils literal notranslate"><span class="pre">RoutingState.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.is_legal_surpass"><code class="docutils literal notranslate"><span class="pre">RoutingState.is_legal_surpass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.is_legal_swap"><code class="docutils literal notranslate"><span class="pre">RoutingState.is_legal_swap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.mapping"><code class="docutils literal notranslate"><span class="pre">RoutingState.mapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.max_interaction_gates"><code class="docutils literal notranslate"><span class="pre">RoutingState.max_interaction_gates</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.max_observation_reach"><code class="docutils literal notranslate"><span class="pre">RoutingState.max_observation_reach</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.n_qubits"><code class="docutils literal notranslate"><span class="pre">RoutingState.n_qubits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.obtain_info"><code class="docutils literal notranslate"><span class="pre">RoutingState.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.obtain_observation"><code class="docutils literal notranslate"><span class="pre">RoutingState.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.position"><code class="docutils literal notranslate"><span class="pre">RoutingState.position</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.reset"><code class="docutils literal notranslate"><span class="pre">RoutingState.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.steps_done"><code class="docutils literal notranslate"><span class="pre">RoutingState.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.swap_gates_inserted"><code class="docutils literal notranslate"><span class="pre">RoutingState.swap_gates_inserted</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.update_state"><code class="docutils literal notranslate"><span class="pre">RoutingState.update_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.SwapQualityRewarder"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.SwapQualityRewarder.__init__"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.SwapQualityRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.routing.html">qgym.envs.routing.routing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing.html#qgym.envs.routing.routing.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.routing_rewarders.html">qgym.envs.routing.routing_rewarders module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.routing_rewarders.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.routing_rewarders.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.routing_rewarders.SwapQualityRewarder"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.routing_state.html">qgym.envs.routing.routing_state module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState"><code class="docutils literal notranslate"><span class="pre">RoutingState</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.routing_visualiser.html">qgym.envs.routing.routing_visualiser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_visualiser.html#qgym.envs.routing.routing_visualiser.RoutingVisualiser"><code class="docutils literal notranslate"><span class="pre">RoutingVisualiser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.html">qgym.envs.scheduling package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.BasicRewarder.__init__"><code class="docutils literal notranslate"><span class="pre">BasicRewarder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.BasicRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">BasicRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook.__init__"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook.__repr__"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook.add_rule"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.add_rule()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook.commutes"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.commutes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook.make_blocking_matrix"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.make_blocking_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.EpisodeRewarder.__init__"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.EpisodeRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties"><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.__init__"><code class="docutils literal notranslate"><span class="pre">MachineProperties.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.__repr__"><code class="docutils literal notranslate"><span class="pre">MachineProperties.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.__str__"><code class="docutils literal notranslate"><span class="pre">MachineProperties.__str__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.add_gates"><code class="docutils literal notranslate"><span class="pre">MachineProperties.add_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.add_not_in_same_cycle"><code class="docutils literal notranslate"><span class="pre">MachineProperties.add_not_in_same_cycle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.add_same_start"><code class="docutils literal notranslate"><span class="pre">MachineProperties.add_same_start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.encode"><code class="docutils literal notranslate"><span class="pre">MachineProperties.encode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.from_file"><code class="docutils literal notranslate"><span class="pre">MachineProperties.from_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.from_mapping"><code class="docutils literal notranslate"><span class="pre">MachineProperties.from_mapping()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.gates"><code class="docutils literal notranslate"><span class="pre">MachineProperties.gates</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.n_gates"><code class="docutils literal notranslate"><span class="pre">MachineProperties.n_gates</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.n_qubits"><code class="docutils literal notranslate"><span class="pre">MachineProperties.n_qubits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.not_in_same_cycle"><code class="docutils literal notranslate"><span class="pre">MachineProperties.not_in_same_cycle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties.same_start"><code class="docutils literal notranslate"><span class="pre">MachineProperties.same_start</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.Scheduling.__init__"><code class="docutils literal notranslate"><span class="pre">Scheduling.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.Scheduling.get_circuit"><code class="docutils literal notranslate"><span class="pre">Scheduling.get_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.Scheduling.reset"><code class="docutils literal notranslate"><span class="pre">Scheduling.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState"><code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.__init__"><code class="docutils literal notranslate"><span class="pre">SchedulingState.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.busy"><code class="docutils literal notranslate"><span class="pre">SchedulingState.busy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.circuit_info"><code class="docutils literal notranslate"><span class="pre">SchedulingState.circuit_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.create_observation_space"><code class="docutils literal notranslate"><span class="pre">SchedulingState.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.cycle"><code class="docutils literal notranslate"><span class="pre">SchedulingState.cycle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.gates"><code class="docutils literal notranslate"><span class="pre">SchedulingState.gates</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.is_done"><code class="docutils literal notranslate"><span class="pre">SchedulingState.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.machine_properties"><code class="docutils literal notranslate"><span class="pre">SchedulingState.machine_properties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.obtain_info"><code class="docutils literal notranslate"><span class="pre">SchedulingState.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.obtain_observation"><code class="docutils literal notranslate"><span class="pre">SchedulingState.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.reset"><code class="docutils literal notranslate"><span class="pre">SchedulingState.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.steps_done"><code class="docutils literal notranslate"><span class="pre">SchedulingState.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.update_state"><code class="docutils literal notranslate"><span class="pre">SchedulingState.update_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState.utils"><code class="docutils literal notranslate"><span class="pre">SchedulingState.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html">qgym.envs.scheduling.machine_properties module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties"><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html">qgym.envs.scheduling.rulebook module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.disjoint_qubits"><code class="docutils literal notranslate"><span class="pre">disjoint_qubits()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.same_gate"><code class="docutils literal notranslate"><span class="pre">same_gate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html">qgym.envs.scheduling.scheduling module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html#qgym.envs.scheduling.scheduling.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html">qgym.envs.scheduling.scheduling_dataclasses module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo"><code class="docutils literal notranslate"><span class="pre">CircuitInfo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.GateInfo"><code class="docutils literal notranslate"><span class="pre">GateInfo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils"><code class="docutils literal notranslate"><span class="pre">SchedulingUtils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html">qgym.envs.scheduling.scheduling_rewarders module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html#qgym.envs.scheduling.scheduling_rewarders.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html#qgym.envs.scheduling.scheduling_rewarders.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html">qgym.envs.scheduling.scheduling_state module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState"><code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html">qgym.envs.scheduling.scheduling_visualiser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html#qgym.envs.scheduling.scheduling_visualiser.SchedulingVisualiser"><code class="docutils literal notranslate"><span class="pre">SchedulingVisualiser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.spaces.html">qgym.spaces package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Box.__init__"><code class="docutils literal notranslate"><span class="pre">Box.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Dict.__init__"><code class="docutils literal notranslate"><span class="pre">Dict.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Discrete.__init__"><code class="docutils literal notranslate"><span class="pre">Discrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiBinary.__init__"><code class="docutils literal notranslate"><span class="pre">MultiBinary.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiDiscrete.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.box.html">qgym.spaces.box module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.box.html#qgym.spaces.box.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.box.html#qgym.spaces.box.Box.__init__"><code class="docutils literal notranslate"><span class="pre">Box.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.dict.html">qgym.spaces.dict module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.dict.html#qgym.spaces.dict.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.dict.html#qgym.spaces.dict.Dict.__init__"><code class="docutils literal notranslate"><span class="pre">Dict.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.discrete.html">qgym.spaces.discrete module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.discrete.html#qgym.spaces.discrete.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.discrete.html#qgym.spaces.discrete.Discrete.__init__"><code class="docutils literal notranslate"><span class="pre">Discrete.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.multi_binary.html">qgym.spaces.multi_binary module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.multi_binary.html#qgym.spaces.multi_binary.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.multi_binary.html#qgym.spaces.multi_binary.MultiBinary.__init__"><code class="docutils literal notranslate"><span class="pre">MultiBinary.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.multi_discrete.html">qgym.spaces.multi_discrete module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.multi_discrete.html#qgym.spaces.multi_discrete.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.multi_discrete.html#qgym.spaces.multi_discrete.MultiDiscrete.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.templates.html">qgym.templates package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.action_space"><code class="docutils literal notranslate"><span class="pre">Environment.action_space</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.close"><code class="docutils literal notranslate"><span class="pre">Environment.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.observation_space"><code class="docutils literal notranslate"><span class="pre">Environment.observation_space</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.render"><code class="docutils literal notranslate"><span class="pre">Environment.render()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.reset"><code class="docutils literal notranslate"><span class="pre">Environment.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.rewarder"><code class="docutils literal notranslate"><span class="pre">Environment.rewarder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.rng"><code class="docutils literal notranslate"><span class="pre">Environment.rng</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.step"><code class="docutils literal notranslate"><span class="pre">Environment.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.__eq__"><code class="docutils literal notranslate"><span class="pre">Rewarder.__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">Rewarder.compute_reward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.reward_range"><code class="docutils literal notranslate"><span class="pre">Rewarder.reward_range</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.rng"><code class="docutils literal notranslate"><span class="pre">State.rng</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.seed"><code class="docutils literal notranslate"><span class="pre">State.seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.steps_done"><code class="docutils literal notranslate"><span class="pre">State.steps_done</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.update_state"><code class="docutils literal notranslate"><span class="pre">State.update_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.close"><code class="docutils literal notranslate"><span class="pre">Visualiser.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.colors"><code class="docutils literal notranslate"><span class="pre">Visualiser.colors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.font"><code class="docutils literal notranslate"><span class="pre">Visualiser.font</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.is_open"><code class="docutils literal notranslate"><span class="pre">Visualiser.is_open</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.render"><code class="docutils literal notranslate"><span class="pre">Visualiser.render()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.render_data"><code class="docutils literal notranslate"><span class="pre">Visualiser.render_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen_height"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_height</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen_width"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_width</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.step"><code class="docutils literal notranslate"><span class="pre">Visualiser.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.environment.html">qgym.templates.environment module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment.action_space"><code class="docutils literal notranslate"><span class="pre">Environment.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment.close"><code class="docutils literal notranslate"><span class="pre">Environment.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment.observation_space"><code class="docutils literal notranslate"><span class="pre">Environment.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment.render"><code class="docutils literal notranslate"><span class="pre">Environment.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment.reset"><code class="docutils literal notranslate"><span class="pre">Environment.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment.rewarder"><code class="docutils literal notranslate"><span class="pre">Environment.rewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment.rng"><code class="docutils literal notranslate"><span class="pre">Environment.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment.step"><code class="docutils literal notranslate"><span class="pre">Environment.step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.rewarder.html">qgym.templates.rewarder module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder.__eq__"><code class="docutils literal notranslate"><span class="pre">Rewarder.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">Rewarder.compute_reward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder.reward_range"><code class="docutils literal notranslate"><span class="pre">Rewarder.reward_range</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.state.html">qgym.templates.state module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.rng"><code class="docutils literal notranslate"><span class="pre">State.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.seed"><code class="docutils literal notranslate"><span class="pre">State.seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.steps_done"><code class="docutils literal notranslate"><span class="pre">State.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.update_state"><code class="docutils literal notranslate"><span class="pre">State.update_state()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.visualiser.html">qgym.templates.visualiser module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData"><code class="docutils literal notranslate"><span class="pre">RenderData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData.colors"><code class="docutils literal notranslate"><span class="pre">RenderData.colors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData.font"><code class="docutils literal notranslate"><span class="pre">RenderData.font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData.render_mode"><code class="docutils literal notranslate"><span class="pre">RenderData.render_mode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData.screen"><code class="docutils literal notranslate"><span class="pre">RenderData.screen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData.screen_height"><code class="docutils literal notranslate"><span class="pre">RenderData.screen_height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData.screen_width"><code class="docutils literal notranslate"><span class="pre">RenderData.screen_width</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.close"><code class="docutils literal notranslate"><span class="pre">Visualiser.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.colors"><code class="docutils literal notranslate"><span class="pre">Visualiser.colors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.font"><code class="docutils literal notranslate"><span class="pre">Visualiser.font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.is_open"><code class="docutils literal notranslate"><span class="pre">Visualiser.is_open</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.render"><code class="docutils literal notranslate"><span class="pre">Visualiser.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.render_data"><code class="docutils literal notranslate"><span class="pre">Visualiser.render_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.screen"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.screen_height"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.screen_width"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.step"><code class="docutils literal notranslate"><span class="pre">Visualiser.step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.utils.html">qgym.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.__init__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.__repr__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.decode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.decode_gates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.encode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.encode_gates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.learn_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.learn_gates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.generate_circuit"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.generate_circuit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.rng"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.rng</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.visualisation.html">qgym.utils.visualisation package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.visualisation.colors.html">qgym.utils.visualisation.colors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.visualisation.typing.html">qgym.utils.visualisation.typing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.typing.html#qgym.utils.visualisation.typing.Font"><code class="docutils literal notranslate"><span class="pre">Font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.typing.html#qgym.utils.visualisation.typing.Surface"><code class="docutils literal notranslate"><span class="pre">Surface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.visualisation.wrappers.html">qgym.utils.visualisation.wrappers module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.wrappers.html#qgym.utils.visualisation.wrappers.draw_point"><code class="docutils literal notranslate"><span class="pre">draw_point()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.wrappers.html#qgym.utils.visualisation.wrappers.draw_wide_line"><code class="docutils literal notranslate"><span class="pre">draw_wide_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.wrappers.html#qgym.utils.visualisation.wrappers.shade_rect"><code class="docutils literal notranslate"><span class="pre">shade_rect()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.wrappers.html#qgym.utils.visualisation.wrappers.write_text"><code class="docutils literal notranslate"><span class="pre">write_text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.gate_encoder.html">qgym.utils.gate_encoder module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder.__init__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder.__repr__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder.decode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.decode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder.encode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.encode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder.learn_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.learn_gates()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.input_validation.html">qgym.utils.input_validation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">check_adjacency_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_bool"><code class="docutils literal notranslate"><span class="pre">check_bool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_graph_is_valid_topology"><code class="docutils literal notranslate"><span class="pre">check_graph_is_valid_topology()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_instance"><code class="docutils literal notranslate"><span class="pre">check_instance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_int"><code class="docutils literal notranslate"><span class="pre">check_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_real"><code class="docutils literal notranslate"><span class="pre">check_real()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_string"><code class="docutils literal notranslate"><span class="pre">check_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_negative"><code class="docutils literal notranslate"><span class="pre">warn_if_negative()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_positive"><code class="docutils literal notranslate"><span class="pre">warn_if_positive()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.random_circuit_generator.html">qgym.utils.random_circuit_generator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator.generate_circuit"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.generate_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator.rng"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.rng</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qgym.custom_types.html">qgym.custom_types module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate"><code class="docutils literal notranslate"><span class="pre">Gate</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.name"><code class="docutils literal notranslate"><span class="pre">Gate.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.q1"><code class="docutils literal notranslate"><span class="pre">Gate.q1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.q2"><code class="docutils literal notranslate"><span class="pre">Gate.q2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="OpenQL Gym" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="qgym.envs.html" class="btn btn-neutral float-right" title="qgym.envs package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, QuTech &amp; TNO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

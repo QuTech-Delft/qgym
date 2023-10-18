@@ -1,0 +1,7 @@
+qgym.templates.state module
+===========================
+
+.. automodule:: qgym.templates.state
+   :members:
+   :undoc-members:
+   :show-inheritance:

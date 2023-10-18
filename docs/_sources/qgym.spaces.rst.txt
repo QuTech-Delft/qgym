@@ -1,0 +1,18 @@
+qgym.spaces package
+===================
+
+.. automodule:: qgym.spaces
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. toctree::
+   :maxdepth: 4
+
+
+   qgym.spaces.box
+   qgym.spaces.dict
+   qgym.spaces.discrete
+   qgym.spaces.multi_binary
+   qgym.spaces.multi_discrete

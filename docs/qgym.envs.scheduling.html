@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qgym.envs.scheduling package &mdash; qgym</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]]}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="qgym.envs.scheduling.machine_properties module" href="qgym.envs.scheduling.machine_properties.html" />
+    <link rel="prev" title="qgym.envs.routing.routing_visualiser module" href="qgym.envs.routing.routing_visualiser.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            qgym
+          </a>
+              <div class="version">
+                0.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="qgym.html">qgym package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="qgym.envs.html">qgym.envs package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMapping.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.action_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.add_random_edge_weights"><code class="docutils literal notranslate"><span class="pre">InitialMapping.add_random_edge_weights()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.metadata"><code class="docutils literal notranslate"><span class="pre">InitialMapping.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.reset"><code class="docutils literal notranslate"><span class="pre">InitialMapping.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing.__init__"><code class="docutils literal notranslate"><span class="pre">Routing.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing.reset"><code class="docutils literal notranslate"><span class="pre">Routing.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.__init__"><code class="docutils literal notranslate"><span class="pre">Scheduling.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.get_circuit"><code class="docutils literal notranslate"><span class="pre">Scheduling.get_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.reset"><code class="docutils literal notranslate"><span class="pre">Scheduling.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping.html">qgym.envs.initial_mapping.initial_mapping module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html">qgym.envs.initial_mapping.initial_mapping_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html">qgym.envs.initial_mapping.initial_mapping_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_visualiser.html">qgym.envs.initial_mapping.initial_mapping_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.html">qgym.envs.routing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState"><code class="docutils literal notranslate"><span class="pre">RoutingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.SwapQualityRewarder"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing.html">qgym.envs.routing.routing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_rewarders.html">qgym.envs.routing.routing_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_state.html">qgym.envs.routing.routing_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_visualiser.html">qgym.envs.routing.routing_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">qgym.envs.scheduling package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.envs.scheduling.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.envs.scheduling.CommutationRulebook"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.envs.scheduling.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.envs.scheduling.MachineProperties"><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.envs.scheduling.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.envs.scheduling.SchedulingState"><code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html">qgym.envs.scheduling.machine_properties module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html">qgym.envs.scheduling.rulebook module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html">qgym.envs.scheduling.scheduling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html">qgym.envs.scheduling.scheduling_dataclasses module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html">qgym.envs.scheduling.scheduling_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html">qgym.envs.scheduling.scheduling_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html">qgym.envs.scheduling.scheduling_visualiser module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.html">qgym.spaces package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Box.__init__"><code class="docutils literal notranslate"><span class="pre">Box.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Dict.__init__"><code class="docutils literal notranslate"><span class="pre">Dict.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Discrete.__init__"><code class="docutils literal notranslate"><span class="pre">Discrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiBinary.__init__"><code class="docutils literal notranslate"><span class="pre">MultiBinary.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiDiscrete.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.box.html">qgym.spaces.box module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.box.html#qgym.spaces.box.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.dict.html">qgym.spaces.dict module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.dict.html#qgym.spaces.dict.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.discrete.html">qgym.spaces.discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.discrete.html#qgym.spaces.discrete.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.multi_binary.html">qgym.spaces.multi_binary module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.multi_binary.html#qgym.spaces.multi_binary.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.multi_discrete.html">qgym.spaces.multi_discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.multi_discrete.html#qgym.spaces.multi_discrete.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.html">qgym.templates package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.action_space"><code class="docutils literal notranslate"><span class="pre">Environment.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.close"><code class="docutils literal notranslate"><span class="pre">Environment.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.observation_space"><code class="docutils literal notranslate"><span class="pre">Environment.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.render"><code class="docutils literal notranslate"><span class="pre">Environment.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.reset"><code class="docutils literal notranslate"><span class="pre">Environment.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.rewarder"><code class="docutils literal notranslate"><span class="pre">Environment.rewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.rng"><code class="docutils literal notranslate"><span class="pre">Environment.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.step"><code class="docutils literal notranslate"><span class="pre">Environment.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.__eq__"><code class="docutils literal notranslate"><span class="pre">Rewarder.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">Rewarder.compute_reward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.reward_range"><code class="docutils literal notranslate"><span class="pre">Rewarder.reward_range</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.rng"><code class="docutils literal notranslate"><span class="pre">State.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.seed"><code class="docutils literal notranslate"><span class="pre">State.seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.steps_done"><code class="docutils literal notranslate"><span class="pre">State.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.update_state"><code class="docutils literal notranslate"><span class="pre">State.update_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.close"><code class="docutils literal notranslate"><span class="pre">Visualiser.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.colors"><code class="docutils literal notranslate"><span class="pre">Visualiser.colors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.font"><code class="docutils literal notranslate"><span class="pre">Visualiser.font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.is_open"><code class="docutils literal notranslate"><span class="pre">Visualiser.is_open</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.render"><code class="docutils literal notranslate"><span class="pre">Visualiser.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.render_data"><code class="docutils literal notranslate"><span class="pre">Visualiser.render_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen_height"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen_width"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.step"><code class="docutils literal notranslate"><span class="pre">Visualiser.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.environment.html">qgym.templates.environment module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.rewarder.html">qgym.templates.rewarder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.state.html">qgym.templates.state module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.visualiser.html">qgym.templates.visualiser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData"><code class="docutils literal notranslate"><span class="pre">RenderData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.html">qgym.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.__init__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.__repr__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.decode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.decode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.encode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.encode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.learn_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.learn_gates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.generate_circuit"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.generate_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.RandomCircuitGenerator.rng"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.rng</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.visualisation.html">qgym.utils.visualisation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.colors.html">qgym.utils.visualisation.colors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.typing.html">qgym.utils.visualisation.typing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.wrappers.html">qgym.utils.visualisation.wrappers module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.gate_encoder.html">qgym.utils.gate_encoder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html">qgym.utils.input_validation module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">check_adjacency_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_bool"><code class="docutils literal notranslate"><span class="pre">check_bool()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_graph_is_valid_topology"><code class="docutils literal notranslate"><span class="pre">check_graph_is_valid_topology()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_instance"><code class="docutils literal notranslate"><span class="pre">check_instance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_int"><code class="docutils literal notranslate"><span class="pre">check_int()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_real"><code class="docutils literal notranslate"><span class="pre">check_real()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_string"><code class="docutils literal notranslate"><span class="pre">check_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_negative"><code class="docutils literal notranslate"><span class="pre">warn_if_negative()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_positive"><code class="docutils literal notranslate"><span class="pre">warn_if_positive()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.random_circuit_generator.html">qgym.utils.random_circuit_generator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.custom_types.html">qgym.custom_types module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate"><code class="docutils literal notranslate"><span class="pre">Gate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.name"><code class="docutils literal notranslate"><span class="pre">Gate.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.q1"><code class="docutils literal notranslate"><span class="pre">Gate.q1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.q2"><code class="docutils literal notranslate"><span class="pre">Gate.q2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qgym</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="qgym.html">qgym package</a></li>
+          <li class="breadcrumb-item"><a href="qgym.envs.html">qgym.envs package</a></li>
+      <li class="breadcrumb-item active">qgym.envs.scheduling package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/qgym.envs.scheduling.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-qgym.envs.scheduling">
+<span id="qgym-envs-scheduling-package"></span><h1>qgym.envs.scheduling package<a class="headerlink" href="#module-qgym.envs.scheduling" title="Link to this heading"></a></h1>
+<p>Module containing the environment, rewarders, visualizer and other utils for the
+scheduling problem of OpenQL.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.BasicRewarder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.envs.scheduling.</span></span><span class="sig-name descname"><span class="pre">BasicRewarder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">illegal_action_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_cycle_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule_gate_bonus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_rewarders.html#BasicRewarder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.BasicRewarder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder" title="qgym.templates.rewarder.Rewarder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rewarder</span></code></a></p>
+<p>Basic rewarder for the <code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.BasicRewarder.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">illegal_action_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_cycle_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schedule_gate_bonus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_rewarders.html#BasicRewarder.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.BasicRewarder.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the reward range and set the rewards and penalties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>illegal_action_penalty</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Penalty for performing an illegal action. An action
+is illegal if <code class="docutils literal notranslate"><span class="pre">action[0]</span></code> is not in <code class="docutils literal notranslate"><span class="pre">state[&quot;legal_actions&quot;]</span></code>. This
+value should be negative (but is not required) and defaults to -5.</p></li>
+<li><p><strong>update_cycle_penalty</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Penalty given for incrementing a cycle. Since the
+<code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment wats to create the shortest schedules,
+incrementing the cycle should be penalized. This value should be
+negative (but is not required) and defaults to -1.</p></li>
+<li><p><strong>schedule_gate_bonus</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Reward gained for successfully scheduling a gate. This
+value should be positive (but is not required) and defaults to 0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.BasicRewarder.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_rewarders.html#BasicRewarder.compute_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.BasicRewarder.compute_reward" title="Link to this definition"></a></dt>
+<dd><p>Compute a reward, based on the new state, and the given action. Specifically
+the ‘legal_actions’ actions array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>old_state</strong> (<a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState" title="qgym.envs.scheduling.scheduling_state.SchedulingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchedulingState</span></code></a>) – State of the <code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment before the current
+action.</p></li>
+<li><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]) – Action that has just been taken.</p></li>
+<li><p><strong>new_state</strong> (<a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState" title="qgym.envs.scheduling.scheduling_state.SchedulingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchedulingState</span></code></a>) – Updated state of the <code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The reward for this action. If the action is illegal, then the reward is
+<cite>illegal_action_penalty</cite>. If the action is legal, and increments the cycle,
+then the reward is <cite>update_cycle_penalty</cite>. Otherwise, the reward is
+<cite>schedule_gate_bonus</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.CommutationRulebook">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.envs.scheduling.</span></span><span class="sig-name descname"><span class="pre">CommutationRulebook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/rulebook.html#CommutationRulebook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.CommutationRulebook" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Commutation rulebook used in the <code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.CommutationRulebook.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/rulebook.html#CommutationRulebook.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.CommutationRulebook.__init__" title="Link to this definition"></a></dt>
+<dd><p>Init of the <code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default_rules</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, default rules are used. Default rules dictate
+that gates with disjoint qubits commute and that gates that are exactly
+the same commute. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then no rules will be initialized.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.CommutationRulebook.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/rulebook.html#CommutationRulebook.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.CommutationRulebook.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Create a string representation of the CommutationRulebook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.CommutationRulebook.add_rule">
+<span class="sig-name descname"><span class="pre">add_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/rulebook.html#CommutationRulebook.add_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.CommutationRulebook.add_rule" title="Link to this definition"></a></dt>
+<dd><p>Add a new commutation rule to the rulebook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rule</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>, <a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – Rule to add to the rulebook. A rule is a <code class="docutils literal notranslate"><span class="pre">Callable</span></code> which takes as
+input two gates and returns a Boolean value that should be <code class="docutils literal notranslate"><span class="pre">True</span></code> if
+two gates commute and <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.CommutationRulebook.commutes">
+<span class="sig-name descname"><span class="pre">commutes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gate1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/rulebook.html#CommutationRulebook.commutes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.CommutationRulebook.commutes" title="Link to this definition"></a></dt>
+<dd><p>Check if <cite>gate1</cite> and <cite>gate2</cite> commute according to the rules in the rulebook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gate1</strong> (<a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>) – Gate to check the commutation.</p></li>
+<li><p><strong>gate2</strong> (<a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>) – Gate to check gate1 against.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Boolean value indicating whether <cite>gate1</cite> commutes with <cite>gate2</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.CommutationRulebook.make_blocking_matrix">
+<span class="sig-name descname"><span class="pre">make_blocking_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/rulebook.html#CommutationRulebook.make_blocking_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.CommutationRulebook.make_blocking_matrix" title="Link to this definition"></a></dt>
+<dd><p>Make a square array of shape (len(circuit), len(circuit)), with dependencies
+based on the given commutation rules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>circuit</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>]) – Circuit to check dependencies for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dependencies matrix of the circuit based on the rules and scheduling from
+right to left.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.EpisodeRewarder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.envs.scheduling.</span></span><span class="sig-name descname"><span class="pre">EpisodeRewarder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">illegal_action_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_cycle_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_rewarders.html#EpisodeRewarder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.EpisodeRewarder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder" title="qgym.templates.rewarder.Rewarder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rewarder</span></code></a></p>
+<p>Rewarder for the <code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment, which only gives a reward at
+the end of the episode or when an illegal action is taken.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.EpisodeRewarder.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">illegal_action_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_cycle_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_rewarders.html#EpisodeRewarder.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.EpisodeRewarder.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the reward range and set the rewards and penalties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>illegal_action_penalty</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Penalty for performing an illegal action. An action
+is illegal if <code class="docutils literal notranslate"><span class="pre">action[0]</span></code> is not in <code class="docutils literal notranslate"><span class="pre">state[&quot;legal_actions&quot;]</span></code>. This
+value should be negative (but is not required) and defaults to -5.</p></li>
+<li><p><strong>update_cycle_penalty</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Penalty given for incrementing a cycle. Since the
+<code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment wats to create the shortest schedules,
+incrementing the cycle should be penalized. This value should be
+negative (but is not required) and defaults to -1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.EpisodeRewarder.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_rewarders.html#EpisodeRewarder.compute_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.EpisodeRewarder.compute_reward" title="Link to this definition"></a></dt>
+<dd><p>Compute a reward, based on the new state, and the given action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>old_state</strong> (<a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState" title="qgym.envs.scheduling.scheduling_state.SchedulingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchedulingState</span></code></a>) – State of the <code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment before the current
+action.</p></li>
+<li><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]) – Action that has just been taken.</p></li>
+<li><p><strong>new_state</strong> (<a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState" title="qgym.envs.scheduling.scheduling_state.SchedulingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchedulingState</span></code></a>) – Updated state of the <code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The reward for this action. If the action is illegal, then the reward is
+<cite>illegal_action_penalty</cite>. If the action is legal, but the episode is not yet
+done, then the reward is 0. Otherwise, the reward is
+<cite>update_cycle_penalty`x`current cycle</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.envs.scheduling.</span></span><span class="sig-name descname"><span class="pre">MachineProperties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_qubits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> is a class to conveniently setup machine properties for the
+<code class="docutils literal notranslate"><span class="pre">Scheduling</span></code> environment.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_qubits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.__init__" title="Link to this definition"></a></dt>
+<dd><p>Init of the MachineProperties class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_qubits</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of qubits of the machine.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Make a string representation without endline characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.__str__" title="Link to this definition"></a></dt>
+<dd><p>Make a string representation of the machine properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.add_gates">
+<span class="sig-name descname"><span class="pre">add_gates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.add_gates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.add_gates" title="Link to this definition"></a></dt>
+<dd><p>Add gates to the machine properties that should be supported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gates</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – <code class="docutils literal notranslate"><span class="pre">Mapping</span></code> of gates that the machine can perform as keys, and the
+number of machine cycles (time) as values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties" title="qgym.envs.scheduling.machine_properties.MachineProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The <code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> with the added gates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.add_not_in_same_cycle">
+<span class="sig-name descname"><span class="pre">add_not_in_same_cycle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.add_not_in_same_cycle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.add_not_in_same_cycle" title="Link to this definition"></a></dt>
+<dd><p>Add gates that should not start in the same cycle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gates</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – <code class="docutils literal notranslate"><span class="pre">Iterable</span></code> of tuples of gate names that should not start in the
+same cycle.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties" title="qgym.envs.scheduling.machine_properties.MachineProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The <code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> with an updated <code class="docutils literal notranslate"><span class="pre">not_in_same_cycle</span></code> property.
+The <code class="docutils literal notranslate"><span class="pre">not_in_same_cycle</span></code> property is updated according to the input
+<cite>gates</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.add_same_start">
+<span class="sig-name descname"><span class="pre">add_same_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.add_same_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.add_same_start" title="Link to this definition"></a></dt>
+<dd><p>Add gates that should start in the same cycle, or wait till the previous gate
+is done.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gates</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – <code class="docutils literal notranslate"><span class="pre">Iterable</span></code> of gate names that should start in the same cycle.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties" title="qgym.envs.scheduling.machine_properties.MachineProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The <code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> with the same start gates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.encode" title="Link to this definition"></a></dt>
+<dd><p>Encode the gates in the machine properties to integer values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder" title="qgym.utils.gate_encoder.GateEncoder"><code class="xref py py-class docutils literal notranslate"><span class="pre">GateEncoder</span></code></a></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The GateEncoder used to encode the gates. This GateEncoder can be used to
+decode the gates or encode quantum circuits containing the same gate names
+as in this <code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.from_file">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.from_file" title="Link to this definition"></a></dt>
+<dd><p>Load MachineProperties from a JSON file. Not implemented.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties" title="qgym.envs.scheduling.machine_properties.MachineProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.from_mapping">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/machine_properties.html#MachineProperties.from_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.from_mapping" title="Link to this definition"></a></dt>
+<dd><p>Initialize the <code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> class from a <code class="docutils literal notranslate"><span class="pre">Mapping</span></code> containing
+valid machines properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>machine_properties</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]) – <code class="docutils literal notranslate"><span class="pre">Mapping</span></code> containing valid machine properties.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties" title="qgym.envs.scheduling.machine_properties.MachineProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Initialized <code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> object with the properties described in
+the <cite>machine_properties</cite> <code class="docutils literal notranslate"><span class="pre">Mapping</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.gates">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.gates" title="Link to this definition"></a></dt>
+<dd><p>Return a``Dict`` with the gate names the machine can perform as keys, and the
+number of machine cycles (time) as values.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.n_gates">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_gates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.n_gates" title="Link to this definition"></a></dt>
+<dd><p>Return the number of supported gates.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.n_qubits">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_qubits</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.n_qubits" title="Link to this definition"></a></dt>
+<dd><p>Return the number of qubits of the machine.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.not_in_same_cycle">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">not_in_same_cycle</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.not_in_same_cycle" title="Link to this definition"></a></dt>
+<dd><p>Gates that can not start in the same cycle.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.MachineProperties.same_start">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">same_start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qgym.envs.scheduling.MachineProperties.same_start" title="Link to this definition"></a></dt>
+<dd><p>Set of gate names that should start in the same cycle, or wait till the
+previous gate is done.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.Scheduling">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.envs.scheduling.</span></span><span class="sig-name descname"><span class="pre">Scheduling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_properties</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_gates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependency_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_circuit_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rulebook</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewarder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling.html#Scheduling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.Scheduling" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment" title="qgym.templates.environment.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int8</span></code>]]]], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]]</p>
+<p>RL environment for the scheduling problem.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.Scheduling.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_properties</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_gates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependency_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_circuit_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rulebook</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rewarder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling.html#Scheduling.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.Scheduling.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the action space, observation space, and initial states for the
+scheduling environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>machine_properties</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties" title="qgym.envs.scheduling.machine_properties.MachineProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">MachineProperties</span></code></a>]) – A <code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> object, a <code class="docutils literal notranslate"><span class="pre">Mapping</span></code> containing
+machine properties or a string with a filename for a file containing the
+machine properties.</p></li>
+<li><p><strong>max_gates</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum number of gates allowed in a circuit. Defaults to 200.</p></li>
+<li><p><strong>dependency_depth</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of dependencies given in the observation.
+Determines the shape of the <cite>dependencies</cite> observation, which has the
+shape (dependency_depth, max_gates). Defaults to 1.</p></li>
+<li><p><strong>random_circuit_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Mode for the random circuit generator. The mode can be
+‘default’ or ‘workshop’. Defaults to ‘default’.</p></li>
+<li><p><strong>rulebook</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook" title="qgym.envs.scheduling.rulebook.CommutationRulebook"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a>]) – <code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code> describing the commutation rules. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (default) is given, a default <code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code> will be
+used. (See <code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code> for more info on the default rules.)</p></li>
+<li><p><strong>rewarder</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder" title="qgym.templates.rewarder.Rewarder"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rewarder</span></code></a>]) – Rewarder to use for the environment. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), then a
+default <code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code> is used.</p></li>
+<li><p><strong>render_mode</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – If ‘human’ open a <code class="docutils literal notranslate"><span class="pre">pygame</span></code> screen visualizing the step. If
+‘rgb_array’, return an RGB array encoding of the rendered frame on each
+render call.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.Scheduling.get_circuit">
+<span class="sig-name descname"><span class="pre">get_circuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling.html#Scheduling.get_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.Scheduling.get_circuit" title="Link to this definition"></a></dt>
+<dd><p>Return the quantum circuit of this episode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Choose from be ‘human’ or ‘encoded’. Defaults to ‘human’.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an unsupported mode is provided.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Human or encoded quantum circuit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.Scheduling.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling.html#Scheduling.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.Scheduling.reset" title="Link to this definition"></a></dt>
+<dd><p>Reset the state, action space and load a new (random) initial state.</p>
+<p>To be used after an episode is finished.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Seed for the random number generator, should only be provided
+(optionally) on the first reset call, i.e., before any learning is done.</p></li>
+<li><p><strong>return_info</strong> – Whether to receive debugging info.</p></li>
+<li><p><strong>options</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Mapping with keyword arguments with additional options for the
+reset. Keywords can be found in the description of
+<code class="docutils literal notranslate"><span class="pre">SchedulingState.reset()</span></code></p></li>
+<li><p><strong>_kwargs</strong> – Additional options to configure the reset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int8</span></code>]]], <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Initial observation and debugging info.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.envs.scheduling.</span></span><span class="sig-name descname"><span class="pre">SchedulingState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_gates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependency_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_circuit_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rulebook</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_state.html#SchedulingState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State" title="qgym.templates.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int8</span></code>]]]], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]]</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code> class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_gates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependency_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_circuit_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rulebook</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_state.html#SchedulingState.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.__init__" title="Link to this definition"></a></dt>
+<dd><p>Init of the <code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>machine_properties</strong> (<a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties" title="qgym.envs.scheduling.machine_properties.MachineProperties"><code class="xref py py-class docutils literal notranslate"><span class="pre">MachineProperties</span></code></a>) – A <code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> object.</p></li>
+<li><p><strong>max_gates</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum number of gates allowed in a circuit.</p></li>
+<li><p><strong>dependency_depth</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of dependencies given in the observation.
+Determines the shape of the <cite>dependencies</cite> observation, which has the
+shape (dependency_depth, max_gates).</p></li>
+<li><p><strong>random_circuit_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Mode for the random circuit generator. The mode can be
+‘default’ or ‘workshop’.</p></li>
+<li><p><strong>rulebook</strong> (<a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook" title="qgym.envs.scheduling.rulebook.CommutationRulebook"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a>) – <code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code> describing the commutation rules.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.busy">
+<span class="sig-name descname"><span class="pre">busy</span></span><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.busy" title="Link to this definition"></a></dt>
+<dd><p>Amount of cycles that a qubit is still busy (zero if available). Used
+internally for the hardware limitations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.circuit_info">
+<span class="sig-name descname"><span class="pre">circuit_info</span></span><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.circuit_info" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">CircuitInfo</span></code> dataclass containing the encoded circuit and attributes used
+to update the state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.create_observation_space">
+<span class="sig-name descname"><span class="pre">create_observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_state.html#SchedulingState.create_observation_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.create_observation_space" title="Link to this definition"></a></dt>
+<dd><p>Create the corresponding observation space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">qgym.spaces.MultiBinary</span></code> space representing the legal actions. If
+the value at index <span class="math notranslate nohighlight">\(i\)</span> determines if gate number <span class="math notranslate nohighlight">\(i\)</span> can be scheduled
+or not.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qgym.spaces.MultiDiscrete</span></code> space representing the integer encoded
+gate names.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qgym.spaces.MultiDiscrete</span></code> space representing the interaction of
+each gate (q1 and q2).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qgym.spaces.MultiDiscrete</span></code> space representing the first <span class="math notranslate nohighlight">\(n\)</span> gates
+that must be scheduled before this gate.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Observation space in the form of a <code class="docutils literal notranslate"><span class="pre">qgym.spaces.Dict</span></code> space containing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.cycle">
+<span class="sig-name descname"><span class="pre">cycle</span></span><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.cycle" title="Link to this definition"></a></dt>
+<dd><p>Current ‘machine’ cycle.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.gates">
+<span class="sig-name descname"><span class="pre">gates</span></span><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.gates" title="Link to this definition"></a></dt>
+<dd><p>Dictionary with gate names as keys and <code class="docutils literal notranslate"><span class="pre">GateInfo</span></code> dataclasses as values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.is_done">
+<span class="sig-name descname"><span class="pre">is_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_state.html#SchedulingState.is_done"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.is_done" title="Link to this definition"></a></dt>
+<dd><p>Determine if the state is done or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean value stating whether we are in a final state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.machine_properties">
+<span class="sig-name descname"><span class="pre">machine_properties</span></span><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.machine_properties" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code> class containing machine properties and limitations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.obtain_info">
+<span class="sig-name descname"><span class="pre">obtain_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_state.html#SchedulingState.obtain_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.obtain_info" title="Link to this definition"></a></dt>
+<dd><p>Obtain additional information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional debugging info for the current state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.obtain_observation">
+<span class="sig-name descname"><span class="pre">obtain_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_state.html#SchedulingState.obtain_observation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.obtain_observation" title="Link to this definition"></a></dt>
+<dd><p>Obtain an observation based on the current state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int8</span></code>]]]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Observation based on the current state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_state.html#SchedulingState.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.reset" title="Link to this definition"></a></dt>
+<dd><p>Reset the state and load a new (random) initial state.</p>
+<p>To be used after an episode is finished.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Seed for the random number generator, should only be provided
+(optionally) on the first reset call, i.e., before any learning is done.</p></li>
+<li><p><strong>circuit</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>]]) – Optional list of a circuit for the next episode, each entry in the
+list should be a <code class="docutils literal notranslate"><span class="pre">Gate</span></code>. When a circuit is give, no random circuit
+will be generated.</p></li>
+<li><p><strong>_kwargs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>) – Additional options to configure the reset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState" title="qgym.envs.scheduling.scheduling_state.SchedulingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchedulingState</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.steps_done">
+<span class="sig-name descname"><span class="pre">steps_done</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.steps_done" title="Link to this definition"></a></dt>
+<dd><p>Number of steps done since the last reset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.update_state">
+<span class="sig-name descname"><span class="pre">update_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/scheduling/scheduling_state.html#SchedulingState.update_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.update_state" title="Link to this definition"></a></dt>
+<dd><p>Update the state of this environment using the given action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]) – First entry determines a gate to schedule, the second entry
+increases the cycle if nonzero.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState" title="qgym.envs.scheduling.scheduling_state.SchedulingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchedulingState</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.envs.scheduling.SchedulingState.utils">
+<span class="sig-name descname"><span class="pre">utils</span></span><a class="headerlink" href="#qgym.envs.scheduling.SchedulingState.utils" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">SchedulingUtils</span></code> dataclass with a random circuit generator, commutation
+rulebook and a gate encoder.</p>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html">qgym.envs.scheduling.machine_properties module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties"><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.__init__"><code class="docutils literal notranslate"><span class="pre">MachineProperties.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.__repr__"><code class="docutils literal notranslate"><span class="pre">MachineProperties.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.__str__"><code class="docutils literal notranslate"><span class="pre">MachineProperties.__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.add_gates"><code class="docutils literal notranslate"><span class="pre">MachineProperties.add_gates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.add_not_in_same_cycle"><code class="docutils literal notranslate"><span class="pre">MachineProperties.add_not_in_same_cycle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.add_same_start"><code class="docutils literal notranslate"><span class="pre">MachineProperties.add_same_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.encode"><code class="docutils literal notranslate"><span class="pre">MachineProperties.encode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.from_file"><code class="docutils literal notranslate"><span class="pre">MachineProperties.from_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.from_mapping"><code class="docutils literal notranslate"><span class="pre">MachineProperties.from_mapping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.gates"><code class="docutils literal notranslate"><span class="pre">MachineProperties.gates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.n_gates"><code class="docutils literal notranslate"><span class="pre">MachineProperties.n_gates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.n_qubits"><code class="docutils literal notranslate"><span class="pre">MachineProperties.n_qubits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.not_in_same_cycle"><code class="docutils literal notranslate"><span class="pre">MachineProperties.not_in_same_cycle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.same_start"><code class="docutils literal notranslate"><span class="pre">MachineProperties.same_start</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html">qgym.envs.scheduling.rulebook module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook.__init__"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook.__repr__"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook.add_rule"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.add_rule()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook.commutes"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.commutes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.CommutationRulebook.make_blocking_matrix"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook.make_blocking_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.disjoint_qubits"><code class="docutils literal notranslate"><span class="pre">disjoint_qubits()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html#qgym.envs.scheduling.rulebook.same_gate"><code class="docutils literal notranslate"><span class="pre">same_gate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html">qgym.envs.scheduling.scheduling module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html#qgym.envs.scheduling.scheduling.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html#qgym.envs.scheduling.scheduling.Scheduling.__init__"><code class="docutils literal notranslate"><span class="pre">Scheduling.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html#qgym.envs.scheduling.scheduling.Scheduling.get_circuit"><code class="docutils literal notranslate"><span class="pre">Scheduling.get_circuit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html#qgym.envs.scheduling.scheduling.Scheduling.reset"><code class="docutils literal notranslate"><span class="pre">Scheduling.reset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html">qgym.envs.scheduling.scheduling_dataclasses module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo"><code class="docutils literal notranslate"><span class="pre">CircuitInfo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo.acts_on"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.acts_on</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo.blocking_matrix"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.blocking_matrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo.dependencies"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.dependencies</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo.encoded"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.encoded</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo.legal"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.legal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo.names"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo.reset"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo.schedule"><code class="docutils literal notranslate"><span class="pre">CircuitInfo.schedule</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.GateInfo"><code class="docutils literal notranslate"><span class="pre">GateInfo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.GateInfo.cycle_length"><code class="docutils literal notranslate"><span class="pre">GateInfo.cycle_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.GateInfo.exclude"><code class="docutils literal notranslate"><span class="pre">GateInfo.exclude</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.GateInfo.exclude_next_cycle"><code class="docutils literal notranslate"><span class="pre">GateInfo.exclude_next_cycle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.GateInfo.not_in_same_cycle"><code class="docutils literal notranslate"><span class="pre">GateInfo.not_in_same_cycle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.GateInfo.reset"><code class="docutils literal notranslate"><span class="pre">GateInfo.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils"><code class="docutils literal notranslate"><span class="pre">SchedulingUtils</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils.gate_encoder"><code class="docutils literal notranslate"><span class="pre">SchedulingUtils.gate_encoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils.random_circuit_generator"><code class="docutils literal notranslate"><span class="pre">SchedulingUtils.random_circuit_generator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils.random_circuit_mode"><code class="docutils literal notranslate"><span class="pre">SchedulingUtils.random_circuit_mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html#qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils.rulebook"><code class="docutils literal notranslate"><span class="pre">SchedulingUtils.rulebook</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html">qgym.envs.scheduling.scheduling_rewarders module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html#qgym.envs.scheduling.scheduling_rewarders.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html#qgym.envs.scheduling.scheduling_rewarders.BasicRewarder.__init__"><code class="docutils literal notranslate"><span class="pre">BasicRewarder.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html#qgym.envs.scheduling.scheduling_rewarders.BasicRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">BasicRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html#qgym.envs.scheduling.scheduling_rewarders.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html#qgym.envs.scheduling.scheduling_rewarders.EpisodeRewarder.__init__"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html#qgym.envs.scheduling.scheduling_rewarders.EpisodeRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder.compute_reward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html">qgym.envs.scheduling.scheduling_state module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState"><code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.__init__"><code class="docutils literal notranslate"><span class="pre">SchedulingState.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.busy"><code class="docutils literal notranslate"><span class="pre">SchedulingState.busy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.circuit_info"><code class="docutils literal notranslate"><span class="pre">SchedulingState.circuit_info</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.create_observation_space"><code class="docutils literal notranslate"><span class="pre">SchedulingState.create_observation_space()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.cycle"><code class="docutils literal notranslate"><span class="pre">SchedulingState.cycle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.gates"><code class="docutils literal notranslate"><span class="pre">SchedulingState.gates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.is_done"><code class="docutils literal notranslate"><span class="pre">SchedulingState.is_done()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.machine_properties"><code class="docutils literal notranslate"><span class="pre">SchedulingState.machine_properties</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.obtain_info"><code class="docutils literal notranslate"><span class="pre">SchedulingState.obtain_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.obtain_observation"><code class="docutils literal notranslate"><span class="pre">SchedulingState.obtain_observation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.reset"><code class="docutils literal notranslate"><span class="pre">SchedulingState.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.steps_done"><code class="docutils literal notranslate"><span class="pre">SchedulingState.steps_done</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.update_state"><code class="docutils literal notranslate"><span class="pre">SchedulingState.update_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html#qgym.envs.scheduling.scheduling_state.SchedulingState.utils"><code class="docutils literal notranslate"><span class="pre">SchedulingState.utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html">qgym.envs.scheduling.scheduling_visualiser module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html#qgym.envs.scheduling.scheduling_visualiser.SchedulingVisualiser"><code class="docutils literal notranslate"><span class="pre">SchedulingVisualiser</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html#qgym.envs.scheduling.scheduling_visualiser.SchedulingVisualiser.__init__"><code class="docutils literal notranslate"><span class="pre">SchedulingVisualiser.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html#qgym.envs.scheduling.scheduling_visualiser.SchedulingVisualiser.render"><code class="docutils literal notranslate"><span class="pre">SchedulingVisualiser.render()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="qgym.envs.routing.routing_visualiser.html" class="btn btn-neutral float-left" title="qgym.envs.routing.routing_visualiser module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="qgym.envs.scheduling.machine_properties.html" class="btn btn-neutral float-right" title="qgym.envs.scheduling.machine_properties module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, QuTech &amp; TNO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
