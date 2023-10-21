@@ -239,8 +239,3 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         """
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, options=options)
-
-    #TODO: what to do with this?!
-    # def add_random_edge_weights(self) -> None:
-    #     """Add random weights to the connection graph and interaction graph."""
-    #     cast(InitialMappingState, self._state).add_random_edge_weights()

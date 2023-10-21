@@ -23,7 +23,9 @@ from qgym import spaces
 from qgym.templates.state import State
 
 
-class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class InitialMappingState(
+    State[Dict[str, NDArray[np.int_] | NDArray[np.float_]], NDArray[np.int_]]
+):
     """The ``InitialMappingState`` class."""
 
     __slots__ = (
