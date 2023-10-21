@@ -236,3 +236,57 @@ class EpisodeRewarder(BasicRewarder):
             return 0
 
         return self._compute_state_reward(new_state)
+    
+class FidelityEpisodeRewarder(BasicRewarder):
+    """Rewarder for the ``InitialMapping`` environment, which only gives a reward at
+    the end of the episode or when an illegal action is taken. Additionally, this 
+    rewarder takes the fidelity of edges in the connection graph into account.
+    """
+
+    def compute_reward(
+        self,
+        *,
+        old_state: InitialMappingState,
+        action: NDArray[np.int_],
+        new_state: InitialMappingState,
+    ) -> float:
+        """Compute a reward, based on the new state, and the given action.
+
+        Specifically the connection graph, interaction graphs and mapping are used.
+
+        Args:
+            old_state: State of the ``InitialMapping`` before the current action.
+            action: Action that has just been taken.
+            new_state: Updated state of the ``InitialMapping``.
+
+        Returns:
+            The reward for this action. If the action is illegal, then the reward is
+            `illegal_action_penalty`. If the action is legal, but the mapping is not yet
+            finished, then the reward is 0. If the action is legal, and the mapping is
+            finished, then the reward is the number of 'good' edges times
+            `reward_per_edge` plus the number of 'bad' edges times `penalty_per_edge`.
+        """
+        if self._is_illegal(action, old_state):
+            return self._illegal_action_penalty
+
+        if len(new_state.mapping_dict) != new_state.n_nodes:
+            return 0
+
+        return self._compute_state_reward(new_state)
+
+    def _compute_state_reward(self, state):
+        reward = 0.0
+        for flat_idx in state.graphs["interaction"]["matrix"].nonzero()[0]:
+            interaction_i, interaction_j = divmod(flat_idx, state.n_nodes)
+            mapped_interaction_i = state.mapping_dict[interaction_i]
+            mapped_interaction_j = state.mapping_dict[interaction_j]
+
+            edge_fidelity = state.graphs["connection"]["matrix"][
+                mapped_interaction_i, mapped_interaction_j
+            ]
+            if edge_fidelity == 0:
+                reward += self._penalty_per_edge
+            else:
+                reward += edge_fidelity * self._reward_per_edge
+
+        return reward
