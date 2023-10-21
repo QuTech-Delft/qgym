@@ -60,11 +60,23 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.steps_done: int = 0
         """Number of steps done since the last reset."""
 
-        self.graphs = {
-            "connection": {
+        self.fidelity = False  # whether edges include fidelity
+        for _, _, wt in connection_graph.edges.data("weight"):
+            if type(wt) is not np.int_:
+                self.fidelity = True
+                break
+        if self.fidelity:
+            connection = {
+                "graph": deepcopy(connection_graph),
+                "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),
+            }
+        else:
+            connection = {
                 "graph": deepcopy(connection_graph),
                 "matrix": nx.to_numpy_array(connection_graph, dtype=np.int8),
-            },
+            }
+        self.graphs = {
+            "connection": connection,
             "interaction": {
                 "graph": deepcopy(interaction_graph),
                 "matrix": nx.to_numpy_array(interaction_graph, dtype=np.int8).flatten(),
@@ -96,7 +108,15 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         mapping_space = spaces.MultiDiscrete(
             nvec=[self.n_nodes + 1] * self.n_nodes, rng=self.rng
         )
-        interaction_matrix_space = spaces.MultiBinary(self.n_nodes**2, rng=self.rng)
+
+        if self.fidelity:
+            interaction_matrix_space = spaces.Box(
+                low=0, high=1, shape=(self.n_nodes, self.n_nodes)
+            )
+        else:
+            interaction_matrix_space = spaces.MultiBinary(
+                self.n_nodes**2, rng=self.rng
+            )
         return spaces.Dict(
             rng=self.rng,
             mapping=mapping_space,
