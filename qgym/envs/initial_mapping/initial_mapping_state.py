@@ -113,7 +113,11 @@ class InitialMappingState(
 
         if self.fidelity:
             interaction_matrix_space = spaces.Box(
-                low=0, high=1, shape=(self.n_nodes, self.n_nodes)
+                low=0,
+                high=1,
+                shape=(self.n_nodes, self.n_nodes),
+                dtype=np.float_,
+                rng=self.rng,
             )
         else:
             interaction_matrix_space = spaces.MultiBinary(
@@ -220,11 +224,12 @@ class InitialMappingState(
         Returns:
             Optional debugging info for the current state.
         """
-        return {"Steps done": self.steps_done,
-                "Mapping": self.mapping,
-                "Mapping Dictionary": self.mapping_dict,
-                "Mapped Qubits": self.mapped_qubits,
-                }
+        return {
+            "Steps done": self.steps_done,
+            "Mapping": self.mapping,
+            "Mapping Dictionary": self.mapping_dict,
+            "Mapped Qubits": self.mapped_qubits,
+        }
 
     @property
     def n_nodes(self) -> int:
