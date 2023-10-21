@@ -165,7 +165,6 @@ class BasicRewarder(Rewarder):
 
         self._reward_range = (l_bound, u_bound)
 
-
 class SingleStepRewarder(BasicRewarder):
     """Rewarder for the ``InitialMapping`` environment, which gives a reward based on
     the improvement in the current step.
