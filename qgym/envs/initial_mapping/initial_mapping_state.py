@@ -207,7 +207,11 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         Returns:
             Optional debugging info for the current state.
         """
-        return {"Steps done": self.steps_done}
+        return {"Steps done": self.steps_done,
+                "Mapping": self.mapping,
+                "Mapping Dictionary": self.mapping_dict,
+                "Mapped Qubits": self.mapped_qubits,
+                }
 
     @property
     def n_nodes(self) -> int:
