@@ -200,7 +200,6 @@ class SingleStepRewarder(BasicRewarder):
             old_state
         )
 
-
 class EpisodeRewarder(BasicRewarder):
     """Rewarder for the ``InitialMapping`` environment, which only gives a reward at
     the end of the episode or when an illegal action is taken.
