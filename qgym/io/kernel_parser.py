@@ -1,4 +1,5 @@
 from collections import deque, namedtuple
+from dataclasses import dataclass
 
 Kernel = namedtuple("Kernel", ["name", "repetitions", "gates", "cycles"])
 
@@ -37,6 +38,10 @@ ONE_QUBIT_INSTRUCTIONS = {
 ONE_QUBIT_ONE_ANGLE_INSTRUCTIONS = {"rx", "ry", "rz"}
 TWO_QUBIT_INSTRUCTIONS = {"cnot", "cz", "swap"}
 
+@dataclass
+class Instruction:
+    name: str
+    values: list[float | int]
 
 class KernelParser:
     def __init__(self, name: str, repetitions: int) -> None:
@@ -50,7 +55,7 @@ class KernelParser:
         if instruction_line.startswith("wait"):
             raise ValueError("The 'wait' instruction is not supported by this parser.")
 
-        elif instruction_line.startswith("skip"):
+        if instruction_line.startswith("skip"):
             skip_count = int(instruction_line.removeprefix("skip"))
             self.current_cycle += skip_count
         else:
@@ -92,7 +97,7 @@ class KernelParser:
             q1, axis1, q2, axis2 = instruction.removeprefix(instruction_name).split(",")
             self.instructions.append(
                 [
-                    "toffoli",
+                    "measure_parity",
                     qubit_to_int(q1),
                     axis1.strip(),
                     qubit_to_int(q2),
@@ -122,4 +127,17 @@ class KernelParser:
 
 
 def qubit_to_int(qubit: str) -> int:
+    """Convert a qubit in string format to an int.
+    
+    Example:
+        >>> qubit_to_int("q[2]")
+        2
+    
+    Args:
+        qubit: String containing a qubit in cQASM format, i.e. q[0]. All whitespaces are
+            ignored.
+    
+    Returns:
+        Integer of the qubit value.
+    """
     return int(qubit.strip(" \t\v\n\r\fq[]"))

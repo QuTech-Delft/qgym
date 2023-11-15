@@ -109,15 +109,9 @@ class QasmParser:
         qubits = int(line.removeprefix("qubits "))
 
         kernels = deque()
+    
         if line.startswith("."):
-            line = line.removeprefix(".")
-            if "(" in line:
-                line = line.removesuffix(")")
-                name, repetitions_string = line.split("(")
-                repetitions = int(repetitions_string)
-            else:
-                name = line.removeprefix(".")
-                repetitions = 1
+            name, repetitions = self._parse_kernel_name_and_repetitions(line)
         else:
             name = ""
             repetitions = 1
@@ -127,14 +121,7 @@ class QasmParser:
         for line in program:
             if line.startswith("."):
                 kernels.append(kernel_parser.make_kernel())
-                line = line.removeprefix(".")
-                if "(" in line:
-                    line = line.removesuffix(")")
-                    name, repetitions_string = line.split("(")
-                    repetitions = int(repetitions_string)
-                else:
-                    name = line.removeprefix(".")
-                    repetitions = 1
+                name, repetitions = self._parse_kernel_name_and_repetitions(line)
                 kernel_parser = KernelParser(name, repetitions)
             else:
                 kernel_parser.add_instruction_line(line)
@@ -142,3 +129,15 @@ class QasmParser:
         kernels.append(kernel_parser.make_kernel())
 
         return Program(qubits, list(kernels))
+    
+    @staticmethod
+    def _parse_kernel_name_and_repetitions(line: str) -> tuple[str, int]:
+        line = line.removeprefix(".")
+        if "(" in line:
+            line = line.removesuffix(")")
+            name, repetitions_string = line.split("(")
+            repetitions = int(repetitions_string)
+        else:
+            name = line
+            repetitions = 1
+        return name, repetitions
