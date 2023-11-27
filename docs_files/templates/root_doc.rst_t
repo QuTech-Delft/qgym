@@ -3,12 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-###########################################################################
-``qgym`` – A Gym for Training and Benchmarking RL-Based Quantum Compilation
-###########################################################################
-``qgym`` is a software framework that provides environments for training and benchmarking RL-based quantum compilers.
+###############################################################################
+:obj:`~qgym` – A Gym for Training and Benchmarking RL-Based Quantum Compilation
+###############################################################################
+:obj:`~qgym` is a software framework that provides environments for training and benchmarking RL-based quantum compilers.
 It is built on top of OpenAI Gym and abstracts parts of the compilation process that are irrelevant to AI researchers.
-``qgym`` includes three environments: Initial Mapping, Qubit Routing, and Scheduling, each of which is customizable and extensible.
+:obj:`~qgym` includes three environments: :class:`~qgym.envs.InitialMapping`,
+Qubit :class:`~qgym.envs.Routing`, and :class:`~qgym.envs.Scheduling`,
+each of which is customizable and extensible.
 
 
 Documentation
@@ -24,7 +26,7 @@ You could also have a look at some `Jupyter Notebooks <https://github.com/QuTech
 
 Installing with pip
 -------------------
-To install the ``qgym`` use
+To install the :obj:`~qgym` use
 
 .. code-block:: console
 
@@ -38,12 +40,12 @@ In this case, use
 
    pip install qgym[tutorial]
 
-Currently ``qgym`` has support for Python 3.7, 3.8, 3.9, 3.10 and 3.11.
+Currently :obj:`~qgym` has support for Python 3.7, 3.8, 3.9, 3.10 and 3.11.
 
 
 Publication
 ============
-The paper on ``qgym`` has been presented in the `1st International Workshop on Quantum Machine Learning: From Foundations to Applications (QML@QCE'23) <https://qml.lfdr.de/2023/>`_.
+The paper on :obj:`~qgym` has been presented in the `1st International Workshop on Quantum Machine Learning: From Foundations to Applications (QML@QCE'23) <https://qml.lfdr.de/2023/>`_.
 You can find the preprint of the paper on `arxiv <https://arxiv.org/pdf/2308.02536.pdf>`_.
 
 .. code-block:: console
@@ -57,7 +59,7 @@ You can find the preprint of the paper on `arxiv <https://arxiv.org/pdf/2308.025
 
 Team
 ====
-Building qgym is a joint effort.
+Building :obj:`~qgym` is a joint effort.
 
 Core developers
 ----------------
