@@ -1,8 +1,8 @@
-"""This module contains the ``MachineProperties`` class, which helps with conveniently
-setting up machine properties for the scheduling environment.
+"""This module contains the :class:`MachineProperties` class, which helps with
+conveniently setting up machine properties for the scheduling environment.
 
 Usage:
-    The code below will create ``MachineProperties`` which will have the following
+    The code below will create :class:`MachineProperties` which will have the following
     properties:
 
     * The machine has two qubits.
@@ -33,8 +33,8 @@ from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
 class MachineProperties:
-    """``MachineProperties`` is a class to conveniently setup machine properties for the
-    ``Scheduling`` environment.
+    """:class:`MachineProperties` is a class to conveniently setup machine properties
+    for the :class:`~qgym.envs.Scheduling` environment.
     """
 
     def __init__(self, n_qubits: int) -> None:
@@ -51,15 +51,15 @@ class MachineProperties:
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
-        """Initialize the ``MachineProperties`` class from a ``Mapping`` containing
+        """Initialize the :class:`MachineProperties` class from a ``Mapping`` containing
         valid machines properties.
 
         Args:
             machine_properties: ``Mapping`` containing valid machine properties.
 
         Returns:
-            Initialized ``MachineProperties`` object with the properties described in
-            the `machine_properties` ``Mapping``.
+            Initialized :class:`MachineProperties` object with the properties described
+            in the `machine_properties` ``Mapping``.
         """
         checked_mp = cls._check_machine_properties_mapping(machine_properties)
 
@@ -84,7 +84,7 @@ class MachineProperties:
                 number of machine cycles (time) as values.
 
         Returns:
-            The ``MachineProperties`` with the added gates.
+            The :class:`MachineProperties` with the added gates.
         """
         check_instance(gates, "gates", Mapping)
 
@@ -107,7 +107,7 @@ class MachineProperties:
             gates: ``Iterable`` of gate names that should start in the same cycle.
 
         Returns:
-            The ``MachineProperties`` with the same start gates.
+            The :class:`MachineProperties` with the same start gates.
         """
         check_instance(gates, "gates", Iterable)
 
@@ -128,9 +128,10 @@ class MachineProperties:
                 same cycle.
 
         Returns:
-            The ``MachineProperties`` with an updated ``not_in_same_cycle`` property.
-            The ``not_in_same_cycle`` property is updated according to the input
-            `gates`.
+            The :class:`MachineProperties` with an updated
+            :class:`~MachineProperties.not_in_same_cycle` property.
+            The :class:`~MachineProperties.not_in_same_cycle` property is updated
+            according to the input `gates`.
         """
         check_instance(gates, "gates", Iterable)
         for gate1, gate2 in gates:
@@ -151,9 +152,10 @@ class MachineProperties:
         """Encode the gates in the machine properties to integer values.
 
         Returns:
-            The GateEncoder used to encode the gates. This GateEncoder can be used to
-            decode the gates or encode quantum circuits containing the same gate names
-            as in this ``MachineProperties`` object.
+            The :class:`~qgym.utils.GateEncoder` used to encode the gates. This
+            :class:`~qgym.utils.GateEncoder` can be used to decode the gates or encode
+            quantum circuits containing the same gate names as in this
+            :class:`MachineProperties` object.
         """
         if (
             any(not isinstance(gate, str) for gate in self._gates)

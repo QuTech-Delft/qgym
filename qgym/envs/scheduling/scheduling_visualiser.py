@@ -1,4 +1,6 @@
-"""This module contains a class used for rendering the ``Scheduling`` environment."""
+"""This module contains a class used for rendering the :class:`~qgym.envs.Scheduling`
+environment.
+"""
 from __future__ import annotations
 
 from typing import Dict, cast
@@ -16,17 +18,17 @@ from qgym.utils.visualisation.wrappers import write_text
 
 
 class SchedulingVisualiser(Visualiser):
-    """Visualiser class for the ``Scheduling`` environment."""
+    """Visualiser class for the :class:`~qgym.envs.Scheduling` environment."""
 
     def __init__(self, render_mode: str, initial_state: SchedulingState) -> None:
-        """Init of the ``SchedulingVisualiser``.
+        """Init of the :class:`SchedulingVisualiser`.
 
         Args:
-            initial_state: ``SchedulingState`` object containing the initial state of
-                the environment to visualise.
-            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
-                'rgb_array', return an RGB array encoding of the rendered frame on each
-                render call.
+            initial_state: :class:`~qgym.envs.scheduling.SchedulingState` object
+                containing the initial state of the environment to visualise.
+            render_mode: If ``"human"`` open a ``pygame`` screen visualizing the step.
+                If ``"rgb_array"``, return an RGB array encoding of the rendered frame
+                on each render call.
         """
         # Rendering data
         self.offset = {"x-axis": 100, "y-axis": 0}
