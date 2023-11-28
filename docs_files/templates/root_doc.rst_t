@@ -32,9 +32,8 @@ To install the :obj:`~qgym` use
 
    pip install qgym
 
-If you would also like to use the notebooks, additional packages are required.
-These can simply be installed by using
-In this case, use
+If you would also like to use the notebooks, additional packages are required, which can
+simply be installed by using:
 
 .. code-block:: console
 

@@ -16,8 +16,7 @@ To install the `qgym` use
 ```terminal
 pip install qgym
 ```
-If you would also like to use the notebooks, additional packages are required.
-These can simply be installed by using
+If you would also like to use the notebooks, additional packages are required, which can simply be installed by using
 In this case, use
 ```terminal
 pip install qgym[tutorial]
