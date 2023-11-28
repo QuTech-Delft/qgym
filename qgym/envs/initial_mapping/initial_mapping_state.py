@@ -1,7 +1,8 @@
-"""This module contains the ``InitialMappingState`` class.
+"""This module contains the :class:`~qgym.envs.initial_mapping.InitialMappingState`
+class.
 
-This ``InitialMappingState`` represents the ``State`` of the ``InitialMapping``
-environment.
+This :class:`~qgym.envs.InitialMapping` represents the :class:`~qgym.templates.State` of
+the :class:`~qgym.envs.InitialMapping` environment.
 
 Usage:
     >>> from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
@@ -26,7 +27,7 @@ from qgym.templates.state import State
 class InitialMappingState(
     State[Dict[str, NDArray[np.int_] | NDArray[np.float_]], NDArray[np.int_]]
 ):
-    """The ``InitialMappingState`` class."""
+    """The :class:`~qgym.envs.initial_mapping.InitialMappingState` class."""
 
     __slots__ = (
         "steps_done",
@@ -39,12 +40,12 @@ class InitialMappingState(
     def __init__(
         self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
     ) -> None:
-        """Init of the ``InitialMappingState`` class.
+        """Init of the :class:`~qgym.envs.initial_mapping.InitialMappingState` class.
 
         Args:
-            connection_graph: ``networkx`` graph representation of the QPU topology.
-                Each node represents a physical qubit and each edge represents a
-                connection in the QPU topology.
+            connection_graph: `networkx Graph <https://networkx.org/documentation/stable/reference/classes/graph.html>`_
+                representation of the QPU topology. Each node represents a physical
+                qubit and each edge represents a connection in the QPU topology.
             interaction_graph_edge_probability: Probability that an edge between any
                 pair of qubits in the random interaction graph exists. The interaction
                 graph will have the same amount of nodes as the connection graph. Nodes
@@ -102,10 +103,11 @@ class InitialMappingState(
         """Create the corresponding observation space.
 
         Returns:
-            Observation space in the form of a ``qgym.spaces.Dict`` space containing:
+            Observation space in the form of a :class:`~qgym.spaces.Dict` space
+            containing:
 
-            * ``qgym.spaces.MultiDiscrete`` space representing the mapping.
-            * ``qgym.spaces.MultiBinary`` representing the interaction matrix.
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the mapping.
+            * :class:`~qgym.spaces.MultiBinary` representing the interaction matrix.
         """
         mapping_space = spaces.MultiDiscrete(
             nvec=[self.n_nodes + 1] * self.n_nodes, rng=self.rng

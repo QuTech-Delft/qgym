@@ -1,6 +1,7 @@
-"""This module contains the ``RoutingState`` class.
+"""This module contains the :class:`RoutingState` class.
 
-This ``RoutingState``represents the ``State`` of the ``Routing`` environment.
+This :class:`RoutingState` represents the :class:`~qgym.templates.State` of the
+:class:`~qgym.envs.Routing` environment.
 
 Usage:
     >>> from qgym.envs.routing.routingstate import RoutingState
@@ -30,7 +31,7 @@ from qgym.templates.state import State
 
 
 class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
-    """The ``RoutingState`` class."""
+    """The :class:`RoutingState` class."""
 
     def __init__(
         self,
@@ -211,11 +212,11 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Create the corresponding observation space.
 
         Returns:
-            Observation space in the form of a ``qgym.spaces.Dict`` space containing:
+            Observation space in the form of a :class:`~qgym.spaces.Dict` space containing:
 
-            * ``qgym.spaces.MultiDiscrete`` space representing the interaction gates
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the interaction gates
               ahead of current position.
-            * ``qgym.spaces.MultiDiscrete`` space representing the current mapping of
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the current mapping of
               logical onto physical qubits
         """
         interaction_gates_ahead = qgym.spaces.MultiDiscrete(

@@ -1,4 +1,5 @@
-"""This module contains some vanilla Rewarders for the ``Scheduling`` environment.
+"""This module contains some vanilla Rewarders for the :class:`~qgym.envs.Scheduling`
+environment.
 
 Usage:
     The rewarders in this module can be customized by initializing the rewarders with
@@ -14,13 +15,15 @@ Usage:
             schedule_gate_bonus: = 3,
             )
 
-    After initialization, the rewarders can be given to the ``Scheduling`` environment.
+    After initialization, the rewarders can be given to the :class:`~qgym.envs.Scheduling`
+    environment.
 
 .. note::
-    When implementing custom rewarders, they should inherit from ``qgym.Rewarder``.
-    Furthermore, they must implement the ``compute_reward`` method. Which takes as input
-    the old state, the new state and the given action. See the documentation of the
-    ``qgym.envs.scheduling.scheduling`` module for more information on the state and
+    When implementing custom rewarders, they should inherit from
+    :class:`~qgym.templates.Rewarder`. Furthermore, they must implement the
+    :func:`~qgym.templates.Rewarder.compute_reward` method. Which takes as input the old
+    state, the new state and the given action. See the documentation of the
+    :obj:`~qgym.envs.scheduling.scheduling` module for more information on the state and
     action space.
 
 """
@@ -35,7 +38,7 @@ from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_po
 
 
 class BasicRewarder(Rewarder):
-    """Basic rewarder for the ``Scheduling`` environment."""
+    """Basic rewarder for the :class:`~qgym.envs.Scheduling` environment."""
 
     def __init__(
         self,
@@ -50,9 +53,9 @@ class BasicRewarder(Rewarder):
                 is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
                 value should be negative (but is not required) and defaults to -5.
             update_cycle_penalty: Penalty given for incrementing a cycle. Since the
-                ``Scheduling`` environment wats to create the shortest schedules,
-                incrementing the cycle should be penalized. This value should be
-                negative (but is not required) and defaults to -1.
+                :class:`~qgym.envs.Scheduling` environment wants to create the shortest
+                schedules, incrementing the cycle should be penalized. This value should
+                be negative (but is not required) and defaults to -1.
             schedule_gate_bonus: Reward gained for successfully scheduling a gate. This
                 value should be positive (but is not required) and defaults to 0.
         """
@@ -82,10 +85,10 @@ class BasicRewarder(Rewarder):
         the 'legal_actions' actions array.
 
         Args:
-            old_state: State of the ``Scheduling`` environment before the current
-                action.
+            old_state: State of the :class:`~qgym.envs.Scheduling` environment before
+                the current action.
             action: Action that has just been taken.
-            new_state: Updated state of the ``Scheduling`` environment.
+            new_state: Updated state of the :class:`~qgym.envs.Scheduling` environment.
 
         Returns:
             The reward for this action. If the action is illegal, then the reward is
@@ -108,7 +111,8 @@ class BasicRewarder(Rewarder):
 
         Args:
             action: Action that has just been taken.
-            old_state: State of the ``Scheduling`` before the current action.
+            old_state: State of the :class:`~qgym.envs.Scheduling` before the current
+                action.
 
         Returns:
             Boolean value stating whether this action was illegal.
@@ -138,8 +142,8 @@ class BasicRewarder(Rewarder):
 
 
 class EpisodeRewarder(Rewarder):
-    """Rewarder for the ``Scheduling`` environment, which only gives a reward at
-    the end of the episode or when an illegal action is taken.
+    """Rewarder for the :class:`~qgym.envs.Scheduling` environment, which only gives a
+    reward at the end of the episode or when an illegal action is taken.
     """
 
     def __init__(
@@ -152,9 +156,9 @@ class EpisodeRewarder(Rewarder):
                 is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
                 value should be negative (but is not required) and defaults to -5.
             update_cycle_penalty: Penalty given for incrementing a cycle. Since the
-                ``Scheduling`` environment wats to create the shortest schedules,
-                incrementing the cycle should be penalized. This value should be
-                negative (but is not required) and defaults to -1.
+                :class:`~qgym.envs.Scheduling` environment wants to create the shortest
+                schedules, incrementing the cycle should be penalized. This value should
+                be negative (but is not required) and defaults to -1.
         """
         self._illegal_action_penalty = check_real(
             illegal_action_penalty, "illegal_action_penalty"
@@ -177,10 +181,10 @@ class EpisodeRewarder(Rewarder):
         """Compute a reward, based on the new state, and the given action.
 
         Args:
-            old_state: State of the ``Scheduling`` environment before the current
-                action.
+            old_state: State of the :class:`~qgym.envs.Scheduling` environment before
+                the current action.
             action: Action that has just been taken.
-            new_state: Updated state of the ``Scheduling`` environment.
+            new_state: Updated state of the :class:`~qgym.envs.Scheduling` environment.
 
         Returns:
             The reward for this action. If the action is illegal, then the reward is
@@ -209,7 +213,8 @@ class EpisodeRewarder(Rewarder):
 
         Args:
             action: Action that has just been taken.
-            old_state: State of the ``Scheduling`` before the current action.
+            old_state: State of the :class:`~qgym.envs.Scheduling` before the current
+                action.
 
         Returns:
             Boolean value stating whether this action was illegal.

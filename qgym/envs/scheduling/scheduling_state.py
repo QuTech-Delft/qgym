@@ -1,6 +1,7 @@
-"""This module contains the ``SchedulingState`` class.
+"""This module contains the :class:`SchedulingState` class.
 
-This ``SchedulingState``represents the ``State`` of the ``Scheduling`` environment.
+This :class:`SchedulingState` represents the :class:`~qgym.templates.State` of the
+:class:`~qgym.envs.Scheduling` environment.
 """
 from __future__ import annotations
 
@@ -25,7 +26,7 @@ from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 class SchedulingState(
     State[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
 ):
-    """The ``SchedulingState`` class."""
+    """The :class:`SchedulingState` class."""
 
     def __init__(
         self,
@@ -36,24 +37,28 @@ class SchedulingState(
         random_circuit_mode: str,
         rulebook: CommutationRulebook,
     ) -> None:
-        """Init of the ``SchedulingState`` class.
+        """Init of the :class:`SchedulingState` class.
 
         Args:
-            machine_properties: A ``MachineProperties`` object.
+            machine_properties: A :class:`~qgym.envs.scheduling.MachineProperties`
+                object.
             max_gates: Maximum number of gates allowed in a circuit.
             dependency_depth: Number of dependencies given in the observation.
                 Determines the shape of the `dependencies` observation, which has the
                 shape (dependency_depth, max_gates).
             random_circuit_mode: Mode for the random circuit generator. The mode can be
-                'default' or 'workshop'.
-            rulebook: ``CommutationRulebook`` describing the commutation rules.
+                ``"default"`` or ``"workshop"``.
+            rulebook: :class:`~qgym.envs.scheduling.CommutationRulebook` describing the
+                commutation rules.
         """
         self.steps_done = 0
         """Number of steps done since the last reset."""
         self.cycle = 0
         """Current 'machine' cycle."""
         self.machine_properties = machine_properties
-        """``MachineProperties`` class containing machine properties and limitations."""
+        """:class:`~qgym.envs.scheduling.MachineProperties` class containing machine
+        properties and limitations.
+        """
         self.utils = SchedulingUtils(
             random_circuit_generator=RandomCircuitGenerator(
                 machine_properties.n_qubits, max_gates, rng=self.rng
@@ -62,8 +67,9 @@ class SchedulingState(
             rulebook=rulebook,
             gate_encoder=machine_properties.encode(),
         )
-        """``SchedulingUtils`` dataclass with a random circuit generator, commutation
-        rulebook and a gate encoder.
+        """:class:`~qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils`
+        dataclass with a random circuit generator, commutation rulebook and a gate
+        encoder.
         """
 
         # At the start no gates should be excluded
@@ -78,7 +84,10 @@ class SchedulingState(
             )
             for gate_name in gate_cycle_lengths
         }
-        """Dictionary with gate names as keys and ``GateInfo`` dataclasses as values."""
+        """Dictionary with gate names as keys and
+        :class:`~qgym.envs.scheduling.scheduling_dataclasses.GateInfo` dataclasses as
+        values.
+        """
         self.busy = np.zeros(machine_properties.n_qubits, dtype=int)
         """Amount of cycles that a qubit is still busy (zero if available). Used
         internally for the hardware limitations.
@@ -98,8 +107,8 @@ class SchedulingState(
             schedule=np.full(len(circuit), -1, dtype=int),
             blocking_matrix=self.utils.rulebook.make_blocking_matrix(circuit),
         )
-        """``CircuitInfo`` dataclass containing the encoded circuit and attributes used
-        to update the state.
+        """:class:`~qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo`` dataclass
+        containing the encoded circuit and attributes used to update the state.
         """
 
         self._update_dependencies()
@@ -165,16 +174,17 @@ class SchedulingState(
         """Create the corresponding observation space.
 
         Returns:
-            Observation space in the form of a ``qgym.spaces.Dict`` space containing:
+            Observation space in the form of a :class:`~qgym.spaces.Dict` space
+            containing:
 
-            * ``qgym.spaces.MultiBinary`` space representing the legal actions. If
+            * :class:`~qgym.spaces.MultiBinary` space representing the legal actions. If
               the value at index $i$ determines if gate number $i$ can be scheduled
               or not.
-            * ``qgym.spaces.MultiDiscrete`` space representing the integer encoded
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the integer encoded
               gate names.
-            * ``qgym.spaces.MultiDiscrete`` space representing the interaction of
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the interaction of
               each gate (q1 and q2).
-            * ``qgym.spaces.MultiDiscrete`` space representing the first $n$ gates
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the first $n$ gates
               that must be scheduled before this gate.
         """
         max_gates = len(self.circuit_info.legal)

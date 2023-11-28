@@ -1,4 +1,6 @@
-"""This module contains a class used for rendering a ``Routing`` environment."""
+"""This module contains a class used for rendering a
+:class:`~qgym.envs.Routing` environment.
+"""
 from __future__ import annotations
 
 from typing import Any, Sequence
@@ -22,10 +24,10 @@ from qgym.utils.visualisation.wrappers import (
 
 
 class RoutingVisualiser(Visualiser):
-    """Visualiser class for the ``Routing`` environment."""
+    """Visualiser class for the :class:`~qgym.envs.Routing` environment."""
 
     def __init__(self, render_mode: str, connection_graph: Graph) -> None:
-        """Init of the ``RoutingVisualiser``.
+        """Init of the :class:`RoutingVisualiser`.
 
         Args:
             connection_graph: ``networkx.Graph`` representation of the connection graph.
