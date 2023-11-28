@@ -1,7 +1,7 @@
 # QGYM – A Gym for Training and Benchmarking RL-Based Quantum Compilation
 `qgym` is a software framework that provides environments for training and benchmarking RL-based quantum compilers.
 It is built on top of OpenAI Gym and abstracts parts of the compilation process that are irrelevant to AI researchers.
-`qgym` includes three environments: `InitialMapping`, Qubit `Routing`, and `Scheduling`, each of which is customizable and extensible.
+`qgym` includes three environments: `InitialMapping`, `Routing`, and `Scheduling`, each of which is customizable and extensible.
 
 ## Documentation
 We have created an [extensive documentation](https://qutech-delft.github.io/qgym/index.html) with code snippets.

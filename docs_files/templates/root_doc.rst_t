@@ -9,7 +9,7 @@
 :obj:`~qgym` is a software framework that provides environments for training and benchmarking RL-based quantum compilers.
 It is built on top of OpenAI Gym and abstracts parts of the compilation process that are irrelevant to AI researchers.
 :obj:`~qgym` includes three environments: :class:`~qgym.envs.InitialMapping`,
-Qubit :class:`~qgym.envs.Routing`, and :class:`~qgym.envs.Scheduling`,
+:class:`~qgym.envs.Routing`, and :class:`~qgym.envs.Scheduling`,
 each of which is customizable and extensible.
 
 
