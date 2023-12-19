@@ -162,7 +162,7 @@ def test_single_step_rewarder(
 
 
 """
-Tests for the episode rewarder rewarder
+Tests for the episode rewarder
 """
 
 
