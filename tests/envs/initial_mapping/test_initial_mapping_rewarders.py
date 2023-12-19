@@ -104,9 +104,9 @@ full_graph = np.array(([[0, 1, 1], [1, 0, 1], [1, 1, 0]]), dtype=np.int_)
     "connection_graph_matrix,interaction_graph_matrix,rewards",
     [
         (empty_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 5, 15]),
+        (empty_graph, full_graph, [0, 0, -3]),
         (full_graph, empty_graph, [0, 0, 0]),
-        (empty_graph, full_graph, [0, -1, -3]),
+        (full_graph, full_graph, [0, 0, 15]),       
     ],
 )
 def test_basic_rewarder(
@@ -137,9 +137,9 @@ Tests for the SingleStepRewarder
     "connection_graph_matrix,interaction_graph_matrix,rewards",
     [
         (empty_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 5, 10]),
+        (empty_graph, full_graph, [0, 0, -3]),
         (full_graph, empty_graph, [0, 0, 0]),
-        (empty_graph, full_graph, [0, -1, -2]),
+        (full_graph, full_graph, [0, 0, 15]),       
     ],
 )
 def test_single_step_rewarder(
@@ -170,9 +170,9 @@ Tests for the EpisodeRewarder
     "connection_graph_matrix,interaction_graph_matrix,rewards",
     [
         (empty_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 0, 15]),
-        (full_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, 0, -3]),
+        (full_graph, empty_graph, [0, 0, 0]),
+        (full_graph, full_graph, [0, 0, 15]),       
     ],
 )
 def test_episode_step_rewarder(
@@ -198,14 +198,20 @@ def test_episode_step_rewarder(
 Tests for the FidelityEpisodeRewarder
 """
 
+empty_graph = np.zeros((3, 3), dtype=np.int_)
+full_graph = np.array(([[0, 1, 1], [1, 0, 1], [1, 1, 0]]), dtype=np.int_)
+fidelity_graph = np.array(([[0, 0.2, 0.6], [0.2, 0, 0.74], [0.6, 0.74, 0]]), dtype=np.float_)
+
 
 @pytest.mark.parametrize(
     "connection_graph_matrix,interaction_graph_matrix,rewards",
     [
         (empty_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 0, 15]),
-        (full_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, 0, -3]),
+        (empty_graph, fidelity_graph, [0, 0, -3]),
+        (full_graph, empty_graph, [0, 0, 0]),
+        (full_graph, full_graph, [0, 0, 15]),
+        (full_graph, fidelity_graph, [0, 0, 0]),
     ],
 )
 def test_episode_step_rewarder(
