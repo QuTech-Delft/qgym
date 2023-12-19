@@ -10,6 +10,7 @@ from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
     SingleStepRewarder,
+    FidelityEpisodeRewarder
 )
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.templates.rewarder import Rewarder
