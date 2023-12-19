@@ -93,7 +93,7 @@ def test_init(rewarder_class):
 
 
 """
-Tests for the basic rewarder
+Tests for the BasicRewarder
 """
 
 empty_graph = np.zeros((3, 3), dtype=np.int_)
@@ -129,7 +129,7 @@ def test_basic_rewarder(
 
 
 """
-Tests for the single step rewarder
+Tests for the SingleStepRewarder
 """
 
 
@@ -162,7 +162,40 @@ def test_single_step_rewarder(
 
 
 """
-Tests for the episode rewarder
+Tests for the EpisodeRewarder
+"""
+
+
+@pytest.mark.parametrize(
+    "connection_graph_matrix,interaction_graph_matrix,rewards",
+    [
+        (empty_graph, empty_graph, [0, 0, 0]),
+        (full_graph, full_graph, [0, 0, 15]),
+        (full_graph, empty_graph, [0, 0, 0]),
+        (empty_graph, full_graph, [0, 0, -3]),
+    ],
+)
+def test_episode_step_rewarder(
+    connection_graph_matrix: NDArray[np.int_],
+    interaction_graph_matrix: NDArray[np.int_],
+    rewards: List[float],
+) -> None:
+    episode_generator = _episode_generator(
+        connection_graph_matrix, interaction_graph_matrix
+    )
+
+    rewarder = EpisodeRewarder()
+
+    for i, (old_state, action, new_state) in enumerate(episode_generator):
+        reward = rewarder.compute_reward(
+            old_state=old_state, action=action, new_state=new_state
+        )
+
+        assert reward == rewards[i]
+      
+        
+"""
+Tests for the FidelityEpisodeRewarder
 """
 
 
