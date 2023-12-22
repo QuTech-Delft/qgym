@@ -9,8 +9,8 @@ from numpy.typing import NDArray
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
+    FidelityEpisodeRewarder,
     SingleStepRewarder,
-    FidelityEpisodeRewarder
 )
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.templates.rewarder import Rewarder
@@ -33,14 +33,26 @@ def _episode_generator(
 
 
 @pytest.fixture(
-    name="rewarder", params=(BasicRewarder(), SingleStepRewarder(), EpisodeRewarder(), FidelityEpisodeRewarder())
+    name="rewarder",
+    params=(
+        BasicRewarder(),
+        SingleStepRewarder(),
+        EpisodeRewarder(),
+        FidelityEpisodeRewarder(),
+    ),
 )
 def _rewarder(request):
     return request.param
 
 
 @pytest.fixture(
-    name="rewarder_class", params=(BasicRewarder, SingleStepRewarder, EpisodeRewarder, FidelityEpisodeRewarder)
+    name="rewarder_class",
+    params=(
+        BasicRewarder,
+        SingleStepRewarder,
+        EpisodeRewarder,
+        FidelityEpisodeRewarder,
+    ),
 )
 def _rewarder_class(request):
     return request.param
@@ -107,7 +119,7 @@ full_graph = np.array(([[0, 1, 1], [1, 0, 1], [1, 1, 0]]), dtype=np.int_)
         (empty_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, -1, -3]),
         (full_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 5, 15]),       
+        (full_graph, full_graph, [0, 5, 15]),
     ],
 )
 def test_basic_rewarder(
@@ -140,7 +152,7 @@ Tests for the SingleStepRewarder
         (empty_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, -1, -2]),
         (full_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 5, 10]),       
+        (full_graph, full_graph, [0, 5, 10]),
     ],
 )
 def test_single_step_rewarder(
@@ -173,7 +185,7 @@ Tests for the EpisodeRewarder
         (empty_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, 0, -3]),
         (full_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 0, 15]),       
+        (full_graph, full_graph, [0, 0, 15]),
     ],
 )
 def test_episode_rewarder(
@@ -193,13 +205,15 @@ def test_episode_rewarder(
         )
 
         assert reward == rewards[i]
-      
-        
+
+
 """
 Tests for the FidelityEpisodeRewarder
 """
 
-fidelity_graph = np.array(([[0, 0.2, 0.6], [0.2, 0, 0.74], [0.6, 0.74, 0]]), dtype=np.float_)
+fidelity_graph = np.array(
+    ([[0, 0.2, 0.6], [0.2, 0, 0.74], [0.6, 0.74, 0]]), dtype=np.float_
+)
 
 
 @pytest.mark.parametrize(

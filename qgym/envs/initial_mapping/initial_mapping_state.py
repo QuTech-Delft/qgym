@@ -14,7 +14,7 @@ Usage:
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, cast, Union
+from typing import Any, Dict, Union, cast
 
 import networkx as nx
 import numpy as np
@@ -64,8 +64,8 @@ class InitialMappingState(
         """Number of steps done since the last reset."""
 
         self.fidelity = False  # whether edges include fidelity
-        for _, _, wt in connection_graph.edges.data("weight"):
-            if not isinstance(wt, int):
+        for _, _, weight in connection_graph.edges.data("weight"):
+            if not isinstance(weight, int):
                 self.fidelity = True
                 break
         if self.fidelity:

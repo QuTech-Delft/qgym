@@ -296,4 +296,4 @@ class FidelityEpisodeRewarder(BasicRewarder):
             else:
                 reward += edge_fidelity * self._reward_per_edge
 
-        return reward/2
+        return reward / 2

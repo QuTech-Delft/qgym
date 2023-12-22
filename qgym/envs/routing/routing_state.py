@@ -212,12 +212,13 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Create the corresponding observation space.
 
         Returns:
-            Observation space in the form of a :class:`~qgym.spaces.Dict` space containing:
+            Observation space in the form of a :class:`~qgym.spaces.Dict` space
+            containing:
 
-            * :class:`~qgym.spaces.MultiDiscrete` space representing the interaction gates
-              ahead of current position.
-            * :class:`~qgym.spaces.MultiDiscrete` space representing the current mapping of
-              logical onto physical qubits
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the interaction
+                gates ahead of current position.
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the current mapping
+            of logical onto physical qubits
         """
         interaction_gates_ahead = qgym.spaces.MultiDiscrete(
             np.full(2 * self.max_observation_reach, self.n_qubits + 1)

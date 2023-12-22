@@ -8,8 +8,8 @@ from qgym.envs import InitialMapping
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
+    FidelityEpisodeRewarder,
     SingleStepRewarder,
-    FidelityEpisodeRewarder
 )
 
 

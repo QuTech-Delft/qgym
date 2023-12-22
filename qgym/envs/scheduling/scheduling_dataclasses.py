@@ -26,7 +26,9 @@ class SchedulingUtils:
 
 @dataclass
 class GateInfo:
-    """Info of a specific gate used in the :class:`~qgym.envs.Scheduling` environment."""
+    """
+    Info of a specific gate used in the :class:`~qgym.envs.Scheduling` environment.
+    """
 
     cycle_length: int
     not_in_same_cycle: set[int]
