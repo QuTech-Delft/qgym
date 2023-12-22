@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from copy import deepcopy
-from typing import Any, Dict, Iterable, Iterator, List, Tuple
+from typing import Iterable, Iterator, cast
 
 import networkx as nx
 import numpy as np
@@ -17,7 +19,7 @@ from qgym.templates.rewarder import Rewarder
 
 def _episode_generator(
     interaction_circuit: ArrayLike,
-) -> Iterator[Tuple[RoutingState, NDArray[np.int_], RoutingState]]:
+) -> Iterator[tuple[RoutingState, NDArray[np.int_], RoutingState]]:
     interaction_circuit = np.asarray(interaction_circuit)
 
     connection_graph = nx.Graph()
@@ -59,11 +61,11 @@ def _episode_generator(
         EpisodeRewarder(),
     ),
 )
-def _rewarder(request):
-    return request.param
+def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
+    return cast(Rewarder, request.param)
 
 
-def test_illegal_actions(rewarder):
+def test_illegal_actions(rewarder: Rewarder) -> None:
     episode_generator = _episode_generator([[0, 1], [0, 2]])
     _, _, new_state = next(episode_generator)
     old_state = deepcopy(new_state)
@@ -74,7 +76,7 @@ def test_illegal_actions(rewarder):
     assert reward == -50
 
 
-def test_inheritance(rewarder):
+def test_inheritance(rewarder: Rewarder) -> None:
     assert isinstance(rewarder, Rewarder)
 
 

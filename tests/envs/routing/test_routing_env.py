@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from __future__ import annotations
 
 import pytest
 from stable_baselines3.common.env_checker import check_env
@@ -19,6 +19,6 @@ from qgym.envs.routing.routing import Routing
         },
     ],
 )
-def test_validity(kwargs: Dict[str, Any]) -> None:
-    env = Routing(**kwargs)
+def test_validity(kwargs: dict[str, tuple[int, int] | bool]) -> None:
+    env = Routing(**kwargs)  # type: ignore[arg-type]
     check_env(env, warn=True)  # todo: maybe switch this to the gym env checker

@@ -135,7 +135,9 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_real
 
 if TYPE_CHECKING:
-    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
+    Gridspecs = (
+        list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
+    )
 
 
 class InitialMapping(

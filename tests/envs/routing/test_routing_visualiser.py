@@ -7,7 +7,7 @@ from qgym.envs.routing import Routing
 
 
 @pytest.mark.skip(reason="This needs to be manually inspected")
-def test_routing_visualiser():
+def test_routing_visualiser() -> None:
     connection_graph = nx.Graph()
     connection_graph.add_edges_from([(0, 1), (1, 2), (2, 3), (3, 0)])
     env = Routing(connection_graph=connection_graph, render_mode="human")

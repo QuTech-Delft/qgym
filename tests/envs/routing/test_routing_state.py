@@ -1,5 +1,7 @@
 """This module contains tests for the ``RoutingState`` class."""
-from typing import Iterable, List, Tuple
+from __future__ import annotations
+
+from typing import Iterable
 
 import networkx as nx
 import numpy as np
@@ -114,10 +116,10 @@ class TestUpdateState:
     def test_surpass(
         self,
         simple_state: RoutingState,
-        interaction_circuit: List[Tuple[int, int]],
+        interaction_circuit: list[tuple[int, int]],
         expected_position: int,
     ) -> None:
-        simple_state.interaction_circuit = interaction_circuit
+        simple_state.interaction_circuit = np.array(interaction_circuit)
         simple_state.update_state(np.array([1, 10, 10]))
         assert simple_state.position == expected_position
         assert simple_state.steps_done == 1

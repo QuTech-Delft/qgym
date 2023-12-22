@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from copy import deepcopy
-from typing import Generator, List, Tuple
+from typing import Generator, cast
 
 import numpy as np
 import pytest
@@ -13,11 +15,12 @@ from qgym.envs.scheduling import (
     MachineProperties,
 )
 from qgym.envs.scheduling.scheduling_state import SchedulingState
+from qgym.templates import Rewarder
 
 
 def _right_to_left_state_generator(
-    circuit: List[Gate],
-) -> Generator[Tuple[SchedulingState, NDArray[np.int_], SchedulingState], None, None]:
+    circuit: list[Gate],
+) -> Generator[tuple[SchedulingState, NDArray[np.int_], SchedulingState], None, None]:
     """
     Generate actions based on a circuit of timings. No illegal action will be taken.
 
@@ -49,7 +52,7 @@ def _right_to_left_state_generator(
 
 
 @pytest.fixture
-def basic_rewarder():
+def basic_rewarder() -> BasicRewarder:
     return BasicRewarder(-float("inf"), -1, 100)
 
 
@@ -64,7 +67,9 @@ def basic_rewarder():
         ),
     ],
 )
-def test_basic_rewarder_rewards(basic_rewarder, circuit, expected_reward):
+def test_basic_rewarder_rewards(
+    basic_rewarder: BasicRewarder, circuit: list[Gate], expected_reward: list[float]
+) -> None:
     episode_generator = _right_to_left_state_generator(circuit)
     for i, (old_state, action, new_state) in enumerate(episode_generator):
         reward = basic_rewarder.compute_reward(
@@ -74,7 +79,7 @@ def test_basic_rewarder_rewards(basic_rewarder, circuit, expected_reward):
 
 
 @pytest.fixture
-def episode_rewarder():
+def episode_rewarder() -> EpisodeRewarder:
     return EpisodeRewarder(-float("inf"), -1)
 
 
@@ -86,7 +91,9 @@ def episode_rewarder():
         ([Gate("x", 1, 1), Gate("x", 1, 1), Gate("measure", 1, 1)], [0] * 8 + [-7]),
     ],
 )
-def test_episode_rewarder_rewards(episode_rewarder, circuit, expected_reward):
+def test_episode_rewarder_rewards(
+    episode_rewarder: EpisodeRewarder, circuit: list[Gate], expected_reward: list[float]
+) -> None:
     episode_generator = _right_to_left_state_generator(circuit)
     for i, (old_state, action, new_state) in enumerate(episode_generator):
         reward = episode_rewarder.compute_reward(
@@ -104,8 +111,11 @@ def test_episode_rewarder_rewards(episode_rewarder, circuit, expected_reward):
     ],
 )
 def test_reward_range_basic_rewarder(
-    illegal_action_p, update_cycle_p, schedule_gate_b, reward_range
-):
+    illegal_action_p: float,
+    update_cycle_p: float,
+    schedule_gate_b: float,
+    reward_range: tuple[float, float],
+) -> None:
     rewarder = BasicRewarder(illegal_action_p, update_cycle_p, schedule_gate_b)
     assert rewarder.reward_range == reward_range
 
@@ -119,18 +129,21 @@ def test_reward_range_basic_rewarder(
         (1, -1, (-float("inf"), float("inf"))),
     ],
 )
-def test_reward_range_episode_rewarder(illegal_action_p, cycle_used_p, reward_range):
+def test_reward_range_episode_rewarder(
+    illegal_action_p: float, cycle_used_p: float, reward_range: tuple[float, float]
+) -> None:
     rewarder = EpisodeRewarder(illegal_action_p, cycle_used_p)
     assert rewarder.reward_range == reward_range
 
 
 @pytest.fixture(name="rewarder", params=(BasicRewarder(), EpisodeRewarder()))
-def _rewarder(request):
-    return request.param
+def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
+    return cast(Rewarder, request.param)
 
 
-def test_illegal_actions(rewarder):
+def test_illegal_actions(rewarder: Rewarder) -> None:
     circuit = [Gate("x", 1, 1), Gate("y", 1, 1)]
     old_state, _, _ = next(_right_to_left_state_generator(circuit))
+    assert hasattr(rewarder, "_is_illegal")
     assert rewarder._is_illegal([0, 0], old_state)
     assert not rewarder._is_illegal([1, 0], old_state)

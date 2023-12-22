@@ -21,7 +21,9 @@ from qgym.utils.input_validation import (
 )
 
 if TYPE_CHECKING:
-    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
+    Gridspecs = (
+        list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
+    )
 
 
 def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Rewarder:

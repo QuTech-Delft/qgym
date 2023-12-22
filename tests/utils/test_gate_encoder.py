@@ -1,3 +1,5 @@
+from typing import Iterable
+
 import pytest
 
 from qgym.custom_types import Gate
@@ -5,12 +7,12 @@ from qgym.utils import GateEncoder
 
 
 @pytest.fixture
-def empty_encoder():
+def empty_encoder() -> GateEncoder:
     return GateEncoder()
 
 
 @pytest.fixture
-def trained_encoder(empty_encoder):
+def trained_encoder(empty_encoder: GateEncoder) -> GateEncoder:
     return empty_encoder.learn_gates(["x", "y", "z", "cnot", "h"])
 
 
@@ -22,7 +24,7 @@ def trained_encoder(empty_encoder):
         {"x": 1, "y": 1, "z": 1, "cnot": 1, "h": 1},
     ],
 )
-def test_learn_gates(empty_encoder, gates):
+def test_learn_gates(empty_encoder: GateEncoder, gates: Iterable[str]) -> None:
     assert type(empty_encoder.learn_gates(gates)) == GateEncoder
 
     assert empty_encoder._encoding_dct == {"x": 1, "y": 2, "z": 3, "cnot": 4, "h": 5}
@@ -31,7 +33,7 @@ def test_learn_gates(empty_encoder, gates):
     assert empty_encoder.n_gates == 5
 
 
-def test_duplicate_gates_warning(empty_encoder):
+def test_duplicate_gates_warning(empty_encoder: GateEncoder) -> None:
     with pytest.warns(UserWarning):
         empty_encoder.learn_gates(["x", "y", "z", "cnot", "h", "h", "z"])
 
@@ -50,7 +52,7 @@ def test_duplicate_gates_warning(empty_encoder):
         (["x", "cnot", "y"], [1, 4, 2]),
     ],
 )
-def test_encode_gates(trained_encoder, gates, encoded_gates):
+def test_encode_gates(trained_encoder: GateEncoder, gates, encoded_gates) -> None:  # type: ignore[no-untyped-def]
     assert trained_encoder.encode_gates(gates) == encoded_gates
 
 
@@ -63,11 +65,11 @@ def test_encode_gates(trained_encoder, gates, encoded_gates):
         (["x", "cnot", "y"], [1, 4, 2]),
     ],
 )
-def test_decode_gates(trained_encoder, gates, encoded_gates):
+def test_decode_gates(trained_encoder: GateEncoder, gates, encoded_gates) -> None:  # type: ignore[no-untyped-def]
     assert trained_encoder.decode_gates(encoded_gates) == gates
 
 
-def test_type_error(trained_encoder):
+def test_type_error(trained_encoder: GateEncoder) -> None:
     with pytest.raises(TypeError):
-        trained_encoder.encode_gates(None)
-        trained_encoder.decode_gates(None)
+        trained_encoder.encode_gates(None)  # type: ignore[call-overload]
+        trained_encoder.decode_gates(None)  # type: ignore[call-overload]
