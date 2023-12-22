@@ -33,7 +33,8 @@ penalized.
 
 
 State Space:
-    The state space is described by a ``InitialMappingState`` with the following
+    The state space is described by a
+    :class:`~qgym.envs.initial_mapping.InitialMappingState` with the following
     attributes:
 
     * `steps_done`: Number of steps done since the last reset.
@@ -49,7 +50,7 @@ State Space:
       logical qubits.
 
 Observation Space:
-    The observation space is a ``qgym.spaces.Dict`` with 2 entries:
+    The observation space is a :class:`~qgym.spaces.Dict` with 2 entries:
 
     * `mapping`: The current state of the mapping.
     * `interaction_matrix`: The flattened adjacency matrix of the interaction graph.
@@ -69,9 +70,10 @@ Example 1:
     >>> from qgym.envs.initial_mapping import InitialMapping
     >>> env = InitialMapping(0.5, connection_grid_size=(3,3))
 
-    By default,  ``InitialMapping`` uses the ``BasicRewarder``. As an example, we would
-    like to change the rewarder to the ``EpisodeRewarder``. This can be done in the
-    following way:
+    By default,  :class:`~qgym.envs.InitialMapping` uses the
+    :class:`~qgym.envs.initial_mapping.BasicRewarder`. As an example, we would like to
+    change the rewarder to the :class:`~qgym.envs.initial_mapping.EpisodeRewarder`. This
+    can be done in the following way:
 
     >>> from qgym.envs.initial_mapping import EpisodeRewarder
     >>> env.rewarder = EpisodeRewarder()
@@ -112,7 +114,7 @@ Example 2:
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping, cast
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
 
 import networkx as nx
 import numpy as np
@@ -133,7 +135,9 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_real
 
 if TYPE_CHECKING:
-    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
+    Gridspecs = (
+        list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
+    )
 
 
 class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
@@ -148,7 +152,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         "_visualiser",
     )
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         interaction_graph_edge_probability: float,
         *,
@@ -162,7 +166,8 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         Furthermore, the connection graph and edge probability for the random
         interaction graph of each episode is defined.
 
-        The supported render modes of this environment are "human" and "rgb_array".
+        The supported render modes of this environment are ``"human"`` and
+        ``"rgb_array"``.
 
         Args:
             interaction_graph_edge_probability: Probability that an edge between any
@@ -179,11 +184,11 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
                 has a grid topology. For more information on the allowed values and
                 types, see ``networkx`` `grid_graph`_ documentation.
             rewarder: Rewarder to use for the environment. Must inherit from
-                ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is
-                used.
-            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
-                'rgb_array', return an RGB array encoding of the rendered frame on each
-                render call.
+                :class:`qgym.templates.Rewarder`. If ``None`` (default), then
+                :class:`qgym.envs.initial_mapping.BasicRewarder` is used.
+            render_mode: If ``"human"`` open a ``pygame`` screen visualizing the step.
+                If ``"rgb_array"``, return an RGB array encoding of the rendered frame
+                on each render call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -222,7 +227,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         seed: int | None = None,
         options: Mapping[str, Any] | None = None,
     ) -> tuple[dict[str, NDArray[np.int_]], dict[str, Any]]:
-        """Reset the state and set a new interaction graph.
+        r"""Reset the state and set a new interaction graph.
 
         To be used after an episode is finished.
 
@@ -231,15 +236,12 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
                 (optionally) on the first reset call i.e., before any learning is done.
             return_info: Whether to receive debugging info. Default is ``False``.
             options: Mapping with keyword arguments with additional options for the
-                reset. Keywords can be found in the description of
-                ``InitialMappingState.reset()``
+                reset. Keywords can be found in the description of 
+                :class:`~qgym.envs.initial_mapping.InitialMappingState`.\
+                :func:`~qgym.envs.initial_mapping.InitialMappingState.reset()`.
 
         Returns:
             Initial observation and debugging info.
         """
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, options=options)
-
-    def add_random_edge_weights(self) -> None:
-        """Add random weights to the connection graph and interaction graph."""
-        cast(InitialMappingState, self._state).add_random_edge_weights()

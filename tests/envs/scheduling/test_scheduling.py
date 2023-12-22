@@ -1,16 +1,25 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Collection
+
 import numpy as np
 import pytest
+from numpy.typing import NDArray
 from stable_baselines3.common.env_checker import check_env
 
 import qgym.spaces
 from qgym.custom_types import Gate
 from qgym.envs import Scheduling
-from qgym.envs.scheduling.scheduling_state import SchedulingState
-from qgym.utils import GateEncoder
+from qgym.envs.scheduling import SchedulingState
+
+if TYPE_CHECKING:
+    MP_DICT = dict[
+        str, int | dict[str, int] | dict[str, Collection[str] | dict[str, list[str]]]
+    ]
 
 
 @pytest.fixture
-def diamond_mp_dict():
+def diamond_mp_dict() -> MP_DICT:
     return {
         "n_qubits": 10,
         "gates": {
@@ -31,11 +40,13 @@ def diamond_mp_dict():
 
 
 @pytest.fixture
-def diamond_env(diamond_mp_dict):
+def diamond_env(diamond_mp_dict: MP_DICT) -> Scheduling:
     return Scheduling(diamond_mp_dict)
 
 
-def naive_schedule_algorithm(scheduling_env: Scheduling, circuit=None):
+def naive_schedule_algorithm(
+    scheduling_env: Scheduling, circuit: list[Gate] | None = None
+) -> NDArray[np.int_]:
     obs, _ = scheduling_env.reset(options={"circuit": circuit})
     action = np.array([0, 0])
     done = False
@@ -48,15 +59,18 @@ def naive_schedule_algorithm(scheduling_env: Scheduling, circuit=None):
         action[1] = 1
         obs, _, done, _, _ = scheduling_env.step(action)
         action[1] = 0
+
+    if not isinstance(scheduling_env._state, SchedulingState):
+        raise TypeError("The state of the scheduling env is not correct.")
     return scheduling_env._state.circuit_info.schedule
 
 
-def test_state(diamond_env) -> None:
+def test_state(diamond_env: Scheduling) -> None:
     assert isinstance(diamond_env, Scheduling)
     assert isinstance(diamond_env._state, SchedulingState)
 
 
-def test_observation_space(diamond_env) -> None:
+def test_observation_space(diamond_env: Scheduling) -> None:
     assert isinstance(diamond_env.observation_space, qgym.spaces.Dict)
 
     observation_space = [
@@ -71,7 +85,7 @@ def test_observation_space(diamond_env) -> None:
         assert isinstance(space, space_type)
 
 
-def test_action_space(diamond_mp_dict) -> None:
+def test_action_space(diamond_mp_dict: MP_DICT) -> None:
     env = Scheduling(diamond_mp_dict, max_gates=100)
 
     assert isinstance(env.action_space, qgym.spaces.MultiDiscrete)
@@ -95,7 +109,7 @@ def test_action_space(diamond_mp_dict) -> None:
         assert sample[1] in range(2)
 
 
-def test_scheduled_after(diamond_mp_dict) -> None:
+def test_scheduled_after(diamond_mp_dict: MP_DICT) -> None:
     env = Scheduling(diamond_mp_dict, dependency_depth=2)
     circuit = [Gate("cnot", 1, 2), Gate("x", 2, 2), Gate("cnot", 1, 3)]
     obs, _ = env.reset(options={"circuit": circuit})
@@ -107,7 +121,7 @@ def test_scheduled_after(diamond_mp_dict) -> None:
     assert (obs["dependencies"] == expected_scheduled_after).all()
 
 
-def test_same_gates_commute(diamond_env) -> None:
+def test_same_gates_commute(diamond_env: Scheduling) -> None:
     circuit = [Gate("cnot", 1, 2), Gate("cnot", 1, 2)]
     obs, _ = diamond_env.reset(options={"circuit": circuit})
 
@@ -116,7 +130,7 @@ def test_same_gates_commute(diamond_env) -> None:
     assert (obs["dependencies"] == expected_scheduled_after).all()
 
 
-def test_legal_actions(diamond_env) -> None:
+def test_legal_actions(diamond_env: Scheduling) -> None:
     circuit = [Gate("cnot", 1, 2), Gate("x", 2, 2), Gate("cnot", 1, 3)]
     obs, _ = diamond_env.reset(options={"circuit": circuit})
 
@@ -127,12 +141,12 @@ def test_legal_actions(diamond_env) -> None:
     assert (obs["legal_actions"] == expected_legal_actions).all()
 
 
-def test_validity(diamond_env) -> None:
+def test_validity(diamond_env: Scheduling) -> None:
     check_env(diamond_env, warn=True)  # todo: maybe switch this to the gym env checker
     assert True
 
 
-def test_full_cnot_circuit(diamond_env) -> None:
+def test_full_cnot_circuit(diamond_env: Scheduling) -> None:
     circuit = [
         Gate("cnot", 0, 1),
         Gate("cnot", 2, 3),
@@ -144,13 +158,13 @@ def test_full_cnot_circuit(diamond_env) -> None:
     assert (schedule == np.zeros(5)).all()
 
 
-def test_same_start_machine_restriction(diamond_env) -> None:
+def test_same_start_machine_restriction(diamond_env: Scheduling) -> None:
     circuit = [Gate("measure", 1, 1), Gate("y", 1, 1), Gate("measure", 0, 0)]
     schedule = naive_schedule_algorithm(diamond_env, circuit=circuit)
     assert (schedule == np.array([10, 0, 0])).all()
 
 
-def test_not_in_same_cycle_machine_restriction(diamond_env) -> None:
+def test_not_in_same_cycle_machine_restriction(diamond_env: Scheduling) -> None:
     circuit = [Gate("x", 0, 0), Gate("y", 1, 1), Gate("y", 3, 3), Gate("z", 2, 2)]
     schedule = naive_schedule_algorithm(diamond_env, circuit=circuit)
     assert (schedule == np.array([0, 2, 2, 4])).all()
@@ -161,7 +175,7 @@ def test_parse_machine_properties() -> None:
         TypeError,
         match="<class 'int'> is not a supported type for 'machine_properties'",
     ):
-        Scheduling._parse_machine_properties(1)
+        Scheduling._parse_machine_properties(1)  # type: ignore[arg-type]
 
 
 def test_parse_random_circuit_mode() -> None:

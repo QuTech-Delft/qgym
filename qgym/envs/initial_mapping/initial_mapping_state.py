@@ -1,7 +1,8 @@
-"""This module contains the ``InitialMappingState`` class.
+"""This module contains the :class:`~qgym.envs.initial_mapping.InitialMappingState`
+class.
 
-This ``InitialMappingState`` represents the ``State`` of the ``InitialMapping``
-environment.
+This :class:`~qgym.envs.InitialMapping` represents the :class:`~qgym.templates.State` of
+the :class:`~qgym.envs.InitialMapping` environment.
 
 Usage:
     >>> from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
@@ -24,7 +25,7 @@ from qgym.templates.state import State
 
 
 class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
-    """The ``InitialMappingState`` class."""
+    """The :class:`~qgym.envs.initial_mapping.InitialMappingState` class."""
 
     __slots__ = (
         "steps_done",
@@ -37,18 +38,21 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     def __init__(
         self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
     ) -> None:
-        """Init of the ``InitialMappingState`` class.
+        # pylint: disable=line-too-long
+        """Init of the :class:`~qgym.envs.initial_mapping.InitialMappingState` class.
 
         Args:
-            connection_graph: ``networkx`` graph representation of the QPU topology.
-                Each node represents a physical qubit and each edge represents a
-                connection in the QPU topology.
+            connection_graph: `networkx Graph <https://networkx.org/documentation/stable/reference/classes/graph.html>`_
+                representation of the QPU topology. Each node represents a physical
+                qubit and each edge represents a connection in the QPU topology.
             interaction_graph_edge_probability: Probability that an edge between any
                 pair of qubits in the random interaction graph exists. The interaction
                 graph will have the same amount of nodes as the connection graph. Nodes
                 without any interactions can be seen as 'null' nodes. Must be a value in
                 the range $[0,1]$.
         """
+        # pylint: enable=line-too-long
+
         # Create a random connection graph with `n_nodes` and with edges existing with
         # probability `interaction_graph_edge_probability` (nodes without connections
         # can be seen as 'null' nodes)
@@ -60,11 +64,23 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.steps_done: int = 0
         """Number of steps done since the last reset."""
 
-        self.graphs = {
-            "connection": {
+        fidelity = False  # whether edges include fidelity
+        for _, _, weight in connection_graph.edges.data("weight"):
+            if not isinstance(weight, int):
+                fidelity = True
+                break
+        if fidelity:
+            connection = {
+                "graph": deepcopy(connection_graph),
+                "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),
+            }
+        else:
+            connection = {
                 "graph": deepcopy(connection_graph),
                 "matrix": nx.to_numpy_array(connection_graph, dtype=np.int8),
-            },
+            }
+        self.graphs = {
+            "connection": connection,
             "interaction": {
                 "graph": deepcopy(interaction_graph),
                 "matrix": nx.to_numpy_array(interaction_graph, dtype=np.int8).flatten(),
@@ -88,15 +104,18 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Create the corresponding observation space.
 
         Returns:
-            Observation space in the form of a ``qgym.spaces.Dict`` space containing:
+            Observation space in the form of a :class:`~qgym.spaces.Dict` space
+            containing the following values if the connection graph has no fidelity
+            information:
 
-            * ``qgym.spaces.MultiDiscrete`` space representing the mapping.
-            * ``qgym.spaces.MultiBinary`` representing the interaction matrix.
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the mapping.
+            * :class:`~qgym.spaces.MultiBinary` representing the interaction matrix.
         """
         mapping_space = spaces.MultiDiscrete(
             nvec=[self.n_nodes + 1] * self.n_nodes, rng=self.rng
         )
         interaction_matrix_space = spaces.MultiBinary(self.n_nodes**2, rng=self.rng)
+
         return spaces.Dict(
             rng=self.rng,
             mapping=mapping_space,
@@ -145,22 +164,6 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.mapped_qubits = {"physical": set(), "logical": set()}
 
         return self
-
-    def add_random_edge_weights(self) -> None:
-        """Add random weights to the connection graph and interaction graph."""
-        for node1, node2 in self.graphs["connection"]["graph"].edges():
-            weight = self.rng.gamma(2, 2) / 4
-            self.graphs["connection"]["graph"].edges[node1, node2]["weight"] = weight
-        self.graphs["connection"]["matrix"] = nx.to_numpy_array(
-            self.graphs["connection"]["graph"]
-        )
-
-        for node1, node2 in self.graphs["interaction"]["graph"].edges():
-            weight = self.rng.gamma(2, 2) / 4
-            self.graphs["interaction"]["graph"].edges[node1, node2]["weight"] = weight
-        self.graphs["interaction"]["matrix"] = nx.to_numpy_array(
-            self.graphs["interaction"]["graph"]
-        ).flatten()
 
     def update_state(self, action: NDArray[np.int_]) -> InitialMappingState:
         """Update the state (in place) of this environment using the given action.
@@ -214,7 +217,12 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         Returns:
             Optional debugging info for the current state.
         """
-        return {"Steps done": self.steps_done}
+        return {
+            "Steps done": self.steps_done,
+            "Mapping": self.mapping,
+            "Mapping Dictionary": self.mapping_dict,
+            "Mapped Qubits": self.mapped_qubits,
+        }
 
     @property
     def n_nodes(self) -> int:

@@ -1,4 +1,5 @@
-"""This module contains some vanilla Rewarders for the ``InitialMapping`` environment.
+"""This module contains some vanilla Rewarders for the
+:class:`~qgym.envs.InitialMapping` environment.
 
 Usage:
     The rewarders in this module can be customized by initializing the rewarders with
@@ -14,15 +15,16 @@ Usage:
             penalty_per_edge: = -2,
             )
 
-    After initialization, the rewarders can be given to the ``InitialMapping``
-    environment.
+    After initialization, the rewarders can be given to the
+    :class:`~qgym.envs.InitialMapping` environment.
 
 .. note::
-    When implementing custom rewarders, they should inherit from ``qgym.Rewarder``.
-    Furthermore, they must implement the ``compute_reward`` method. Which takes as input
-    the old state, the new state and the given action. See the documentation of the
-    ``qgym.envs.initial_mapping.initial_mapping`` module for more information on
-    the state and action space.
+    When implementing custom rewarders, they should inherit from
+    :class:`~qgym.templates.Rewarder`. Furthermore, they must implement the
+    :func:`~qgym.templates.Rewarder.compute_reward` method. Which takes as input the old
+    state, the new state and the given action. See the documentation of the
+    :obj:`~qgym.envs.initial_mapping.initial_mapping`
+    module for more information on the state and action space.
 
 """
 import numpy as np
@@ -34,7 +36,7 @@ from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_po
 
 
 class BasicRewarder(Rewarder):
-    """Basic rewarder for the ``InitialMapping`` environment."""
+    """Basic rewarder for the :class:`~qgym.envs.InitialMapping` environment."""
 
     __slots__ = (
         "_illegal_action_penalty",
@@ -87,9 +89,10 @@ class BasicRewarder(Rewarder):
         Specifically the connection graph, interaction graphs and mapping are used.
 
         Args:
-            old_state: State of the ``InitialMapping`` before the current action.
+            old_state: State of the :class:`~qgym.envs.InitialMapping` before the
+                current action.
             action: Action that has just been taken.
-            new_state: Updated state of the ``InitialMapping``.
+            new_state: Updated state of the :class:`~qgym.envs.InitialMapping`.
 
         Returns:
             The reward for this action. If the action is illegal, then the reward is
@@ -167,8 +170,8 @@ class BasicRewarder(Rewarder):
 
 
 class SingleStepRewarder(BasicRewarder):
-    """Rewarder for the ``InitialMapping`` environment, which gives a reward based on
-    the improvement in the current step.
+    """Rewarder for the :class:`~qgym.envs.InitialMapping` environment, which gives a
+    reward based on the improvement in the current step.
     """
 
     def compute_reward(
@@ -183,9 +186,10 @@ class SingleStepRewarder(BasicRewarder):
         Specifically the connection graph, interaction graphs and mapping are used.
 
         Args:
-            old_state: State of the ``InitialMapping`` before the current action.
+            old_state: State of the :class:`~qgym.envs.InitialMapping` before the
+                current action.
             action: Action that has just been taken.
-            new_state: Updated state of the ``InitialMapping``.
+            new_state: Updated state of the :class:`~qgym.envs.InitialMapping`.
 
         Returns:
             The reward for this action. If the action is illegal, then the reward is
@@ -202,8 +206,8 @@ class SingleStepRewarder(BasicRewarder):
 
 
 class EpisodeRewarder(BasicRewarder):
-    """Rewarder for the ``InitialMapping`` environment, which only gives a reward at
-    the end of the episode or when an illegal action is taken.
+    """Rewarder for the :class:`~qgym.envs.InitialMapping` environment, which only gives
+    a reward at the end of the episode or when an illegal action is taken.
     """
 
     def compute_reward(
@@ -218,9 +222,10 @@ class EpisodeRewarder(BasicRewarder):
         Specifically the connection graph, interaction graphs and mapping are used.
 
         Args:
-            old_state: State of the ``InitialMapping`` before the current action.
+            old_state: State of the :class:`~qgym.envs.InitialMapping` before the
+                current action.
             action: Action that has just been taken.
-            new_state: Updated state of the ``InitialMapping``.
+            new_state: Updated state of the :class:`~qgym.envs.InitialMapping`.
 
         Returns:
             The reward for this action. If the action is illegal, then the reward is
@@ -236,3 +241,59 @@ class EpisodeRewarder(BasicRewarder):
             return 0
 
         return self._compute_state_reward(new_state)
+
+
+class FidelityEpisodeRewarder(BasicRewarder):
+    """Rewarder for the :class:`~qgym.envs.InitialMapping` environment, which only gives
+    a reward at the end of the episode or when an illegal action is taken. Additionally,
+    this rewarder takes the fidelity of edges in the connection graph into account.
+    """
+
+    def compute_reward(
+        self,
+        *,
+        old_state: InitialMappingState,
+        action: NDArray[np.int_],
+        new_state: InitialMappingState,
+    ) -> float:
+        """Compute a reward, based on the new state, and the given action.
+
+        Specifically the connection graph, interaction graphs and mapping are used.
+
+        Args:
+            old_state: State of the :class:`~qgym.envs.InitialMapping` before the
+                current action.
+            action: Action that has just been taken.
+            new_state: Updated state of the :class:`~qgym.envs.InitialMapping`.
+
+        Returns:
+            The reward for this action. If the action is illegal, then the reward is
+            `illegal_action_penalty`. If the action is legal, but the mapping is not yet
+            finished, then the reward is 0. If the action is legal, and the mapping is
+            finished, then the reward is the number of 'good' edges times
+            `reward_per_edge` plus the number of 'bad' edges times `penalty_per_edge`.
+        """
+        if self._is_illegal(action, old_state):
+            return self._illegal_action_penalty
+
+        if len(new_state.mapping_dict) != new_state.n_nodes:
+            return 0
+
+        return self._compute_state_reward(new_state)
+
+    def _compute_state_reward(self, state: InitialMappingState) -> float:
+        reward = 0.0
+        for flat_idx in state.graphs["interaction"]["matrix"].nonzero()[0]:
+            interaction_i, interaction_j = divmod(flat_idx, state.n_nodes)
+            mapped_interaction_i = state.mapping_dict[interaction_i]
+            mapped_interaction_j = state.mapping_dict[interaction_j]
+
+            edge_fidelity = state.graphs["connection"]["matrix"][
+                mapped_interaction_i, mapped_interaction_j
+            ]
+            if edge_fidelity == 0:
+                reward += self._penalty_per_edge
+            else:
+                reward += edge_fidelity * self._reward_per_edge
+
+        return float(reward / 2)

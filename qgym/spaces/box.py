@@ -25,7 +25,7 @@ class Box(gymnasium.spaces.Box):
     intervals.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         low: SupportsFloat | ArrayLike,
         high: SupportsFloat | ArrayLike,

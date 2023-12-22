@@ -21,7 +21,9 @@ from qgym.utils.input_validation import (
 )
 
 if TYPE_CHECKING:
-    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
+    Gridspecs = (
+        list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
+    )
 
 
 def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Rewarder:
@@ -75,7 +77,7 @@ def parse_connection_graph(
     Args:
         graph: ``networkx.Graph`` representation of the QPU topology.
         matrix: Adjacency matrix representation of the QPU topology.
-        size: Size of the connection graph when the topology is a grid.
+        grid_size: Size of the connection graph when the topology is a grid.
 
     Raises:
         ValueError: When `graph`, `matrix` and `grid_size` are all ``None``.

@@ -1,8 +1,8 @@
-"""This module contains the ``CommutationRulebook`` class together with basic
-commutation rules used in the ``Scheduling`` environment.
+"""This module contains the :class:`CommutationRulebook` class together with basic
+commutation rules used in the :class:`~qgym.envs.Scheduling` environment.
 
 Example:
-    The code block below shows how to set up a ``CommutationRulebook``, with the
+    The code block below shows how to set up a :class:`CommutationRulebook`, with the
     additional commutation rule that two C-NOT gates with the same control qubit
     commute.
 
@@ -33,10 +33,10 @@ from qgym.custom_types import Gate
 
 
 class CommutationRulebook:
-    """Commutation rulebook used in the ``Scheduling`` environment."""
+    """Commutation rulebook used in the :class:`~qgym.envs.Scheduling` environment."""
 
     def __init__(self, default_rules: bool = True) -> None:
-        """Init of the ``CommutationRulebook``.
+        """Init of the :class:`CommutationRulebook`.
 
         Args:
             default_rules: If ``True``, default rules are used. Default rules dictate
@@ -98,7 +98,7 @@ class CommutationRulebook:
         self._rules.append(rule)
 
     def __repr__(self) -> str:
-        """Create a string representation of the CommutationRulebook."""
+        """Create a string representation of the :class:`CommutationRulebook`."""
         text = f"{self.__class__.__name__}(rules=["
         for rule in self._rules:
             if callable(rule) and hasattr(rule, "__name__"):

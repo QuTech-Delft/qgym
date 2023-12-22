@@ -1,6 +1,7 @@
-"""This module contains the ``RoutingState`` class.
+"""This module contains the :class:`RoutingState` class.
 
-This ``RoutingState``represents the ``State`` of the ``Routing`` environment.
+This :class:`RoutingState` represents the :class:`~qgym.templates.State` of the
+:class:`~qgym.envs.Routing` environment.
 
 Usage:
     >>> from qgym.envs.routing.routingstate import RoutingState
@@ -30,9 +31,9 @@ from qgym.templates.state import State
 
 
 class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
-    """The ``RoutingState`` class."""
+    """The :class:`RoutingState` class."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         *,
         max_interaction_gates: int,
@@ -211,12 +212,13 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Create the corresponding observation space.
 
         Returns:
-            Observation space in the form of a ``qgym.spaces.Dict`` space containing:
+            Observation space in the form of a :class:`~qgym.spaces.Dict` space
+            containing:
 
-            * ``qgym.spaces.MultiDiscrete`` space representing the interaction gates
-              ahead of current position.
-            * ``qgym.spaces.MultiDiscrete`` space representing the current mapping of
-              logical onto physical qubits
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the interaction
+              gates ahead of current position.
+            * :class:`~qgym.spaces.MultiDiscrete` space representing the current mapping
+              of logical onto physical qubits
         """
         interaction_gates_ahead = qgym.spaces.MultiDiscrete(
             np.full(2 * self.max_observation_reach, self.n_qubits + 1)

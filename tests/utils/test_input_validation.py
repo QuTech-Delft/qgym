@@ -112,7 +112,7 @@ class TestCheckString:
     def test_error(self) -> None:
         msg = "'test' must be a string, but was of type <class 'int'>"
         with pytest.raises(TypeError, match=msg):
-            check_string(1, "test")
+            check_string(1, "test")  # type: ignore[arg-type]
 
 
 class TestCheckBool:
@@ -141,7 +141,7 @@ class TestAdjacencyMatrix:
         ],
         ids=["ndarray", "nested_list", "csr_matrix", "nested_tuple"],
     )
-    def test_check_adjacency_matrix_input(self, arg: ArrayLike):
+    def test_check_adjacency_matrix_input(self, arg: ArrayLike) -> None:
         assert (check_adjacency_matrix(arg) == np.zeros((2, 2))).all()
 
     @pytest.mark.parametrize(
@@ -153,7 +153,7 @@ class TestAdjacencyMatrix:
             check_adjacency_matrix(arg)
 
 
-def test_check_graph_is_valid_topology():
+def test_check_graph_is_valid_topology() -> None:
     graph = nx.Graph()
     msg = "'test' has no nodes"
     with pytest.raises(ValueError, match=msg):
@@ -180,7 +180,7 @@ class TestCheckInstance:
             check_instance(1, "test", str)
 
 
-def test_warn_if_positive():
+def test_warn_if_positive() -> None:
     warn_if_positive(0, "test")
     warn_if_positive(-1.0, "test")
 
@@ -188,10 +188,11 @@ def test_warn_if_positive():
         warn_if_positive(1, "test")
 
     assert len(record) == 1
+    assert isinstance(record[0].message, Warning)
     assert record[0].message.args[0] == "'test' was positive"
 
 
-def test_warn_if_negative():
+def test_warn_if_negative() -> None:
     warn_if_negative(0, "test")
     warn_if_negative(1.0, "test")
 
@@ -199,4 +200,5 @@ def test_warn_if_negative():
         warn_if_negative(-1, "test")
 
     assert len(record) == 1
+    assert isinstance(record[0].message, Warning)
     assert record[0].message.args[0] == "'test' was negative"

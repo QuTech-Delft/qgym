@@ -1,4 +1,6 @@
-"""This module contains dataclasses used in the ``Scheduling`` environment."""
+"""This module contains dataclasses used in the :class:`~qgym.envs.Scheduling`
+environment.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -14,7 +16,7 @@ from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
 @dataclass
 class SchedulingUtils:
-    """Utils used in the ``Scheduling`` environment."""
+    """Utils used in the :class:`~qgym.envs.Scheduling` environment."""
 
     random_circuit_generator: RandomCircuitGenerator
     random_circuit_mode: str
@@ -24,7 +26,9 @@ class SchedulingUtils:
 
 @dataclass
 class GateInfo:
-    """Info of a specific gate used in the ``Scheduling`` environment."""
+    """
+    Info of a specific gate used in the :class:`~qgym.envs.Scheduling` environment.
+    """
 
     cycle_length: int
     not_in_same_cycle: set[int]
@@ -34,7 +38,8 @@ class GateInfo:
     def reset(self) -> GateInfo:
         """Reset the object.
 
-        To be used in the reset function of the ``Scheduling`` environment.
+        To be used in the reset function of the :class:`~qgym.envs.Scheduling`
+        environment.
 
         Returns:
             Self.
@@ -46,7 +51,9 @@ class GateInfo:
 
 @dataclass
 class CircuitInfo:
-    """Info of the circuit of the current episode of ``Scheduling`` environment."""
+    """Info of the circuit of the current episode of :class:`~qgym.envs.Scheduling`
+    environment.
+    """
 
     encoded: list[Gate]
     names: NDArray[np.int_]
@@ -59,7 +66,8 @@ class CircuitInfo:
     def reset(self, circuit: list[Gate] | None, utils: SchedulingUtils) -> CircuitInfo:
         """Reset the object.
 
-        To be used in the reset function of the ``Scheduling`` environment.
+        To be used in the reset function of the :class:`~qgym.envs.Scheduling`
+        environment.
 
         Returns:
             Self.

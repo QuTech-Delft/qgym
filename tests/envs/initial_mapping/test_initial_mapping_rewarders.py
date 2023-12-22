@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from copy import deepcopy
-from typing import Any, Dict, Iterator, List, Tuple
+from typing import Iterator, Type, cast
 
 import networkx as nx
 import numpy as np
@@ -9,6 +11,7 @@ from numpy.typing import NDArray
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
+    FidelityEpisodeRewarder,
     SingleStepRewarder,
 )
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
@@ -18,7 +21,7 @@ from qgym.templates.rewarder import Rewarder
 def _episode_generator(
     connection_graph_matrix: NDArray[np.int_],
     interaction_graph_matrix: NDArray[np.int_],
-) -> Iterator[Tuple[Dict[str, Any], NDArray[np.int_], Dict[str, Any]]]:
+) -> Iterator[tuple[InitialMappingState, NDArray[np.int_], InitialMappingState]]:
     connection_graph = nx.from_numpy_array(connection_graph_matrix)
     interaction_graph = nx.from_numpy_array(interaction_graph_matrix)
     new_state = InitialMappingState(connection_graph, 0)
@@ -32,20 +35,32 @@ def _episode_generator(
 
 
 @pytest.fixture(
-    name="rewarder", params=(BasicRewarder(), SingleStepRewarder(), EpisodeRewarder())
+    name="rewarder",
+    params=(
+        BasicRewarder(),
+        SingleStepRewarder(),
+        EpisodeRewarder(),
+        FidelityEpisodeRewarder(),
+    ),
 )
-def _rewarder(request):
-    return request.param
+def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
+    return cast(Rewarder, request.param)
 
 
 @pytest.fixture(
-    name="rewarder_class", params=(BasicRewarder, SingleStepRewarder, EpisodeRewarder)
+    name="rewarder_class",
+    params=(
+        BasicRewarder,
+        SingleStepRewarder,
+        EpisodeRewarder,
+        FidelityEpisodeRewarder,
+    ),
 )
-def _rewarder_class(request):
-    return request.param
+def _rewarder_class(request: pytest.FixtureRequest) -> type[Rewarder]:
+    return cast(Type[Rewarder], request.param)
 
 
-def test_illegal_actions(rewarder):
+def test_illegal_actions(rewarder: Rewarder) -> None:
     episode_generator = _episode_generator(full_graph, empty_graph)
     _, _, new_state = next(episode_generator)
     old_state = deepcopy(new_state)
@@ -61,7 +76,7 @@ def test_illegal_actions(rewarder):
     assert reward == -100
 
 
-def test_inheritance(rewarder):
+def test_inheritance(rewarder: Rewarder) -> None:
     assert isinstance(rewarder, Rewarder)
 
 
@@ -74,26 +89,29 @@ def test_inheritance(rewarder):
     ],
 )
 def test_reward_range(
-    rewarder_class,
-    illegal_action_penalty,
-    reward_per_edge,
-    penalty_per_edge,
-    reward_range,
-):
-    rewarder = rewarder_class(illegal_action_penalty, reward_per_edge, penalty_per_edge)
+    rewarder_class: type[Rewarder],
+    illegal_action_penalty: float,
+    reward_per_edge: float,
+    penalty_per_edge: float,
+    reward_range: tuple[float, float],
+) -> None:
+    rewarder = rewarder_class(illegal_action_penalty, reward_per_edge, penalty_per_edge)  # type: ignore[call-arg]
     assert rewarder.reward_range == reward_range
 
 
-def test_init(rewarder_class):
-    rewarder = rewarder_class(-3, 3, -2)
+def test_init(rewarder_class: type[Rewarder]) -> None:
+    rewarder = rewarder_class(-3, 3, -2)  # type: ignore[call-arg]
     assert rewarder._reward_range == (-float("inf"), float("inf"))
+    assert hasattr(rewarder, "_illegal_action_penalty")
     assert rewarder._illegal_action_penalty == -3
+    assert hasattr(rewarder, "_reward_per_edge")
     assert rewarder._reward_per_edge == 3
+    assert hasattr(rewarder, "_penalty_per_edge")
     assert rewarder._penalty_per_edge == -2
 
 
 """
-Tests for the basic rewarder
+Tests for the BasicRewarder
 """
 
 empty_graph = np.zeros((3, 3), dtype=np.int_)
@@ -101,18 +119,18 @@ full_graph = np.array(([[0, 1, 1], [1, 0, 1], [1, 1, 0]]), dtype=np.int_)
 
 
 @pytest.mark.parametrize(
-    "connection_graph_matrix,interaction_graph_matrix,rewards",
+    "connection_graph_matrix, interaction_graph_matrix, rewards",
     [
         (empty_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 5, 15]),
-        (full_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, -1, -3]),
+        (full_graph, empty_graph, [0, 0, 0]),
+        (full_graph, full_graph, [0, 5, 15]),
     ],
 )
 def test_basic_rewarder(
     connection_graph_matrix: NDArray[np.int_],
     interaction_graph_matrix: NDArray[np.int_],
-    rewards: List[float],
+    rewards: list[float],
 ) -> None:
     episode_generator = _episode_generator(
         connection_graph_matrix, interaction_graph_matrix
@@ -129,7 +147,7 @@ def test_basic_rewarder(
 
 
 """
-Tests for the single step rewarder
+Tests for the SingleStepRewarder
 """
 
 
@@ -137,15 +155,15 @@ Tests for the single step rewarder
     "connection_graph_matrix,interaction_graph_matrix,rewards",
     [
         (empty_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 5, 10]),
-        (full_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, -1, -2]),
+        (full_graph, empty_graph, [0, 0, 0]),
+        (full_graph, full_graph, [0, 5, 10]),
     ],
 )
 def test_single_step_rewarder(
     connection_graph_matrix: NDArray[np.int_],
     interaction_graph_matrix: NDArray[np.int_],
-    rewards: List[float],
+    rewards: list[float],
 ) -> None:
     episode_generator = _episode_generator(
         connection_graph_matrix, interaction_graph_matrix
@@ -162,23 +180,23 @@ def test_single_step_rewarder(
 
 
 """
-Tests for the episode rewarder rewarder
+Tests for the EpisodeRewarder
 """
 
 
 @pytest.mark.parametrize(
-    "connection_graph_matrix,interaction_graph_matrix,rewards",
+    "connection_graph_matrix, interaction_graph_matrix, rewards",
     [
         (empty_graph, empty_graph, [0, 0, 0]),
-        (full_graph, full_graph, [0, 0, 15]),
-        (full_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, 0, -3]),
+        (full_graph, empty_graph, [0, 0, 0]),
+        (full_graph, full_graph, [0, 0, 15]),
     ],
 )
-def test_episode_step_rewarder(
+def test_episode_rewarder(
     connection_graph_matrix: NDArray[np.int_],
     interaction_graph_matrix: NDArray[np.int_],
-    rewards: List[float],
+    rewards: list[float],
 ) -> None:
     episode_generator = _episode_generator(
         connection_graph_matrix, interaction_graph_matrix
@@ -192,3 +210,42 @@ def test_episode_step_rewarder(
         )
 
         assert reward == rewards[i]
+
+
+"""
+Tests for the FidelityEpisodeRewarder
+"""
+
+fidelity_graph = np.array(
+    ([[0, 0.2, 0.6], [0.2, 0, 0.74], [0.6, 0.74, 0]]), dtype=np.float_
+)
+
+
+@pytest.mark.parametrize(
+    "connection_graph_matrix, interaction_graph_matrix, rewards",
+    [
+        (empty_graph, empty_graph, [0, 0, 0]),
+        (empty_graph, full_graph, [0, 0, -3]),
+        (full_graph, empty_graph, [0, 0, 0]),
+        (full_graph, full_graph, [0, 0, 15]),
+        (fidelity_graph, empty_graph, [0, 0, 0]),
+        (fidelity_graph, full_graph, [0, 0, 7.70]),
+    ],
+)
+def test_fidelity_episode_rewarder(
+    connection_graph_matrix: NDArray[np.int_],
+    interaction_graph_matrix: NDArray[np.int_],
+    rewards: list[float],
+) -> None:
+    episode_generator = _episode_generator(
+        connection_graph_matrix, interaction_graph_matrix
+    )
+
+    rewarder = FidelityEpisodeRewarder()
+
+    for i, (old_state, action, new_state) in enumerate(episode_generator):
+        reward = rewarder.compute_reward(
+            old_state=old_state, action=action, new_state=new_state
+        )
+
+        np.testing.assert_allclose(reward, rewards[i])

@@ -1,4 +1,5 @@
-"""This module will contain some vanilla Rewarders for the ``Routing`` environment.
+"""This module will contain some vanilla Rewarders for the :class:`~qgym.envs.Routing`
+environment.
 
 Usage:
     The rewarders in this module can be customized by initializing the rewarders with
@@ -14,13 +15,15 @@ Usage:
             schedule_gate_bonus: = 3,
             )
 
-    After initialization, the rewarders can be given to the ``Routing`` environment.
+    After initialization, the rewarders can be given to the :class:`~qgym.envs.Routing`
+    environment.
 
 .. note::
-    When implementing custom rewarders, they should inherit from ``qgym.Rewarder``.
-    Furthermore, they must implement the ``compute_reward`` method. Which takes as input
-    the old state, the new state and the given action. See the documentation of the
-    ``qgym.envs.routing.routing`` module for more information on the state and
+    When implementing custom rewarders, they should inherit from
+    :class:`~qgym.templates.Rewarder`. Furthermore, they must implement the
+    :func:`~qgym.templates.Rewarder.compute_reward` method. Which takes as input the
+    old state, the new state and the given action. See the documentation of the
+    :obj:`~qgym.envs.routing.routing` module for more information on the state and
     action space.
 
 """
@@ -35,7 +38,9 @@ from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_po
 
 
 class BasicRewarder(Rewarder):
-    """RL Rewarder, for computing rewards on the ``RoutingState``."""
+    """RL Rewarder, for computing rewards on the
+    :class:`~qgym.envs.routing.RoutingState`.
+    """
 
     def __init__(
         self,
@@ -77,9 +82,11 @@ class BasicRewarder(Rewarder):
         """Compute a reward, based on the old state, new state, and the given action.
 
         Args:
-            old_state: ``RoutingState`` before the current action.
+            old_state: :class:`~qgym.envs.routing.RoutingState` before the current
+                action.
             action: Action that has just been taken.
-            new_state: ``RoutingState`` after the current action.
+            new_state: :class:`~qgym.envs.routing.RoutingState` after the current
+                action.
 
         Returns:
             The reward for this action.
@@ -128,10 +135,12 @@ class BasicRewarder(Rewarder):
 
 
 class SwapQualityRewarder(BasicRewarder):
-    """Rewarder for the ``Routing`` environment which takes swap qualities into account.
+    """Rewarder for the :class:`~qgym.envs.Routing` environment which takes swap
+    qualities into account.
 
-    The ``SwapQualityRewarder`` has an adjusted reward w.r.t. the ``BasicRewarder`` in
-    the sense that good SWAPs give lower penalties and bad SWAPs give higher penalties.
+    The :class:`SwapQualityRewarder` has an adjusted reward w.r.t. the
+    :class:`BasicRewarder` in the sense that good SWAPs give lower penalties and bad
+    SWAPs give higher penalties.
     """
 
     def __init__(
@@ -155,7 +164,7 @@ class SwapQualityRewarder(BasicRewarder):
                 this value should be positive and defaults to 10.
             good_swap_reward: Reward given for placing a good swap. In general, we want
                 to place as little swaps as possible. However, when they are good, the
-                penalty for the placement should be surpressed. That happens with this
+                penalty for the placement should be suppressed. That happens with this
                 reward. So, the value should be positive and smaller than the
                 penalty_per_swap, in order not to get positive rewards for swaps,
                 defaults to 5.
@@ -185,9 +194,11 @@ class SwapQualityRewarder(BasicRewarder):
         Specifically, the change in observation reach is used.
 
         Args:
-            old_state: ``RoutingState`` before the current action.
+            old_state: :class:`~qgym.envs.routing.RoutingState` before the current
+                action.
             action: Action that has just been taken.
-            new_state: ``RoutingState`` after the current action.
+            new_state: :class:`~qgym.envs.routing.RoutingState` after the current
+                action.
 
         Returns:
             The reward for this action. If the action is illegal, then the reward is

@@ -6,11 +6,12 @@ account.
 
 Circuits:
     The quantum operations scheduling problem consist of scheduling the operations
-    described by a quantum circuit. For the ``Scheduling`` environment in this module, a
-    quantum circuit is defined as a list of gates, where a gate is a ``namedtuple`` with
-    a 'name', 'q1' and 'q2'. For example, a c-not with control qubit 2 and target qubit
-    5 would be ``Gate("cnot", 2, 5)`` and an X gate acting on qubit 4 would be
-    ``Gate("x", 4, 4)``. In this representation, the circuit below can be created by:
+    described by a quantum circuit. For the :class:`Scheduling` environment in this
+    module, a quantum circuit is defined as a list of gates, where a gate is a
+    ``namedtuple`` with a 'name', 'q1' and 'q2'. For example, a c-not with control
+    qubit 2 and target qubit 5 would be ``Gate("cnot", 2, 5)`` and an X gate acting on
+    qubit 4 would be ``Gate("x", 4, 4)``. In this representation, the circuit below can
+    be created by:
 
     >>> from qgym.custom_types import Gate
     >>> circuit = [Gate("x", 1, 1), Gate("cnot", 0, 1), Gate("x", 0, 0), Gate("h",1,1)]
@@ -36,7 +37,7 @@ Hardware specifications:
 
     Finding an optimal schedule with these restriction is already a difficult task.
     However, to complicate matters there can be more limitations defined by the
-    hardware. To be more concrete, the ``Schdeuling`` environment can take two more
+    hardware. To be more concrete, the :class:`Scheduling` environment can take two more
     types of limitations into account:
 
     #. Some gates must start at the same time, or must wait till the previous one is
@@ -53,15 +54,17 @@ State space:
 
     * `machine_properties`: MachineProperties object containing machine properties
       and limitations.
-    * `utils`: ``SchedulingUtils`` dataclass with a random circuit generator,
-      commutation rulebook and a gate encoder.
-    * `gates`: Dictionary with gate names as keys and ``GateInfo`` dataclasses as
+    * `utils`: :class:`~qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils`
+      dataclass with a random circuit generator, commutation rulebook and a gate
+      encoder.
+    * `gates`: Dictionary with gate names as keys and
+      :class:`~qgym.envs.scheduling.scheduling_dataclasses.GateInfo` dataclasses as
       values.
     * `steps_done`: Number of steps done since the last reset.
     * `cycle`: Current 'machine' cycle.
     * `busy`: Used internally for the hardware limitations.
-    * `circuit_info`: ``CircuitInfo`` dataclass containing the encoded circuit and
-      attributes used to update the state.
+    * `circuit_info`: :class:`~qgym.envs.scheduling.scheduling_dataclasses.CircuitInfo`
+      dataclass containing the encoded circuit and attributes used to update the state.
 
 Observation space:
     Each element in the observation space is a dictionary with 4 entries:
@@ -97,8 +100,8 @@ Example 1:
       one is done.
     * The X and Y gates cannot be performed in the same cycle.
 
-    The code block below shows how a ``Scheduling`` environment for such a machine, were
-    the environment only allows for circuit with a maximum length of 5:
+    The code block below shows how a :class:`Scheduling` environment for such a machine,
+    were the environment only allows for circuit with a maximum length of 5:
 
     .. code-block:: python
 
@@ -117,9 +120,9 @@ Example 1:
 Example 2:
     This example shows how to add a specified commutation rulebook, which can contain
     costum commutation rules. For more information on implementing custom cummutation
-    rules, see the documentation of ``CommutationRulebook``. This example uses the same
-    machine properties as example 1. Costrum commutation rules can be added as shown in
-    the code block below:
+    rules, see the documentation of :class:`~qgym.envs.scheduling.CommutationRulebook`.
+    This example uses the same machine properties as example 1. Custom commutation rules
+    can be added as shown in the code block below:
 
     .. code-block:: python
 
@@ -170,7 +173,7 @@ class Scheduling(
 ):
     """RL environment for the scheduling problem."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         machine_properties: Mapping[str, Any] | str | MachineProperties,
         *,
@@ -185,23 +188,25 @@ class Scheduling(
         scheduling environment.
 
         Args:
-            machine_properties: A ``MachineProperties`` object, a ``Mapping`` containing
-                machine properties or a string with a filename for a file containing the
-                machine properties.
+            machine_properties: A :class:`~qgym.envs.scheduling.MachineProperties`
+                object, a ``Mapping`` containing machine properties or a string with a
+                filename for a file containing the machine properties.
             max_gates: Maximum number of gates allowed in a circuit. Defaults to 200.
             dependency_depth: Number of dependencies given in the observation.
                 Determines the shape of the `dependencies` observation, which has the
                 shape (dependency_depth, max_gates). Defaults to 1.
             random_circuit_mode: Mode for the random circuit generator. The mode can be
                 'default' or 'workshop'. Defaults to 'default'.
-            rulebook: ``CommutationRulebook`` describing the commutation rules. If
-                ``None`` (default) is given, a default ``CommutationRulebook`` will be
-                used. (See ``CommutationRulebook`` for more info on the default rules.)
+            rulebook: :class:`~qgym.envs.scheduling.CommutationRulebook` describing the
+                commutation rules. If ``None`` (default) is given, a default
+                :class:`~qgym.envs.scheduling.CommutationRulebook` will be used. (See
+                :class:`~qgym.envs.scheduling.CommutationRulebook` for more info on the
+                default rules.)
             rewarder: Rewarder to use for the environment. If ``None`` (default), then a
-                default ``BasicRewarder`` is used.
-            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
-                'rgb_array', return an RGB array encoding of the rendered frame on each
-                render call.
+                default :class:`~qgym.envs.scheduling.BasicRewarder` is used.
+            render_mode: If ``"human"`` open a ``pygame`` screen visualizing the step.
+                If ``"rgb_array"``, return an RGB array encoding of the rendered frame
+                on each render call.
         """
         self.metadata = {
             "render.modes": ["human", "rgb_array"],
@@ -235,7 +240,7 @@ class Scheduling(
         seed: int | None = None,
         options: Mapping[str, Any] | None = None,
     ) -> tuple[dict[str, NDArray[np.int_] | NDArray[np.int8]], dict[str, Any]]:
-        """Reset the state, action space and load a new (random) initial state.
+        r"""Reset the state, action space and load a new (random) initial state.
 
         To be used after an episode is finished.
 
@@ -245,7 +250,8 @@ class Scheduling(
             return_info: Whether to receive debugging info.
             options: Mapping with keyword arguments with additional options for the
                 reset. Keywords can be found in the description of
-                ``SchedulingState.reset()``
+                :class:`~qgym.envs.scheduling.SchedulingState`.\
+                :class:`~qgym.envs.scheduling.SchedulingState.reset`.
             _kwargs: Additional options to configure the reset.
 
         Returns:
@@ -257,7 +263,7 @@ class Scheduling(
         """Return the quantum circuit of this episode.
 
         Args:
-            mode: Choose from be 'human' or 'encoded'. Defaults to 'human'.
+            mode: Choose from be ``"human"`` or ``"encoded"``. Defaults to ``"human"``.
 
         Raises:
             ValueError: If an unsupported mode is provided.

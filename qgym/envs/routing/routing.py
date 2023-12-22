@@ -35,8 +35,8 @@ be taken into account, like the fidelity of connections in the QPU.
 
 
 State Space:
-    The state space is described by a ``RoutingState`` with the following
-    attributes:
+    The state space is described by a :class:`~qgym.envs.routing.RoutingState` with the
+    following attributes:
 
     * `steps_done`: Number of steps done since the last reset.
     * `num_nodes`: Number of *physical* qubits.
@@ -62,7 +62,7 @@ State Space:
       acting on logical qubits q1 and q2 before gate g in the interaction_circuit.
 
 Observation Space:
-    The observation space is a ``qgym.spaces.Dict`` with 2-4 entries:
+    The observation space is a :class:`~qgym.spaces.Dict` with 2-4 entries:
 
     * `interaction_gates_ahead`: Array with Boolean values for the upcoming connection
       gates in the quantum circuit.
@@ -108,13 +108,15 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_bool, check_int
 
 if TYPE_CHECKING:
-    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
+    Gridspecs = (
+        list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
+    )
 
 
 class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """RL environment for the routing problem of OpenQL."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         max_interaction_gates: int = 10,
         max_observation_reach: int = 5,
@@ -129,7 +131,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     ) -> None:
         """Initialize the action space, observation space, and initial states.
 
-        The supported render modes of this environment are "human" and "rgb_array".
+        The supported render modes of this environment are ``"human"`` and
+        ``"rgb_array"``.
 
         Args:
             max_interaction_gates: Sets the maximum amount of gates in the
@@ -156,11 +159,11 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 has a grid topology. For more information on the allowed values and
                 types, see ``networkx`` `grid_graph`_ documentation.
             rewarder: Rewarder to use for the environment. Must inherit from
-                ``qgym.Rewarder``. If ``None`` (default), then ``BasicRewarder`` is
-                used.
-            render_mode: If 'human' open a ``pygame`` screen visualizing the step. If
-                'rgb_array', return an RGB array encoding of the rendered frame on each
-                render call.
+                :class:`~qgym.templates.Rewarder`. If ``None`` (default), then
+                :class:`~qgym.envs,routing.BasicRewarder` is used.
+            render_mode: If ``"human"`` open a ``pygame`` screen visualizing the step.
+                If ``"rgb_array"``, return an RGB array encoding of the rendered frame
+                on each render call.
 
         .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
             networkx.generators.lattice.grid_graph.html#grid-graph
@@ -219,7 +222,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         seed: int | None = None,
         options: Mapping[str, Any] | None = None,
     ) -> tuple[dict[str, NDArray[np.int_]], dict[str, Any]]:
-        """Reset the state and set/create a new interaction circuit.
+        r"""Reset the state and set/create a new interaction circuit.
 
         To be used after an episode is finished.
 
@@ -228,7 +231,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 (optionally) on the first reset call i.e., before any learning is done.
             options: Mapping with keyword arguments with additional options for the
                 reset. Keywords can be found in the description of
-                ``RoutingState.reset()``
+                :class:`~qgym.envs.routing.RoutingState`.\
+                :class:`~qgym.envs.routing.RoutingState.reset()`.
 
         Returns:
             Initial observation and debugging info.

@@ -12,7 +12,7 @@ from numpy.typing import ArrayLike, NDArray
 # pylint: disable=invalid-name
 
 
-def check_real(
+def check_real(  # pylint: disable=too-many-arguments
     x: Any,
     name: str,
     *,
@@ -66,7 +66,7 @@ def check_real(
     return x_float
 
 
-def check_int(
+def check_int(  # pylint: disable=too-many-arguments
     x: Any,
     name: str,
     *,
