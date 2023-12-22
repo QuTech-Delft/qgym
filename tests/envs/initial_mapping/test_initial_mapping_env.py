@@ -9,6 +9,7 @@ from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
     SingleStepRewarder,
+    FidelityEpisodeRewarder
 )
 
 

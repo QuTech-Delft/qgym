@@ -14,7 +14,7 @@ Usage:
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, cast
+from typing import Any, Dict, cast, Union
 
 import networkx as nx
 import numpy as np
@@ -25,7 +25,7 @@ from qgym.templates.state import State
 
 
 class InitialMappingState(
-    State[Dict[str, NDArray[np.int_] | NDArray[np.float_]], NDArray[np.int_]]
+    State[Dict[str, Union[NDArray[np.int_], NDArray[np.float_]]], NDArray[np.int_]]
 ):
     """The :class:`~qgym.envs.initial_mapping.InitialMappingState` class."""
 
@@ -65,7 +65,7 @@ class InitialMappingState(
 
         self.fidelity = False  # whether edges include fidelity
         for _, _, wt in connection_graph.edges.data("weight"):
-            if type(wt) is not np.int_:
+            if not isinstance(wt, int):
                 self.fidelity = True
                 break
         if self.fidelity:
@@ -117,7 +117,7 @@ class InitialMappingState(
             interaction_matrix_space = spaces.Box(
                 low=0,
                 high=1,
-                shape=(self.n_nodes, self.n_nodes),
+                shape=(self.n_nodes * self.n_nodes,),
                 dtype=np.float_,
                 rng=self.rng,
             )
