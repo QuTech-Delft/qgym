@@ -121,16 +121,20 @@ class InitialMappingState(
                 dtype=np.float_,
                 rng=self.rng,
             )
-        else:
-            interaction_matrix_space = spaces.MultiBinary(
-                self.n_nodes**2, rng=self.rng
-            )
-        return spaces.Dict(
+            return spaces.Dict(
             rng=self.rng,
             mapping=mapping_space,
             interaction_matrix=interaction_matrix_space,
         )
-
+        else:
+            return spaces.Dict(
+            rng=self.rng,
+            mapping=mapping_space,
+            interaction_matrix=spaces.MultiBinary(
+                self.n_nodes**2, rng=self.rng
+            ),
+        )
+            
     def reset(
         self,
         *,

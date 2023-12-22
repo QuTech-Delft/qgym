@@ -108,7 +108,7 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_bool, check_int
 
 if TYPE_CHECKING:
-    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
+    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]] #TODO: fix mypy
 
 
 class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):

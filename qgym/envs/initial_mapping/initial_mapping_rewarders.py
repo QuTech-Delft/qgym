@@ -281,7 +281,7 @@ class FidelityEpisodeRewarder(BasicRewarder):
 
         return self._compute_state_reward(new_state)
 
-    def _compute_state_reward(self, state):
+    def _compute_state_reward(self, state) -> float:
         reward = 0.0
         for flat_idx in state.graphs["interaction"]["matrix"].nonzero()[0]:
             interaction_i, interaction_j = divmod(flat_idx, state.n_nodes)
@@ -296,4 +296,4 @@ class FidelityEpisodeRewarder(BasicRewarder):
             else:
                 reward += edge_fidelity * self._reward_per_edge
 
-        return reward / 2
+        return float(reward / 2)
