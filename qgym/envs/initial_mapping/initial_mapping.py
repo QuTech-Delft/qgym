@@ -114,7 +114,7 @@ Example 2:
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping, Union
 
 import networkx as nx
 import numpy as np
@@ -135,11 +135,13 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_real
 
 if TYPE_CHECKING:
-    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]  # TODO: fix mypy
+    Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]
 
 
 class InitialMapping(
-    Environment[Dict[str, NDArray[np.int_] | NDArray[np.float_]], NDArray[np.int_]]
+    Environment[
+        Dict[str, Union[NDArray[np.int_], NDArray[np.float_]]], NDArray[np.int_]
+    ]
 ):
     """RL environment for the initial mapping problem of OpenQL."""
 

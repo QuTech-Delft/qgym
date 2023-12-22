@@ -40,6 +40,7 @@ class InitialMappingState(
     def __init__(
         self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
     ) -> None:
+        # pylint: disable=line-too-long
         """Init of the :class:`~qgym.envs.initial_mapping.InitialMappingState` class.
 
         Args:
@@ -52,6 +53,8 @@ class InitialMappingState(
                 without any interactions can be seen as 'null' nodes. Must be a value in
                 the range $[0,1]$.
         """
+        # pylint: enable=line-too-long
+
         # Create a random connection graph with `n_nodes` and with edges existing with
         # probability `interaction_graph_edge_probability` (nodes without connections
         # can be seen as 'null' nodes)
@@ -126,12 +129,11 @@ class InitialMappingState(
                 mapping=mapping_space,
                 interaction_matrix=interaction_matrix_space,
             )
-        else:
-            return spaces.Dict(
-                rng=self.rng,
-                mapping=mapping_space,
-                interaction_matrix=spaces.MultiBinary(self.n_nodes**2, rng=self.rng),
-            )
+        return spaces.Dict(
+            rng=self.rng,
+            mapping=mapping_space,
+            interaction_matrix=spaces.MultiBinary(self.n_nodes**2, rng=self.rng),
+        )
 
     def reset(
         self,
