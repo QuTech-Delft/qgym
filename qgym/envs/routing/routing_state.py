@@ -216,9 +216,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             containing:
 
             * :class:`~qgym.spaces.MultiDiscrete` space representing the interaction
-                gates ahead of current position.
+              gates ahead of current position.
             * :class:`~qgym.spaces.MultiDiscrete` space representing the current mapping
-            of logical onto physical qubits
+              of logical onto physical qubits
         """
         interaction_gates_ahead = qgym.spaces.MultiDiscrete(
             np.full(2 * self.max_observation_reach, self.n_qubits + 1)

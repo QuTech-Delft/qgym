@@ -203,7 +203,7 @@ class InitialMappingState(
         self.mapped_qubits["logical"].add(logical_qubit)
         return self
 
-    def obtain_observation(self) -> dict[str, NDArray[np.int_]]:
+    def obtain_observation(self) -> dict[str, NDArray[np.int_] | NDArray[np.float_]]:
         """Obtain an observation based on the current state.
 
         Returns:

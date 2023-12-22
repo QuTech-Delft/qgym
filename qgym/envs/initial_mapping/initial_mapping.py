@@ -138,7 +138,9 @@ if TYPE_CHECKING:
     Gridspecs = list[int | Iterable[int]] | tuple[int | Iterable[int]]  # TODO: fix mypy
 
 
-class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class InitialMapping(
+    Environment[Dict[str, NDArray[np.int_] | NDArray[np.float_]], NDArray[np.int_]]
+):
     """RL environment for the initial mapping problem of OpenQL."""
 
     __slots__ = (
@@ -224,7 +226,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         *,
         seed: int | None = None,
         options: Mapping[str, Any] | None = None,
-    ) -> tuple[dict[str, NDArray[np.int_]], dict[str, Any]]:
+    ) -> tuple[dict[str, NDArray[np.int_] | NDArray[np.float_]], dict[str, Any]]:
         r"""Reset the state and set a new interaction graph.
 
         To be used after an episode is finished.
