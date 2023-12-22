@@ -33,7 +33,7 @@ from qgym.templates.state import State
 class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """The :class:`RoutingState` class."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         *,
         max_interaction_gates: int,

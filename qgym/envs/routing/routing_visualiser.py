@@ -137,7 +137,7 @@ class RoutingVisualiser(Visualiser):
         )
         self._draw_mapping(screen, state=state, x_gates=x_gates, y_lines=y_lines)
 
-    def _draw_circuit_lines(
+    def _draw_circuit_lines(  # pylint: disable=too-many-arguments
         self,
         screen: Surface,
         *,

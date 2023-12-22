@@ -173,7 +173,7 @@ class Scheduling(
 ):
     """RL environment for the scheduling problem."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         machine_properties: Mapping[str, Any] | str | MachineProperties,
         *,

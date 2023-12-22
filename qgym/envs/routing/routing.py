@@ -116,7 +116,7 @@ if TYPE_CHECKING:
 class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """RL environment for the routing problem of OpenQL."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         max_interaction_gates: int = 10,
         max_observation_reach: int = 5,

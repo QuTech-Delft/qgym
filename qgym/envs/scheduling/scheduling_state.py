@@ -28,7 +28,7 @@ class SchedulingState(
 ):
     """The :class:`SchedulingState` class."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         *,
         machine_properties: MachineProperties,
