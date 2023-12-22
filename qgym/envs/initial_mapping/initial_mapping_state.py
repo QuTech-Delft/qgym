@@ -14,7 +14,7 @@ Usage:
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, Union, cast
+from typing import Any, Dict, cast
 
 import networkx as nx
 import numpy as np
@@ -24,9 +24,7 @@ from qgym import spaces
 from qgym.templates.state import State
 
 
-class InitialMappingState(
-    State[Dict[str, Union[NDArray[np.int_], NDArray[np.float_]]], NDArray[np.int_]]
-):
+class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """The :class:`~qgym.envs.initial_mapping.InitialMappingState` class."""
 
     __slots__ = (
@@ -66,12 +64,12 @@ class InitialMappingState(
         self.steps_done: int = 0
         """Number of steps done since the last reset."""
 
-        self.fidelity = False  # whether edges include fidelity
+        fidelity = False  # whether edges include fidelity
         for _, _, weight in connection_graph.edges.data("weight"):
             if not isinstance(weight, int):
-                self.fidelity = True
+                fidelity = True
                 break
-        if self.fidelity:
+        if fidelity:
             connection = {
                 "graph": deepcopy(connection_graph),
                 "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),
@@ -107,7 +105,8 @@ class InitialMappingState(
 
         Returns:
             Observation space in the form of a :class:`~qgym.spaces.Dict` space
-            containing:
+            containing the following values if the connection graph has no fidelity
+            information:
 
             * :class:`~qgym.spaces.MultiDiscrete` space representing the mapping.
             * :class:`~qgym.spaces.MultiBinary` representing the interaction matrix.
@@ -115,24 +114,12 @@ class InitialMappingState(
         mapping_space = spaces.MultiDiscrete(
             nvec=[self.n_nodes + 1] * self.n_nodes, rng=self.rng
         )
+        interaction_matrix_space = spaces.MultiBinary(self.n_nodes**2, rng=self.rng)
 
-        if self.fidelity:
-            interaction_matrix_space = spaces.Box(
-                low=0,
-                high=1,
-                shape=(self.n_nodes * self.n_nodes,),
-                dtype=np.float_,
-                rng=self.rng,
-            )
-            return spaces.Dict(
-                rng=self.rng,
-                mapping=mapping_space,
-                interaction_matrix=interaction_matrix_space,
-            )
         return spaces.Dict(
             rng=self.rng,
             mapping=mapping_space,
-            interaction_matrix=spaces.MultiBinary(self.n_nodes**2, rng=self.rng),
+            interaction_matrix=interaction_matrix_space,
         )
 
     def reset(
@@ -205,7 +192,7 @@ class InitialMappingState(
         self.mapped_qubits["logical"].add(logical_qubit)
         return self
 
-    def obtain_observation(self) -> dict[str, NDArray[np.int_] | NDArray[np.float_]]:
+    def obtain_observation(self) -> dict[str, NDArray[np.int_]]:
         """Obtain an observation based on the current state.
 
         Returns:
