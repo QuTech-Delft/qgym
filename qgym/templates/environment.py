@@ -146,7 +146,8 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         self._rng = rng
 
     def __del__(self) -> None:
-        self.close()
+        if hasattr(self, "_visualiser"):
+            self.close()
 
     def _compute_reward(
         self,
