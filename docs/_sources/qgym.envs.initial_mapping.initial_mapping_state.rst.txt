@@ -1,7 +1,0 @@
-qgym.envs.initial\_mapping.initial\_mapping\_state module
-=========================================================
-
-.. automodule:: qgym.envs.initial_mapping.initial_mapping_state
-   :members:
-   :undoc-members:
-   :show-inheritance:

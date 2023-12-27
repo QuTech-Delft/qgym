@@ -1,7 +1,0 @@
-qgym.envs.scheduling.scheduling\_dataclasses module
-===================================================
-
-.. automodule:: qgym.envs.scheduling.scheduling_dataclasses
-   :members:
-   :undoc-members:
-   :show-inheritance:

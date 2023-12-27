@@ -1,7 +1,0 @@
-qgym.custom\_types module
-=========================
-
-.. automodule:: qgym.custom_types
-   :members:
-   :undoc-members:
-   :show-inheritance:

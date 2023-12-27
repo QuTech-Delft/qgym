@@ -1,7 +1,0 @@
-qgym.utils.visualisation.colors module
-======================================
-
-.. automodule:: qgym.utils.visualisation.colors
-   :members:
-   :undoc-members:
-   :show-inheritance:

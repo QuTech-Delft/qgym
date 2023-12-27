@@ -1,7 +1,0 @@
-qgym.templates.visualiser module
-================================
-
-.. automodule:: qgym.templates.visualiser
-   :members:
-   :undoc-members:
-   :show-inheritance:

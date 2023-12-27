@@ -1,7 +1,0 @@
-qgym.spaces.box module
-======================
-
-.. automodule:: qgym.spaces.box
-   :members:
-   :undoc-members:
-   :show-inheritance:

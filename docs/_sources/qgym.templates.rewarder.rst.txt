@@ -1,7 +1,0 @@
-qgym.templates.rewarder module
-==============================
-
-.. automodule:: qgym.templates.rewarder
-   :members:
-   :undoc-members:
-   :show-inheritance:

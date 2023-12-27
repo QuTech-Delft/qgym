@@ -1,7 +1,0 @@
-qgym.spaces.multi\_discrete module
-==================================
-
-.. automodule:: qgym.spaces.multi_discrete
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-qgym.utils.visualisation.wrappers module
-========================================
-
-.. automodule:: qgym.utils.visualisation.wrappers
-   :members:
-   :undoc-members:
-   :show-inheritance:

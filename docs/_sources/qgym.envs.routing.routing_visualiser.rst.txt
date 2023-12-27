@@ -1,7 +1,0 @@
-qgym.envs.routing.routing\_visualiser module
-============================================
-
-.. automodule:: qgym.envs.routing.routing_visualiser
-   :members:
-   :undoc-members:
-   :show-inheritance:

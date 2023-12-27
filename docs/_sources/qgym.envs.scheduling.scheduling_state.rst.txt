@@ -1,7 +1,0 @@
-qgym.envs.scheduling.scheduling\_state module
-=============================================
-
-.. automodule:: qgym.envs.scheduling.scheduling_state
-   :members:
-   :undoc-members:
-   :show-inheritance:

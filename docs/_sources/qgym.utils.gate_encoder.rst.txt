@@ -1,7 +1,0 @@
-qgym.utils.gate\_encoder module
-===============================
-
-.. automodule:: qgym.utils.gate_encoder
-   :members:
-   :undoc-members:
-   :show-inheritance:

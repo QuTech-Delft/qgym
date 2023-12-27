@@ -1,7 +1,0 @@
-qgym.envs.scheduling.scheduling\_rewarders module
-=================================================
-
-.. automodule:: qgym.envs.scheduling.scheduling_rewarders
-   :members:
-   :undoc-members:
-   :show-inheritance:
