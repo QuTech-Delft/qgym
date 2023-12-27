@@ -1,0 +1,7 @@
+qgym.spaces.discrete module
+===========================
+
+.. automodule:: qgym.spaces.discrete
+   :members:
+   :undoc-members:
+   :show-inheritance:

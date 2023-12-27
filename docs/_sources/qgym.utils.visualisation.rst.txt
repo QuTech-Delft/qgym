@@ -1,0 +1,16 @@
+qgym.utils.visualisation package
+================================
+
+.. automodule:: qgym.utils.visualisation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. toctree::
+   :maxdepth: 4
+
+
+   qgym.utils.visualisation.colors
+   qgym.utils.visualisation.typing
+   qgym.utils.visualisation.wrappers

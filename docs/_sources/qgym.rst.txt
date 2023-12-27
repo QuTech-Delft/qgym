@@ -1,0 +1,23 @@
+qgym package
+============
+
+.. automodule:: qgym
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. toctree::
+   :maxdepth: 4
+
+
+   qgym.envs
+   qgym.spaces
+   qgym.templates
+   qgym.utils
+
+
+.. toctree::
+   :maxdepth: 4
+
+
+   qgym.custom_types

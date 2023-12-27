@@ -1,0 +1,82 @@
+.. qgym documentation master file, created by
+   sphinx-quickstart on Fri Dec 22 16:10:07 2023.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+###############################################################################
+:obj:`~qgym` – A Gym for Training and Benchmarking RL-Based Quantum Compilation
+###############################################################################
+:obj:`~qgym` is a software framework that provides environments for training and benchmarking RL-based quantum compilers.
+It is built on top of OpenAI Gym and abstracts parts of the compilation process that are irrelevant to AI researchers.
+:obj:`~qgym` includes three environments: :class:`~qgym.envs.InitialMapping`,
+:class:`~qgym.envs.Routing`, and :class:`~qgym.envs.Scheduling`,
+each of which is customizable and extensible.
+
+
+Documentation
+==============
+We have created an `extensive documentation <https://qutech-delft.github.io/qgym/index.html>`_ with code snippets.
+Please feel free to contact us via `s.feld@tudelft.nl <s.feld@tudelft.nl>`_ if you have any questions, or by creating a `GitHub issue <https://github.com/QuTech-Delft/qgym/issues/new>`_.
+
+
+Getting Started
+===============
+What follows are some simple steps to get you running.
+You could also have a look at some `Jupyter Notebooks <https://github.com/QuTech-Delft/qgym/tree/master/notebooks>`_ that we have created for a tutorial at the `IEEE International Conference on Quantum Computing and Engineering (QCE’22) <https://qce.quantum.ieee.org/2022/tutorials-program/>`_.
+
+Installing with pip
+-------------------
+To install the :obj:`~qgym` use
+
+.. code-block:: console
+
+   pip install qgym
+
+If you would also like to use the notebooks, additional packages are required, which can
+simply be installed by using:
+
+.. code-block:: console
+
+   pip install qgym[tutorial]
+
+Currently :obj:`~qgym` has support for Python 3.7, 3.8, 3.9, 3.10 and 3.11.
+
+
+Publication
+============
+The paper on :obj:`~qgym` has been presented in the `1st International Workshop on Quantum Machine Learning: From Foundations to Applications (QML@QCE'23) <https://qml.lfdr.de/2023/>`_.
+You can find the preprint of the paper on `arxiv <https://arxiv.org/pdf/2308.02536.pdf>`_.
+
+.. code-block:: console
+
+   @article{van2023qgym,
+   title={qgym: A Gym for training and benchmarking RL-based quantum compilation},
+   author={van der Linde, Stan and de Kok, Willem and Bontekoe, Tariq and Feld, Sebastian},
+   journal={arXiv preprint arXiv:2308.02536},
+   year={2023}
+   }
+
+Team
+====
+Building :obj:`~qgym` is a joint effort.
+
+Core developers
+----------------
+- `Stan van der Linde <https://scholar.google.com/citations?user=MyQ0mBcAAAAJ&hl=nl>`_
+- `Willem de Kok <https://nl.linkedin.com/in/willem-de-kok-a74942187>`_
+- `Tariq Bontekoe <https://nl.linkedin.com/in/tariq-bontekoe-53214817a>`_
+- `Sebastian Feld <https://nl.linkedin.com/in/sebastian-feld?>`_
+
+Power users
+------------
+- Joris Henstra
+- Rares Oancea 
+
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Contents:
+   :hidden:
+
+   qgym
+

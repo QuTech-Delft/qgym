@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qgym.envs.routing.routing_rewarders &mdash; qgym</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            qgym
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../qgym.html">qgym package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.envs.html">qgym.envs package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMapping.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.action_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.metadata"><code class="docutils literal notranslate"><span class="pre">InitialMapping.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.InitialMapping.reset"><code class="docutils literal notranslate"><span class="pre">InitialMapping.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Routing.__init__"><code class="docutils literal notranslate"><span class="pre">Routing.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Routing.reset"><code class="docutils literal notranslate"><span class="pre">Routing.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Scheduling.__init__"><code class="docutils literal notranslate"><span class="pre">Scheduling.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Scheduling.get_circuit"><code class="docutils literal notranslate"><span class="pre">Scheduling.get_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.html#qgym.envs.Scheduling.reset"><code class="docutils literal notranslate"><span class="pre">Scheduling.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.initial_mapping.html">qgym.envs.initial_mapping.initial_mapping module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.initial_mapping_rewarders.html">qgym.envs.initial_mapping.initial_mapping_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.initial_mapping_state.html">qgym.envs.initial_mapping.initial_mapping_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.initial_mapping_visualiser.html">qgym.envs.initial_mapping.initial_mapping_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.routing.html">qgym.envs.routing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.RoutingState"><code class="docutils literal notranslate"><span class="pre">RoutingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.html#qgym.envs.routing.SwapQualityRewarder"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.routing.html">qgym.envs.routing.routing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.routing_rewarders.html">qgym.envs.routing.routing_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.routing_state.html">qgym.envs.routing.routing_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.routing.routing_visualiser.html">qgym.envs.routing.routing_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.scheduling.html">qgym.envs.scheduling package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties"><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState"><code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.machine_properties.html">qgym.envs.scheduling.machine_properties module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.rulebook.html">qgym.envs.scheduling.rulebook module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling.html">qgym.envs.scheduling.scheduling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling_dataclasses.html">qgym.envs.scheduling.scheduling_dataclasses module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling_rewarders.html">qgym.envs.scheduling.scheduling_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling_state.html">qgym.envs.scheduling.scheduling_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.scheduling.scheduling_visualiser.html">qgym.envs.scheduling.scheduling_visualiser module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.spaces.html">qgym.spaces package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Box.__init__"><code class="docutils literal notranslate"><span class="pre">Box.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Dict.__init__"><code class="docutils literal notranslate"><span class="pre">Dict.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.Discrete.__init__"><code class="docutils literal notranslate"><span class="pre">Discrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.MultiBinary.__init__"><code class="docutils literal notranslate"><span class="pre">MultiBinary.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.html#qgym.spaces.MultiDiscrete.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.box.html">qgym.spaces.box module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.box.html#qgym.spaces.box.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.dict.html">qgym.spaces.dict module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.dict.html#qgym.spaces.dict.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.discrete.html">qgym.spaces.discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.discrete.html#qgym.spaces.discrete.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.multi_binary.html">qgym.spaces.multi_binary module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.multi_binary.html#qgym.spaces.multi_binary.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.spaces.multi_discrete.html">qgym.spaces.multi_discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.spaces.multi_discrete.html#qgym.spaces.multi_discrete.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.templates.html">qgym.templates package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.action_space"><code class="docutils literal notranslate"><span class="pre">Environment.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.close"><code class="docutils literal notranslate"><span class="pre">Environment.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.observation_space"><code class="docutils literal notranslate"><span class="pre">Environment.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.render"><code class="docutils literal notranslate"><span class="pre">Environment.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.reset"><code class="docutils literal notranslate"><span class="pre">Environment.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.rewarder"><code class="docutils literal notranslate"><span class="pre">Environment.rewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.rng"><code class="docutils literal notranslate"><span class="pre">Environment.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Environment.step"><code class="docutils literal notranslate"><span class="pre">Environment.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Rewarder.__eq__"><code class="docutils literal notranslate"><span class="pre">Rewarder.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Rewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">Rewarder.compute_reward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Rewarder.reward_range"><code class="docutils literal notranslate"><span class="pre">Rewarder.reward_range</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.rng"><code class="docutils literal notranslate"><span class="pre">State.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.seed"><code class="docutils literal notranslate"><span class="pre">State.seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.steps_done"><code class="docutils literal notranslate"><span class="pre">State.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.update_state"><code class="docutils literal notranslate"><span class="pre">State.update_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.close"><code class="docutils literal notranslate"><span class="pre">Visualiser.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.colors"><code class="docutils literal notranslate"><span class="pre">Visualiser.colors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.font"><code class="docutils literal notranslate"><span class="pre">Visualiser.font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.is_open"><code class="docutils literal notranslate"><span class="pre">Visualiser.is_open</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.render"><code class="docutils literal notranslate"><span class="pre">Visualiser.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.render_data"><code class="docutils literal notranslate"><span class="pre">Visualiser.render_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.screen"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.screen_height"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.screen_width"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.Visualiser.step"><code class="docutils literal notranslate"><span class="pre">Visualiser.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.environment.html">qgym.templates.environment module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.environment.html#qgym.templates.environment.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.rewarder.html">qgym.templates.rewarder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.state.html">qgym.templates.state module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.state.html#qgym.templates.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.visualiser.html">qgym.templates.visualiser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData"><code class="docutils literal notranslate"><span class="pre">RenderData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.utils.html">qgym.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.__init__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.__repr__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.decode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.decode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.encode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.encode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.GateEncoder.learn_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.learn_gates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator.generate_circuit"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.generate_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.html#qgym.utils.RandomCircuitGenerator.rng"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator.rng</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.visualisation.html">qgym.utils.visualisation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.visualisation.colors.html">qgym.utils.visualisation.colors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.visualisation.typing.html">qgym.utils.visualisation.typing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.visualisation.wrappers.html">qgym.utils.visualisation.wrappers module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.gate_encoder.html">qgym.utils.gate_encoder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.input_validation.html">qgym.utils.input_validation module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">check_adjacency_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_bool"><code class="docutils literal notranslate"><span class="pre">check_bool()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_graph_is_valid_topology"><code class="docutils literal notranslate"><span class="pre">check_graph_is_valid_topology()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_instance"><code class="docutils literal notranslate"><span class="pre">check_instance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_int"><code class="docutils literal notranslate"><span class="pre">check_int()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_real"><code class="docutils literal notranslate"><span class="pre">check_real()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.check_string"><code class="docutils literal notranslate"><span class="pre">check_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_negative"><code class="docutils literal notranslate"><span class="pre">warn_if_negative()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_positive"><code class="docutils literal notranslate"><span class="pre">warn_if_positive()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.random_circuit_generator.html">qgym.utils.random_circuit_generator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.random_circuit_generator.html#qgym.utils.random_circuit_generator.RandomCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">RandomCircuitGenerator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../qgym.custom_types.html">qgym.custom_types module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../qgym.custom_types.html#qgym.custom_types.Gate"><code class="docutils literal notranslate"><span class="pre">Gate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.custom_types.html#qgym.custom_types.Gate.name"><code class="docutils literal notranslate"><span class="pre">Gate.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.custom_types.html#qgym.custom_types.Gate.q1"><code class="docutils literal notranslate"><span class="pre">Gate.q1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.custom_types.html#qgym.custom_types.Gate.q2"><code class="docutils literal notranslate"><span class="pre">Gate.q2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">qgym</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">qgym.envs.routing.routing_rewarders</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for qgym.envs.routing.routing_rewarders</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module will contain some vanilla Rewarders for the :class:`~qgym.envs.Routing`</span>
+<span class="sd">environment.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">    The rewarders in this module can be customized by initializing the rewarders with</span>
+<span class="sd">    different values.</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from qgym.envs.routing import BasicRewarder</span>
+
+<span class="sd">        rewarder = BasicRewarder(</span>
+<span class="sd">            illegal_action_penalty = -1,</span>
+<span class="sd">            update_cycle_penalty = -2,</span>
+<span class="sd">            schedule_gate_bonus: = 3,</span>
+<span class="sd">            )</span>
+
+<span class="sd">    After initialization, the rewarders can be given to the :class:`~qgym.envs.Routing`</span>
+<span class="sd">    environment.</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">    When implementing custom rewarders, they should inherit from</span>
+<span class="sd">    :class:`~qgym.templates.Rewarder`. Furthermore, they must implement the</span>
+<span class="sd">    :func:`~qgym.templates.Rewarder.compute_reward` method. Which takes as input the</span>
+<span class="sd">    old state, the new state and the given action. See the documentation of the</span>
+<span class="sd">    :obj:`~qgym.envs.routing.routing` module for more information on the state and</span>
+<span class="sd">    action space.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+
+<span class="kn">from</span> <span class="nn">qgym.envs.routing.routing_state</span> <span class="kn">import</span> <span class="n">RoutingState</span>
+<span class="kn">from</span> <span class="nn">qgym.templates</span> <span class="kn">import</span> <span class="n">Rewarder</span>
+<span class="kn">from</span> <span class="nn">qgym.utils.input_validation</span> <span class="kn">import</span> <span class="n">check_real</span><span class="p">,</span> <span class="n">warn_if_negative</span><span class="p">,</span> <span class="n">warn_if_positive</span>
+
+
+<div class="viewcode-block" id="BasicRewarder">
+<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.BasicRewarder">[docs]</a>
+<span class="k">class</span> <span class="nc">BasicRewarder</span><span class="p">(</span><span class="n">Rewarder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;RL Rewarder, for computing rewards on the</span>
+<span class="sd">    :class:`~qgym.envs.routing.RoutingState`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BasicRewarder.__init__">
+<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.BasicRewarder.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">illegal_action_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">50</span><span class="p">,</span>
+        <span class="n">penalty_per_swap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">reward_per_surpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the rewards and penalties.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            illegal_action_penalty: Penalty for performing an illegal action. An action</span>
+<span class="sd">                is illegal if ``action[0]`` is not in ``state[&quot;legal_actions&quot;]``. This</span>
+<span class="sd">                value should be negative (but is not required) and defaults to -50.</span>
+<span class="sd">            penalty_per_swap: Penalty for placing a swap. In general, we want to have as</span>
+<span class="sd">                little swaps as possible. Therefore, this value should be negative and</span>
+<span class="sd">                defaults to -10.</span>
+<span class="sd">            reward_per_surpass: Reward given for surpassing a gate. In general, we want</span>
+<span class="sd">                to have go to the end of the circuit as fast as possible. Therefore,</span>
+<span class="sd">                this value should be positive and defaults to 10.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span>
+            <span class="n">illegal_action_penalty</span><span class="p">,</span> <span class="s2">&quot;illegal_action_penalty&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span><span class="n">penalty_per_swap</span><span class="p">,</span> <span class="s2">&quot;penalty_per_swap&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span><span class="n">reward_per_surpass</span><span class="p">,</span> <span class="s2">&quot;reward_per_surpass&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_reward_range</span><span class="p">()</span>
+
+        <span class="n">warn_if_positive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span><span class="p">,</span> <span class="s2">&quot;illegal_action_penalty&quot;</span><span class="p">)</span>
+        <span class="n">warn_if_positive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span><span class="p">,</span> <span class="s2">&quot;penalty_per_swap&quot;</span><span class="p">)</span>
+        <span class="n">warn_if_negative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span><span class="p">,</span> <span class="s2">&quot;reward_per_surpass&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BasicRewarder.compute_reward">
+<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.BasicRewarder.compute_reward">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+        <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span>
+        <span class="n">new_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute a reward, based on the old state, new state, and the given action.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            old_state: :class:`~qgym.envs.routing.RoutingState` before the current</span>
+<span class="sd">                action.</span>
+<span class="sd">            action: Action that has just been taken.</span>
+<span class="sd">            new_state: :class:`~qgym.envs.routing.RoutingState` after the current</span>
+<span class="sd">                action.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The reward for this action.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_illegal</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">old_state</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span>
+
+        <span class="n">reward</span> <span class="o">=</span> <span class="n">old_state</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span>
+        <span class="n">reward</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_state</span><span class="o">.</span><span class="n">swap_gates_inserted</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span>
+        <span class="n">reward</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span> <span class="k">if</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span>
+
+        <span class="k">return</span> <span class="n">reward</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_is_illegal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span> <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks whether an action chosen by the agent is illegal.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Boolean value stating whether the action was illegal or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span> <span class="o">=</span> <span class="n">old_state</span><span class="o">.</span><span class="n">interaction_circuit</span><span class="p">[</span><span class="n">old_state</span><span class="o">.</span><span class="n">position</span><span class="p">]</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="n">old_state</span><span class="o">.</span><span class="n">is_legal_surpass</span><span class="p">(</span><span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">old_state</span><span class="o">.</span><span class="n">is_legal_swap</span><span class="p">(</span><span class="n">action</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">action</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_set_reward_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the reward range.&quot;&quot;&quot;</span>
+        <span class="n">l_bound</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="n">l_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">u_bound</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="n">u_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">l_bound</span><span class="p">,</span> <span class="n">u_bound</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SwapQualityRewarder">
+<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.SwapQualityRewarder">[docs]</a>
+<span class="k">class</span> <span class="nc">SwapQualityRewarder</span><span class="p">(</span><span class="n">BasicRewarder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rewarder for the :class:`~qgym.envs.Routing` environment which takes swap</span>
+<span class="sd">    qualities into account.</span>
+
+<span class="sd">    The :class:`SwapQualityRewarder` has an adjusted reward w.r.t. the</span>
+<span class="sd">    :class:`BasicRewarder` in the sense that good SWAPs give lower penalties and bad</span>
+<span class="sd">    SWAPs give higher penalties.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SwapQualityRewarder.__init__">
+<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.SwapQualityRewarder.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">illegal_action_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">50</span><span class="p">,</span>
+        <span class="n">penalty_per_swap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">reward_per_surpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">good_swap_reward</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the rewards and penalties and a flag.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            illegal_action_penalty: Penalty for performing an illegal action. An action</span>
+<span class="sd">                is illegal if ``action[0]`` is not in ``state[&quot;legal_actions&quot;]``. This</span>
+<span class="sd">                value should be negative (but is not required) and defaults to -50.</span>
+<span class="sd">            penalty_per_swap: Penalty for placing a swap. In general, we want to have as</span>
+<span class="sd">                little swaps as possible. Therefore, this value should be negative and</span>
+<span class="sd">                defaults to -10.</span>
+<span class="sd">            reward_per_surpass: Reward given for surpassing a gate. In general, we want</span>
+<span class="sd">                to have go to the end of the circuit as fast as possible. Therefore,</span>
+<span class="sd">                this value should be positive and defaults to 10.</span>
+<span class="sd">            good_swap_reward: Reward given for placing a good swap. In general, we want</span>
+<span class="sd">                to place as little swaps as possible. However, when they are good, the</span>
+<span class="sd">                penalty for the placement should be suppressed. That happens with this</span>
+<span class="sd">                reward. So, the value should be positive and smaller than the</span>
+<span class="sd">                penalty_per_swap, in order not to get positive rewards for swaps,</span>
+<span class="sd">                defaults to 5.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">illegal_action_penalty</span><span class="o">=</span><span class="n">illegal_action_penalty</span><span class="p">,</span>
+            <span class="n">penalty_per_swap</span><span class="o">=</span><span class="n">penalty_per_swap</span><span class="p">,</span>
+            <span class="n">reward_per_surpass</span><span class="o">=</span><span class="n">reward_per_surpass</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_good_swap_reward</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span><span class="n">good_swap_reward</span><span class="p">,</span> <span class="s2">&quot;reward_per_good_swap&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_good_swap_reward</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Good swaps should not result in positive rewards.&quot;</span><span class="p">)</span>
+
+        <span class="n">warn_if_negative</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_good_swap_reward</span><span class="p">,</span> <span class="s2">&quot;reward_per_good_swap&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SwapQualityRewarder.compute_reward">
+<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.SwapQualityRewarder.compute_reward">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+        <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span>
+        <span class="n">new_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute a reward, based on the old state, the given action and the new state.</span>
+
+<span class="sd">        Specifically, the change in observation reach is used.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            old_state: :class:`~qgym.envs.routing.RoutingState` before the current</span>
+<span class="sd">                action.</span>
+<span class="sd">            action: Action that has just been taken.</span>
+<span class="sd">            new_state: :class:`~qgym.envs.routing.RoutingState` after the current</span>
+<span class="sd">                action.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The reward for this action. If the action is illegal, then the reward is</span>
+<span class="sd">            `illegal_action_penalty`. If the action is legal, then the reward for a</span>
+<span class="sd">            surpass is just reward_per_surpass. But, for a legal swap the reward</span>
+<span class="sd">            adjusted with respect to the BasicRewarder. Namely, the penalty of a swap is</span>
+<span class="sd">            reduced if it increases the observation_reach and the penalty is increased</span>
+<span class="sd">            if the observation_reach is decreases.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_illegal</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">old_state</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span>
+
+        <span class="k">if</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_good_swap_reward</span>
+            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observation_enhancement_factor</span><span class="p">(</span><span class="n">old_state</span><span class="p">,</span> <span class="n">new_state</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_observation_enhancement_factor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+        <span class="n">new_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the change of the observation reach as an effect of a swap.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            old_state: ``RoutingState`` before the current action.</span>
+<span class="sd">            new_state: ``RoutingState`` after the current action.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A fraction that expresses the procentual improvement w.r.t the `old_state`&#39;s</span>
+<span class="sd">            observation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">is_legal_surpass</span> <span class="o">=</span> <span class="n">old_state</span><span class="o">.</span><span class="n">obtain_observation</span><span class="p">()[</span><span class="s2">&quot;is_legal_surpass&quot;</span><span class="p">]</span>
+            <span class="n">old_executable_gates_ahead</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">is_legal_surpass</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+            <span class="n">is_legal_surpass</span> <span class="o">=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">obtain_observation</span><span class="p">()[</span><span class="s2">&quot;is_legal_surpass&quot;</span><span class="p">]</span>
+            <span class="n">new_executable_gates_ahead</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">is_legal_surpass</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">old_state</span><span class="o">.</span><span class="n">observe_legal_surpasses</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;observe_legal_surpasses needs to be True to compute&quot;</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;observation_enhancement_factor&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+            <span class="k">raise</span> <span class="n">error</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">new_executable_gates_ahead</span> <span class="o">-</span> <span class="n">old_executable_gates_ahead</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="n">old_state</span><span class="o">.</span><span class="n">max_observation_reach</span>
+
+    <span class="k">def</span> <span class="nf">_set_reward_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the reward range.&quot;&quot;&quot;</span>
+        <span class="n">l_bound</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_good_swap_reward</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="n">l_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">u_bound</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_good_swap_reward</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="n">u_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">l_bound</span><span class="p">,</span> <span class="n">u_bound</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="EpisodeRewarder">
+<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.EpisodeRewarder">[docs]</a>
+<span class="k">class</span> <span class="nc">EpisodeRewarder</span><span class="p">(</span><span class="n">BasicRewarder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rewarder for the ``Routing`` environment, which only gives a reward after at</span>
+<span class="sd">    the end of a full episode. The reward is the highest for the lowest amount of SWAPs.</span>
+<span class="sd">    This could be improved for setting for taking into account the fidelity of edges and</span>
+<span class="sd">    scoring good and looking at what edges the circuit is executed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EpisodeRewarder.compute_reward">
+<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.EpisodeRewarder.compute_reward">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+        <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span>
+        <span class="n">new_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute a reward, based on the new state, and the given action.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            old_state: ``RoutingState`` before the current action.</span>
+<span class="sd">            action: Action that has just been taken.</span>
+<span class="sd">            new_state: ``RoutingState`` after the current action.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            If an action is illegal returns the `illegal_action_penalty`. If the episode</span>
+<span class="sd">            is finished returns the reward calculated over the episode, otherwise</span>
+<span class="sd">            returns 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_illegal</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">old_state</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_state</span><span class="o">.</span><span class="n">is_done</span><span class="p">():</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_state</span><span class="o">.</span><span class="n">swap_gates_inserted</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_set_reward_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the reward range.&quot;&quot;&quot;</span>
+        <span class="n">l_bound</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">l_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">u_bound</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">u_bound</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">l_bound</span><span class="p">,</span> <span class="n">u_bound</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, QuTech &amp; TNO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+qgym.spaces.dict module
+=======================
+
+.. automodule:: qgym.spaces.dict
+   :members:
+   :undoc-members:
+   :show-inheritance:

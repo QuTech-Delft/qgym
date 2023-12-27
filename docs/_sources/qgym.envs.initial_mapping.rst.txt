@@ -1,0 +1,17 @@
+qgym.envs.initial\_mapping package
+==================================
+
+.. automodule:: qgym.envs.initial_mapping
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. toctree::
+   :maxdepth: 4
+
+
+   qgym.envs.initial_mapping.initial_mapping
+   qgym.envs.initial_mapping.initial_mapping_rewarders
+   qgym.envs.initial_mapping.initial_mapping_state
+   qgym.envs.initial_mapping.initial_mapping_visualiser

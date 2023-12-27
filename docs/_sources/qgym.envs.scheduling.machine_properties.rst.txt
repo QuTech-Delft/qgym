@@ -1,0 +1,7 @@
+qgym.envs.scheduling.machine\_properties module
+===============================================
+
+.. automodule:: qgym.envs.scheduling.machine_properties
+   :members:
+   :undoc-members:
+   :show-inheritance:
