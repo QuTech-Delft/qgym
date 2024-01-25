@@ -43,7 +43,7 @@ def _episode_generator(
         FidelityEpisodeRewarder(),
     ),
 )
-def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
+def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
     return cast(Rewarder, request.param)
 
 
@@ -56,7 +56,7 @@ def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
         FidelityEpisodeRewarder,
     ),
 )
-def _rewarder_class(request: pytest.FixtureRequest) -> type[Rewarder]:
+def rewarder_class_fixture(request: pytest.FixtureRequest) -> type[Rewarder]:
     return cast(Type[Rewarder], request.param)
 
 

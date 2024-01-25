@@ -107,3 +107,21 @@ def parse_connection_graph(
         return nx.grid_graph(grid_size)
 
     raise ValueError("No valid arguments for a connection graph were given")
+
+
+def has_fidelity(graph: nx.Graph) -> bool:
+    """Check if the given graph has fidelity encoded in its edges.
+
+    A graph can have fidelity encoded by setting the "weight" attributes of at least one
+    edge to a fidelity value.
+
+    Args:
+        graph: Networks representation of the graph.
+
+    Returns:
+        Boolean value stating wether the graph has fidelity encoded.
+    """
+    for _, _, weight in graph.edges.data("weight"):
+        if weight is not None and weight not in (0, 1):
+            return True
+    return False

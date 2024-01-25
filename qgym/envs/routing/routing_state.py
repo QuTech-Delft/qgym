@@ -26,6 +26,7 @@ from numpy.typing import NDArray
 
 import qgym.spaces
 from qgym.templates.state import State
+from qgym.utils.input_parsing import has_fidelity
 
 # pylint: disable=too-many-instance-attributes
 
@@ -98,9 +99,14 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         self.observe_legal_surpasses = observe_legal_surpasses
 
         if observe_connection_graph:
-            self.connection_matrix = nx.to_numpy_array(
-                connection_graph, dtype=np.int_
-            ).flatten()
+            if has_fidelity(connection_graph):
+                self.connection_matrix = nx.to_numpy_array(
+                    connection_graph, dtype=np.float_
+                ).flatten()
+            else:
+                self.connection_matrix = nx.to_numpy_array(
+                    connection_graph, dtype=np.int8
+                ).flatten()
 
         # Keep track of at what position which swap_gate is inserted
         self.swap_gates_inserted: deque[tuple[int, int, int]] = deque()
@@ -240,9 +246,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         if hasattr(self, "connection_matrix"):
             observation_kwargs["connection_graph"] = qgym.spaces.Box(
                 low=0,
-                high=np.iinfo(np.int64).max,
+                high=1,
                 shape=(self.n_qubits * self.n_qubits,),
-                dtype=np.int64,
+                dtype=self.connection_matrix.dtype,
             )
 
         if self.observe_legal_surpasses:

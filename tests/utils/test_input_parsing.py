@@ -4,7 +4,11 @@ import networkx as nx
 import pytest
 
 from qgym.envs.initial_mapping import BasicRewarder, EpisodeRewarder
-from qgym.utils.input_parsing import parse_connection_graph, parse_rewarder
+from qgym.utils.input_parsing import (
+    has_fidelity,
+    parse_connection_graph,
+    parse_rewarder,
+)
 
 
 class TestParseRewarder:
@@ -66,3 +70,15 @@ class TestParseConnectionGraphWarnings:
 def test_parse_connection_graph_exception() -> None:
     with pytest.raises(ValueError):
         parse_connection_graph()
+
+
+class TestHasFidelity:
+    def test_positive(self) -> None:
+        graph = nx.Graph()
+        graph.add_weighted_edges_from([(0, 1, 0.9), (1, 2, 0.8)])
+        assert has_fidelity(graph)
+
+    def test_negative(self) -> None:
+        graph = nx.Graph()
+        graph.add_edges_from([(0, 1), (1, 2)])
+        assert not has_fidelity(graph)

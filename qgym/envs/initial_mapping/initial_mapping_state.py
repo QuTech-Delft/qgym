@@ -22,6 +22,7 @@ from numpy.typing import NDArray
 
 from qgym import spaces
 from qgym.templates.state import State
+from qgym.utils.input_parsing import has_fidelity
 
 
 class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
@@ -64,12 +65,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.steps_done: int = 0
         """Number of steps done since the last reset."""
 
-        fidelity = False  # whether edges include fidelity
-        for _, _, weight in connection_graph.edges.data("weight"):
-            if not isinstance(weight, int):
-                fidelity = True
-                break
-        if fidelity:
+        if has_fidelity(connection_graph):
             connection = {
                 "graph": deepcopy(connection_graph),
                 "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),

@@ -56,13 +56,55 @@ def test_init(
     assert state.connection_graph is quad_graph
 
 
-def test_create_observation_space(simple_state: RoutingState) -> None:
-    observation_space = simple_state.create_observation_space()
-    assert isinstance(observation_space, qgym.spaces.Dict)
-    assert isinstance(
-        observation_space["interaction_gates_ahead"], qgym.spaces.MultiDiscrete
-    )
-    assert isinstance(observation_space["mapping"], qgym.spaces.MultiDiscrete)
+class TestCreateObservationSpace:
+    def test_min_case(self, quad_graph: nx.Graph) -> None:
+        state = RoutingState(
+            max_interaction_gates=50,
+            max_observation_reach=5,
+            connection_graph=quad_graph,
+            observe_legal_surpasses=False,
+            observe_connection_graph=False,
+        )
+        observation_space = state.create_observation_space()
+        assert isinstance(observation_space, qgym.spaces.Dict)
+        assert isinstance(
+            observation_space["interaction_gates_ahead"], qgym.spaces.MultiDiscrete
+        )
+        assert isinstance(observation_space["mapping"], qgym.spaces.MultiDiscrete)
+
+    def test_observe_legal_surpasses(self, quad_graph: nx.Graph) -> None:
+        state = RoutingState(
+            max_interaction_gates=50,
+            max_observation_reach=5,
+            connection_graph=quad_graph,
+            observe_legal_surpasses=True,
+            observe_connection_graph=False,
+        )
+        observation_space = state.create_observation_space()
+        assert isinstance(observation_space, qgym.spaces.Dict)
+        assert isinstance(
+            observation_space["interaction_gates_ahead"], qgym.spaces.MultiDiscrete
+        )
+        assert isinstance(observation_space["mapping"], qgym.spaces.MultiDiscrete)
+        assert isinstance(
+            observation_space["is_legal_surpass"], qgym.spaces.MultiBinary
+        )
+
+    def test_connection_graph(self, quad_graph: nx.Graph) -> None:
+        state = RoutingState(
+            max_interaction_gates=50,
+            max_observation_reach=5,
+            connection_graph=quad_graph,
+            observe_legal_surpasses=False,
+            observe_connection_graph=True,
+        )
+        observation_space = state.create_observation_space()
+        assert isinstance(observation_space, qgym.spaces.Dict)
+        assert isinstance(
+            observation_space["interaction_gates_ahead"], qgym.spaces.MultiDiscrete
+        )
+        assert isinstance(observation_space["mapping"], qgym.spaces.MultiDiscrete)
+        assert isinstance(observation_space["connection_graph"], qgym.spaces.Box)
 
 
 def test_interaction_circuit_properties(simple_state: RoutingState) -> None:
