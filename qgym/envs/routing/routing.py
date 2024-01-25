@@ -121,7 +121,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         max_interaction_gates: int = 10,
         max_observation_reach: int = 5,
         observe_legal_surpasses: bool = True,
-        observe_connection_graph: bool = True,
+        observe_connection_graph: bool = False,
         *,
         connection_graph: nx.Graph | None = None,
         connection_graph_matrix: ArrayLike | None = None,
@@ -149,7 +149,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
                 QPU-topology practically doesn't change a lot for one machine, hence an
                 agent is typically trained for just one QPU-topology which can be
                 learned implicitly by rewards and/or the booleans if they are shown,
-                depending on the other flag above.
+                depending on the other flag above. Default is ``False``.
             connection_graph: ``networkx`` graph representation of the QPU topology.
                 Each node represents a physical qubit and each node represents a
                 connection in the QPU topology.
