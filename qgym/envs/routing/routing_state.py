@@ -30,7 +30,7 @@ from qgym.templates.state import State
 # pylint: disable=too-many-instance-attributes
 
 
-class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
     """The :class:`RoutingState` class."""
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -69,6 +69,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """``networkx`` graph representation of the QPU topology. Each node represents a
         physical qubit and each edge represents a connection in the QPU topology.
         """
+        self.edges = list(self.connection_graph.edges)
+        """List of all the edges, used to decode given actions."""
         self.max_interaction_gates = max_interaction_gates
         """Sets the maximum amount of gates in the interaction_circuit, when a new
         interaction_circuit is generated.
@@ -163,7 +165,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
     def obtain_info(
         self,
-    ) -> dict[str, int | deque[tuple[int, int, int]] | NDArray[np.int_]]:
+    ) -> dict[
+        str, int | deque[tuple[int, int, int]] | NDArray[np.int_] | list[tuple[int]]
+    ]:
         """Obtain additional information of the current state.
 
         Returns:
@@ -180,15 +184,17 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             ),
             "Number of swaps inserted": len(self.swap_gates_inserted),
             "Swap gates inserted": self.swap_gates_inserted,
+            "Action Encoding": self.edges,
         }
 
-    def update_state(self, action: NDArray[np.int_]) -> RoutingState:
+    def update_state(self, action: int) -> RoutingState:
         """Update the state (in place) of this environment using the given action.
 
         Args:
-            action: If action[0]==0 a SWAP-gate applied to qubits action[1], action[2]
-                will be registered in the swap_gates_inserted-deque at the current
-                position, if action[0]==1 the first observed gate will be surpassed.
+            action: Integer value in [0, n_connections]. Each value of 0 to
+                n_connections-1 corresponds to placing a SWAP and this SWAP gate will be
+                appended to the `swap_gates_inserted` ``deque``. The value of
+                n_connections correspond to a surpass.
 
         Returns:
             Self.
@@ -196,15 +202,15 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # Increase the step number
         self.steps_done += 1
 
-        surpass, qubit1, qubit2 = action
         # surpass current_gate if legal
-        if surpass and self.is_legal_surpass(*self.interaction_circuit[self.position]):
-            self.position += 1
+        if action == self.n_connections:
+            if self.is_legal_surpass(*self.interaction_circuit[self.position]):
+                self.position += 1
+            return self
 
-        # elif insert swap-gate if legal
-        elif not surpass and self.is_legal_swap(qubit1, qubit2):
-            self._place_swap_gate(qubit1, qubit2)
-            self._update_mapping(qubit1, qubit2)
+        qubit1, qubit2 = self.edges[action]
+        self._place_swap_gate(qubit1, qubit2)
+        self._update_mapping(qubit1, qubit2)
 
         return self
 
@@ -295,22 +301,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """Place a swap gate at the current position with the given logical qubits."""
         self.swap_gates_inserted.append((self.position, logical_qubit1, logical_qubit2))
 
-    def is_legal_swap(
-        self,
-        logical_qubit1: int,
-        logical_qubit2: int,
-    ) -> bool:
-        """Checks whether a swap of two logical qubits is legal.
-
-        Returns:
-            Boolean value state whether the swap is allowed in the connection graph..
-        """
-        physical_qubit1 = self.mapping[logical_qubit1]
-        physical_qubit2 = self.mapping[logical_qubit2]
-        return (logical_qubit1 != logical_qubit2) and (
-            (physical_qubit1, physical_qubit2) in self.connection_graph.edges
-        )
-
     def is_legal_surpass(
         self,
         logical_qubit1: int,
@@ -360,3 +350,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     def n_qubits(self) -> int:
         """Number of qubits in the `connection_graph`."""
         return int(self.connection_graph.number_of_nodes())
+
+    @property
+    def n_connections(self) -> int:
+        """Number of connections in the `connection_graph`."""
+        return len(self.edges)

@@ -16,10 +16,7 @@ from qgym.envs.routing.routing_state import RoutingState
 @pytest.fixture(name="quad_graph", scope="class")
 def quad_graph_fixture() -> nx.Graph:
     quad_graph = nx.Graph()
-    quad_graph.add_edge(0, 1)
-    quad_graph.add_edge(1, 2)
-    quad_graph.add_edge(2, 3)
-    quad_graph.add_edge(3, 0)
+    quad_graph.add_edges_from([(0, 1), (1, 2), (2, 3), (3, 0)])
     return quad_graph
 
 
@@ -92,18 +89,13 @@ def test_obtain_observation(simple_state: RoutingState) -> None:
 
 
 class TestUpdateState:
-    @pytest.mark.parametrize(
-        argnames="action, expected_mapping",
-        argvalues=[([0, 2, 3], [0, 1, 3, 2]), ([0, 1, 3], [0, 1, 2, 3])],
-        ids=["legal", "illegal"],
-    )
     def test_swap(
         self,
         simple_state: RoutingState,
-        action: NDArray[np.int_],
-        expected_mapping: ArrayLike,
     ) -> None:
-        simple_state.update_state(np.asarray(action))
+        action = simple_state.edges.index((2, 3))
+        expected_mapping = [0, 1, 3, 2]
+        simple_state.update_state(action)
         assert simple_state.position == 0
         assert simple_state.steps_done == 1
         assert np.array_equal(simple_state.mapping, expected_mapping)
@@ -120,7 +112,7 @@ class TestUpdateState:
         expected_position: int,
     ) -> None:
         simple_state.interaction_circuit = np.array(interaction_circuit)
-        simple_state.update_state(np.array([1, 10, 10]))
+        simple_state.update_state(4)
         assert simple_state.position == expected_position
         assert simple_state.steps_done == 1
         assert np.array_equal(simple_state.mapping, [0, 1, 2, 3])

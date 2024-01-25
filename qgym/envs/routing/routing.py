@@ -41,6 +41,7 @@ State Space:
     * `steps_done`: Number of steps done since the last reset.
     * `num_nodes`: Number of *physical* qubits.
     * `connection_graph`: A networkx representation of the connection graph.
+    * `edges`: List of edges of the connection graph used for decoding actions.
     * `mapping`: Array of which the index represents a physical qubit, and the value a
       virtual qubit. This is updated after each swap.
     * `max_interaction_gates`: Maximum amount of gates allowed in the interaction 
@@ -67,20 +68,17 @@ Observation Space:
     * `interaction_gates_ahead`: Array with Boolean values for the upcoming connection
       gates in the quantum circuit.
     * `mapping`: The current state of the mapping.
-    * (Optional)`connection_graph`: Adjacency matrix of the connection graph.
-    * (Optional)`is_legal_surpass_booleans`: Array with boolean values stating whether a
-      connection gate can be surpassed with the current mapping.
+    * (Optional) `connection_graph`: Adjacency matrix of the connection graph.
+    * (Optional) `is_legal_surpass_booleans`: Array with boolean values stating whether
+      a connection gate can be surpassed with the current mapping.
 
 Action Space:
-    A valid action is a tuple of integers  $(i,j,k)$. The integer $i$ indicates whether
-    the agent wants to surpass the current gate and move on to the next gate. If $i$ is 
-    0, then a SWAP gate is inserted at the current position between qubits $j$ and $k$.
-    Only legal actions will be executed, an action is legal when:
-
-    #. $i=1$ and the next gate can be executed.
-    #. $i=0$ and physical qubit $j$ does not equal physical qubit $k$.
-    #. $i=0$ and physical qubits $j$ and $k$ have a connection between them in the
-       connection graph.
+    A valid action is an integer in the domain [0, n_connections]. The values 0 to
+    n_connections-1 represent an added SWAP gate. The value of n_connections indicates
+    that the agents wants to surpass the current gate and move to the next gate.
+    
+    Illegal actions will not be executed. An action is considered illegal when the agent
+    want to surpass a gate that cannot be executed with the current mapping.
 
 
 # TODO: create Examples
@@ -113,7 +111,7 @@ if TYPE_CHECKING:
     )
 
 
-class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
     """RL environment for the routing problem of OpenQL."""
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -202,13 +200,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.observation_space = self._state.create_observation_space()
 
         # Define attributes defined in parent class
-        self.action_space = qgym.spaces.MultiDiscrete(
-            nvec=[
-                2,
-                connection_graph.number_of_nodes(),
-                connection_graph.number_of_nodes(),
-            ],
-            rng=self.rng,
+        self.action_space = qgym.spaces.Discrete(
+            self._state.n_connections + 1, rng=self.rng
         )
 
         self.metadata = {"render.modes": ["human", "rgb_array"]}

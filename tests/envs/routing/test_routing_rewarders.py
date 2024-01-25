@@ -40,13 +40,13 @@ def _episode_generator(
 
         next_gate = new_state.interaction_circuit[new_state.position]
         if new_state.is_legal_surpass(*next_gate):
-            action = np.array([1, 0, 0])
+            action = new_state.n_connections
         else:
             physical_qubit1 = new_state.mapping[next_gate[0]]
             if physical_qubit1 in (0, 1):
-                action = np.array([0, 2, 3])
+                action = new_state.edges.index((2, 3))
             else:
-                action = np.array([0, 0, 1])
+                action = new_state.edges.index((0, 1))
 
         old_state = deepcopy(new_state)
         new_state.update_state(action)
@@ -61,7 +61,7 @@ def _episode_generator(
         EpisodeRewarder(),
     ),
 )
-def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
+def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
     return cast(Rewarder, request.param)
 
 
@@ -70,9 +70,7 @@ def test_illegal_actions(rewarder: Rewarder) -> None:
     _, _, new_state = next(episode_generator)
     old_state = deepcopy(new_state)
 
-    reward = rewarder.compute_reward(
-        old_state=old_state, action=np.array([1, 0, 0]), new_state=new_state
-    )
+    reward = rewarder.compute_reward(old_state=old_state, action=4, new_state=new_state)
     assert reward == -50
 
 
