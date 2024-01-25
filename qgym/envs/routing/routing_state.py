@@ -335,8 +335,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         logical_qubit2: int,
     ) -> None:
         """Updates mapping for a swap of two qubits."""
-        physical_qubits = self.mapping[[logical_qubit1, logical_qubit2]]
-        self.mapping[[logical_qubit2, logical_qubit1]] = physical_qubits
+        physical_qubits = self.mapping[np.array([logical_qubit1, logical_qubit2])]
+        self.mapping[np.array([logical_qubit2, logical_qubit1])] = physical_qubits
 
     def generate_random_interaction_circuit(self, n_gates: int) -> NDArray[np.int_]:
         """Generate a random interaction circuit.
