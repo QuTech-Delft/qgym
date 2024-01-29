@@ -243,4 +243,3 @@ class EpisodeRewarder(BasicRewarder):
             return 0
 
         return self._compute_state_reward(new_state)
-    
