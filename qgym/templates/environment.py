@@ -2,6 +2,7 @@
 
 All environments should inherit from ``Environment``.
 """
+
 from __future__ import annotations
 
 from abc import abstractmethod

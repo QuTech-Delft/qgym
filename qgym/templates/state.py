@@ -2,6 +2,7 @@
 
 All states should inherit from ``State``.
 """
+
 from __future__ import annotations
 
 from abc import abstractmethod

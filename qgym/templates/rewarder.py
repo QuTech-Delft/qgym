@@ -2,6 +2,7 @@
 
 All rewarders should inherit from ``Rewarder``.
 """
+
 from __future__ import annotations
 
 from abc import abstractmethod

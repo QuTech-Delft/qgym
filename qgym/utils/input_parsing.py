@@ -3,6 +3,7 @@
 With parsing we mean that the user input is validated and transformed to a predictable
 format. In this way, user can give different input formats, but internally we are 
 assured that the data has the same format."""
+
 from __future__ import annotations
 
 import warnings

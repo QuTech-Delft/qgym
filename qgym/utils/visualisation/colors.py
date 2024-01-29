@@ -1,4 +1,5 @@
 """This module contains some default RGB colors."""
+
 # Define some basic colors
 WHITE = (255, 255, 255)
 GRAY = (150, 150, 150)

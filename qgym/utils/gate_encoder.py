@@ -10,6 +10,7 @@ Usage:
     >>> encoder.decode_gates(encoded_list)
     ['x', 'x', 'measure', 'z']
 """
+
 from __future__ import annotations
 
 import warnings
@@ -54,33 +55,30 @@ class GateEncoder:
         return self
 
     @overload
-    def encode_gates(self, gates: str) -> int:
-        ...
+    def encode_gates(self, gates: str) -> int: ...
 
     @overload
-    def encode_gates(self, gates: Mapping[str, T]) -> dict[int, T]:
-        ...
+    def encode_gates(self, gates: Mapping[str, T]) -> dict[int, T]: ...
 
     @overload
-    def encode_gates(self, gates: Sequence[Gate]) -> list[Gate]:
-        ...
+    def encode_gates(self, gates: Sequence[Gate]) -> list[Gate]: ...
 
     @overload
-    def encode_gates(self, gates: set[str]) -> set[int]:
-        ...
+    def encode_gates(self, gates: set[str]) -> set[int]: ...
 
     @overload
-    def encode_gates(self, gates: list[str] | tuple[str, ...]) -> list[int]:
-        ...
+    def encode_gates(self, gates: list[str] | tuple[str, ...]) -> list[int]: ...
 
     def encode_gates(
         self,
-        gates: str
-        | Mapping[str, Any]
-        | Sequence[Gate]
-        | set[str]
-        | list[str]
-        | tuple[str, ...],
+        gates: (
+            str
+            | Mapping[str, Any]
+            | Sequence[Gate]
+            | set[str]
+            | list[str]
+            | tuple[str, ...]
+        ),
     ) -> int | dict[int, Any] | list[Gate] | set[int] | list[int]:
         """Encode the gate names (of type ``str``) in `gates` to integers, based on the
         gates seen in ``learn_gates``.
@@ -151,33 +149,30 @@ class GateEncoder:
         return encoded_dict
 
     @overload
-    def decode_gates(self, encoded_gates: int) -> str:
-        ...
+    def decode_gates(self, encoded_gates: int) -> str: ...
 
     @overload
-    def decode_gates(self, encoded_gates: Mapping[int, Any]) -> dict[str, Any]:
-        ...
+    def decode_gates(self, encoded_gates: Mapping[int, Any]) -> dict[str, Any]: ...
 
     @overload
-    def decode_gates(self, encoded_gates: Sequence[Gate]) -> list[Gate]:
-        ...
+    def decode_gates(self, encoded_gates: Sequence[Gate]) -> list[Gate]: ...
 
     @overload
-    def decode_gates(self, encoded_gates: set[int]) -> set[str]:
-        ...
+    def decode_gates(self, encoded_gates: set[int]) -> set[str]: ...
 
     @overload
-    def decode_gates(self, encoded_gates: list[int] | tuple[int, ...]) -> list[str]:
-        ...
+    def decode_gates(self, encoded_gates: list[int] | tuple[int, ...]) -> list[str]: ...
 
     def decode_gates(
         self,
-        encoded_gates: int
-        | Mapping[int, Any]
-        | Sequence[Gate]
-        | set[int]
-        | list[int]
-        | tuple[int, ...],
+        encoded_gates: (
+            int
+            | Mapping[int, Any]
+            | Sequence[Gate]
+            | set[int]
+            | list[int]
+            | tuple[int, ...]
+        ),
     ) -> str | dict[str, Any] | list[Gate] | set[str] | list[str]:
         """Decode integer encoded gate names to the original gate names based on the
         gates seen in ``learn_gates``.

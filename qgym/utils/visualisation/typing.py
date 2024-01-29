@@ -1,4 +1,5 @@
 """This module contains types and type aliases used during visualisation."""
+
 from typing import Tuple
 
 import pygame

@@ -15,6 +15,7 @@ Usage:
     >>>             observe_connection_graph = False,
     >>>             )
 """
+
 from __future__ import annotations
 
 from collections import deque

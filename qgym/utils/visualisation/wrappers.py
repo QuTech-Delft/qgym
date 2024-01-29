@@ -1,4 +1,5 @@
 """This module contains wrappers around some commonly used ``pygame`` functions."""
+
 import numpy as np
 import pygame
 from numpy.typing import ArrayLike

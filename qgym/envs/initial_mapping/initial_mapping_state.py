@@ -11,6 +11,7 @@ Usage:
     >>> state = InitialMappingState(connection_graph, 0.5)
 
 """
+
 from __future__ import annotations
 
 from copy import deepcopy

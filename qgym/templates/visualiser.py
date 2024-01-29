@@ -2,6 +2,7 @@
 
 All visualisers should inherit from ``Visualiser``.
 """
+
 from __future__ import annotations
 
 from abc import abstractmethod

@@ -1,6 +1,7 @@
 """This module contains the ``RandomCircuitGenerator``, which can be used to generate
 random circuits. Here, a quantum circuit is a ``List`` with ``Gate`` objects.
 """
+
 from __future__ import annotations
 
 import numpy as np
