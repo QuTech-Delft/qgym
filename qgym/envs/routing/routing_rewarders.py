@@ -49,9 +49,9 @@ class BasicRewarder(Rewarder):
 
         Args:
             illegal_action_penalty: Penalty for performing an illegal action. An action
-                is illegal the action means 'surpass' even though the next gate cannot
-                be executed. This value should be negative (but is not required) and
-                defaults to -50.
+                is illegal when the action means 'surpass' even though the next gate
+                cannot be surpassed. This value should be negative (but is not required)
+                and defaults to -50.
             penalty_per_swap: Penalty for placing a swap. In general, we want to have as
                 little swaps as possible. Therefore, this value should be negative and
                 defaults to -10.
@@ -151,9 +151,9 @@ class SwapQualityRewarder(BasicRewarder):
 
         Args:
             illegal_action_penalty: Penalty for performing an illegal action. An action
-                is illegal the action means 'surpass' even though the next gate cannot
-                be executed. This value should be negative (but is not required) and
-                defaults to -50.
+                is illegal when the action means 'surpass' even though the next gate
+                cannot be surpassed. This value should be negative (but is not required)
+                and defaults to -50.
             penalty_per_swap: Penalty for placing a swap. In general, we want to have as
                 little swaps as possible. Therefore, this value should be negative and
                 defaults to -10.
