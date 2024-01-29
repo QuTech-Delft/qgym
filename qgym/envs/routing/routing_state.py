@@ -105,7 +105,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
                 ).flatten()
             else:
                 self.connection_matrix = nx.to_numpy_array(
-                    connection_graph, dtype=np.int8
+                    connection_graph, dtype=np.bool_
                 ).flatten()
 
         # Keep track of at what position which swap_gate is inserted
@@ -244,12 +244,17 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         }
 
         if hasattr(self, "connection_matrix"):
-            observation_kwargs["connection_graph"] = qgym.spaces.Box(
-                low=0,
-                high=1,
-                shape=(self.n_qubits * self.n_qubits,),
-                dtype=self.connection_matrix.dtype,
-            )
+            if has_fidelity(self.connection_graph):
+                observation_kwargs["connection_graph"] = qgym.spaces.Box(
+                    low=0,
+                    high=1,
+                    shape=(self.n_qubits * self.n_qubits,),
+                    dtype=self.connection_matrix.dtype,
+                )
+            else:
+                observation_kwargs["connection_graph"] = qgym.spaces.MultiBinary(
+                    self.n_qubits * self.n_qubits
+                )
 
         if self.observe_legal_surpasses:
             observation_kwargs["is_legal_surpass"] = qgym.spaces.MultiBinary(

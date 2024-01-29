@@ -104,7 +104,9 @@ class TestCreateObservationSpace:
             observation_space["interaction_gates_ahead"], qgym.spaces.MultiDiscrete
         )
         assert isinstance(observation_space["mapping"], qgym.spaces.MultiDiscrete)
-        assert isinstance(observation_space["connection_graph"], qgym.spaces.Box)
+        assert isinstance(
+            observation_space["connection_graph"], qgym.spaces.MultiBinary
+        )
 
 
 def test_interaction_circuit_properties(simple_state: RoutingState) -> None:
