@@ -23,7 +23,6 @@ from numpy.typing import NDArray
 
 from qgym import spaces
 from qgym.templates.state import State
-from qgym.utils.input_parsing import has_fidelity
 
 
 class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
