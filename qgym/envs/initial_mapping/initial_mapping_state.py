@@ -66,16 +66,11 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.steps_done: int = 0
         """Number of steps done since the last reset."""
 
-        if has_fidelity(connection_graph):
-            connection = {
-                "graph": deepcopy(connection_graph),
-                "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),
-            }
-        else:
-            connection = {
-                "graph": deepcopy(connection_graph),
-                "matrix": nx.to_numpy_array(connection_graph, dtype=np.int8),
-            }
+        connection = {
+            "graph": deepcopy(connection_graph),
+            "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),
+        }
+
         self.graphs = {
             "connection": connection,
             "interaction": {
