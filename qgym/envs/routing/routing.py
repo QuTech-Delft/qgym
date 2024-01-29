@@ -205,7 +205,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
             self._state.n_connections + 1, rng=self.rng
         )
 
-        self.metadata = {"render.modes": ["human", "rgb_array"]}
+        self.metadata = {"render_modes": ["human", "rgb_array"]}
         self._visualiser = parse_visualiser(
             render_mode, RoutingVisualiser, [connection_graph]
         )
