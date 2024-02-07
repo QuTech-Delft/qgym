@@ -33,7 +33,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -69,7 +69,6 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -173,6 +172,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -241,6 +241,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -607,13 +608,9 @@
       <ul>
         <li><a href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder.compute_reward">(qgym.envs.initial_mapping.EpisodeRewarder method)</a>
 </li>
-        <li><a href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder.compute_reward">(qgym.envs.initial_mapping.FidelityEpisodeRewarder method)</a>
-</li>
         <li><a href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.BasicRewarder.compute_reward">(qgym.envs.initial_mapping.initial_mapping_rewarders.BasicRewarder method)</a>
 </li>
         <li><a href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.EpisodeRewarder.compute_reward">(qgym.envs.initial_mapping.initial_mapping_rewarders.EpisodeRewarder method)</a>
-</li>
-        <li><a href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.FidelityEpisodeRewarder.compute_reward">(qgym.envs.initial_mapping.initial_mapping_rewarders.FidelityEpisodeRewarder method)</a>
 </li>
         <li><a href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.SingleStepRewarder.compute_reward">(qgym.envs.initial_mapping.initial_mapping_rewarders.SingleStepRewarder method)</a>
 </li>
@@ -724,6 +721,12 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState.edges">edges (qgym.envs.routing.routing_state.RoutingState attribute)</a>
+
+      <ul>
+        <li><a href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.edges">(qgym.envs.routing.RoutingState attribute)</a>
+</li>
+      </ul></li>
       <li><a href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.encode">encode() (qgym.envs.scheduling.machine_properties.MachineProperties method)</a>
 
       <ul>
@@ -770,12 +773,6 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder">FidelityEpisodeRewarder (class in qgym.envs.initial_mapping)</a>
-
-      <ul>
-        <li><a href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.FidelityEpisodeRewarder">(class in qgym.envs.initial_mapping.initial_mapping_rewarders)</a>
-</li>
-      </ul></li>
       <li><a href="qgym.utils.visualisation.typing.html#qgym.utils.visualisation.typing.Surface.fill">fill() (qgym.utils.visualisation.typing.Surface method)</a>
 </li>
       <li><a href="qgym.utils.visualisation.typing.html#qgym.utils.visualisation.typing.Font">Font (class in qgym.utils.visualisation.typing)</a>
@@ -938,6 +935,10 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity">has_fidelity() (in module qgym.utils.input_parsing)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qgym.envs.initial_mapping.initial_mapping_visualiser.html#qgym.envs.initial_mapping.initial_mapping_visualiser.InitialMappingVisualiser.header_spacing">header_spacing (qgym.envs.initial_mapping.initial_mapping_visualiser.InitialMappingVisualiser property)</a>
 
       <ul>
@@ -998,16 +999,20 @@
         <li><a href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.is_legal_surpass">(qgym.envs.routing.RoutingState method)</a>
 </li>
       </ul></li>
-      <li><a href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState.is_legal_swap">is_legal_swap() (qgym.envs.routing.routing_state.RoutingState method)</a>
-
-      <ul>
-        <li><a href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.is_legal_swap">(qgym.envs.routing.RoutingState method)</a>
-</li>
-      </ul></li>
       <li><a href="qgym.templates.html#qgym.templates.Visualiser.is_open">is_open (qgym.templates.Visualiser property)</a>
 
       <ul>
         <li><a href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser.is_open">(qgym.templates.visualiser.Visualiser property)</a>
+</li>
+      </ul></li>
+      <li><a href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState.is_truncated">is_truncated() (qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState method)</a>
+
+      <ul>
+        <li><a href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.is_truncated">(qgym.envs.initial_mapping.InitialMappingState method)</a>
+</li>
+        <li><a href="qgym.templates.html#qgym.templates.State.is_truncated">(qgym.templates.State method)</a>
+</li>
+        <li><a href="qgym.templates.state.html#qgym.templates.state.State.is_truncated">(qgym.templates.state.State method)</a>
 </li>
       </ul></li>
       <li><a href="qgym.utils.visualisation.typing.html#qgym.utils.visualisation.typing.Font.italic">italic (qgym.utils.visualisation.typing.Font attribute)</a>
@@ -1209,6 +1214,12 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState.n_connections">n_connections (qgym.envs.routing.routing_state.RoutingState property)</a>
+
+      <ul>
+        <li><a href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.n_connections">(qgym.envs.routing.RoutingState property)</a>
+</li>
+      </ul></li>
       <li><a href="qgym.envs.scheduling.machine_properties.html#qgym.envs.scheduling.machine_properties.MachineProperties.n_gates">n_gates (qgym.envs.scheduling.machine_properties.MachineProperties property)</a>
 
       <ul>

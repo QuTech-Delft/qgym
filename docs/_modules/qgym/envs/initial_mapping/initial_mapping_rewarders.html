@@ -33,7 +33,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -69,7 +69,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -173,6 +172,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -241,6 +241,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -331,6 +332,7 @@
 <span class="sd">    module for more information on the state and action space.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 
@@ -433,12 +435,13 @@
             <span class="n">mapped_interaction_j</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">interaction_j</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">mapped_interaction_i</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mapped_interaction_j</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">][</span><span class="s2">&quot;matrix&quot;</span><span class="p">][</span>
+            <span class="n">edge_fidelity</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">][</span><span class="s2">&quot;matrix&quot;</span><span class="p">][</span>
                 <span class="n">mapped_interaction_i</span><span class="p">,</span> <span class="n">mapped_interaction_j</span>
-            <span class="p">]:</span>
-                <span class="n">reward</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_edge</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">edge_fidelity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">reward</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_edge</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">reward</span> <span class="o">+=</span> <span class="n">edge_fidelity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_edge</span>
 
         <span class="k">return</span> <span class="n">reward</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># divide by two due to double counting of edges</span>
 
@@ -565,68 +568,6 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_state_reward</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span></div>
 </div>
-
-
-
-<div class="viewcode-block" id="FidelityEpisodeRewarder">
-<a class="viewcode-back" href="../../../../qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder">[docs]</a>
-<span class="k">class</span> <span class="nc">FidelityEpisodeRewarder</span><span class="p">(</span><span class="n">BasicRewarder</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rewarder for the :class:`~qgym.envs.InitialMapping` environment, which only gives</span>
-<span class="sd">    a reward at the end of the episode or when an illegal action is taken. Additionally,</span>
-<span class="sd">    this rewarder takes the fidelity of edges in the connection graph into account.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="FidelityEpisodeRewarder.compute_reward">
-<a class="viewcode-back" href="../../../../qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder.compute_reward">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">old_state</span><span class="p">:</span> <span class="n">InitialMappingState</span><span class="p">,</span>
-        <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span>
-        <span class="n">new_state</span><span class="p">:</span> <span class="n">InitialMappingState</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute a reward, based on the new state, and the given action.</span>
-
-<span class="sd">        Specifically the connection graph, interaction graphs and mapping are used.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            old_state: State of the :class:`~qgym.envs.InitialMapping` before the</span>
-<span class="sd">                current action.</span>
-<span class="sd">            action: Action that has just been taken.</span>
-<span class="sd">            new_state: Updated state of the :class:`~qgym.envs.InitialMapping`.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            The reward for this action. If the action is illegal, then the reward is</span>
-<span class="sd">            `illegal_action_penalty`. If the action is legal, but the mapping is not yet</span>
-<span class="sd">            finished, then the reward is 0. If the action is legal, and the mapping is</span>
-<span class="sd">            finished, then the reward is the number of &#39;good&#39; edges times</span>
-<span class="sd">            `reward_per_edge` plus the number of &#39;bad&#39; edges times `penalty_per_edge`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_illegal</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">old_state</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_state</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">)</span> <span class="o">!=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">0</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_state_reward</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span></div>
-
-
-    <span class="k">def</span> <span class="nf">_compute_state_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">InitialMappingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="n">reward</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">for</span> <span class="n">flat_idx</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;interaction&quot;</span><span class="p">][</span><span class="s2">&quot;matrix&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="n">interaction_i</span><span class="p">,</span> <span class="n">interaction_j</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">flat_idx</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">)</span>
-            <span class="n">mapped_interaction_i</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">interaction_i</span><span class="p">]</span>
-            <span class="n">mapped_interaction_j</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">interaction_j</span><span class="p">]</span>
-
-            <span class="n">edge_fidelity</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;connection&quot;</span><span class="p">][</span><span class="s2">&quot;matrix&quot;</span><span class="p">][</span>
-                <span class="n">mapped_interaction_i</span><span class="p">,</span> <span class="n">mapped_interaction_j</span>
-            <span class="p">]</span>
-            <span class="k">if</span> <span class="n">edge_fidelity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">reward</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_edge</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">reward</span> <span class="o">+=</span> <span class="n">edge_fidelity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_edge</span>
-
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">reward</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span></div>
 
 </pre></div>
 

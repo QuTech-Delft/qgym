@@ -36,7 +36,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,7 +72,6 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -176,6 +175,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -244,6 +244,7 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -312,6 +313,25 @@
 <p>With parsing we mean that the user input is validated and transformed to a predictable
 format. In this way, user can give different input formats, but internally we are
 assured that the data has the same format.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="qgym.utils.input_parsing.has_fidelity">
+<span class="sig-prename descclassname"><span class="pre">qgym.utils.input_parsing.</span></span><span class="sig-name descname"><span class="pre">has_fidelity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/utils/input_parsing.html#has_fidelity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.utils.input_parsing.has_fidelity" title="Link to this definition"></a></dt>
+<dd><p>Check if the given graph has fidelity encoded in its edges.</p>
+<p>A graph can have fidelity encoded by setting the “weight” attributes of at least one
+edge to a fidelity value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></span>) – Networks representation of the graph.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Boolean value stating wether the graph has fidelity encoded.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="qgym.utils.input_parsing.parse_connection_graph">
 <span class="sig-prename descclassname"><span class="pre">qgym.utils.input_parsing.</span></span><span class="sig-name descname"><span class="pre">parse_connection_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/utils/input_parsing.html#parse_connection_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.utils.input_parsing.parse_connection_graph" title="Link to this definition"></a></dt>

@@ -36,7 +36,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,7 +72,6 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -176,6 +175,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -244,6 +244,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -357,10 +358,6 @@ RL agent using the following code:</p>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder.compute_reward()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder.compute_reward()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMapping.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping.action_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.action_space</span></code></a></li>
@@ -374,6 +371,7 @@ RL agent using the following code:</p>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.create_observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.graphs"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.graphs</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.is_done"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.is_truncated"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.mapped_qubits"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapped_qubits</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.mapping"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState.mapping_dict"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapping_dict</span></code></a></li>
@@ -396,7 +394,6 @@ RL agent using the following code:</p>
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html">qgym.envs.initial_mapping.initial_mapping_rewarders module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
 </ul>
 </li>
@@ -429,14 +426,15 @@ RL agent using the following code:</p>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.__init__"><code class="docutils literal notranslate"><span class="pre">RoutingState.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.connection_graph"><code class="docutils literal notranslate"><span class="pre">RoutingState.connection_graph</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.create_observation_space"><code class="docutils literal notranslate"><span class="pre">RoutingState.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.edges"><code class="docutils literal notranslate"><span class="pre">RoutingState.edges</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.generate_random_interaction_circuit"><code class="docutils literal notranslate"><span class="pre">RoutingState.generate_random_interaction_circuit()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.interaction_circuit"><code class="docutils literal notranslate"><span class="pre">RoutingState.interaction_circuit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.is_done"><code class="docutils literal notranslate"><span class="pre">RoutingState.is_done()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.is_legal_surpass"><code class="docutils literal notranslate"><span class="pre">RoutingState.is_legal_surpass()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.is_legal_swap"><code class="docutils literal notranslate"><span class="pre">RoutingState.is_legal_swap()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.mapping"><code class="docutils literal notranslate"><span class="pre">RoutingState.mapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.max_interaction_gates"><code class="docutils literal notranslate"><span class="pre">RoutingState.max_interaction_gates</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.max_observation_reach"><code class="docutils literal notranslate"><span class="pre">RoutingState.max_observation_reach</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.n_connections"><code class="docutils literal notranslate"><span class="pre">RoutingState.n_connections</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.n_qubits"><code class="docutils literal notranslate"><span class="pre">RoutingState.n_qubits</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.obtain_info"><code class="docutils literal notranslate"><span class="pre">RoutingState.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState.obtain_observation"><code class="docutils literal notranslate"><span class="pre">RoutingState.obtain_observation()</span></code></a></li>
@@ -647,6 +645,7 @@ RL agent using the following code:</p>
 <li class="toctree-l2"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -696,6 +695,7 @@ RL agent using the following code:</p>
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -778,6 +778,7 @@ RL agent using the following code:</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>

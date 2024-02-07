@@ -36,7 +36,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,7 +72,6 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -176,6 +175,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -244,6 +244,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -350,8 +351,9 @@ action space.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>illegal_action_penalty</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Penalty for performing an illegal action. An action
-is illegal if <code class="docutils literal notranslate"><span class="pre">action[0]</span></code> is not in <code class="docutils literal notranslate"><span class="pre">state[&quot;legal_actions&quot;]</span></code>. This
-value should be negative (but is not required) and defaults to -50.</p></li>
+is illegal when the action means ‘surpass’ even though the next gate
+cannot be surpassed. This value should be negative (but is not required)
+and defaults to -50.</p></li>
 <li><p><strong>penalty_per_swap</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Penalty for placing a swap. In general, we want to have as
 little swaps as possible. Therefore, this value should be negative and
 defaults to -10.</p></li>
@@ -372,7 +374,7 @@ this value should be positive and defaults to 10.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>old_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState" title="qgym.envs.routing.routing_state.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a></span>) – <a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState" title="qgym.envs.routing.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a> before the current
 action.</p></li>
-<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]</span>) – Action that has just been taken.</p></li>
+<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Action that has just been taken.</p></li>
 <li><p><strong>new_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState" title="qgym.envs.routing.routing_state.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a></span>) – <a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState" title="qgym.envs.routing.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a> after the current
 action.</p></li>
 </ul>
@@ -404,7 +406,7 @@ scoring good and looking at what edges the circuit is executed.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>old_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState" title="qgym.envs.routing.routing_state.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a></span>) – <code class="docutils literal notranslate"><span class="pre">RoutingState</span></code> before the current action.</p></li>
-<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]</span>) – Action that has just been taken.</p></li>
+<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Action that has just been taken.</p></li>
 <li><p><strong>new_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState" title="qgym.envs.routing.routing_state.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a></span>) – <code class="docutils literal notranslate"><span class="pre">RoutingState</span></code> after the current action.</p></li>
 </ul>
 </dd>
@@ -438,8 +440,9 @@ SWAPs give higher penalties.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>illegal_action_penalty</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Penalty for performing an illegal action. An action
-is illegal if <code class="docutils literal notranslate"><span class="pre">action[0]</span></code> is not in <code class="docutils literal notranslate"><span class="pre">state[&quot;legal_actions&quot;]</span></code>. This
-value should be negative (but is not required) and defaults to -50.</p></li>
+is illegal when the action means ‘surpass’ even though the next gate
+cannot be surpassed. This value should be negative (but is not required)
+and defaults to -50.</p></li>
 <li><p><strong>penalty_per_swap</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Penalty for placing a swap. In general, we want to have as
 little swaps as possible. Therefore, this value should be negative and
 defaults to -10.</p></li>
@@ -467,7 +470,7 @@ defaults to 5.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>old_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState" title="qgym.envs.routing.routing_state.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a></span>) – <a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState" title="qgym.envs.routing.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a> before the current
 action.</p></li>
-<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]</span>) – Action that has just been taken.</p></li>
+<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Action that has just been taken.</p></li>
 <li><p><strong>new_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qgym.envs.routing.routing_state.html#qgym.envs.routing.routing_state.RoutingState" title="qgym.envs.routing.routing_state.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a></span>) – <a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState" title="qgym.envs.routing.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a> after the current
 action.</p></li>
 </ul>

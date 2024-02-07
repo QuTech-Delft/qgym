@@ -33,7 +33,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -69,7 +69,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -173,6 +172,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -241,6 +241,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -319,6 +320,7 @@
 <span class="sd">    &gt;&gt;&gt;             observe_connection_graph = False,</span>
 <span class="sd">    &gt;&gt;&gt;             )</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
@@ -330,13 +332,14 @@
 
 <span class="kn">import</span> <span class="nn">qgym.spaces</span>
 <span class="kn">from</span> <span class="nn">qgym.templates.state</span> <span class="kn">import</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">qgym.utils.input_parsing</span> <span class="kn">import</span> <span class="n">has_fidelity</span>
 
 <span class="c1"># pylint: disable=too-many-instance-attributes</span>
 
 
 <div class="viewcode-block" id="RoutingState">
 <a class="viewcode-back" href="../../../../qgym.envs.routing.routing_state.html#qgym.envs.routing.RoutingState">[docs]</a>
-<span class="k">class</span> <span class="nc">RoutingState</span><span class="p">(</span><span class="n">State</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">]],</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">]]):</span>
+<span class="k">class</span> <span class="nc">RoutingState</span><span class="p">(</span><span class="n">State</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">]],</span> <span class="nb">int</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The :class:`RoutingState` class.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RoutingState.__init__">
@@ -377,6 +380,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;``networkx`` graph representation of the QPU topology. Each node represents a</span>
 <span class="sd">        physical qubit and each edge represents a connection in the QPU topology.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_graph</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of all the edges, used to decode given actions.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_interaction_gates</span> <span class="o">=</span> <span class="n">max_interaction_gates</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the maximum amount of gates in the interaction_circuit, when a new</span>
 <span class="sd">        interaction_circuit is generated.</span>
@@ -404,9 +409,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">observe_legal_surpasses</span> <span class="o">=</span> <span class="n">observe_legal_surpasses</span>
 
         <span class="k">if</span> <span class="n">observe_connection_graph</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">connection_matrix</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_numpy_array</span><span class="p">(</span>
-                <span class="n">connection_graph</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">has_fidelity</span><span class="p">(</span><span class="n">connection_graph</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connection_matrix</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_numpy_array</span><span class="p">(</span>
+                    <span class="n">connection_graph</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connection_matrix</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">to_numpy_array</span><span class="p">(</span>
+                    <span class="n">connection_graph</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
         <span class="c1"># Keep track of at what position which swap_gate is inserted</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">swap_gates_inserted</span><span class="p">:</span> <span class="n">deque</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
@@ -477,7 +487,9 @@
 <a class="viewcode-back" href="../../../../qgym.envs.routing.routing_state.html#qgym.envs.routing.RoutingState.obtain_info">[docs]</a>
     <span class="k">def</span> <span class="nf">obtain_info</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">deque</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span>
+        <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">deque</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">|</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
+    <span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Obtain additional information of the current state.</span>
 
 <span class="sd">        Returns:</span>
@@ -494,18 +506,20 @@
             <span class="p">),</span>
             <span class="s2">&quot;Number of swaps inserted&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swap_gates_inserted</span><span class="p">),</span>
             <span class="s2">&quot;Swap gates inserted&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">swap_gates_inserted</span><span class="p">,</span>
+            <span class="s2">&quot;Action Encoding&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="RoutingState.update_state">
 <a class="viewcode-back" href="../../../../qgym.envs.routing.routing_state.html#qgym.envs.routing.RoutingState.update_state">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">RoutingState</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RoutingState</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the state (in place) of this environment using the given action.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            action: If action[0]==0 a SWAP-gate applied to qubits action[1], action[2]</span>
-<span class="sd">                will be registered in the swap_gates_inserted-deque at the current</span>
-<span class="sd">                position, if action[0]==1 the first observed gate will be surpassed.</span>
+<span class="sd">            action: Integer value in [0, n_connections]. Each value of 0 to</span>
+<span class="sd">                n_connections-1 corresponds to placing a SWAP and this SWAP gate will be</span>
+<span class="sd">                appended to the `swap_gates_inserted` ``deque``. The value of</span>
+<span class="sd">                n_connections correspond to a surpass.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Self.</span>
@@ -513,15 +527,15 @@
         <span class="c1"># Increase the step number</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">steps_done</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">surpass</span><span class="p">,</span> <span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span> <span class="o">=</span> <span class="n">action</span>
         <span class="c1"># surpass current_gate if legal</span>
-        <span class="k">if</span> <span class="n">surpass</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_legal_surpass</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">interaction_circuit</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_connections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_legal_surpass</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">interaction_circuit</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="bp">self</span>
 
-        <span class="c1"># elif insert swap-gate if legal</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">surpass</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_legal_swap</span><span class="p">(</span><span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_place_swap_gate</span><span class="p">(</span><span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_mapping</span><span class="p">(</span><span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span><span class="p">)</span>
+        <span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">action</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_place_swap_gate</span><span class="p">(</span><span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_mapping</span><span class="p">(</span><span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -552,12 +566,17 @@
         <span class="p">}</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;connection_matrix&quot;</span><span class="p">):</span>
-            <span class="n">observation_kwargs</span><span class="p">[</span><span class="s2">&quot;connection_graph&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qgym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span>
-                <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">high</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
-                <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_qubits</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_qubits</span><span class="p">,),</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">has_fidelity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_graph</span><span class="p">):</span>
+                <span class="n">observation_kwargs</span><span class="p">[</span><span class="s2">&quot;connection_graph&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qgym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span>
+                    <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">high</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_qubits</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_qubits</span><span class="p">,),</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_matrix</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">observation_kwargs</span><span class="p">[</span><span class="s2">&quot;connection_graph&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qgym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">MultiBinary</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">n_qubits</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_qubits</span>
+                <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">observe_legal_surpasses</span><span class="p">:</span>
             <span class="n">observation_kwargs</span><span class="p">[</span><span class="s2">&quot;is_legal_surpass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qgym</span><span class="o">.</span><span class="n">spaces</span><span class="o">.</span><span class="n">MultiBinary</span><span class="p">(</span>
@@ -622,25 +641,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Place a swap gate at the current position with the given logical qubits.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">swap_gates_inserted</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">logical_qubit1</span><span class="p">,</span> <span class="n">logical_qubit2</span><span class="p">))</span>
 
-<div class="viewcode-block" id="RoutingState.is_legal_swap">
-<a class="viewcode-back" href="../../../../qgym.envs.routing.routing_state.html#qgym.envs.routing.RoutingState.is_legal_swap">[docs]</a>
-    <span class="k">def</span> <span class="nf">is_legal_swap</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">logical_qubit1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">logical_qubit2</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks whether a swap of two logical qubits is legal.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Boolean value state whether the swap is allowed in the connection graph..</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">physical_qubit1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">logical_qubit1</span><span class="p">]</span>
-        <span class="n">physical_qubit2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">logical_qubit2</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">logical_qubit1</span> <span class="o">!=</span> <span class="n">logical_qubit2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="p">(</span><span class="n">physical_qubit1</span><span class="p">,</span> <span class="n">physical_qubit2</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_graph</span><span class="o">.</span><span class="n">edges</span>
-        <span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="RoutingState.is_legal_surpass">
 <a class="viewcode-back" href="../../../../qgym.envs.routing.routing_state.html#qgym.envs.routing.RoutingState.is_legal_surpass">[docs]</a>
     <span class="k">def</span> <span class="nf">is_legal_surpass</span><span class="p">(</span>
@@ -672,8 +672,8 @@
         <span class="n">logical_qubit2</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates mapping for a swap of two qubits.&quot;&quot;&quot;</span>
-        <span class="n">physical_qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[[</span><span class="n">logical_qubit1</span><span class="p">,</span> <span class="n">logical_qubit2</span><span class="p">]]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[[</span><span class="n">logical_qubit2</span><span class="p">,</span> <span class="n">logical_qubit1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">physical_qubits</span>
+        <span class="n">physical_qubits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">logical_qubit1</span><span class="p">,</span> <span class="n">logical_qubit2</span><span class="p">])]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">logical_qubit2</span><span class="p">,</span> <span class="n">logical_qubit1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">physical_qubits</span>
 
 <div class="viewcode-block" id="RoutingState.generate_random_interaction_circuit">
 <a class="viewcode-back" href="../../../../qgym.envs.routing.routing_state.html#qgym.envs.routing.RoutingState.generate_random_interaction_circuit">[docs]</a>
@@ -695,7 +695,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_qubits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of qubits in the `connection_graph`.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connection_graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of connections in the `connection_graph`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span></div>
 
 </pre></div>
 

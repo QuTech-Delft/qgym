@@ -38,7 +38,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -74,7 +74,6 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -178,6 +177,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -246,6 +246,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -377,42 +378,6 @@ a reward at the end of the episode or when an illegal action is taken.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qgym.envs.initial_mapping.EpisodeRewarder.compute_reward">
 <span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/initial_mapping/initial_mapping_rewarders.html#EpisodeRewarder.compute_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.initial_mapping.EpisodeRewarder.compute_reward" title="Link to this definition"></a></dt>
-<dd><p>Compute a reward, based on the new state, and the given action.</p>
-<p>Specifically the connection graph, interaction graphs and mapping are used.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>old_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState" title="qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></span>) – State of the <a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping" title="qgym.envs.InitialMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialMapping</span></code></a> before the
-current action.</p></li>
-<li><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]</span>) – Action that has just been taken.</p></li>
-<li><p><strong>new_state</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState" title="qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></span>) – Updated state of the <a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping" title="qgym.envs.InitialMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialMapping</span></code></a>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The reward for this action. If the action is illegal, then the reward is
-<cite>illegal_action_penalty</cite>. If the action is legal, but the mapping is not yet
-finished, then the reward is 0. If the action is legal, and the mapping is
-finished, then the reward is the number of ‘good’ edges times
-<cite>reward_per_edge</cite> plus the number of ‘bad’ edges times <cite>penalty_per_edge</cite>.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="qgym.envs.initial_mapping.FidelityEpisodeRewarder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.envs.initial_mapping.</span></span><span class="sig-name descname"><span class="pre">FidelityEpisodeRewarder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">illegal_action_penalty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_per_edge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty_per_edge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/initial_mapping/initial_mapping_rewarders.html#FidelityEpisodeRewarder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.initial_mapping.FidelityEpisodeRewarder" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.BasicRewarder" title="qgym.envs.initial_mapping.initial_mapping_rewarders.BasicRewarder"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></p>
-<p>Rewarder for the <a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping" title="qgym.envs.InitialMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialMapping</span></code></a> environment, which only gives
-a reward at the end of the episode or when an illegal action is taken. Additionally,
-this rewarder takes the fidelity of edges in the connection graph into account.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="qgym.envs.initial_mapping.FidelityEpisodeRewarder.compute_reward">
-<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/initial_mapping/initial_mapping_rewarders.html#FidelityEpisodeRewarder.compute_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.initial_mapping.FidelityEpisodeRewarder.compute_reward" title="Link to this definition"></a></dt>
 <dd><p>Compute a reward, based on the new state, and the given action.</p>
 <p>Specifically the connection graph, interaction graphs and mapping are used.</p>
 <dl class="field-list simple">
@@ -591,6 +556,22 @@ interaction graph and connection graph.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.envs.initial_mapping.InitialMappingState.is_truncated">
+<span class="sig-name descname"><span class="pre">is_truncated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/initial_mapping/initial_mapping_state.html#InitialMappingState.is_truncated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.initial_mapping.InitialMappingState.is_truncated" title="Link to this definition"></a></dt>
+<dd><p>Determine if the episode should be truncated or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Boolean value stating whether the episode should be truncated. The episode
+is truncated if the number of steps in the current episode is more than 10
+times the number of nodes in the connection graph.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qgym.envs.initial_mapping.InitialMappingState.mapped_qubits">
 <span class="sig-name descname"><span class="pre">mapped_qubits</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict[str,</span> <span class="pre">set[int]]</span></em><a class="headerlink" href="#qgym.envs.initial_mapping.InitialMappingState.mapped_qubits" title="Link to this definition"></a></dt>
@@ -751,10 +732,6 @@ edges times <cite>penalty_per_edge</cite> created by the <em>this</em> action.</
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.EpisodeRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder.compute_reward()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.FidelityEpisodeRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder.compute_reward()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html#qgym.envs.initial_mapping.initial_mapping_rewarders.SingleStepRewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder.compute_reward()</span></code></a></li>
 </ul>
@@ -767,6 +744,7 @@ edges times <cite>penalty_per_edge</cite> created by the <em>this</em> action.</
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState.create_observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.create_observation_space()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState.graphs"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.graphs</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState.is_done"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.is_done()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState.is_truncated"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.is_truncated()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState.mapped_qubits"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapped_qubits</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState.mapping"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapping</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html#qgym.envs.initial_mapping.initial_mapping_state.InitialMappingState.mapping_dict"><code class="docutils literal notranslate"><span class="pre">InitialMappingState.mapping_dict</span></code></a></li>

@@ -36,7 +36,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,7 +72,6 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -176,6 +175,7 @@
 <li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -244,6 +244,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -330,7 +331,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="qgym.envs.routing.routing_state.RoutingState">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.envs.routing.routing_state.</span></span><span class="sig-name descname"><span class="pre">RoutingState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_interaction_gates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_observation_reach</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observe_legal_surpasses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observe_connection_graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/routing/routing_state.html#RoutingState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.routing.routing_state.RoutingState" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State" title="qgym.templates.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]]</p>
+<dd><p>Bases: <a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State" title="qgym.templates.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]], <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</p>
 <p>The <a class="reference internal" href="#qgym.envs.routing.routing_state.RoutingState" title="qgym.envs.routing.routing_state.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a> class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="qgym.envs.routing.routing_state.RoutingState.__init__">
@@ -390,6 +391,12 @@ of logical onto physical qubits</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.envs.routing.routing_state.RoutingState.edges">
+<span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#qgym.envs.routing.routing_state.RoutingState.edges" title="Link to this definition"></a></dt>
+<dd><p>List of all the edges, used to decode given actions.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="qgym.envs.routing.routing_state.RoutingState.generate_random_interaction_circuit">
 <span class="sig-name descname"><span class="pre">generate_random_interaction_circuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_gates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/routing/routing_state.html#RoutingState.generate_random_interaction_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.routing.routing_state.RoutingState.generate_random_interaction_circuit" title="Link to this definition"></a></dt>
@@ -444,20 +451,6 @@ executed with the current mapping and connection graph.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="qgym.envs.routing.routing_state.RoutingState.is_legal_swap">
-<span class="sig-name descname"><span class="pre">is_legal_swap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logical_qubit1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logical_qubit2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/envs/routing/routing_state.html#RoutingState.is_legal_swap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.envs.routing.routing_state.RoutingState.is_legal_swap" title="Link to this definition"></a></dt>
-<dd><p>Checks whether a swap of two logical qubits is legal.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Boolean value state whether the swap is allowed in the connection graph..</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qgym.envs.routing.routing_state.RoutingState.mapping">
 <span class="sig-name descname"><span class="pre">mapping</span></span><a class="headerlink" href="#qgym.envs.routing.routing_state.RoutingState.mapping" title="Link to this definition"></a></dt>
@@ -481,6 +474,12 @@ agent will always see all gates ahead in an observation.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="qgym.envs.routing.routing_state.RoutingState.n_connections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_connections</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qgym.envs.routing.routing_state.RoutingState.n_connections" title="Link to this definition"></a></dt>
+<dd><p>Number of connections in the <cite>connection_graph</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="qgym.envs.routing.routing_state.RoutingState.n_qubits">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_qubits</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qgym.envs.routing.routing_state.RoutingState.n_qubits" title="Link to this definition"></a></dt>
 <dd><p>Number of qubits in the <cite>connection_graph</cite>.</p>
@@ -492,7 +491,7 @@ agent will always see all gates ahead in an observation.</p>
 <dd><p>Obtain additional information of the current state.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">deque</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">deque</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]]</span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dictionary containing optional debugging info for the current state.</p>
@@ -565,9 +564,10 @@ logical qubits q1 and q2 before gate g in the interaction_circuit.</p>
 <dd><p>Update the state (in place) of this environment using the given action.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int32</span></code>]]</span>) – If action[0]==0 a SWAP-gate applied to qubits action[1], action[2]
-will be registered in the swap_gates_inserted-deque at the current
-position, if action[0]==1 the first observed gate will be surpassed.</p>
+<dd class="field-odd"><p><strong>action</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Integer value in [0, n_connections]. Each value of 0 to
+n_connections-1 corresponds to placing a SWAP and this SWAP gate will be
+appended to the <cite>swap_gates_inserted</cite> <code class="docutils literal notranslate"><span class="pre">deque</span></code>. The value of
+n_connections correspond to a surpass.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#qgym.envs.routing.routing_state.RoutingState" title="qgym.envs.routing.routing_state.RoutingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingState</span></code></a></span></p>

@@ -33,7 +33,7 @@
             qgym
           </a>
               <div class="version">
-                0.1.0
+                0.2.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -69,7 +69,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.FidelityEpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">FidelityEpisodeRewarder</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
@@ -173,6 +172,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
@@ -241,6 +241,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
@@ -331,10 +332,8 @@
 <span class="sd">    action space.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">qgym.envs.routing.routing_state</span> <span class="kn">import</span> <span class="n">RoutingState</span>
 <span class="kn">from</span> <span class="nn">qgym.templates</span> <span class="kn">import</span> <span class="n">Rewarder</span>
@@ -360,8 +359,9 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            illegal_action_penalty: Penalty for performing an illegal action. An action</span>
-<span class="sd">                is illegal if ``action[0]`` is not in ``state[&quot;legal_actions&quot;]``. This</span>
-<span class="sd">                value should be negative (but is not required) and defaults to -50.</span>
+<span class="sd">                is illegal when the action means &#39;surpass&#39; even though the next gate</span>
+<span class="sd">                cannot be surpassed. This value should be negative (but is not required)</span>
+<span class="sd">                and defaults to -50.</span>
 <span class="sd">            penalty_per_swap: Penalty for placing a swap. In general, we want to have as</span>
 <span class="sd">                little swaps as possible. Therefore, this value should be negative and</span>
 <span class="sd">                defaults to -10.</span>
@@ -384,11 +384,7 @@
 <div class="viewcode-block" id="BasicRewarder.compute_reward">
 <a class="viewcode-back" href="../../../../qgym.envs.routing.routing_rewarders.html#qgym.envs.routing.BasicRewarder.compute_reward">[docs]</a>
     <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
-        <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span>
-        <span class="n">new_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">new_state</span><span class="p">:</span> <span class="n">RoutingState</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute a reward, based on the old state, new state, and the given action.</span>
 
@@ -408,22 +404,25 @@
 
         <span class="n">reward</span> <span class="o">=</span> <span class="n">old_state</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span>
         <span class="n">reward</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_state</span><span class="o">.</span><span class="n">swap_gates_inserted</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span>
-        <span class="n">reward</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span> <span class="k">if</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">old_state</span><span class="o">.</span><span class="n">n_connections</span><span class="p">:</span>
+            <span class="n">reward</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reward</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_penalty_per_swap</span>
 
         <span class="k">return</span> <span class="n">reward</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_is_illegal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span> <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_is_illegal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks whether an action chosen by the agent is illegal.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Boolean value stating whether the action was illegal or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span> <span class="o">=</span> <span class="n">old_state</span><span class="o">.</span><span class="n">interaction_circuit</span><span class="p">[</span><span class="n">old_state</span><span class="o">.</span><span class="n">position</span><span class="p">]</span>
-            <span class="k">return</span> <span class="ow">not</span> <span class="n">old_state</span><span class="o">.</span><span class="n">is_legal_surpass</span><span class="p">(</span><span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">!=</span> <span class="n">old_state</span><span class="o">.</span><span class="n">n_connections</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">return</span> <span class="ow">not</span> <span class="n">old_state</span><span class="o">.</span><span class="n">is_legal_swap</span><span class="p">(</span><span class="n">action</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">action</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span> <span class="o">=</span> <span class="n">old_state</span><span class="o">.</span><span class="n">interaction_circuit</span><span class="p">[</span><span class="n">old_state</span><span class="o">.</span><span class="n">position</span><span class="p">]</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">old_state</span><span class="o">.</span><span class="n">is_legal_surpass</span><span class="p">(</span><span class="n">qubit1</span><span class="p">,</span> <span class="n">qubit2</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_reward_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the reward range.&quot;&quot;&quot;</span>
@@ -471,8 +470,9 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            illegal_action_penalty: Penalty for performing an illegal action. An action</span>
-<span class="sd">                is illegal if ``action[0]`` is not in ``state[&quot;legal_actions&quot;]``. This</span>
-<span class="sd">                value should be negative (but is not required) and defaults to -50.</span>
+<span class="sd">                is illegal when the action means &#39;surpass&#39; even though the next gate</span>
+<span class="sd">                cannot be surpassed. This value should be negative (but is not required)</span>
+<span class="sd">                and defaults to -50.</span>
 <span class="sd">            penalty_per_swap: Penalty for placing a swap. In general, we want to have as</span>
 <span class="sd">                little swaps as possible. Therefore, this value should be negative and</span>
 <span class="sd">                defaults to -10.</span>
@@ -506,7 +506,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
-        <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span>
+        <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">new_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute a reward, based on the old state, the given action and the new state.</span>
@@ -531,7 +531,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_illegal</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">old_state</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_illegal_action_penalty</span>
 
-        <span class="k">if</span> <span class="n">action</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">old_state</span><span class="o">.</span><span class="n">n_connections</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_per_surpass</span>
 
         <span class="k">return</span> <span class="p">(</span>
@@ -612,7 +612,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">old_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
-        <span class="n">action</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">],</span>
+        <span class="n">action</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">new_state</span><span class="p">:</span> <span class="n">RoutingState</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute a reward, based on the new state, and the given action.</span>
