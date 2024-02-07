@@ -202,6 +202,16 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         """
         return bool(len(self.mapping_dict) == self.n_nodes)
 
+    def is_truncated(self) -> bool:
+        """Determine if the episode should be truncated or not.
+
+        Returns:
+            Boolean value stating whether the episode should be truncated. The episode
+            is truncated if the number of steps in the current episode is more than 10
+            times the number of nodes in the connection graph.
+        """
+        return bool(self.steps_done < self.n_nodes * 10)
+
     def obtain_info(self) -> dict[str, Any]:
         """Obtain additional information.
 

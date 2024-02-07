@@ -74,7 +74,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
             self._state.obtain_observation(),
             self._compute_reward(old_state, action),
             self._state.is_done(),
-            False,
+            self._state.is_truncated(),
             self._state.obtain_info(),
         )
 

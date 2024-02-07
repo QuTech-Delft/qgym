@@ -83,6 +83,10 @@ class State(Generic[ObservationT, ActionT]):
         """Boolean value stating whether we are in a final state."""
         raise NotImplementedError
 
+    def is_truncated(self) -> bool:
+        """Boolean value stating whether the episode is truncated."""
+        return False
+
     @abstractmethod
     def obtain_info(self) -> dict[Any, Any]:
         """Optional debugging info for the current state."""
