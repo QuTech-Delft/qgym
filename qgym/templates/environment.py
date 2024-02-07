@@ -61,8 +61,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
             2. Reward for the given action;
             3. Boolean value stating whether the new state is a final state (i.e., if
                we are done);
-            4. Boolean value stating whether the episode is truncated. Currently always
-               returns ``False``.
+            4. Boolean value stating whether the episode is truncated.
             5. Additional (debugging) information.
         """
         old_state = deepcopy(self._state)
