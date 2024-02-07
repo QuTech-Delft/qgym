@@ -132,7 +132,12 @@ class Visualiser:
 
     def close(self) -> None:
         """Close the screen used for rendering."""
-        pygame.quit()
+        # Sometimes when we try to quit pygame we get a TypeError and the environment
+        # crashes. This is a botch to prevent that.
+        try:
+            pygame.quit()
+        except TypeError:
+            pass
 
     @property
     def screen_width(self) -> int:
