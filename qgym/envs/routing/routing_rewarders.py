@@ -27,10 +27,8 @@ Usage:
     action space.
 
 """
-import warnings
 
-import numpy as np
-from numpy.typing import NDArray
+import warnings
 
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.templates import Rewarder
@@ -52,8 +50,9 @@ class BasicRewarder(Rewarder):
 
         Args:
             illegal_action_penalty: Penalty for performing an illegal action. An action
-                is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
-                value should be negative (but is not required) and defaults to -50.
+                is illegal when the action means 'surpass' even though the next gate
+                cannot be surpassed. This value should be negative (but is not required)
+                and defaults to -50.
             penalty_per_swap: Penalty for placing a swap. In general, we want to have as
                 little swaps as possible. Therefore, this value should be negative and
                 defaults to -10.
@@ -73,11 +72,7 @@ class BasicRewarder(Rewarder):
         warn_if_negative(self._reward_per_surpass, "reward_per_surpass")
 
     def compute_reward(
-        self,
-        *,
-        old_state: RoutingState,
-        action: NDArray[np.int_],
-        new_state: RoutingState,
+        self, *, old_state: RoutingState, action: int, new_state: RoutingState
     ) -> float:
         """Compute a reward, based on the old state, new state, and the given action.
 
@@ -97,21 +92,24 @@ class BasicRewarder(Rewarder):
 
         reward = old_state.position * self._reward_per_surpass
         reward += len(old_state.swap_gates_inserted) * self._penalty_per_swap
-        reward += self._reward_per_surpass if action[0] else self._penalty_per_swap
+        if action == old_state.n_connections:
+            reward += self._reward_per_surpass
+        else:
+            reward += self._penalty_per_swap
 
         return reward
 
-    def _is_illegal(self, action: NDArray[np.int_], old_state: RoutingState) -> bool:
+    def _is_illegal(self, action: int, old_state: RoutingState) -> bool:
         """Checks whether an action chosen by the agent is illegal.
 
         Returns:
             Boolean value stating whether the action was illegal or not.
         """
-        if action[0]:
-            qubit1, qubit2 = old_state.interaction_circuit[old_state.position]
-            return not old_state.is_legal_surpass(qubit1, qubit2)
+        if action != old_state.n_connections:
+            return False
 
-        return not old_state.is_legal_swap(action[1], action[2])
+        qubit1, qubit2 = old_state.interaction_circuit[old_state.position]
+        return not old_state.is_legal_surpass(qubit1, qubit2)
 
     def _set_reward_range(self) -> None:
         """Set the reward range."""
@@ -154,8 +152,9 @@ class SwapQualityRewarder(BasicRewarder):
 
         Args:
             illegal_action_penalty: Penalty for performing an illegal action. An action
-                is illegal if ``action[0]`` is not in ``state["legal_actions"]``. This
-                value should be negative (but is not required) and defaults to -50.
+                is illegal when the action means 'surpass' even though the next gate
+                cannot be surpassed. This value should be negative (but is not required)
+                and defaults to -50.
             penalty_per_swap: Penalty for placing a swap. In general, we want to have as
                 little swaps as possible. Therefore, this value should be negative and
                 defaults to -10.
@@ -186,7 +185,7 @@ class SwapQualityRewarder(BasicRewarder):
         self,
         *,
         old_state: RoutingState,
-        action: NDArray[np.int_],
+        action: int,
         new_state: RoutingState,
     ) -> float:
         """Compute a reward, based on the old state, the given action and the new state.
@@ -211,7 +210,7 @@ class SwapQualityRewarder(BasicRewarder):
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
-        if action[0]:
+        if action == old_state.n_connections:
             return self._reward_per_surpass
 
         return (
@@ -286,7 +285,7 @@ class EpisodeRewarder(BasicRewarder):
         self,
         *,
         old_state: RoutingState,
-        action: NDArray[np.int_],
+        action: int,
         new_state: RoutingState,
     ) -> float:
         """Compute a reward, based on the new state, and the given action.

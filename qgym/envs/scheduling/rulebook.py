@@ -22,6 +22,7 @@ Example:
         rulebook.add_rule(rulebook)
 
 """
+
 from __future__ import annotations
 
 from typing import Callable

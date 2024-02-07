@@ -14,6 +14,7 @@ Usage:
      [1. 1.]
      [1. 1.]], (3, 2), float64))
 """
+
 from __future__ import annotations
 
 import typing
@@ -28,9 +29,11 @@ class Dict(gymnasium.spaces.Dict):
 
     def __init__(
         self,
-        spaces: typing.Dict[str, gymnasium.Space[Any]]
-        | Sequence[tuple[str, gymnasium.Space[Any]]]
-        | None = None,
+        spaces: (
+            typing.Dict[str, gymnasium.Space[Any]]
+            | Sequence[tuple[str, gymnasium.Space[Any]]]
+            | None
+        ) = None,
         *,
         rng: Generator | None = None,
         **spaces_kwargs: gymnasium.Space[Any],

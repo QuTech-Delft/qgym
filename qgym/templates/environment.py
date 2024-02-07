@@ -2,6 +2,7 @@
 
 All environments should inherit from ``Environment``.
 """
+
 from __future__ import annotations
 
 from abc import abstractmethod
@@ -60,8 +61,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
             2. Reward for the given action;
             3. Boolean value stating whether the new state is a final state (i.e., if
                we are done);
-            4. Boolean value stating whether the episode is truncated. Currently always
-               returns ``False``.
+            4. Boolean value stating whether the episode is truncated.
             5. Additional (debugging) information.
         """
         old_state = deepcopy(self._state)
@@ -73,7 +73,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
             self._state.obtain_observation(),
             self._compute_reward(old_state, action),
             self._state.is_done(),
-            False,
+            self._state.is_truncated(),
             self._state.obtain_info(),
         )
 

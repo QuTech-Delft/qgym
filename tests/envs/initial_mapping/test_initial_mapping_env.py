@@ -11,7 +11,6 @@ from qgym.envs import InitialMapping
 from qgym.envs.initial_mapping import (
     BasicRewarder,
     EpisodeRewarder,
-    FidelityEpisodeRewarder,
     InitialMappingState,
     SingleStepRewarder,
 )
@@ -95,7 +94,6 @@ def test_init_custom_connection_grid_size(
         BasicRewarder(),
         EpisodeRewarder(),
         SingleStepRewarder(),
-        FidelityEpisodeRewarder(),
     ],
 )
 def test_init_custom_rewarder(rewarder: Rewarder) -> None:

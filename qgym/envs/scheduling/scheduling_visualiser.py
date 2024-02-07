@@ -1,6 +1,7 @@
 """This module contains a class used for rendering the :class:`~qgym.envs.Scheduling`
 environment.
 """
+
 from __future__ import annotations
 
 from typing import Dict, cast

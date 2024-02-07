@@ -148,6 +148,7 @@ Example 2:
 
 
 """
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -209,7 +210,7 @@ class Scheduling(
                 on each render call.
         """
         self.metadata = {
-            "render.modes": ["human", "rgb_array"],
+            "render_modes": ["human", "rgb_array"],
             "random_circuit.mode": ["default", "workshop"],
         }
 

@@ -1,6 +1,7 @@
 """This module contains a class used for rendering a
 :class:`~qgym.envs.Routing` environment.
 """
+
 from __future__ import annotations
 
 from typing import Any, Sequence

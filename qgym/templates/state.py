@@ -2,6 +2,7 @@
 
 All states should inherit from ``State``.
 """
+
 from __future__ import annotations
 
 from abc import abstractmethod
@@ -81,6 +82,10 @@ class State(Generic[ObservationT, ActionT]):
     def is_done(self) -> bool:
         """Boolean value stating whether we are in a final state."""
         raise NotImplementedError
+
+    def is_truncated(self) -> bool:
+        """Boolean value stating whether the episode is truncated."""
+        return False
 
     @abstractmethod
     def obtain_info(self) -> dict[Any, Any]:

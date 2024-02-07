@@ -11,6 +11,7 @@ Usage:
     >>> state = InitialMappingState(connection_graph, 0.5)
 
 """
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -64,21 +65,11 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         self.steps_done: int = 0
         """Number of steps done since the last reset."""
 
-        fidelity = False  # whether edges include fidelity
-        for _, _, weight in connection_graph.edges.data("weight"):
-            if not isinstance(weight, int):
-                fidelity = True
-                break
-        if fidelity:
-            connection = {
-                "graph": deepcopy(connection_graph),
-                "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),
-            }
-        else:
-            connection = {
-                "graph": deepcopy(connection_graph),
-                "matrix": nx.to_numpy_array(connection_graph, dtype=np.int8),
-            }
+        connection = {
+            "graph": deepcopy(connection_graph),
+            "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),
+        }
+
         self.graphs = {
             "connection": connection,
             "interaction": {
@@ -210,6 +201,16 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             Boolean value stating whether we are in a final state.
         """
         return bool(len(self.mapping_dict) == self.n_nodes)
+
+    def is_truncated(self) -> bool:
+        """Determine if the episode should be truncated or not.
+
+        Returns:
+            Boolean value stating whether the episode should be truncated. The episode
+            is truncated if the number of steps in the current episode is more than 10
+            times the number of nodes in the connection graph.
+        """
+        return bool(self.steps_done < self.n_nodes * 10)
 
     def obtain_info(self) -> dict[str, Any]:
         """Obtain additional information.

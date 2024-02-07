@@ -112,6 +112,7 @@ Example 2:
 
 
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
@@ -216,7 +217,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             nvec=[self._state.n_nodes, self._state.n_nodes], rng=self.rng
         )
 
-        self.metadata = {"render.modes": ["human", "rgb_array"]}
+        self.metadata = {"render_modes": ["human", "rgb_array"]}
         self._visualiser = parse_visualiser(
             render_mode, InitialMappingVisualiser, [connection_graph]
         )

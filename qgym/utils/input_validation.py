@@ -1,4 +1,5 @@
 """This module contains generic input validation methods."""
+
 from __future__ import annotations
 
 import warnings

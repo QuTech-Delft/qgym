@@ -11,7 +11,6 @@ from numpy.typing import NDArray
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
-    FidelityEpisodeRewarder,
     SingleStepRewarder,
 )
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
@@ -40,10 +39,9 @@ def _episode_generator(
         BasicRewarder(),
         SingleStepRewarder(),
         EpisodeRewarder(),
-        FidelityEpisodeRewarder(),
     ),
 )
-def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
+def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
     return cast(Rewarder, request.param)
 
 
@@ -53,10 +51,9 @@ def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
         BasicRewarder,
         SingleStepRewarder,
         EpisodeRewarder,
-        FidelityEpisodeRewarder,
     ),
 )
-def _rewarder_class(request: pytest.FixtureRequest) -> type[Rewarder]:
+def rewarder_class_fixture(request: pytest.FixtureRequest) -> type[Rewarder]:
     return cast(Type[Rewarder], request.param)
 
 
@@ -213,7 +210,7 @@ def test_episode_rewarder(
 
 
 """
-Tests for the FidelityEpisodeRewarder
+Tests for the Fidelity
 """
 
 fidelity_graph = np.array(
@@ -241,7 +238,7 @@ def test_fidelity_episode_rewarder(
         connection_graph_matrix, interaction_graph_matrix
     )
 
-    rewarder = FidelityEpisodeRewarder()
+    rewarder = EpisodeRewarder()
 
     for i, (old_state, action, new_state) in enumerate(episode_generator):
         reward = rewarder.compute_reward(

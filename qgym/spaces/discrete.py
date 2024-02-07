@@ -8,6 +8,7 @@ Usage:
     Discrete(3)
 
 """
+
 from __future__ import annotations
 
 import gymnasium.spaces

@@ -6,6 +6,7 @@ Usage:
     MultiBinary(10)
 
 """
+
 from __future__ import annotations
 
 import gymnasium.spaces

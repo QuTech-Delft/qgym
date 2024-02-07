@@ -3,6 +3,7 @@
 This :class:`SchedulingState` represents the :class:`~qgym.templates.State` of the
 :class:`~qgym.envs.Scheduling` environment.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, Set, Union, cast

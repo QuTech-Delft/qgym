@@ -9,6 +9,7 @@ Usage:
      [20 20 20]], (2, 3), int32)
 
 """
+
 from __future__ import annotations
 
 from numbers import Integral
