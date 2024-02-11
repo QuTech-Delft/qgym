@@ -1,7 +1,7 @@
 """This module contains function which parse user input.
 
 With parsing we mean that the user input is validated and transformed to a predictable
-format. In this way, user can give different input formats, but internally we are 
+format. In this way, user can give different input formats, but internally we are
 assured that the data has the same format."""
 
 from __future__ import annotations
@@ -105,7 +105,11 @@ def parse_connection_graph(
 
     if grid_size is not None:
         # Generate connection grid graph
-        return nx.grid_graph(grid_size)
+        graph = nx.grid_graph(grid_size)
+
+        # Relabel the nodes to be indexed
+        mapping = {node: i for i, node in enumerate(graph.nodes())}
+        return nx.relabel_nodes(graph, mapping)
 
     raise ValueError("No valid arguments for a connection graph were given")
 
