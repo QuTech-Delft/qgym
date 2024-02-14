@@ -107,9 +107,9 @@ def parse_connection_graph(
         # Generate connection grid graph
         graph = nx.grid_graph(grid_size)
 
-        # Relabel the nodes to be indexed
-        mapping = {node: i for i, node in enumerate(graph.nodes())}
-        return nx.relabel_nodes(graph, mapping)
+        # Relabel the nodes to be integers
+        graph = nx.convert_node_labels_to_integers(graph)
+        return graph
 
     raise ValueError("No valid arguments for a connection graph were given")
 
