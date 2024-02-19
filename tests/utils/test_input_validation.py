@@ -154,21 +154,24 @@ class TestAdjacencyMatrix:
 
 
 class TestGraphValidTopology:
-    def test_check_graph_is_valid_topology(self) -> None:
+    def test_empty_graph(self) -> None:
         graph = nx.Graph()
         msg = "'test' has no nodes"
         with pytest.raises(ValueError, match=msg):
             check_graph_is_valid_topology(graph, "test")
 
-        graph.add_edge(1, 2)
+    def test_line_graph(self) -> None:
+        graph = nx.cycle_graph(2)
         check_graph_is_valid_topology(graph, "test")
 
+    def test_self_loop(self) -> None:
+        graph = nx.Graph()
         graph.add_edge(1, 1)
         msg = "'test' contains self-loops"
         with pytest.raises(ValueError, match=msg):
             check_graph_is_valid_topology(graph, "test")
 
-    def test_check_graph_is_valid_topology_nodes(self) -> None:
+    def test_non_int_label(self) -> None:
         graph = nx.Graph()
         graph.add_node((0, 0))
 

@@ -226,7 +226,7 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
     if len(graph) == 0:
         raise ValueError(f"'{name}' has no nodes")
 
-    if not all(isinstance(node, int) for node in graph.nodes()):
+    if any(not isinstance(node, int) for node in graph):
         raise TypeError(f"'{name}' has nodes that are not integers")
 
 
