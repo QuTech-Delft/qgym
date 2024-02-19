@@ -37,13 +37,13 @@ class TestEnvironment:
 
     def test_episode(self, small_env: InitialMapping):
         obs, reward, is_done, truncated, _ = small_env.step(np.array([0, 1]))
-        assert np.array_equal(obs["mapping"], [1, 2])
+        np.testing.assert_array_equal(obs["mapping"], [1, 2])
         assert reward == 0
         assert not is_done
         assert not truncated
 
         obs, reward, is_done, truncated, _ = small_env.step(np.array([1, 0]))
-        assert np.array_equal(obs["mapping"], [1, 0])
+        np.testing.assert_array_equal(obs["mapping"], [1, 0])
         assert is_done
         assert not truncated
 

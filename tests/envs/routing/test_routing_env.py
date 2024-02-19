@@ -28,4 +28,4 @@ class TestEnvironment:
     def test_step(self, kwargs):
         env = Routing(**kwargs)  # type: ignore[arg-type]
         obs = env.step(0)[0]
-        assert np.array_equal(obs["mapping"], [2, 1, 0, 3])
+        np.testing.assert_array_equal(obs["mapping"], [2, 1, 0, 3])
