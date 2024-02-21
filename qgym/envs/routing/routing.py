@@ -88,13 +88,19 @@ Action Space:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
+from collections.abc import Iterable, Mapping
+from copy import deepcopy
+from typing import TYPE_CHECKING, Any, Dict
 
 import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
+from qgym.envs.routing.interaction_generation import (
+    BasicInteractionGenerator,
+    InteractionGenerator,
+)
 from qgym.envs.routing.routing_rewarders import BasicRewarder
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.envs.routing.routing_visualiser import RoutingVisualiser
@@ -104,7 +110,7 @@ from qgym.utils.input_parsing import (
     parse_rewarder,
     parse_visualiser,
 )
-from qgym.utils.input_validation import check_bool, check_int
+from qgym.utils.input_validation import check_bool, check_instance, check_int
 
 if TYPE_CHECKING:
     Gridspecs = (
@@ -117,7 +123,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        max_interaction_gates: int = 10,
+        interaction_generator: InteractionGenerator | None = None,
         max_observation_reach: int = 5,
         observe_legal_surpasses: bool = True,
         observe_connection_graph: bool = False,
@@ -172,14 +178,22 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
             connection_graph, connection_graph_matrix, connection_grid_size
         )
 
-        max_interaction_gates = check_int(
-            max_interaction_gates, "max_interaction_gates", l_bound=0
-        )
+        if interaction_generator is None:
+            interaction_generator = BasicInteractionGenerator(
+                len(connection_graph), seed=self.rng
+            )
+        else:
+            check_instance(
+                interaction_generator, "interaction_generator", InteractionGenerator
+            )
+            if interaction_generator.finite:
+                raise ValueError(
+                    "'interaction_generator' should not be an infinite iterator"
+                )
+            interaction_generator = deepcopy(interaction_generator)
+
         max_observation_reach = check_int(
-            max_observation_reach,
-            "max_observation_reach",
-            l_bound=0,
-            u_bound=max_interaction_gates,
+            max_observation_reach, "max_observation_reach", l_bound=1
         )
         observe_legal_surpasses = check_bool(
             observe_legal_surpasses, "observe_legal_surpasses", safe=False
@@ -192,7 +206,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
         self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 
         self._state = RoutingState(
-            max_interaction_gates=max_interaction_gates,
+            interaction_generator=interaction_generator,
             max_observation_reach=max_observation_reach,
             connection_graph=connection_graph,
             observe_legal_surpasses=observe_legal_surpasses,

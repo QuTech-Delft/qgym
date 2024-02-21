@@ -124,8 +124,8 @@ class RoutingVisualiser(Visualiser):
         x_right = screen.get_width() * 0.95
         y_distance = screen.get_height() / (state.n_qubits)
         y_lines = y_distance * (0.5 + np.arange(state.n_qubits))
-        dx_gates = (x_right - x_left) / state.max_interaction_gates
-        x_gates = x_left + dx_gates * (0.5 + np.arange(state.max_interaction_gates))
+        dx_gates = (x_right - x_left) / len(state.interaction_circuit)
+        x_gates = x_left + dx_gates * (0.5 + np.arange(len(state.interaction_circuit)))
 
         self._draw_circuit_lines(
             screen, x_text=x_text, x_left=x_left, x_right=x_right, y_lines=y_lines
@@ -213,7 +213,7 @@ class RoutingVisualiser(Visualiser):
             x_left: Left most x coordinate of the circuit lines.
             x_right: Right most x coordinate of the circuit lines.
         """
-        dx_gates = (x_right - x_left) / state.max_interaction_gates
+        dx_gates = (x_right - x_left) / len(state.interaction_circuit)
 
         shade_left_width = (state.position + 0.5) * dx_gates
         shade_height = screen.get_height()
@@ -226,7 +226,9 @@ class RoutingVisualiser(Visualiser):
         )
 
         shade_right_width = (
-            state.max_interaction_gates - state.max_observation_reach - state.position
+            len(state.interaction_circuit)
+            - state.max_observation_reach
+            - state.position
         ) * dx_gates
         if shade_right_width > 0:
             shade_rect(
