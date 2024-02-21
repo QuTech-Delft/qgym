@@ -48,8 +48,10 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         """Init of the ``RoutingState`` class.
 
         Args:
-            max_interaction_gates: Sets the maximum amount of gates in the
-                interaction_circuit, when a new interaction_circuit is generated.
+            interaction_generator: Interaction generator for generating interaction
+                circuits. This generator is used to generate a new interaction circuits
+                when :func:`RoutingState.reset` is called without an interaction
+                circuit.
             max_observation_reach: Sets a cap on the maximum amount of gates the agent
                 can see ahead when making an observation. When bigger than
                 max_interaction_gates the agent will always see all gates ahead in an
