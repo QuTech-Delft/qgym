@@ -115,6 +115,7 @@ Example 2:
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
 
 import networkx as nx
@@ -122,6 +123,10 @@ import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
+from qgym.envs.initial_mapping.graph_generation import (
+    BasicGraphGenerator,
+    GraphGenerator,
+)
 from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.envs.initial_mapping.initial_mapping_visualiser import (
@@ -133,7 +138,7 @@ from qgym.utils.input_parsing import (
     parse_rewarder,
     parse_visualiser,
 )
-from qgym.utils.input_validation import check_real
+from qgym.utils.input_validation import check_instance
 
 if TYPE_CHECKING:
     Gridspecs = (
@@ -155,7 +160,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        interaction_graph_edge_probability: float,
+        graph_generator: GraphGenerator | None = None,
         *,
         connection_graph: nx.Graph | None = None,
         connection_graph_matrix: ArrayLike | None = None,
@@ -195,22 +200,22 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
             networkx.generators.lattice.grid_graph.html#grid-graph
         """
         # Check user input and parse it to a uniform format
-        interaction_graph_edge_probability = check_real(
-            interaction_graph_edge_probability,
-            "interaction_graph_edge_probability",
-            l_bound=0,
-            u_bound=1,
-        )
         connection_graph = parse_connection_graph(
             connection_graph, connection_graph_matrix, connection_grid_size
         )
 
+        if graph_generator is None:
+            graph_generator = BasicGraphGenerator(len(connection_graph), seed=self.rng)
+        else:
+            check_instance(graph_generator, "graph_generator", GraphGenerator)
+            if not graph_generator.finite:
+                raise ValueError("'graph_generator' should not be a finite iterator")
+            graph_generator = deepcopy(graph_generator)
+
         self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 
         # Define internal attributes
-        self._state = InitialMappingState(
-            connection_graph, interaction_graph_edge_probability
-        )
+        self._state = InitialMappingState(connection_graph, graph_generator)
         self.observation_space = self._state.create_observation_space()
         # Define attributes defined in parent class
         self.action_space = qgym.spaces.MultiDiscrete(

@@ -22,6 +22,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from qgym import spaces
+from qgym.envs.initial_mapping.graph_generation import GraphGenerator
 from qgym.templates.state import State
 
 
@@ -37,7 +38,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     )
 
     def __init__(
-        self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
+        self, connection_graph: nx.Graph, graph_generator: GraphGenerator
     ) -> None:
         # pylint: disable=line-too-long
         """Init of the :class:`~qgym.envs.initial_mapping.InitialMappingState` class.
@@ -57,10 +58,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
         # Create a random connection graph with `n_nodes` and with edges existing with
         # probability `interaction_graph_edge_probability` (nodes without connections
         # can be seen as 'null' nodes)
-        interaction_graph = nx.fast_gnp_random_graph(
-            connection_graph.number_of_nodes(),
-            interaction_graph_edge_probability,
-        )
+        interaction_graph = next(graph_generator)
 
         self.steps_done: int = 0
         """Number of steps done since the last reset."""
@@ -75,7 +73,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             "interaction": {
                 "graph": deepcopy(interaction_graph),
                 "matrix": nx.to_numpy_array(interaction_graph, dtype=np.int8).flatten(),
-                "edge_probability": interaction_graph_edge_probability,
+                "generator": graph_generator,
             },
         }
         """Dictionary containing the graph and matrix representations of the both the
@@ -139,8 +137,8 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         # Reset the state
         if interaction_graph is None:
-            self.graphs["interaction"]["graph"] = nx.fast_gnp_random_graph(
-                self.n_nodes, self.graphs["interaction"]["edge_probability"]
+            self.graphs["interaction"]["graph"] = next(
+                self.graphs["interaction"]["generator"]
             )
         else:
             self.graphs["interaction"]["graph"] = deepcopy(interaction_graph)

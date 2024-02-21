@@ -26,14 +26,13 @@ def small_graph() -> nx.Graph:
 
 @pytest.fixture
 def small_env(small_graph: nx.Graph) -> InitialMapping:
-    return InitialMapping(0.5, connection_graph=small_graph)
+    return InitialMapping(connection_graph=small_graph)
 
 
 def test_validity(small_env: InitialMapping) -> None:
     check_env(
         small_env, warn=True
     )  # todo: maybe switch this to the gymnasium env checker
-    assert True
 
 
 @pytest.mark.parametrize(
@@ -45,7 +44,7 @@ def test_unsupported_render_mode(
     small_graph: nx.Graph, render_mode: int | str, error_type: type[Exception]
 ) -> None:
     with pytest.raises(error_type):
-        InitialMapping(0.5, connection_graph=small_graph, render_mode=render_mode)  # type: ignore[arg-type]
+        InitialMapping(connection_graph=small_graph, render_mode=render_mode)  # type: ignore[arg-type]
 
 
 def test_init_custom_connection_graph(
@@ -65,7 +64,7 @@ def test_init_custom_connection_graph(
 def test_init_custom_connection_graph_matrix(
     small_graph: nx.Graph, connection_graph_matrix: ArrayLike
 ) -> None:
-    env = InitialMapping(0.5, connection_graph_matrix=connection_graph_matrix)
+    env = InitialMapping(connection_graph_matrix=connection_graph_matrix)
     assert isinstance(env._state, InitialMappingState)
     assert nx.is_isomorphic(env._state.graphs["connection"]["graph"], small_graph)
     np.testing.assert_array_equal(
@@ -80,7 +79,7 @@ def test_init_custom_connection_graph_matrix(
 def test_init_custom_connection_grid_size(
     small_graph: nx.Graph, connection_grid_size: list[int] | tuple[int, ...]
 ) -> None:
-    env = InitialMapping(0.5, connection_grid_size=connection_grid_size)
+    env = InitialMapping(connection_grid_size=connection_grid_size)
     assert isinstance(env._state, InitialMappingState)
     assert nx.is_isomorphic(env._state.graphs["connection"]["graph"], small_graph)
     np.testing.assert_array_equal(
@@ -97,7 +96,7 @@ def test_init_custom_connection_grid_size(
     ],
 )
 def test_init_custom_rewarder(rewarder: Rewarder) -> None:
-    env = InitialMapping(1, connection_grid_size=(2, 2), rewarder=rewarder)
+    env = InitialMapping(connection_grid_size=(2, 2), rewarder=rewarder)
     assert env.rewarder == rewarder
     # Check that we made a copy for safety
     assert env.rewarder is not rewarder
