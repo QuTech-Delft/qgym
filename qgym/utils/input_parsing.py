@@ -2,15 +2,18 @@
 
 With parsing we mean that the user input is validated and transformed to a predictable
 format. In this way, user can give different input formats, but internally we are 
-assured that the data has the same format."""
+assured that the data has the same format.
+"""
 
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Iterable, Type
+from typing import TYPE_CHECKING, Any, SupportsInt
 
 import networkx as nx
+from numpy.random import Generator, default_rng
 from numpy.typing import ArrayLike
 
 from qgym.templates import Rewarder, Visualiser
@@ -27,7 +30,7 @@ if TYPE_CHECKING:
     )
 
 
-def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Rewarder:
+def parse_rewarder(rewarder: Rewarder | None, default: type[Rewarder]) -> Rewarder:
     """Parse a `rewarder` given by the user.
 
     Args:
@@ -46,7 +49,7 @@ def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Reward
 
 
 def parse_visualiser(
-    render_mode: str | None, vis_type: Type[Visualiser], args: list[Any]
+    render_mode: str | None, vis_type: type[Visualiser], args: list[Any]
 ) -> None | Visualiser:
     """Parse a `Visualiser` by the render mode.
 
@@ -126,3 +129,29 @@ def has_fidelity(graph: nx.Graph) -> bool:
         if weight is not None and weight not in (0, 1):
             return True
     return False
+
+
+def parse_seed(seed: Generator | SupportsInt | None) -> Generator:
+    """Parse a give seed to produce a numpy.random.Generator.
+
+    Args:
+        seed: Seed to parse.
+
+    Returns:
+        A generator created from the given `seed`.
+
+    Raises:
+        TypeError: If `seed` is not a ``Generator``, ``SupportsInt`` or ``None``.
+    """
+    if seed is None:
+        return default_rng(None)
+
+    if isinstance(seed, SupportsInt):
+        return default_rng(int(seed))
+
+    if isinstance(seed, Generator):
+        return seed
+
+    raise TypeError(
+        f"seed must be a Generator, SupportsInt or None, but was of type {type(seed)}"
+    )

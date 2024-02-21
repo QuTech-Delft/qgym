@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import networkx as nx
 import pytest
+from numpy.random import Generator, default_rng
 
 from qgym.envs.initial_mapping import BasicRewarder, EpisodeRewarder
 from qgym.utils.input_parsing import (
     has_fidelity,
     parse_connection_graph,
     parse_rewarder,
+    parse_seed,
 )
 
 
@@ -82,3 +84,37 @@ class TestHasFidelity:
         graph = nx.Graph()
         graph.add_edges_from([(0, 1), (1, 2)])
         assert not has_fidelity(graph)
+
+
+class TestParseSeed:
+
+    def test_none(self) -> None:
+        rng = parse_seed(None)
+        assert isinstance(rng, Generator)
+
+    def test_supports_int(self) -> None:
+        rng = parse_seed(1.0)
+        assert isinstance(rng, Generator)
+
+    def test_generator(self) -> None:
+        rng = default_rng()
+        assert rng is parse_seed(rng)
+
+    def test_expected_int_behaviour(self) -> None:
+        rng1 = parse_seed(1)
+        rng2 = parse_seed(1)
+        rng3 = parse_seed(2)
+
+        for _ in range(100):
+            r_float1 = rng1.random()
+            r_float2 = rng2.random()
+            r_float3 = rng3.random()
+
+            assert r_float1 == r_float2
+            assert r_float2 != r_float3
+
+    def test_type_error(self) -> None:
+        msg = "seed must be a Generator, SupportsInt or None, but was of type "
+        msg += "<class 'str'>"
+        with pytest.raises(TypeError, match=msg):
+            parse_seed("test")
