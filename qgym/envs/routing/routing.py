@@ -44,8 +44,7 @@ State Space:
     * `edges`: List of edges of the connection graph used for decoding actions.
     * `mapping`: Array of which the index represents a physical qubit, and the value a
       virtual qubit. This is updated after each swap.
-    * `max_interaction_gates`: Maximum amount of gates allowed in the interaction 
-      circuit, when a new interaction circuit is (randomly) generated.
+    * `interaction_generator`: Generator for interaction circuits.
     * `interaction_circuit`: An array of 2-tuples of integers, where every tuple
       represents a, not specified, gate acting on the two qubits labeled by the
       integers in the tuples.
