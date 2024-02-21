@@ -73,10 +73,10 @@ class BasicGraphGenerator(GraphGenerator):
         rng = self.rng
         finite = self.finite
         return (
-            f"BasicGraphGenerator[{n_nodes=}, "
-            f"{interaction_graph_edge_probability=}, "
-            f"{rng=}, "
-            f"{finite=}]"
+            f"BasicGraphGenerator[n_nodes={n_nodes}, "
+            f"interaction_graph_edge_probability={interaction_graph_edge_probability}, "
+            f"rng={rng}, "
+            f"finite={finite}]"
         )
 
     def __next__(self) -> nx.Graph:
