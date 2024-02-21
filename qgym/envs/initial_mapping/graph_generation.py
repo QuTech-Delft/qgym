@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from collections.abc import Iterator
 from typing import SupportsFloat, SupportsInt
 
@@ -13,7 +13,7 @@ from qgym.utils.input_parsing import parse_seed
 from qgym.utils.input_validation import check_int, check_real
 
 
-class GraphGenerator(ABC, Iterator[nx.Graph]):  # pylint: disable=too-few-public-methods
+class GraphGenerator(Iterator[nx.Graph]):  # pylint: disable=too-few-public-methods
     """Abstract Base Class for graph generation.
 
     All graph generators should inherit from :class:`GraphGenerator` to be compatible
