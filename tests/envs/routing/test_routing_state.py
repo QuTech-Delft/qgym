@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 import networkx as nx
 import numpy as np
 import pytest
-from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
+from qgym.envs.routing.interaction_generation import (
+    InteractionGenerator,
+    NullInteractionGenerator,
+)
 from qgym.envs.routing.routing_state import RoutingState
 
 
@@ -24,7 +27,7 @@ def quad_graph_fixture() -> nx.Graph:
 @pytest.fixture(name="simple_state")
 def simple_state_fixture(quad_graph: nx.Graph) -> RoutingState:
     return RoutingState(
-        max_interaction_gates=50,
+        interaction_generator=NullInteractionGenerator(),
         max_observation_reach=5,
         connection_graph=quad_graph,
         observe_legal_surpasses=False,
@@ -32,22 +35,16 @@ def simple_state_fixture(quad_graph: nx.Graph) -> RoutingState:
     )
 
 
-@pytest.mark.parametrize(
-    "max_interaction_gates, max_observation_reach",
-    [(1, 1), (5, 5), (10, 5), (50, 5), (5, 10)],
-    scope="class",
-)
-def test_init(
-    max_interaction_gates: int, max_observation_reach: int, quad_graph: nx.Graph
-) -> None:
+@pytest.mark.parametrize("max_observation_reach", [1, 5, 10, 50])
+def test_init(max_observation_reach: int, quad_graph: nx.Graph) -> None:
     state = RoutingState(
-        max_interaction_gates=max_interaction_gates,
+        interaction_generator=NullInteractionGenerator(),
         max_observation_reach=max_observation_reach,
         connection_graph=quad_graph,
         observe_legal_surpasses=False,
         observe_connection_graph=True,
     )
-    assert state.max_interaction_gates == max_interaction_gates
+    assert isinstance(state.interaction_generator, InteractionGenerator)
     assert isinstance(state.swap_gates_inserted, Iterable)
     assert state.position == 0
     assert state.steps_done == 0
@@ -60,7 +57,7 @@ def test_init(
 class TestCreateObservationSpace:
     def test_min_case(self, quad_graph: nx.Graph) -> None:
         state = RoutingState(
-            max_interaction_gates=50,
+            interaction_generator=NullInteractionGenerator(),
             max_observation_reach=5,
             connection_graph=quad_graph,
             observe_legal_surpasses=False,
@@ -75,7 +72,7 @@ class TestCreateObservationSpace:
 
     def test_observe_legal_surpasses(self, quad_graph: nx.Graph) -> None:
         state = RoutingState(
-            max_interaction_gates=50,
+            interaction_generator=NullInteractionGenerator(),
             max_observation_reach=5,
             connection_graph=quad_graph,
             observe_legal_surpasses=True,
@@ -93,7 +90,7 @@ class TestCreateObservationSpace:
 
     def test_connection_graph(self, quad_graph: nx.Graph) -> None:
         state = RoutingState(
-            max_interaction_gates=50,
+            interaction_generator=NullInteractionGenerator(),
             max_observation_reach=5,
             connection_graph=quad_graph,
             observe_legal_surpasses=False,
@@ -111,8 +108,9 @@ class TestCreateObservationSpace:
 
 
 def test_interaction_circuit_properties(simple_state: RoutingState) -> None:
-    assert len(simple_state.interaction_circuit) <= simple_state.max_interaction_gates
     assert isinstance(simple_state.interaction_circuit, np.ndarray)
+    assert simple_state.interaction_circuit.ndim == 2
+    assert simple_state.interaction_circuit.shape[1] == 2
 
 
 class TestCanBeExecuted:

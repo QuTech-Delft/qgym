@@ -97,7 +97,7 @@ class NullGraphGenerator(GraphGenerator):
         self.finite = False
 
     def __next__(self) -> nx.Graph:
-        """Create a new randomly generated graph."""
+        """Create a new null graph."""
         return nx.null_graph()
 
     def __repr__(self) -> str:
