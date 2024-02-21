@@ -68,9 +68,9 @@ Example 1:
     following code:
 
     >>> from qgym.envs.initial_mapping import InitialMapping
-    >>> env = InitialMapping(0.5, connection_grid_size=(3,3))
+    >>> env = InitialMapping(connection_grid_size=(3,3))
 
-    By default,  :class:`~qgym.envs.InitialMapping` uses the
+    By default,  :class:`InitialMapping` uses the
     :class:`~qgym.envs.initial_mapping.BasicRewarder`. As an example, we would like to
     change the rewarder to the :class:`~qgym.envs.initial_mapping.EpisodeRewarder`. This
     can be done in the following way:
@@ -108,7 +108,7 @@ Example 2:
         connection_graph.add_edge(0, 3)
 
         # Initialize the environment with the custom connection graph
-        env = InitialMapping(0.5, connection_graph=connection_graph)
+        env = InitialMapping(connection_graph=connection_graph)
 
 
 """
@@ -176,11 +176,12 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         ``"rgb_array"``.
 
         Args:
-            interaction_graph_edge_probability: Probability that an edge between any
-                pair of qubits in the random interaction graph exists. The interaction
-                graph will have the same amount of nodes as the connection graph. Nodes
-                without any interactions can be seen as 'null' nodes. Must be a value in
-                the range [0,1].
+            graph_generator: Graph generator for generating interaction graphs. This
+                generator is used to generate a new interaction graph when
+                :func:`InitialMapping.reset` is called without an interaction
+                graph. If ``None`` is provided a new
+                :class:`~qgym.envs.initial_mapping.graph_generation.BasicGraphGenerator`
+                with the same number of nodes as the interaction graph will be made.
             connection_graph: ``networkx`` graph representation of the QPU topology.
                 Each node represents a physical qubit and each node represents a
                 connection in the QPU topology.

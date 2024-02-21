@@ -6,9 +6,11 @@ the :class:`~qgym.envs.InitialMapping` environment.
 
 Usage:
     >>> from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
+    >>> from qgym.envs.initial_mapping.graph_generation import BasicGraphGenerator
     >>> import networkx as nx
     >>> connection_graph = nx.grid_graph((3,3))
-    >>> state = InitialMappingState(connection_graph, 0.5)
+    >>> graph_generator = BasicGraphGenerator(9, 0.5)
+    >>> state = InitialMappingState(connection_graph, graph_generator)
 
 """
 
@@ -47,11 +49,10 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             connection_graph: `networkx Graph <https://networkx.org/documentation/stable/reference/classes/graph.html>`_
                 representation of the QPU topology. Each node represents a physical
                 qubit and each edge represents a connection in the QPU topology.
-            interaction_graph_edge_probability: Probability that an edge between any
-                pair of qubits in the random interaction graph exists. The interaction
-                graph will have the same amount of nodes as the connection graph. Nodes
-                without any interactions can be seen as 'null' nodes. Must be a value in
-                the range $[0,1]$.
+            graph_generator: Graph generator for generating interaction graphs. This
+                generator is used to generate a new interaction graph when
+                :func:`InitialMappingState.reset` is called without an interaction
+                graph.
         """
         # pylint: enable=line-too-long
 
