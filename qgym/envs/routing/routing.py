@@ -96,13 +96,10 @@ import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
-from qgym.envs.routing.interaction_generation import (
-    BasicInteractionGenerator,
-    InteractionGenerator,
-)
 from qgym.envs.routing.routing_rewarders import BasicRewarder
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.envs.routing.routing_visualiser import RoutingVisualiser
+from qgym.generators.interaction import BasicInteractionGenerator, InteractionGenerator
 from qgym.templates import Environment, Rewarder
 from qgym.utils.input_parsing import (
     parse_connection_graph,

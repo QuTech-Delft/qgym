@@ -9,11 +9,8 @@ import numpy as np
 import pytest
 
 import qgym.spaces
-from qgym.envs.routing.interaction_generation import (
-    InteractionGenerator,
-    NullInteractionGenerator,
-)
 from qgym.envs.routing.routing_state import RoutingState
+from qgym.generators.interaction import InteractionGenerator, NullInteractionGenerator
 
 
 # Arrange

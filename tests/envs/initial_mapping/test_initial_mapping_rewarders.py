@@ -8,13 +8,13 @@ import numpy as np
 import pytest
 from numpy.typing import NDArray
 
-from qgym.envs.initial_mapping.graph_generation import NullGraphGenerator
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
     SingleStepRewarder,
 )
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
+from qgym.generators.graph import NullGraphGenerator
 from qgym.templates.rewarder import Rewarder
 
 

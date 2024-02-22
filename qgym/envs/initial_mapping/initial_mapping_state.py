@@ -24,7 +24,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from qgym import spaces
-from qgym.envs.initial_mapping.graph_generation import GraphGenerator
+from qgym.generators.graph import GraphGenerator
 from qgym.templates.state import State
 
 

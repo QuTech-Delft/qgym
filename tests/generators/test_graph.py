@@ -5,7 +5,7 @@ from collections.abc import Iterator
 import networkx as nx
 import pytest
 
-from qgym.envs.initial_mapping.graph_generation import (
+from qgym.generators.graph import (
     BasicGraphGenerator,
     GraphGenerator,
     NullGraphGenerator,
