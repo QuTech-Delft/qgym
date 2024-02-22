@@ -15,7 +15,7 @@ from qgym.envs.routing import (
     RoutingState,
     SwapQualityRewarder,
 )
-from qgym.envs.routing.interaction_generation import NullInteractionGenerator
+from qgym.generators.interaction import NullInteractionGenerator
 from qgym.templates.rewarder import Rewarder
 
 

@@ -5,10 +5,11 @@ This :class:`RoutingState` represents the :class:`~qgym.templates.State` of the
 
 Usage:
     >>> from qgym.envs.routing.routingstate import RoutingState
+    >>> from qgym.generators import BasicInteractionGenerator
     >>> import networkx as nx
     >>> connection_graph = nx.grid_graph((3,3))
     >>> state = RoutingState(
-    >>>             max_interaction_gates = 100,
+    >>>             interaction_generator = BasicInteractionGenerator(9, 100),
     >>>             max_observation_reach = 20,
     >>>             connection_graph = connection_graph,
     >>>             observe_legal_surpasses = True,
@@ -26,7 +27,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.envs.routing.interaction_generation import InteractionGenerator
+from qgym.generators.interaction import InteractionGenerator
 from qgym.templates.state import State
 from qgym.utils.input_parsing import has_fidelity
 

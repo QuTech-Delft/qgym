@@ -123,15 +123,12 @@ import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
 import qgym.spaces
-from qgym.envs.initial_mapping.graph_generation import (
-    BasicGraphGenerator,
-    GraphGenerator,
-)
 from qgym.envs.initial_mapping.initial_mapping_rewarders import BasicRewarder
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.envs.initial_mapping.initial_mapping_visualiser import (
     InitialMappingVisualiser,
 )
+from qgym.generators.graph import BasicGraphGenerator, GraphGenerator
 from qgym.templates import Environment, Rewarder
 from qgym.utils.input_parsing import (
     parse_connection_graph,

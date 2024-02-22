@@ -5,7 +5,7 @@ from collections.abc import Iterator
 import numpy as np
 import pytest
 
-from qgym.envs.routing.interaction_generation import (
+from qgym.generators.interaction import (
     BasicInteractionGenerator,
     InteractionGenerator,
     NullInteractionGenerator,
