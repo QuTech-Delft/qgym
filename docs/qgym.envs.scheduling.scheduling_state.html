@@ -38,7 +38,7 @@
             qgym
           </a>
               <div class="version">
-                0.2.0
+                0.2.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -454,9 +454,9 @@ properties and limitations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seed</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – Seed for the random number generator, should only be provided
+<li><p><strong>seed</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Seed for the random number generator, should only be provided
 (optionally) on the first reset call, i.e., before any learning is done.</p></li>
-<li><p><strong>circuit</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>]]</span>) – Optional list of a circuit for the next episode, each entry in the
+<li><p><strong>circuit</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate" title="qgym.custom_types.Gate"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gate</span></code></a>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Optional list of a circuit for the next episode, each entry in the
 list should be a <code class="docutils literal notranslate"><span class="pre">Gate</span></code>. When a circuit is give, no random circuit
 will be generated.</p></li>
 <li><p><strong>_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></span>) – Additional options to configure the reset.</p></li>

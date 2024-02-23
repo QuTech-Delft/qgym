@@ -33,7 +33,7 @@
             qgym
           </a>
               <div class="version">
-                0.2.0
+                0.2.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -306,7 +306,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;This module contains function which parse user input.</span>
 
 <span class="sd">With parsing we mean that the user input is validated and transformed to a predictable</span>
-<span class="sd">format. In this way, user can give different input formats, but internally we are </span>
+<span class="sd">format. In this way, user can give different input formats, but internally we are</span>
 <span class="sd">assured that the data has the same format.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
@@ -418,7 +418,11 @@
 
     <span class="k">if</span> <span class="n">grid_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Generate connection grid graph</span>
-        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">grid_graph</span><span class="p">(</span><span class="n">grid_size</span><span class="p">)</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">grid_graph</span><span class="p">(</span><span class="n">grid_size</span><span class="p">)</span>
+
+        <span class="c1"># Relabel the nodes to be integers</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">convert_node_labels_to_integers</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">graph</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid arguments for a connection graph were given&quot;</span><span class="p">)</span></div>
 

@@ -36,7 +36,7 @@
             qgym
           </a>
               <div class="version">
-                0.2.0
+                0.2.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -360,8 +360,8 @@ cast to bool.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="qgym.utils.input_validation.check_graph_is_valid_topology">
 <span class="sig-prename descclassname"><span class="pre">qgym.utils.input_validation.</span></span><span class="sig-name descname"><span class="pre">check_graph_is_valid_topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/utils/input_validation.html#check_graph_is_valid_topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.utils.input_validation.check_graph_is_valid_topology" title="Link to this definition"></a></dt>
-<dd><p>Check if <cite>graph</cite> with name ‘name’ is an instance of <code class="docutils literal notranslate"><span class="pre">networkx.Graph</span></code> and check
-if the graph is valid topology graph.</p>
+<dd><p>Check if <cite>graph</cite> with name ‘name’ is an instance of <code class="docutils literal notranslate"><span class="pre">networkx.Graph</span></code>, check
+if the graph is valid topology graph and check if the nodes are integers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -414,8 +414,8 @@ messages.</p></li>
 <li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></span>) – Variable to check.</p></li>
 <li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the variable. This name will be displayed in possible error
 messages.</p></li>
-<li><p><strong>l_bound</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Lower bound of <cite>x</cite>.</p></li>
-<li><p><strong>u_bound</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Upper bound of <cite>x</cite>.</p></li>
+<li><p><strong>l_bound</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Lower bound of <cite>x</cite>.</p></li>
+<li><p><strong>u_bound</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Upper bound of <cite>x</cite>.</p></li>
 <li><p><strong>l_inclusive</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the lower bound is inclusive, otherwise the lower
 bound is exclusive.</p></li>
 <li><p><strong>u_inclusive</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the upper bound is inclusive, otherwise the upper
@@ -448,8 +448,8 @@ bound is exclusive.</p></li>
 <li><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></span>) – Variable to check.</p></li>
 <li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the variable. This name will be displayed in possible error
 messages.</p></li>
-<li><p><strong>l_bound</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Lower bound of <cite>x</cite>.</p></li>
-<li><p><strong>u_bound</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</span>) – Upper bound of <cite>x</cite>.</p></li>
+<li><p><strong>l_bound</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Lower bound of <cite>x</cite>.</p></li>
+<li><p><strong>u_bound</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Upper bound of <cite>x</cite>.</p></li>
 <li><p><strong>l_inclusive</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the lower bound is inclusive, otherwise the lower bound
 is exclusive.</p></li>
 <li><p><strong>u_inclusive</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the upper bound is inclusive, otherwise the upper bound

@@ -33,7 +33,7 @@
             qgym
           </a>
               <div class="version">
-                0.2.0
+                0.2.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -537,7 +537,7 @@
 <span class="sd">            is truncated if the number of steps in the current episode is more than 10</span>
 <span class="sd">            times the number of nodes in the connection graph.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_done</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps_done</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="InitialMappingState.obtain_info">
