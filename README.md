@@ -27,14 +27,18 @@ Currently `qgym` has support for Python 3.7, 3.8, 3.9, 3.10 and 3.11.
 
 ## Publication
 The paper on `qgym` has been presented in the [1st International Workshop on Quantum Machine Learning: From Foundations to Applications (QML@QCE'23)](https://qml.lfdr.de/2023/).
+The publication can be found on [computer.org](https://www.computer.org/csdl/proceedings-article/qce/2023/432302a026/1SuQRWR5uCI)
 You can find the preprint of the paper on [arxiv](https://arxiv.org/pdf/2308.02536.pdf).
 
 ```terminal
-@article{van2023qgym,
+@inproceedings{van2023qgym,
   title={qgym: A Gym for training and benchmarking RL-based quantum compilation},
-  author={van der Linde, Stan and de Kok, Willem and Bontekoe, Tariq and Feld, Sebastian},
-  journal={arXiv preprint arXiv:2308.02536},
-  year={2023}
+  author={Van Der Linde, Stan and De Kok, Willem and Bontekoe, Tariq and Feld, Sebastian},
+  booktitle={2023 IEEE International Conference on Quantum Computing and Engineering (QCE)},
+  volume={2},
+  pages={26--30},
+  year={2023},
+  organization={IEEE}
 }
 ```
 ## Team
