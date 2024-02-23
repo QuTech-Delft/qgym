@@ -7,9 +7,8 @@ Function named as ``*_error`` or ``*_loss`` return a scalar value to minimize:
 the lower the better.
 """
 
-
 import networkx as nx
-from qiskit import QuantumCircuit ##TODO: find other option than qiskit dependency.
+from qiskit import QuantumCircuit  ##TODO: find other option than qiskit dependency.
 import numpy as np
 from numpy.typing import NDArray
 
