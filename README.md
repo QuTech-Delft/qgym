@@ -46,6 +46,6 @@ Building qgym is a joint effort.
 - [Tariq Bontekoe](https://nl.linkedin.com/in/tariq-bontekoe-53214817a)
 - [Sebastian Feld](https://nl.linkedin.com/in/sebastian-feld?)
 
-### Power users
-- Joris Henstra
-- Rares Oancea 
+### Contributors and Power Users
+- [Joris Henstra](https://www.linkedin.com/in/jorishenstra/)
+- [Rares Oancea](https://www.linkedin.com/in/rares-adrian-oancea-8a67b0204/)
