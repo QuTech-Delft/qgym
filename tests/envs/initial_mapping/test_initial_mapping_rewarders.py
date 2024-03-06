@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 from numpy.typing import NDArray
 
+from qgym.envs.initial_mapping.graph_generation import NullGraphGenerator
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
     EpisodeRewarder,
@@ -23,7 +24,7 @@ def _episode_generator(
 ) -> Iterator[tuple[InitialMappingState, NDArray[np.int_], InitialMappingState]]:
     connection_graph = nx.from_numpy_array(connection_graph_matrix)
     interaction_graph = nx.from_numpy_array(interaction_graph_matrix)
-    new_state = InitialMappingState(connection_graph, 0)
+    new_state = InitialMappingState(connection_graph, NullGraphGenerator())
     new_state.reset(interaction_graph=interaction_graph)
 
     for i in range(connection_graph_matrix.shape[0]):
