@@ -100,7 +100,9 @@ class GateEncoder:
         if isinstance(gates, Mapping):
             return self._encode_mapping(gates)
 
-        if isinstance(gates, Sequence) and isinstance(gates[0], Gate):
+        if isinstance(gates, Sequence) and (
+            len(gates) == 0 or isinstance(gates[0], Gate)
+        ):
             # We assume that if the first element of gates is a Gate, then the whole
             # Sequence contains Gate objects.
             encoded_gates_list: list[Gate] = []
