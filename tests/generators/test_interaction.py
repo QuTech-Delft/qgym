@@ -12,7 +12,7 @@ from qgym.generators.interaction import (
 )
 
 
-def test_graph_generator() -> None:
+def test_abc() -> None:
     with pytest.raises(TypeError):
         InteractionGenerator()
 

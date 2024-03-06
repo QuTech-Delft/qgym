@@ -12,7 +12,7 @@ from qgym.generators.graph import (
 )
 
 
-def test_graph_generator() -> None:
+def test_abc() -> None:
     with pytest.raises(TypeError):
         GraphGenerator()
 
