@@ -3,21 +3,17 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from collections.abc import Iterator
-from typing import SupportsInt
+from typing import Iterator, List, SupportsInt
 
 import numpy as np
 from numpy.random import Generator
-from numpy.typing import NDArray
 
 from qgym.custom_types import Gate
 from qgym.utils.input_parsing import parse_seed
 from qgym.utils.input_validation import check_int
 
 
-class CircuitGenerator(
-    Iterator[NDArray[np.int_]]
-):  # pylint: disable=too-few-public-methods
+class CircuitGenerator(Iterator[List[Gate]]):  # pylint: disable=too-few-public-methods
     """Abstract Base Class for circuit generation used for scheduling.
 
     All interaction circuit generators should inherit from :class:`CircuitGenerator`
