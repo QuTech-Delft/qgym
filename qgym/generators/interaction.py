@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from collections.abc import Iterator
-from typing import SupportsInt
+from typing import Iterator, SupportsInt
 
 import numpy as np
 from numpy.random import Generator
