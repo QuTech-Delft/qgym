@@ -35,7 +35,7 @@ class TestEnvironment:
         # todo: maybe switch this to the gymnasium env checker
         check_env(small_env, warn=True)
 
-    def test_episode(self, small_env: InitialMapping):
+    def test_episode(self, small_env: InitialMapping) -> None:
         obs, reward, is_done, truncated, _ = small_env.step(np.array([0, 1]))
         np.testing.assert_array_equal(obs["mapping"], [1, 2])
         assert reward == 0
@@ -47,7 +47,7 @@ class TestEnvironment:
         assert is_done
         assert not truncated
 
-    def test_truncation(self, small_env: InitialMapping):
+    def test_truncation(self, small_env: InitialMapping) -> None:
         truncated = False
         for _ in range(10000):
             _, _, is_done, truncated, _ = small_env.step(np.array([0, 0]))

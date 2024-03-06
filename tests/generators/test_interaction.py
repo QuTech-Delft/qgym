@@ -14,13 +14,13 @@ from qgym.generators.interaction import (
 
 def test_abc() -> None:
     with pytest.raises(TypeError):
-        InteractionGenerator()
+        InteractionGenerator()  # type: ignore[abstract]
 
 
 class TestNullInteractionGenerator:
 
     @pytest.fixture(name="generator")
-    def null_graph_generator_fixture(self) -> None:
+    def null_graph_generator_fixture(self) -> NullInteractionGenerator:
         return NullInteractionGenerator()
 
     def test_infinite(self, generator: NullInteractionGenerator) -> None:
@@ -49,7 +49,7 @@ class TestNullInteractionGenerator:
 class TestBasicGraphGenerator:
 
     @pytest.fixture(name="simple_generator")
-    def null_graph_generator_fixture(self) -> None:
+    def null_graph_generator_fixture(self) -> BasicInteractionGenerator:
         return BasicInteractionGenerator(5)
 
     def test_infinite(self, simple_generator: BasicInteractionGenerator) -> None:

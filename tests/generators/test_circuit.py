@@ -17,13 +17,13 @@ from qgym.generators.circuit import (
 
 def test_abc() -> None:
     with pytest.raises(TypeError):
-        CircuitGenerator()
+        CircuitGenerator()  # type: ignore[abstract]
 
 
 class TestNullCircuitGenerator:
 
     @pytest.fixture(name="generator")
-    def null_graph_generator_fixture(self) -> None:
+    def null_graph_generator_fixture(self) -> NullCircuitGenerator:
         return NullCircuitGenerator()
 
     def test_infinite(self, generator: NullCircuitGenerator) -> None:
@@ -54,7 +54,7 @@ class TestBasicCircuitGenerator:
         self.max_length = 50
 
     @pytest.fixture(name="simple_generator")
-    def null_graph_generator_fixture(self) -> None:
+    def null_graph_generator_fixture(self) -> BasicCircuitGenerator:
         return BasicCircuitGenerator(self.n_qubits, self.max_length, seed=42)
 
     def test_infinite(self, simple_generator: BasicCircuitGenerator) -> None:
@@ -117,7 +117,7 @@ class TestWorkshopCircuitGenerator:
         self.max_length = 50
 
     @pytest.fixture(name="simple_generator")
-    def null_graph_generator_fixture(self) -> None:
+    def null_graph_generator_fixture(self) -> WorkshopCircuitGenerator:
         return WorkshopCircuitGenerator(self.n_qubits, self.max_length, seed=42)
 
     def test_infinite(self, simple_generator: WorkshopCircuitGenerator) -> None:

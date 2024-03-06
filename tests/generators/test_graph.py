@@ -14,13 +14,13 @@ from qgym.generators.graph import (
 
 def test_abc() -> None:
     with pytest.raises(TypeError):
-        GraphGenerator()
+        GraphGenerator()  # type: ignore[abstract]
 
 
 class TestNullGraphGenerator:
 
     @pytest.fixture(name="generator")
-    def null_graph_generator_fixture(self) -> None:
+    def null_graph_generator_fixture(self) -> NullGraphGenerator:
         return NullGraphGenerator()
 
     def test_infinite(self, generator: NullGraphGenerator) -> None:
@@ -47,7 +47,7 @@ class TestNullGraphGenerator:
 class TestBasicGraphGenerator:
 
     @pytest.fixture(name="simple_generator")
-    def null_graph_generator_fixture(self) -> None:
+    def null_graph_generator_fixture(self) -> BasicGraphGenerator:
         return BasicGraphGenerator(5)
 
     def test_infinite(self, simple_generator: BasicGraphGenerator) -> None:

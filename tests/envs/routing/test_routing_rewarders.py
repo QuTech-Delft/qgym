@@ -21,7 +21,7 @@ from qgym.templates.rewarder import Rewarder
 
 def _episode_generator(
     interaction_circuit: ArrayLike,
-) -> Iterator[tuple[RoutingState, NDArray[np.int_], RoutingState]]:
+) -> Iterator[tuple[RoutingState, int, RoutingState]]:
     interaction_circuit = np.asarray(interaction_circuit)
 
     connection_graph = nx.Graph()

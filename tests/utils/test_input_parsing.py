@@ -117,4 +117,4 @@ class TestParseSeed:
         msg = "seed must be a Generator, SupportsInt or None, but was of type "
         msg += "<class 'str'>"
         with pytest.raises(TypeError, match=msg):
-            parse_seed("test")
+            parse_seed("test")  # type: ignore[arg-type]
