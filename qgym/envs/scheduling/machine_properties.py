@@ -26,8 +26,9 @@ Usage:
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable, Mapping
 from copy import deepcopy
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 from qgym.utils import GateEncoder
 from qgym.utils.input_validation import check_instance, check_int, check_string

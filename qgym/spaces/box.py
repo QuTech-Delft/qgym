@@ -12,8 +12,9 @@ Usage:
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from numbers import Integral
-from typing import Any, Sequence, SupportsFloat
+from typing import Any, SupportsFloat
 
 import gymnasium.spaces
 import numpy as np

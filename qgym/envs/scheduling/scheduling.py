@@ -158,8 +158,9 @@ Example 2:
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any, Dict, Mapping, Union, cast
+from typing import Any, Dict, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray

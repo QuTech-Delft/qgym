@@ -115,8 +115,9 @@ Example 2:
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
+from typing import TYPE_CHECKING, Any, Dict
 
 import networkx as nx
 import numpy as np
