@@ -117,7 +117,11 @@ Example 1:
         circuit_generator = WorkshopCircuitGenerator(2, 10)
 
         # Initialize the environment
-        env = Scheduling(hardware_spec, max_gates=5, circuit_generator=circuit_generator)
+        env = Scheduling(
+            hardware_spec,
+            max_gates=5,
+            circuit_generator=circuit_generator
+        )
 
 
 Example 2:
