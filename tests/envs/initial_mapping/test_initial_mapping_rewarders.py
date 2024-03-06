@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from copy import deepcopy
-from typing import Iterator, Type, cast
+from typing import Type, cast
 
 import networkx as nx
 import numpy as np
@@ -21,7 +22,7 @@ from qgym.templates.rewarder import Rewarder
 def _episode_generator(
     connection_graph_matrix: NDArray[np.int_],
     interaction_graph_matrix: NDArray[np.int_],
-) -> Iterator[tuple[InitialMappingState, NDArray[np.int_], InitialMappingState]]:
+) -> Iterator[tuple[InitialMappingState, int, InitialMappingState]]:
     connection_graph = nx.from_numpy_array(connection_graph_matrix)
     interaction_graph = nx.from_numpy_array(interaction_graph_matrix)
     new_state = InitialMappingState(connection_graph, NullGraphGenerator())

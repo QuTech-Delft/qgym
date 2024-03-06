@@ -1,10 +1,9 @@
-"""This module contains tests for the graph generation module."""
+"""This module contains tests for the circuit generation module."""
 
 from __future__ import annotations
 
 from collections.abc import Iterator
 
-import networkx as nx
 import pytest
 
 from qgym.custom_types import Gate

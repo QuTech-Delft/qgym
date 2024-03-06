@@ -138,7 +138,7 @@ class TestUpdateState:
         simple_state.update_state(action)
         assert simple_state.position == 0
         assert simple_state.steps_done == 1
-        assert np.array_equal(simple_state.mapping, expected_mapping)
+        np.testing.assert_array_equal(simple_state.mapping, expected_mapping)
 
     @pytest.mark.parametrize(
         argnames="interaction_circuit, expected_position",
@@ -155,7 +155,7 @@ class TestUpdateState:
         simple_state.update_state(4)
         assert simple_state.position == expected_position
         assert simple_state.steps_done == 1
-        assert np.array_equal(simple_state.mapping, [0, 1, 2, 3])
+        np.testing.assert_array_equal(simple_state.mapping, [0, 1, 2, 3])
 
 
 def test_reset(simple_state: RoutingState) -> None:
