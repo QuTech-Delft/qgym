@@ -107,5 +107,61 @@ class TestBasicCircuitGenerator:
             curcuit2 = next(generator2)
             curcuit3 = next(generator3)
 
-            assert nx.is_isomorphic(curcuit1, curcuit2)
-            assert not nx.is_isomorphic(curcuit1, curcuit3)
+            assert curcuit1 == curcuit2
+            assert curcuit1 != curcuit3
+
+
+class TestWorkshopCircuitGenerator:
+
+    def __init__(self) -> None:
+        self.n_qubits = 5
+        self.max_length = 50
+
+    @pytest.fixture(name="simple_generator")
+    def null_graph_generator_fixture(self) -> None:
+        return WorkshopCircuitGenerator(self.n_qubits, self.max_length, seed=42)
+
+    def test_infinite(self, simple_generator: WorkshopCircuitGenerator) -> None:
+        assert not simple_generator.finite
+
+    def test_inheritance(self, generator: WorkshopCircuitGenerator) -> None:
+        assert isinstance(generator, CircuitGenerator)
+        assert isinstance(generator, Iterator)
+
+    def test_next(self, simple_generator: WorkshopCircuitGenerator) -> None:
+        circuit = next(simple_generator)
+        assert isinstance(circuit, list)
+        assert self.n_qubits <= len(circuit) <= self.max_length
+        self._check_circuit(circuit)
+
+    def test_iter(self, simple_generator: WorkshopCircuitGenerator) -> None:
+        for i, circuit in enumerate(simple_generator):
+            assert isinstance(circuit, list)
+            assert self.n_qubits <= len(circuit) <= self.max_length
+            self._check_circuit(circuit)
+
+            if i > 100:
+                break
+
+    def _check_circuit(self, circuit: list[Gate]) -> None:
+        for i in range(self.n_qubits, len(circuit)):
+            gate = circuit[i]
+            assert isinstance(gate, Gate)
+            assert gate.name in {"x", "y", "cnot", "measure"}
+            if gate.name == "cnot":
+                assert gate.q1 != gate.q2
+            else:
+                assert gate.q1 == gate.q2
+
+    def test_seed(self) -> None:
+        generator1 = BasicCircuitGenerator(10, seed=1)
+        generator2 = BasicCircuitGenerator(10, seed=1)
+        generator3 = BasicCircuitGenerator(10, seed=3)
+
+        for _ in range(10):
+            curcuit1 = next(generator1)
+            curcuit2 = next(generator2)
+            curcuit3 = next(generator3)
+
+            assert curcuit1 == curcuit2
+            assert curcuit1 != curcuit3
