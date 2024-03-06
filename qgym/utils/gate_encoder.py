@@ -14,7 +14,8 @@ Usage:
 from __future__ import annotations
 
 import warnings
-from typing import Any, Iterable, Mapping, Sequence, TypeVar, cast, overload
+from collections.abc import Iterable, Mapping, Sequence
+from typing import Any, TypeVar, cast, overload
 
 from qgym.custom_types import Gate
 

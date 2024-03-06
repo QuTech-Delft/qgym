@@ -10,7 +10,7 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any, Type
+from typing import Any
 
 import gymnasium.spaces
 import numpy as np
@@ -24,7 +24,7 @@ class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
     def __init__(
         self,
         nvec: ArrayLike,
-        dtype: str | Type[np.integer[Any]] = np.int_,
+        dtype: str | type[np.integer[Any]] = np.int_,
         *,
         rng: Generator | None = None,
     ) -> None:
