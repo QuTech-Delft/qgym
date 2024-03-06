@@ -74,7 +74,7 @@ class BasicInteractionGenerator(InteractionGenerator):
         )
 
     def __next__(self) -> NDArray[np.int_]:
-        """Create a new randomly generated graph."""
+        """Create a new randomly generated interaction circuit."""
         length = self.rng.integers(1, self.max_length + 1)
 
         circuit = np.zeros((length, 2), dtype=int)

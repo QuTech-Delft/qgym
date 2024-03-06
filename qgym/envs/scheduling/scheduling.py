@@ -55,8 +55,7 @@ State space:
     * `machine_properties`: MachineProperties object containing machine properties
       and limitations.
     * `utils`: :class:`~qgym.envs.scheduling.scheduling_dataclasses.SchedulingUtils`
-      dataclass with a random circuit generator, commutation rulebook and a gate
-      encoder.
+      dataclass with a circuit generator, commutation rulebook and a gate encoder.
     * `gates`: Dictionary with gate names as keys and
       :class:`~qgym.envs.scheduling.scheduling_dataclasses.GateInfo` dataclasses as
       values.
@@ -106,6 +105,7 @@ Example 1:
     .. code-block:: python
 
         from qgym.envs.scheduling import Scheduling, MachineProperties
+        from qgym.generators import WorkshopCircuitGenerator
 
         # Set up the hardware specifications
         hardware_spec = MachineProperties(n_qubits=2)
@@ -113,8 +113,11 @@ Example 1:
         hardware_spec.add_same_start(["measure"])
         hardware_spec.add_not_in_same_cycle([("x", "y")])
 
+        # Set up the circuit generator
+        circuit_generator = WorkshopCircuitGenerator(2, 10)
+
         # Initialize the environment
-        env = Scheduling(hardware_spec, max_gates=5, random_circuit_mode="workshop")
+        env = Scheduling(hardware_spec, max_gates=5, circuit_generator=circuit_generator)
 
 
 Example 2:
@@ -128,6 +131,7 @@ Example 2:
 
         from qgym.envs.scheduling import Scheduling, MachineProperties
         from qgym.envs.scheduling.rulebook import CommutationRulebook
+        from qgym.generators import WorkshopCircuitGenerator
 
         # Set up the hardware specifications
         hardware_spec = MachineProperties(n_qubits=2)
@@ -138,12 +142,15 @@ Example 2:
         # Setup the rulebook
         rulebook = CommutationRulebook()
 
+        # Set up the circuit generator
+        circuit_generator = WorkshopCircuitGenerator(2, 10)
+
         # Initialize the environment
         env_com = Scheduling(
                             hardware_spec,
                             max_gates=5,
                             rulebook=rulebook,
-                            random_circuit_mode="workshop",
+                            circuit_generator=circuit_generator,
                         )
 
 
@@ -164,6 +171,7 @@ from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
 from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.envs.scheduling.scheduling_visualiser import SchedulingVisualiser
+from qgym.generators.circuit import BasicCircuitGenerator, CircuitGenerator
 from qgym.templates import Environment, Rewarder
 from qgym.utils.input_parsing import parse_rewarder, parse_visualiser
 from qgym.utils.input_validation import check_instance, check_int, check_string
@@ -180,7 +188,7 @@ class Scheduling(
         *,
         max_gates: int = 200,
         dependency_depth: int = 1,
-        random_circuit_mode: str = "default",
+        circuit_generator: CircuitGenerator | None = None,
         rulebook: CommutationRulebook | None = None,
         rewarder: Rewarder | None = None,
         render_mode: str | None = None,
@@ -196,8 +204,7 @@ class Scheduling(
             dependency_depth: Number of dependencies given in the observation.
                 Determines the shape of the `dependencies` observation, which has the
                 shape (dependency_depth, max_gates). Defaults to 1.
-            random_circuit_mode: Mode for the random circuit generator. The mode can be
-                'default' or 'workshop'. Defaults to 'default'.
+            circuit_generator: Generator class for generating circuits for training.
             rulebook: :class:`~qgym.envs.scheduling.CommutationRulebook` describing the
                 commutation rules. If ``None`` (default) is given, a default
                 :class:`~qgym.envs.scheduling.CommutationRulebook` will be used. (See
@@ -216,8 +223,20 @@ class Scheduling(
 
         machine_properties = self._parse_machine_properties(machine_properties)
         max_gates = check_int(max_gates, "max_gates", l_bound=1)
+
+        if circuit_generator is None:
+            circuit_generator = BasicCircuitGenerator(
+                machine_properties.n_qubits, max_gates, seed=self.rng
+            )
+        else:
+            check_instance(circuit_generator, "circuit_generator", CircuitGenerator)
+            if circuit_generator.finite:
+                raise ValueError(
+                    "'circuit_generator' should not be an infinite iterator"
+                )
+            circuit_generator = deepcopy(circuit_generator)
+
         dependency_depth = check_int(dependency_depth, "dependency_depth", l_bound=1)
-        random_circuit_mode = self._parse_random_circuit_mode(random_circuit_mode)
         rulebook = self._parse_rulebook(rulebook)
         self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 
@@ -225,7 +244,7 @@ class Scheduling(
             machine_properties=machine_properties,
             max_gates=max_gates,
             dependency_depth=dependency_depth,
-            random_circuit_mode=random_circuit_mode,
+            circuit_generator=circuit_generator,
             rulebook=rulebook,
         )
         self.observation_space = self._state.create_observation_space()
@@ -312,28 +331,6 @@ class Scheduling(
         msg = f"{type(machine_properties)} is not a supported type for "
         msg += "'machine_properties'"
         raise TypeError(msg)
-
-    @staticmethod
-    def _parse_random_circuit_mode(random_circuit_mode: str) -> str:
-        """Parse the `random_circuit_mode` given by the user.
-
-        Args:
-            random_circuit_mode: Mode for the random circuit generator. The mode can be
-            'default' or 'workshop'.
-
-        Raises:
-            ValueError: If the given mode is not supported.
-
-        Returns:
-            Valid random circuit mode.
-        """
-        random_circuit_mode = check_string(
-            random_circuit_mode, "random_circuit_mode", lower=True
-        )
-        if random_circuit_mode not in ["default", "workshop"]:
-            msg = f"'{random_circuit_mode}' is not a supported random circuit mode"
-            raise ValueError(msg)
-        return random_circuit_mode
 
     @staticmethod
     def _parse_rulebook(rulebook: CommutationRulebook | None) -> CommutationRulebook:
