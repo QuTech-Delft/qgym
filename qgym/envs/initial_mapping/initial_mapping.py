@@ -190,7 +190,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
                 types, see ``networkx`` `grid_graph`_ documentation.
             rewarder: Rewarder to use for the environment. Must inherit from
                 :class:`qgym.templates.Rewarder`. If ``None`` (default), then
-                :class:`qgym.envs.initial_mapping.BasicRewarder` is used.
+                :class:`~qgym.envs.initial_mapping.BasicRewarder` is used.
             render_mode: If ``"human"`` open a ``pygame`` screen visualizing the step.
                 If ``"rgb_array"``, return an RGB array encoding of the rendered frame
                 on each render call.
