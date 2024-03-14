@@ -6,10 +6,10 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v4
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
       - name: Install requirements
         run: pip install mypy .
       - name: Run mypy
@@ -18,10 +18,10 @@ jobs:
   pylint:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v4
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
       - name: Install requirements
         run: pip install pylint .
       - name: Run pylint
