@@ -23,6 +23,8 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
       - name: Install requirements
-        run: pip install pylint .
+        run: |
+          pip install --upgrade pip
+          pip install pylint .
       - name: Run pylint
         run: pylint qgym
