@@ -11,7 +11,9 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
       - name: Install requirements
-        run: pip install mypy .
+        run: |
+          pip install --upgrade pip
+          pip install pylint .
       - name: Run mypy
         run: mypy qgym
 
