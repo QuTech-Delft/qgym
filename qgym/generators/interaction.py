@@ -19,11 +19,11 @@ class InteractionGenerator(
     """Abstract Base Class for interaction circuit generation.
 
     All interaction circuit generators should inherit from :class:`InteractionGenerator`
-    to be compatible with the :class:`~qgym.envs.Routing` environemnt.
+    to be compatible with the :class:`~qgym.envs.Routing` environment.
     """
 
     finite: bool
-    """Boolean value stating wether the generator is finite."""
+    """Boolean value stating whether the generator is finite."""
 
     @abstractmethod
     def __next__(self) -> NDArray[np.int_]:

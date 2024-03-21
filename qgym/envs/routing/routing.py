@@ -137,7 +137,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
 
         Args:
             interaction_generator: Interaction generator for generating interaction
-                circuits. This generator is used to generate a new interaction circuits
+                circuits. This generator is used to generate a new interaction circuit
                 when :func:`Routing.reset` is called without an interaction circuit.
             max_observation_reach: Sets a cap on the maximum amount of gates the agent
                 can see ahead when making an observation. When bigger that

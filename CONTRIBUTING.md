@@ -1,6 +1,5 @@
 # Contributing
 Currently, we are not looking for any new contributors.
-We are happy to receive any issues one encounters.
 
 # Developer notes
 Below is a list of useful information for developers.

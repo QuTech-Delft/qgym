@@ -16,19 +16,20 @@ class GraphGenerator(Iterator[nx.Graph]):  # pylint: disable=too-few-public-meth
     """Abstract Base Class for graph generation.
 
     All graph generators should inherit from :class:`GraphGenerator` to be compatible
-    with the :class:`~qgym.envs.InitialMapping` environemnt.
+    with the :class:`~qgym.envs.InitialMapping` environment.
     """
 
     finite: bool
-    """Boolean value stating wether the generator is finite."""
+    """Boolean value stating whether the generator is finite."""
 
     @abstractmethod
     def __next__(self) -> nx.Graph:
         """Make a new networkx ``Graph``.
 
         The __next__ method of a :class:`GraphGenerator` should generate a networkx
-        ``Graph`` representations of the interaction graph. To be a valid interaction
-        graph, all nodes should have integer labels.
+        ``Graph`` representation of the interaction graph. To be a valid interaction
+        graph, all nodes should have integer labels starting from 0 and up to the number
+        of nodes minus 1.
         """
 
 

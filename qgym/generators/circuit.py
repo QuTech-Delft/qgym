@@ -17,11 +17,11 @@ class CircuitGenerator(Iterator[List[Gate]]):  # pylint: disable=too-few-public-
     """Abstract Base Class for circuit generation used for scheduling.
 
     All interaction circuit generators should inherit from :class:`CircuitGenerator`
-    to be compatible with the :class:`~qgym.envs.Scheduling` environemnt.
+    to be compatible with the :class:`~qgym.envs.Scheduling` environment.
     """
 
     finite: bool
-    """Boolean value stating wether the generator is finite."""
+    """Boolean value stating whether the generator is finite."""
 
     @abstractmethod
     def __next__(self) -> list[Gate]:
