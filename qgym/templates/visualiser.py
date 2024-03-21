@@ -50,7 +50,7 @@ class Visualiser:
     render_data: RenderData
 
     @abstractmethod
-    def __init__(self, render_mode: str, *args: list[Any]):
+    def __init__(self, render_mode: str, *args: list[Any]) -> None:
         raise NotImplementedError
 
     @abstractmethod

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import warnings
 from numbers import Integral, Real
-from typing import Any
+from typing import Any, SupportsInt
 
 import networkx as nx
 import numpy as np
@@ -98,7 +98,7 @@ def check_int(  # pylint: disable=too-many-arguments
     Returns:
         Floating point representation of `x`.
     """
-    if not isinstance(x, Real):
+    if not isinstance(x, Real) or not isinstance(x, SupportsInt):
         raise TypeError(f"'{name}' should be an integer, but was of type {type(x)}")
 
     if not isinstance(x, Integral):

@@ -55,7 +55,7 @@ class InitialMappingVisualiser(Visualiser):
 
         self.subscreens = self._init_subscreen_rectangles()
 
-        # Save evrything we need to know about the graphs
+        # Save everything we need to know about the graphs
         self.graphs = {
             "connection": {
                 "render_positions": self._get_render_positions(

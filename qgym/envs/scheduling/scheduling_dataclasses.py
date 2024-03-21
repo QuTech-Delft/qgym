@@ -11,16 +11,15 @@ from numpy.typing import NDArray
 
 from qgym.custom_types import Gate
 from qgym.envs.scheduling.rulebook import CommutationRulebook
+from qgym.generators.circuit import CircuitGenerator
 from qgym.utils.gate_encoder import GateEncoder
-from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
 
 @dataclass
 class SchedulingUtils:
     """Utils used in the :class:`~qgym.envs.Scheduling` environment."""
 
-    random_circuit_generator: RandomCircuitGenerator
-    random_circuit_mode: str
+    circuit_generator: CircuitGenerator
     rulebook: CommutationRulebook
     gate_encoder: GateEncoder
 
@@ -74,9 +73,7 @@ class CircuitInfo:
             Self.
         """
         if circuit is None:
-            circuit = utils.random_circuit_generator.generate_circuit(
-                mode=utils.random_circuit_mode
-            )
+            circuit = next(utils.circuit_generator)
 
         self.blocking_matrix = utils.rulebook.make_blocking_matrix(circuit)
         self.encoded = utils.gate_encoder.encode_gates(circuit)

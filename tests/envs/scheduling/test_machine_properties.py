@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Collection, Iterable
+from collections.abc import Collection, Iterable
+from typing import TYPE_CHECKING
 
 import pytest
 

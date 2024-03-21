@@ -20,8 +20,8 @@ from qgym.envs.scheduling.scheduling_dataclasses import (
     GateInfo,
     SchedulingUtils,
 )
+from qgym.generators.circuit import CircuitGenerator
 from qgym.templates.state import State
-from qgym.utils.random_circuit_generator import RandomCircuitGenerator
 
 
 class SchedulingState(
@@ -35,7 +35,7 @@ class SchedulingState(
         machine_properties: MachineProperties,
         max_gates: int,
         dependency_depth: int,
-        random_circuit_mode: str,
+        circuit_generator: CircuitGenerator,
         rulebook: CommutationRulebook,
     ) -> None:
         """Init of the :class:`SchedulingState` class.
@@ -47,8 +47,7 @@ class SchedulingState(
             dependency_depth: Number of dependencies given in the observation.
                 Determines the shape of the `dependencies` observation, which has the
                 shape (dependency_depth, max_gates).
-            random_circuit_mode: Mode for the random circuit generator. The mode can be
-                ``"default"`` or ``"workshop"``.
+            circuit_generator: Generator class for generating circuits for training.
             rulebook: :class:`~qgym.envs.scheduling.CommutationRulebook` describing the
                 commutation rules.
         """
@@ -61,10 +60,7 @@ class SchedulingState(
         properties and limitations.
         """
         self.utils = SchedulingUtils(
-            random_circuit_generator=RandomCircuitGenerator(
-                machine_properties.n_qubits, max_gates, rng=self.rng
-            ),
-            random_circuit_mode=random_circuit_mode,
+            circuit_generator=circuit_generator,
             rulebook=rulebook,
             gate_encoder=machine_properties.encode(),
         )
@@ -95,9 +91,7 @@ class SchedulingState(
         """
 
         # Generate a circuit
-        circuit = self.utils.random_circuit_generator.generate_circuit(
-            mode=self.utils.random_circuit_mode
-        )
+        circuit = next(self.utils.circuit_generator)
 
         self.circuit_info = CircuitInfo(
             encoded=self.utils.gate_encoder.encode_gates(circuit),

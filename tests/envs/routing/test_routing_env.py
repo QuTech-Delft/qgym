@@ -25,7 +25,7 @@ class TestEnvironment:
         env = Routing(**kwargs)  # type: ignore[arg-type]
         check_env(env, warn=True)  # todo: maybe switch this to the gym env checker
 
-    def test_step(self, kwargs):
+    def test_step(self, kwargs: dict[str, tuple[int, int] | bool]) -> None:
         env = Routing(**kwargs)  # type: ignore[arg-type]
         obs = env.step(0)[0]
         np.testing.assert_array_equal(obs["mapping"], [2, 1, 0, 3])

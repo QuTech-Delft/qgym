@@ -5,10 +5,11 @@ This :class:`RoutingState` represents the :class:`~qgym.templates.State` of the
 
 Usage:
     >>> from qgym.envs.routing.routingstate import RoutingState
+    >>> from qgym.generators import BasicInteractionGenerator
     >>> import networkx as nx
     >>> connection_graph = nx.grid_graph((3,3))
     >>> state = RoutingState(
-    >>>             max_interaction_gates = 100,
+    >>>             interaction_generator = BasicInteractionGenerator(9, 100),
     >>>             max_observation_reach = 20,
     >>>             connection_graph = connection_graph,
     >>>             observe_legal_surpasses = True,
@@ -26,6 +27,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
+from qgym.generators.interaction import InteractionGenerator
 from qgym.templates.state import State
 from qgym.utils.input_parsing import has_fidelity
 
@@ -38,7 +40,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
     def __init__(  # pylint: disable=too-many-arguments
         self,
         *,
-        max_interaction_gates: int,
+        interaction_generator: InteractionGenerator,
         max_observation_reach: int,
         connection_graph: nx.Graph,
         observe_legal_surpasses: bool,
@@ -47,8 +49,10 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         """Init of the ``RoutingState`` class.
 
         Args:
-            max_interaction_gates: Sets the maximum amount of gates in the
-                interaction_circuit, when a new interaction_circuit is generated.
+            interaction_generator: Interaction generator for generating interaction
+                circuits. This generator is used to generate a new interaction circuit
+                when :func:`RoutingState.reset` is called without an interaction
+                circuit.
             max_observation_reach: Sets a cap on the maximum amount of gates the agent
                 can see ahead when making an observation. When bigger than
                 max_interaction_gates the agent will always see all gates ahead in an
@@ -73,14 +77,11 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         """
         self.edges = list(self.connection_graph.edges)
         """List of all the edges, used to decode given actions."""
-        self.max_interaction_gates = max_interaction_gates
+        self.interaction_generator = interaction_generator
         """Sets the maximum amount of gates in the interaction_circuit, when a new
         interaction_circuit is generated.
         """
-        number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
-        self.interaction_circuit = self.generate_random_interaction_circuit(
-            number_of_gates
-        )
+        self.interaction_circuit = next(self.interaction_generator)
         """An array of 2-tuples of integers, where every tuple represents a, not
         specified, gate acting on the two qubits labeled by the integers in the tuples.
         """
@@ -141,23 +142,14 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
             self.seed(seed)
 
         if interaction_circuit is None:
-            number_of_gates = self.rng.integers(1, self.max_interaction_gates + 1)
-            self.interaction_circuit = self.generate_random_interaction_circuit(
-                number_of_gates
-            )
+            self.interaction_circuit = next(self.interaction_generator)
         else:
             interaction_circuit = np.array(interaction_circuit)
-            max_gates = self.max_interaction_gates
-            if (
-                interaction_circuit.ndim != 2
-                or interaction_circuit.shape[0] > max_gates
-                or interaction_circuit.shape[1] != 2
-            ):
-                msg = "'interaction_circuit' should have be an ArrayLike with shape "
-                msg += (
-                    "(n_interactions,2), where n_interactions<=max_interaction_gates."
+            if interaction_circuit.ndim != 2 or interaction_circuit.shape[1] != 2:
+                raise ValueError(
+                    "'interaction_circuit' should have be an ArrayLike with shape "
+                    "(n_interactions,2)."
                 )
-                raise ValueError(msg)
             self.interaction_circuit = interaction_circuit
 
         # Reset position, counters
@@ -343,20 +335,6 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         """Updates mapping for a swap of two qubits."""
         physical_qubits = self.mapping[np.array([logical_qubit1, logical_qubit2])]
         self.mapping[np.array([logical_qubit2, logical_qubit1])] = physical_qubits
-
-    def generate_random_interaction_circuit(self, n_gates: int) -> NDArray[np.int_]:
-        """Generate a random interaction circuit.
-
-        Returns:
-            A randomly generated interaction circuit.
-        """
-        circuit = np.zeros((n_gates, 2), dtype=int)
-        for idx in range(n_gates):
-            circuit[idx] = self.rng.choice(
-                np.arange(self.n_qubits), size=2, replace=False
-            )
-
-        return circuit
 
     @property
     def n_qubits(self) -> int:

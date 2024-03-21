@@ -50,6 +50,15 @@ except ImportError:
     pass
 
 
+# Intersphinx options for linking to external libraries.
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
+    "networkx": ("https://networkx.org/documentation/stable/", None),
+    "gymnasium": ("https://gymnasium.farama.org/", None),
+    "pygame": ("https://www.pygame.org/docs/", None),
+}
+
 mathjax3_config = {
     "tex2jax": {
         "inlineMath": [["\\(", "\\)"]],

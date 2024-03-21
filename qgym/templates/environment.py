@@ -6,8 +6,9 @@ All environments should inherit from ``Environment``.
 from __future__ import annotations
 
 from abc import abstractmethod
+from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any, Mapping
+from typing import Any
 
 import gymnasium
 import numpy as np
@@ -98,7 +99,8 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         super().reset(seed=seed)
         options = {} if options is None else options
         self._state.reset(seed=seed, **options)
-        self.render()
+        if self._visualiser is not None:
+            self._visualiser.step(self._state)
         return self._state.obtain_observation(), self._state.obtain_info()
 
     def render(self) -> None | NDArray[np.int_]:  # type: ignore[override]

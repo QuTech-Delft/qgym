@@ -44,8 +44,7 @@ State Space:
     * `edges`: List of edges of the connection graph used for decoding actions.
     * `mapping`: Array of which the index represents a physical qubit, and the value a
       virtual qubit. This is updated after each swap.
-    * `max_interaction_gates`: Maximum amount of gates allowed in the interaction 
-      circuit, when a new interaction circuit is (randomly) generated.
+    * `interaction_generator`: Generator for interaction circuits.
     * `interaction_circuit`: An array of 2-tuples of integers, where every tuple
       represents a, not specified, gate acting on the two qubits labeled by the
       integers in the tuples.
@@ -88,7 +87,9 @@ Action Space:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
+from collections.abc import Iterable, Mapping
+from copy import deepcopy
+from typing import TYPE_CHECKING, Any, Dict
 
 import networkx as nx
 import numpy as np
@@ -98,13 +99,14 @@ import qgym.spaces
 from qgym.envs.routing.routing_rewarders import BasicRewarder
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.envs.routing.routing_visualiser import RoutingVisualiser
+from qgym.generators.interaction import BasicInteractionGenerator, InteractionGenerator
 from qgym.templates import Environment, Rewarder
 from qgym.utils.input_parsing import (
     parse_connection_graph,
     parse_rewarder,
     parse_visualiser,
 )
-from qgym.utils.input_validation import check_bool, check_int
+from qgym.utils.input_validation import check_bool, check_instance, check_int
 
 if TYPE_CHECKING:
     Gridspecs = (
@@ -117,7 +119,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        max_interaction_gates: int = 10,
+        interaction_generator: InteractionGenerator | None = None,
         max_observation_reach: int = 5,
         observe_legal_surpasses: bool = True,
         observe_connection_graph: bool = False,
@@ -134,8 +136,9 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
         ``"rgb_array"``.
 
         Args:
-            max_interaction_gates: Sets the maximum amount of gates in the
-                `interaction_circuit`, when a new `interaction_circuit` is generated.
+            interaction_generator: Interaction generator for generating interaction
+                circuits. This generator is used to generate a new interaction circuit
+                when :func:`Routing.reset` is called without an interaction circuit.
             max_observation_reach: Sets a cap on the maximum amount of gates the agent
                 can see ahead when making an observation. When bigger that
                 `max_interaction_gates` the agent will always see all gates ahead in an
@@ -172,14 +175,22 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
             connection_graph, connection_graph_matrix, connection_grid_size
         )
 
-        max_interaction_gates = check_int(
-            max_interaction_gates, "max_interaction_gates", l_bound=0
-        )
+        if interaction_generator is None:
+            interaction_generator = BasicInteractionGenerator(
+                len(connection_graph), seed=self.rng
+            )
+        else:
+            check_instance(
+                interaction_generator, "interaction_generator", InteractionGenerator
+            )
+            if interaction_generator.finite:
+                raise ValueError(
+                    "'interaction_generator' should not be an infinite iterator"
+                )
+            interaction_generator = deepcopy(interaction_generator)
+
         max_observation_reach = check_int(
-            max_observation_reach,
-            "max_observation_reach",
-            l_bound=0,
-            u_bound=max_interaction_gates,
+            max_observation_reach, "max_observation_reach", l_bound=1
         )
         observe_legal_surpasses = check_bool(
             observe_legal_surpasses, "observe_legal_surpasses", safe=False
@@ -192,7 +203,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
         self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 
         self._state = RoutingState(
-            max_interaction_gates=max_interaction_gates,
+            interaction_generator=interaction_generator,
             max_observation_reach=max_observation_reach,
             connection_graph=connection_graph,
             observe_legal_surpasses=observe_legal_surpasses,

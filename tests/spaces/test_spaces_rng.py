@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from copy import deepcopy
-from typing import Any, Iterable
+from typing import Any
 
 import numpy as np
 import pytest
@@ -24,7 +25,7 @@ def test_init_rng(space: type[Space[Any]], args: Iterable[Any]) -> None:
     space2 = space(*args, rng=np.random.default_rng(0))  # type: ignore[call-arg]
     space3 = space(*args, rng=np.random.default_rng(1))  # type: ignore[call-arg]
 
-    assert np.array_equal(space1.sample(), space2.sample())
+    np.testing.assert_array_equal(space1.sample(), space2.sample())
     assert not np.array_equal(space1.sample(), space3.sample())
 
 
@@ -33,7 +34,7 @@ def test_init_rng_dict() -> None:
     space2 = Dict({"test": MultiBinary(100)}, rng=np.random.default_rng(0))
     space3 = Dict({"test": MultiBinary(100)}, rng=np.random.default_rng(1))
 
-    assert np.array_equal(space1.sample()["test"], space2.sample()["test"])
+    np.testing.assert_array_equal(space1.sample()["test"], space2.sample()["test"])
     assert not np.array_equal(space1.sample()["test"], space3.sample()["test"])
 
 
@@ -50,7 +51,7 @@ def test_seed(space: Space[Any]) -> None:
     space2.seed(0)
     space3.seed(1)
 
-    assert np.array_equal(space1.sample(), space2.sample())
+    np.testing.assert_array_equal(space1.sample(), space2.sample())
     assert not np.array_equal(space1.sample(), space3.sample())
 
 
@@ -63,5 +64,5 @@ def test_seed_dict() -> None:
     space2.seed(0)
     space3.seed(1)
 
-    assert np.array_equal(space1.sample()["test"], space2.sample()["test"])
+    np.testing.assert_array_equal(space1.sample()["test"], space2.sample()["test"])
     assert not np.array_equal(space1.sample()["test"], space3.sample()["test"])

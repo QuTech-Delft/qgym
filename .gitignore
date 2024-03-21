@@ -16,6 +16,7 @@
 
 # Pytest
 **/.pytest_cache/
+.coverage
 
 # Sphinx
 /docs_build/
