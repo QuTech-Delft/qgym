@@ -99,7 +99,8 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         super().reset(seed=seed)
         options = {} if options is None else options
         self._state.reset(seed=seed, **options)
-        self.render()
+        if self._visualiser is not None:
+            self._visualiser.step(self._state)
         return self._state.obtain_observation(), self._state.obtain_info()
 
     def render(self) -> None | NDArray[np.int_]:  # type: ignore[override]

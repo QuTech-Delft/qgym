@@ -147,7 +147,7 @@ Example 2:
         rulebook = CommutationRulebook()
 
         # Set up the circuit generator
-        circuit_generator = WorkshopCircuitGenerator(2, 10)
+        circuit_generator = WorkshopCircuitGenerator(2, 5)
 
         # Initialize the environment
         env_com = Scheduling(
