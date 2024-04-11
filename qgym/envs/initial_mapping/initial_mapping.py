@@ -204,12 +204,13 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         )
 
         if graph_generator is None:
-            graph_generator = BasicGraphGenerator(len(connection_graph), seed=self.rng)
+            graph_generator = BasicGraphGenerator(seed=self.rng)
         else:
             check_instance(graph_generator, "graph_generator", GraphGenerator)
             if graph_generator.finite:
                 raise ValueError("'graph_generator' should not be an infinite iterator")
             graph_generator = deepcopy(graph_generator)
+        graph_generator.set_state_attributes(connection_graph=connection_graph)
 
         self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 

@@ -21,7 +21,9 @@ class TestNullGraphGenerator:
 
     @pytest.fixture(name="generator")
     def null_graph_generator_fixture(self) -> NullGraphGenerator:
-        return NullGraphGenerator()
+        generator = NullGraphGenerator()
+        generator.set_state_attributes()
+        return generator
 
     def test_infinite(self, generator: NullGraphGenerator) -> None:
         assert not generator.finite
@@ -48,7 +50,9 @@ class TestBasicGraphGenerator:
 
     @pytest.fixture(name="simple_generator")
     def null_graph_generator_fixture(self) -> BasicGraphGenerator:
-        return BasicGraphGenerator(5)
+        generator = BasicGraphGenerator()
+        generator.set_state_attributes(connection_graph=nx.empty_graph(5))
+        return generator
 
     def test_infinite(self, simple_generator: BasicGraphGenerator) -> None:
         assert not simple_generator.finite
@@ -77,7 +81,8 @@ class TestBasicGraphGenerator:
                 break
 
     def test_full_edge_probability(self) -> None:
-        generator = BasicGraphGenerator(5, 1)
+        generator = BasicGraphGenerator(1)
+        generator.set_state_attributes(connection_graph=nx.empty_graph(5))
         graph = next(generator)
 
         assert isinstance(graph, nx.Graph)
@@ -85,9 +90,15 @@ class TestBasicGraphGenerator:
         assert nx.is_isomorphic(graph, nx.complete_graph(5))
 
     def test_seed(self) -> None:
-        generator1 = BasicGraphGenerator(10, seed=1)
-        generator2 = BasicGraphGenerator(10, seed=1)
-        generator3 = BasicGraphGenerator(10, seed=3)
+        connection_graph = nx.empty_graph(10)
+
+        generator1 = BasicGraphGenerator(seed=1)
+        generator2 = BasicGraphGenerator(seed=1)
+        generator3 = BasicGraphGenerator(seed=3)
+
+        generator1.set_state_attributes(connection_graph=connection_graph)
+        generator2.set_state_attributes(connection_graph=connection_graph)
+        generator3.set_state_attributes(connection_graph=connection_graph)
 
         for _ in range(10):
             graph1 = next(generator1)

@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Iterator, SupportsFloat, SupportsInt
+from typing import Any, Iterator, SupportsFloat, SupportsInt
 
 import networkx as nx
 from numpy.random import Generator
 
 from qgym.utils.input_parsing import parse_seed
-from qgym.utils.input_validation import check_int, check_real
+from qgym.utils.input_validation import check_graph_is_valid_topology, check_real
 
 
 class GraphGenerator(Iterator[nx.Graph]):  # pylint: disable=too-few-public-methods
@@ -24,39 +24,45 @@ class GraphGenerator(Iterator[nx.Graph]):  # pylint: disable=too-few-public-meth
 
     @abstractmethod
     def __next__(self) -> nx.Graph:
-        """Make a new networkx ``Graph``.
+        """Make a new :class:~`networkx.Graph`, representing an interaction graph.
 
-        The __next__ method of a :class:`GraphGenerator` should generate a networkx
-        ``Graph`` representation of the interaction graph. To be a valid interaction
-        graph, all nodes should have integer labels starting from 0 and up to the number
-        of nodes minus 1.
+        The __next__ method of a :class:`GraphGenerator` should generate a
+        :class:~`networkx.Graph` representation of the interaction graph. To be a valid
+        interaction graph, all nodes should have integer labels starting from 0 and up
+        to the number of nodes minus 1.
+        """
+
+    @abstractmethod
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Set attributes that the state can receive.
+
+        This method is called inside the mapping environment to receive information
+        about the state. The same keywords as for the the init of the
+        :class:`~qgym.envs.initial_mapping.InitialMappingState` are provided.
         """
 
 
 class BasicGraphGenerator(GraphGenerator):
     """:class:`BasicGraphGenerator` is a simple graph generation implementation.
 
-    It uses ``networkx`` `fast_gnp_random_graph`_ to generate graphs.
-
-    .. _fast_gnp_random_graph: https://networkx.org/documentation/stable/reference/
-       generated/networkx.generators.random_graphs.fast_gnp_random_graph.html
+    It uses :func:`~networkx.generators.random_graphs.fast_gnp_random_graph` to generate
+    graphs.
     """
 
     def __init__(
         self,
-        n_nodes: SupportsInt,
         interaction_graph_edge_probability: SupportsFloat = 0.5,
         seed: Generator | SupportsInt | None = None,
     ) -> None:
         """Init of the :class:`BasicGraphGenerator`.
 
         Args:
-            n_nodes: Number of nodes in the generated graph.
             interaction_graph_edge_probability: Probability to add an edge between two
-                nodes.
+                nodes. See the documentation of
+                :func:`~networkx.generators.random_graphs.fast_gnp_random_graph` for
+                more information.
             seed: Seed to use.
         """
-        self.n_nodes = check_int(n_nodes, "n_nodes", l_bound=1)
         self.interaction_graph_edge_probability = check_real(
             interaction_graph_edge_probability,
             "interaction_graph_edge_probability",
@@ -65,6 +71,7 @@ class BasicGraphGenerator(GraphGenerator):
         )
         self.rng = parse_seed(seed)
         self.finite = False
+        self.n_nodes: int
 
     def __repr__(self) -> str:
         """String representation of the :class:`BasicGraphGenerator`."""
@@ -80,14 +87,27 @@ class BasicGraphGenerator(GraphGenerator):
         )
 
     def __next__(self) -> nx.Graph:
-        """Create a new randomly generated graph."""
+        """Create a new randomly generated :class:~`networkx.Graph`."""
         return nx.fast_gnp_random_graph(
             n=self.n_nodes, p=self.interaction_graph_edge_probability, seed=self.rng
         )
 
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Set attributes `n_nodes` attribute.
+
+        Number of nodes is the number of nodes (qubits) of the connections graph.
+
+        Args:
+            kwargs: Keyword arguments. Must have the key ``"connection_graph"`` which
+                must be a :class:~`networkx.Graph`.
+        """
+        connection_graph: nx.Graph = kwargs["connection_graph"]
+        check_graph_is_valid_topology(connection_graph, "connection_graph")
+        self.n_nodes = connection_graph.number_of_nodes()
+
 
 class NullGraphGenerator(GraphGenerator):
-    """Generator class for generating empty graphs.
+    """Generator class for generating empty :class:`~netowrkx.Graphs`.
 
     Useful for unit testing.
     """
@@ -103,3 +123,10 @@ class NullGraphGenerator(GraphGenerator):
     def __repr__(self) -> str:
         """String representation of the :class:`NullGraphGenerator`."""
         return f"NullGraphGenerator[finite={self.finite}]"
+
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Receive state attributes, but do nothing with it.
+
+        Args:
+            kwargs: Keyword arguments.
+        """
