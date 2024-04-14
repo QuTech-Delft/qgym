@@ -49,45 +49,50 @@ class TestNullCircuitGenerator:
 
 class TestBasicCircuitGenerator:
 
-    def __init__(self) -> None:
-        self.n_qubits = 5
-        self.max_length = 50
-
     @pytest.fixture(name="simple_generator")
-    def null_graph_generator_fixture(self) -> BasicCircuitGenerator:
-        return BasicCircuitGenerator(self.n_qubits, self.max_length, seed=42)
+    def basic_circuit_generator_fixture(self) -> BasicCircuitGenerator:
+        return BasicCircuitGenerator(5, 50, seed=42)
+
+    def test_attributes(self, simple_generator: BasicCircuitGenerator) -> None:
+        assert simple_generator.n_qubits == 5
+        assert simple_generator.max_length == 50
 
     def test_infinite(self, simple_generator: BasicCircuitGenerator) -> None:
         assert not simple_generator.finite
 
-    def test_inheritance(self, generator: BasicCircuitGenerator) -> None:
-        assert isinstance(generator, CircuitGenerator)
-        assert isinstance(generator, Iterator)
+    def test_inheritance(self, simple_generator: BasicCircuitGenerator) -> None:
+        assert isinstance(simple_generator, CircuitGenerator)
+        assert isinstance(simple_generator, Iterator)
 
     def test_next(self, simple_generator: BasicCircuitGenerator) -> None:
         circuit = next(simple_generator)
-        assert isinstance(circuit, list)
-        assert self.n_qubits <= len(circuit) <= self.max_length
-        self._check_circuit(circuit)
+        self._check_circuit(
+            circuit, simple_generator.n_qubits, simple_generator.max_length
+        )
 
     def test_iter(self, simple_generator: BasicCircuitGenerator) -> None:
         for i, circuit in enumerate(simple_generator):
-            assert isinstance(circuit, list)
-            assert self.n_qubits <= len(circuit) <= self.max_length
-            self._check_circuit(circuit)
-
+            self._check_circuit(
+                circuit, simple_generator.n_qubits, simple_generator.max_length
+            )
             if i > 100:
                 break
 
-    def _check_circuit(self, circuit: list[Gate]) -> None:
-        for i in range(self.n_qubits):
+    def _check_circuit(
+        self, circuit: list[Gate], n_qubits: int, max_length: int
+    ) -> None:
+        """Check the type, shape and gates in the circuit."""
+        assert isinstance(circuit, list)
+        assert n_qubits <= len(circuit) <= max_length
+
+        for i in range(n_qubits):
             gate = circuit[i]
             assert isinstance(gate, Gate)
             assert gate.name == "prep"
             assert gate.q1 == i
             assert gate.q1 == i
 
-        for i in range(self.n_qubits, len(circuit)):
+        for i in range(n_qubits, len(circuit)):
             gate = circuit[i]
             assert isinstance(gate, Gate)
             assert gate.name in {"x", "y", "z", "cnot", "measure"}
@@ -112,38 +117,43 @@ class TestBasicCircuitGenerator:
 
 class TestWorkshopCircuitGenerator:
 
-    def __init__(self) -> None:
-        self.n_qubits = 5
-        self.max_length = 50
-
     @pytest.fixture(name="simple_generator")
-    def null_graph_generator_fixture(self) -> WorkshopCircuitGenerator:
-        return WorkshopCircuitGenerator(self.n_qubits, self.max_length, seed=42)
+    def workshop_circuit_generator_fixture(self) -> WorkshopCircuitGenerator:
+        return WorkshopCircuitGenerator(5, 50, seed=42)
+
+    def test_attributes(self, simple_generator: WorkshopCircuitGenerator) -> None:
+        assert simple_generator.n_qubits == 5
+        assert simple_generator.max_length == 50
 
     def test_infinite(self, simple_generator: WorkshopCircuitGenerator) -> None:
         assert not simple_generator.finite
 
-    def test_inheritance(self, generator: WorkshopCircuitGenerator) -> None:
-        assert isinstance(generator, CircuitGenerator)
-        assert isinstance(generator, Iterator)
+    def test_inheritance(self, simple_generator: WorkshopCircuitGenerator) -> None:
+        assert isinstance(simple_generator, CircuitGenerator)
+        assert isinstance(simple_generator, Iterator)
 
     def test_next(self, simple_generator: WorkshopCircuitGenerator) -> None:
         circuit = next(simple_generator)
-        assert isinstance(circuit, list)
-        assert self.n_qubits <= len(circuit) <= self.max_length
-        self._check_circuit(circuit)
+        self._check_circuit(
+            circuit, simple_generator.n_qubits, simple_generator.max_length
+        )
 
     def test_iter(self, simple_generator: WorkshopCircuitGenerator) -> None:
         for i, circuit in enumerate(simple_generator):
-            assert isinstance(circuit, list)
-            assert self.n_qubits <= len(circuit) <= self.max_length
-            self._check_circuit(circuit)
-
+            self._check_circuit(
+                circuit, simple_generator.n_qubits, simple_generator.max_length
+            )
             if i > 100:
                 break
 
-    def _check_circuit(self, circuit: list[Gate]) -> None:
-        for i in range(self.n_qubits, len(circuit)):
+    def _check_circuit(
+        self, circuit: list[Gate], n_qubits: int, max_length: int
+    ) -> None:
+        """Check the type, shape and gates in the circuit."""
+        assert isinstance(circuit, list)
+        assert n_qubits <= len(circuit) <= max_length
+
+        for i in range(n_qubits, len(circuit)):
             gate = circuit[i]
             assert isinstance(gate, Gate)
             assert gate.name in {"x", "y", "cnot", "measure"}

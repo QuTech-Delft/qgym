@@ -49,10 +49,17 @@ class TestNullGraphGenerator:
 class TestBasicGraphGenerator:
 
     @pytest.fixture(name="simple_generator")
-    def null_graph_generator_fixture(self) -> BasicGraphGenerator:
+    def basic_graph_generator_fixture(self) -> BasicGraphGenerator:
         generator = BasicGraphGenerator()
         generator.set_state_attributes(connection_graph=nx.empty_graph(5))
         return generator
+
+    def test_set_state_attributes(self) -> None:
+        generator = BasicGraphGenerator()
+        assert not hasattr(generator, "n_nodes")
+        generator.set_state_attributes(connection_graph=nx.empty_graph(5))
+        assert hasattr(generator, "n_nodes")
+        assert generator.n_nodes == 5
 
     def test_infinite(self, simple_generator: BasicGraphGenerator) -> None:
         assert not simple_generator.finite
