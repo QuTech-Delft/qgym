@@ -12,7 +12,7 @@ from qgym.utils.input_parsing import parse_seed
 from qgym.utils.input_validation import check_graph_is_valid_topology, check_real
 
 
-class GraphGenerator(Iterator[nx.Graph]):  # pylint: disable=too-few-public-methods
+class GraphGenerator(Iterator[nx.Graph]):
     """Abstract Base Class for graph generation.
 
     All graph generators should inherit from :class:`GraphGenerator` to be compatible
@@ -93,7 +93,7 @@ class BasicGraphGenerator(GraphGenerator):
         )
 
     def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
-        """Set attributes `n_nodes` attribute.
+        """Set the `n_nodes` attribute.
 
         Number of nodes is the number of nodes (qubits) of the connections graph.
 

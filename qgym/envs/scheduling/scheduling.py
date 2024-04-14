@@ -113,14 +113,11 @@ Example 1:
         hardware_spec.add_same_start(["measure"])
         hardware_spec.add_not_in_same_cycle([("x", "y")])
 
-        # Set up the circuit generator
-        circuit_generator = WorkshopCircuitGenerator(2, 10)
-
         # Initialize the environment
         env = Scheduling(
             hardware_spec,
             max_gates=5,
-            circuit_generator=circuit_generator
+            circuit_generator=WorkshopCircuitGenerator()
         )
 
 
@@ -146,15 +143,12 @@ Example 2:
         # Setup the rulebook
         rulebook = CommutationRulebook()
 
-        # Set up the circuit generator
-        circuit_generator = WorkshopCircuitGenerator(2, 5)
-
         # Initialize the environment
         env_com = Scheduling(
                             hardware_spec,
                             max_gates=5,
                             rulebook=rulebook,
-                            circuit_generator=circuit_generator,
+                            circuit_generator=WorkshopCircuitGenerator(),
                         )
 
 
@@ -230,9 +224,7 @@ class Scheduling(
         max_gates = check_int(max_gates, "max_gates", l_bound=1)
 
         if circuit_generator is None:
-            circuit_generator = BasicCircuitGenerator(
-                machine_properties.n_qubits, max_gates, seed=self.rng
-            )
+            circuit_generator = BasicCircuitGenerator(seed=self.rng)
         else:
             check_instance(circuit_generator, "circuit_generator", CircuitGenerator)
             if circuit_generator.finite:
@@ -240,6 +232,12 @@ class Scheduling(
                     "'circuit_generator' should not be an infinite iterator"
                 )
             circuit_generator = deepcopy(circuit_generator)
+        circuit_generator.set_state_attributes(
+            machine_properties=machine_properties,
+            max_gates=max_gates,
+            dependency_depth=dependency_depth,
+            rulebook=rulebook,
+        )
 
         dependency_depth = check_int(dependency_depth, "dependency_depth", l_bound=1)
         rulebook = self._parse_rulebook(rulebook)

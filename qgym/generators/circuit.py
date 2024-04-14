@@ -1,9 +1,9 @@
-"""This module contains graph generators for :class:`~qgym.envs.Routing`."""
+"""This module contains circuit generators for :class:`~qgym.envs.Scheduling`."""
 
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Iterator, List, SupportsInt
+from typing import Any, Iterator, List, SupportsInt
 
 import numpy as np
 from numpy.random import Generator
@@ -13,7 +13,7 @@ from qgym.utils.input_parsing import parse_seed
 from qgym.utils.input_validation import check_int
 
 
-class CircuitGenerator(Iterator[List[Gate]]):  # pylint: disable=too-few-public-methods
+class CircuitGenerator(Iterator[List[Gate]]):
     """Abstract Base Class for circuit generation used for scheduling.
 
     All interaction circuit generators should inherit from :class:`CircuitGenerator`
@@ -34,35 +34,50 @@ class CircuitGenerator(Iterator[List[Gate]]):  # pylint: disable=too-few-public-
             >>> circuit = [Gate("prep", 0,0), Gate("prep", 1,1), Gate("cnot", 0,1)]
         """
 
+    @abstractmethod
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Set attributes that the state can receive.
+
+        This method is called inside the scheduling environment to receive information
+        about the state. The same keywords as for the the init of the
+        :class:`~qgym.envs.scheduling.SchedulingState` are provided.
+        """
+
 
 class BasicCircuitGenerator(CircuitGenerator):
     """:class:`BasicCircuitGenerator` is a basic random circuit generation
     implementation.
     """
 
-    def __init__(
-        self,
-        n_qubits: SupportsInt,
-        max_length: SupportsInt = 50,
-        seed: Generator | SupportsInt | None = None,
-    ) -> None:
+    def __init__(self, seed: Generator | SupportsInt | None = None) -> None:
         """Init of the :class:`BasicInteractionGenerator`.
 
         Args:
-            n_qubits: Number of qubits.
-            max_length: Maximum length of the generated circuits. Defaults to 50.
             seed: Seed to use.
         """
-        self.n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
-        self.max_length = check_int(max_length, "max_length", l_bound=1)
         self.rng = parse_seed(seed)
         self.finite = False
+        self.n_qubits: int
+        self.max_gates: int
+
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Set the `n_qubits` and `max_gates` attributes.
+
+        Args:
+            kwargs: Keyword arguments. Must have the keys ``"machine_properties"`` and
+                ``"max_gates"`` with values of type
+                :class:`~qgym.envs.scheduling.MachineProperties` and integerlike
+                (``SupportsInt``) respectively.
+        """
+        machine_properties = kwargs["machine_properties"]
+        self.n_qubits = machine_properties.n_qubits
+        self.max_gates = check_int(kwargs["max_gates"], "max_gates", l_bound=1)
 
     def __repr__(self) -> str:
         """String representation of the :class:`BasicCircuitGenerator`."""
         return (
             f"BasicCircuitGenerator[n_qubits={self.n_qubits} "
-            f"max_length={self.max_length}, "
+            f"max_gates={self.max_gates}, "
             f"rng={self.rng}, "
             f"finite={self.finite}]"
         )
@@ -73,7 +88,7 @@ class BasicCircuitGenerator(CircuitGenerator):
         The length of the circuit is a random integer in the interval
         [`n_qubits`, `max_length`].
         """
-        n_gates = self.rng.integers(self.n_qubits, self.max_length, endpoint=True)
+        n_gates = self.rng.integers(self.n_qubits, self.max_gates, endpoint=True)
         gate_names = ["x", "y", "z", "cnot", "measure"]
         probabilities = [0.16, 0.16, 0.16, 0.5, 0.02]
 
@@ -103,29 +118,35 @@ class WorkshopCircuitGenerator(CircuitGenerator):
     implementation.
     """
 
-    def __init__(
-        self,
-        n_qubits: SupportsInt,
-        max_length: SupportsInt = 10,
-        seed: Generator | SupportsInt | None = None,
-    ) -> None:
+    def __init__(self, seed: Generator | SupportsInt | None = None) -> None:
         """Init of the :class:`WorkshopCircuitGenerator`.
 
         Args:
-            n_qubits: Number of qubits.
-            max_length: Maximum length of the generated circuits. Defaults to 10.
             seed: Seed to use.
         """
-        self.n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
-        self.max_length = check_int(max_length, "max_length", l_bound=1)
         self.rng = parse_seed(seed)
         self.finite = False
+        self.n_qubits: int
+        self.max_gates: int
+
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Set the- `n_qubits` and `max_gates` attributes.
+
+        Args:
+            kwargs: Keyword arguments. Must have the keys ``"machine_properties"`` and
+                ``"max_gates"`` with values of type
+                :class:`~qgym.envs.scheduling.MachineProperties` and integerlike
+                (``SupportsInt``) respectively.
+        """
+        machine_properties = kwargs["machine_properties"]
+        self.n_qubits = machine_properties.n_qubits
+        self.max_gates = check_int(kwargs["max_gates"], "max_gates", l_bound=1)
 
     def __repr__(self) -> str:
         """String representation of the :class:`WorkshopCircuitGenerator`."""
         return (
             f"WorkshopCircuitGenerator[n_qubits={self.n_qubits} "
-            f"max_length={self.max_length}, "
+            f"max_gates={self.max_gates}, "
             f"rng={self.rng}, "
             f"finite={self.finite}]"
         )
@@ -136,7 +157,7 @@ class WorkshopCircuitGenerator(CircuitGenerator):
         The length of the circuit is a random integer in the interval
         [`n_qubits`, `max_length`].
         """
-        n_gates = self.rng.integers(self.n_qubits, self.max_length, endpoint=True)
+        n_gates = self.rng.integers(self.n_qubits, self.max_gates, endpoint=True)
         gate_names = ["x", "y", "cnot", "measure"]
         probabilities = [0.2, 0.2, 0.5, 0.1]
 
@@ -176,3 +197,10 @@ class NullCircuitGenerator(CircuitGenerator):
     def __repr__(self) -> str:
         """String representation of the :class:`NullCircuitGenerator`."""
         return f"NullCircuitGenerator[finite={self.finite}]"
+
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Receive state attributes, but do nothing with it.
+
+        Args:
+            kwargs: Keyword arguments.
+        """
