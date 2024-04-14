@@ -35,7 +35,7 @@ class CircuitGenerator(Iterator[List[Gate]]):
         """
 
     @abstractmethod
-    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+    def set_state_attributes(self, **kwargs: Any) -> None:
         """Set attributes that the state can receive.
 
         This method is called inside the scheduling environment to receive information
@@ -70,6 +70,10 @@ class BasicCircuitGenerator(CircuitGenerator):
                 (``SupportsInt``) respectively.
         """
         machine_properties = kwargs["machine_properties"]
+        if not hasattr(machine_properties, "n_qubits"):
+            raise AttributeError(
+                "'machine_properties' did not have the 'n_qubits' attribute"
+            )
         self.n_qubits = machine_properties.n_qubits
         self.max_gates = check_int(kwargs["max_gates"], "max_gates", l_bound=1)
 
@@ -139,6 +143,10 @@ class WorkshopCircuitGenerator(CircuitGenerator):
                 (``SupportsInt``) respectively.
         """
         machine_properties = kwargs["machine_properties"]
+        if not hasattr(machine_properties, "n_qubits"):
+            raise AttributeError(
+                "'machine_properties' did not have the 'n_qubits' attribute"
+            )
         self.n_qubits = machine_properties.n_qubits
         self.max_gates = check_int(kwargs["max_gates"], "max_gates", l_bound=1)
 
