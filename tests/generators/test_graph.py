@@ -22,8 +22,12 @@ class TestNullGraphGenerator:
     @pytest.fixture(name="generator")
     def null_graph_generator_fixture(self) -> NullGraphGenerator:
         generator = NullGraphGenerator()
-        generator.set_state_attributes()
         return generator
+
+    def test_set_state_attributes(self, generator: NullGraphGenerator) -> None:
+        assert len(vars(generator)) == 1
+        generator.set_state_attributes()
+        assert len(vars(generator)) == 1
 
     def test_infinite(self, generator: NullGraphGenerator) -> None:
         assert not generator.finite

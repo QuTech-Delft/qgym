@@ -2,6 +2,7 @@
 
 from collections.abc import Iterator
 
+import networkx as nx
 import numpy as np
 import pytest
 
@@ -20,8 +21,13 @@ def test_abc() -> None:
 class TestNullInteractionGenerator:
 
     @pytest.fixture(name="generator")
-    def null_graph_generator_fixture(self) -> NullInteractionGenerator:
+    def null_interaction_generator_fixture(self) -> NullInteractionGenerator:
         return NullInteractionGenerator()
+
+    def test_set_state_attributes(self, generator: NullInteractionGenerator) -> None:
+        assert len(vars(generator)) == 1
+        generator.set_state_attributes()
+        assert len(vars(generator)) == 1
 
     def test_infinite(self, generator: NullInteractionGenerator) -> None:
         assert not generator.finite
@@ -49,8 +55,17 @@ class TestNullInteractionGenerator:
 class TestBasicGraphGenerator:
 
     @pytest.fixture(name="simple_generator")
-    def null_graph_generator_fixture(self) -> BasicInteractionGenerator:
-        return BasicInteractionGenerator(5)
+    def null_interaction_generator_fixture(self) -> BasicInteractionGenerator:
+        generator = BasicInteractionGenerator()
+        generator.set_state_attributes(connection_graph=nx.empty_graph(5))
+        return generator
+
+    def test_set_state_attributes(self) -> None:
+        generator = BasicInteractionGenerator()
+        assert not hasattr(generator, "n_qubits")
+
+        generator.set_state_attributes(connection_graph=nx.empty_graph(5))
+        assert generator.n_qubits == 5
 
     def test_infinite(self, simple_generator: BasicInteractionGenerator) -> None:
         assert not simple_generator.finite
@@ -79,9 +94,12 @@ class TestBasicGraphGenerator:
                 break
 
     def test_seed(self) -> None:
-        generator1 = BasicInteractionGenerator(10, seed=1)
-        generator2 = BasicInteractionGenerator(10, seed=1)
-        generator3 = BasicInteractionGenerator(10, seed=3)
+        generator1 = BasicInteractionGenerator(seed=1)
+        generator2 = BasicInteractionGenerator(seed=1)
+        generator3 = BasicInteractionGenerator(seed=3)
+
+        for generator in [generator1, generator2, generator3]:
+            generator.set_state_attributes(connection_graph=nx.empty_graph(10))
 
         for _ in range(10):
             circuit1 = next(generator1)

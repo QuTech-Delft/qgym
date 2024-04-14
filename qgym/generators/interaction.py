@@ -1,21 +1,20 @@
-"""This module contains graph generators for :class:`~qgym.envs.Routing`."""
+"""This module contains interaction generators for :class:`~qgym.envs.Routing`."""
 
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Iterator, SupportsInt
+from typing import Any, Iterator, SupportsInt
 
+import networkx as nx
 import numpy as np
 from numpy.random import Generator
 from numpy.typing import NDArray
 
 from qgym.utils.input_parsing import parse_seed
-from qgym.utils.input_validation import check_int
+from qgym.utils.input_validation import check_graph_is_valid_topology, check_int
 
 
-class InteractionGenerator(
-    Iterator[NDArray[np.int_]]
-):  # pylint: disable=too-few-public-methods
+class InteractionGenerator(Iterator[NDArray[np.int_]]):
     """Abstract Base Class for interaction circuit generation.
 
     All interaction circuit generators should inherit from :class:`InteractionGenerator`
@@ -29,40 +28,56 @@ class InteractionGenerator(
     def __next__(self) -> NDArray[np.int_]:
         """Make a new interaction circuit.
 
-        The __next__ method of a :class:`InteractionGenerator` should generate a NDArray
-        of shape (len_circuit, 2) with dtype int. Each pair represent he indices of two
-        qubits that have an interaction in the circuit.
+        The ``__next__`` method of a :class:`InteractionGenerator` should generate a
+        :class:`~numpy.ndarray` of shape (len_circuit, 2) with dtype ``int``. Each pair
+        represent the indices of two qubits that have an interaction in the circuit.
+        """
+
+    @abstractmethod
+    def set_state_attributes(self, **kwargs: Any) -> None:
+        """Set attributes that the state can receive.
+
+        This method is called inside the scheduling environment to receive information
+        about the state. The same keywords as for the the init of the
+        :class:`~qgym.envs.routing.RoutingState` are provided.
         """
 
 
 class BasicInteractionGenerator(InteractionGenerator):
     """:class:`BasicInteractionGenerator` is an interaction generation implementation.
 
-    Interactions are completely randomly generated using the ``numpy`` `choice`_ method.
-
-    .. _choice: https://numpy.org/doc/stable/reference/random/generated/
-       numpy.random.choice.html
+    Interactions are completely randomly generated using the :func:`numpy.random.choice`
+    method.
     """
 
     def __init__(
         self,
-        n_qubits: SupportsInt,
         max_length: SupportsInt = 10,
         seed: Generator | SupportsInt | None = None,
     ) -> None:
         """Init of the :class:`BasicInteractionGenerator`.
 
         Args:
-            n_qubits: Number of qubits.
             max_length: Maximum length of the generated interaction circuits. Defaults
                 to 10.
             seed: Seed to use.
         """
-        self.n_qubits = check_int(n_qubits, "n_qubits", l_bound=1)
         self.max_length = check_int(max_length, "max_length", l_bound=1)
         self.rng = parse_seed(seed)
         self.finite = False
+        self.n_qubits: int
         super().__init__()
+
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Set the `n_qubits` attribute.
+
+        Args:
+            kwargs: Keyword arguments. Must have the ``"connection_graph"`` key with a
+                :class:`~networkx.Graph` representation of the connection graph.
+        """
+        connection_graph: nx.Graph = kwargs["connection_graph"]
+        check_graph_is_valid_topology(connection_graph, "connection_graph")
+        self.n_qubits = connection_graph.number_of_nodes()
 
     def __repr__(self) -> str:
         """String representation of the :class:`BasicInteractionGenerator`."""
@@ -101,3 +116,10 @@ class NullInteractionGenerator(InteractionGenerator):
     def __repr__(self) -> str:
         """String representation of the :class:`NullInteractionGenerator`."""
         return f"NullInteractionGenerator[finite={self.finite}]"
+
+    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+        """Receive state attributes, but do nothing with it.
+
+        Args:
+            kwargs: Keyword arguments.
+        """

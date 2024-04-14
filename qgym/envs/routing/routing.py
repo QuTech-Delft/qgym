@@ -175,10 +175,18 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
             connection_graph, connection_graph_matrix, connection_grid_size
         )
 
+        max_observation_reach = check_int(
+            max_observation_reach, "max_observation_reach", l_bound=1
+        )
+        observe_legal_surpasses = check_bool(
+            observe_legal_surpasses, "observe_legal_surpasses", safe=False
+        )
+        observe_connection_graph = check_bool(
+            observe_connection_graph, "observe_connection_graph", safe=False
+        )
+
         if interaction_generator is None:
-            interaction_generator = BasicInteractionGenerator(
-                len(connection_graph), seed=self.rng
-            )
+            interaction_generator = BasicInteractionGenerator(seed=self.rng)
         else:
             check_instance(
                 interaction_generator, "interaction_generator", InteractionGenerator
@@ -188,15 +196,11 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
                     "'interaction_generator' should not be an infinite iterator"
                 )
             interaction_generator = deepcopy(interaction_generator)
-
-        max_observation_reach = check_int(
-            max_observation_reach, "max_observation_reach", l_bound=1
-        )
-        observe_legal_surpasses = check_bool(
-            observe_legal_surpasses, "observe_legal_surpasses", safe=False
-        )
-        observe_connection_graph = check_bool(
-            observe_connection_graph, "observe_connection_graph", safe=False
+        interaction_generator.set_state_attributes(
+            max_observation_reach=max_observation_reach,
+            connection_graph=connection_graph,
+            observe_legal_surpasses=observe_legal_surpasses,
+            observe_connection_graph=observe_connection_graph,
         )
 
         # Define internal attributes
