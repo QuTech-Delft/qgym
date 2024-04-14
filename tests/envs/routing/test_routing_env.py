@@ -10,11 +10,11 @@ from qgym.envs.routing.routing import Routing
 @pytest.mark.parametrize(
     "kwargs",
     [
-        {"connection_grid_size": (2, 2)},
-        {"connection_grid_size": (2, 2), "observe_legal_surpasses": False},
-        {"connection_grid_size": (2, 2), "observe_connection_graph": False},
+        {"connection_graph": (2, 2)},
+        {"connection_graph": (2, 2), "observe_legal_surpasses": False},
+        {"connection_graph": (2, 2), "observe_connection_graph": False},
         {
-            "connection_grid_size": (2, 2),
+            "connection_graph": (2, 2),
             "observe_legal_surpasses": False,
             "observe_connection_graph": False,
         },

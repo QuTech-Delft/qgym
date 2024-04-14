@@ -37,41 +37,23 @@ class TestParseConnectionGraph:
     def test_parse_connection_graph1(self, expected_output: nx.Graph) -> None:
         graph = nx.Graph()
         graph.add_edge(0, 1)
-        output_graph = parse_connection_graph(graph=graph)
+        output_graph = parse_connection_graph(graph)
         assert nx.is_isomorphic(output_graph, expected_output)
         # Test if it is a copy
         assert graph is not output_graph
 
     def test_parse_connection_graph2(self, expected_output: nx.Graph) -> None:
-        output_graph = parse_connection_graph(matrix=[[0, 1], [1, 0]])
+        output_graph = parse_connection_graph([[0, 1], [1, 0]])
         assert nx.is_isomorphic(output_graph, expected_output)
 
     def test_parse_connection_graph3(self, expected_output: nx.Graph) -> None:
-        output_graph = parse_connection_graph(grid_size=(1, 2))
+        output_graph = parse_connection_graph((1, 2))
         assert nx.is_isomorphic(output_graph, expected_output)
-
-
-class TestParseConnectionGraphWarnings:
-    @pytest.mark.parametrize(
-        "matrix,grid_size", [("test", None), (None, "test"), ("test", "test")]
-    )
-    def test_nx_graph_and_other(
-        self, matrix: str | None, grid_size: str | None
-    ) -> None:
-        small_graph = nx.Graph()
-        small_graph.add_edge(0, 1)
-
-        with pytest.warns(UserWarning):
-            parse_connection_graph(small_graph, matrix, grid_size)  # type: ignore[arg-type]
-
-    def test_array_like_and_gridspec(self) -> None:
-        with pytest.warns(UserWarning):
-            parse_connection_graph(matrix=[[0, 1], [1, 0]], grid_size="test")  # type: ignore[arg-type]
 
 
 def test_parse_connection_graph_exception() -> None:
     with pytest.raises(ValueError):
-        parse_connection_graph()
+        parse_connection_graph("test")
 
 
 class TestHasFidelity:

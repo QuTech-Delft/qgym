@@ -119,14 +119,12 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
+        connection_graph: nx.Graph | ArrayLike | Gridspecs,
         interaction_generator: InteractionGenerator | None = None,
         max_observation_reach: int = 5,
         observe_legal_surpasses: bool = True,
         observe_connection_graph: bool = False,
         *,
-        connection_graph: nx.Graph | None = None,
-        connection_graph_matrix: ArrayLike | None = None,
-        connection_grid_size: Gridspecs | None = None,
         rewarder: Rewarder | None = None,
         render_mode: str | None = None,
     ) -> None:
@@ -136,6 +134,11 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
         ``"rgb_array"``.
 
         Args:
+            connection_graph: Graph representation of the QPU topology. Each node
+                represents a physical qubit and each node represents a connection in the
+                QPU topology. See
+                :func:`~qgym.utils.input_parsing.parse_connection_graph` for supported
+                formats.
             interaction_generator: Interaction generator for generating interaction
                 circuits. This generator is used to generate a new interaction circuit
                 when :func:`Routing.reset` is called without an interaction circuit.
@@ -152,28 +155,15 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
                 agent is typically trained for just one QPU-topology which can be
                 learned implicitly by rewards and/or the booleans if they are shown,
                 depending on the other flag above. Default is ``False``.
-            connection_graph: ``networkx`` graph representation of the QPU topology.
-                Each node represents a physical qubit and each node represents a
-                connection in the QPU topology.
-            connection_graph_matrix: Adjacency matrix representation of the QPU
-                topology.
-            connection_grid_size: Size of the connection graph when the connection graph
-                has a grid topology. For more information on the allowed values and
-                types, see ``networkx`` `grid_graph`_ documentation.
             rewarder: Rewarder to use for the environment. Must inherit from
                 :class:`~qgym.templates.Rewarder`. If ``None`` (default), then
                 :class:`~qgym.envs,routing.BasicRewarder` is used.
             render_mode: If ``"human"`` open a ``pygame`` screen visualizing the step.
                 If ``"rgb_array"``, return an RGB array encoding of the rendered frame
                 on each render call.
-
-        .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
-            networkx.generators.lattice.grid_graph.html#grid-graph
         """
         # Check user input and parse it to a uniform format
-        connection_graph = parse_connection_graph(
-            connection_graph, connection_graph_matrix, connection_grid_size
-        )
+        connection_graph = parse_connection_graph(connection_graph)
 
         max_observation_reach = check_int(
             max_observation_reach, "max_observation_reach", l_bound=1

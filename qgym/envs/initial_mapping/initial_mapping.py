@@ -68,7 +68,7 @@ Example 1:
     following code:
 
     >>> from qgym.envs.initial_mapping import InitialMapping
-    >>> env = InitialMapping(connection_grid_size=(3,3))
+    >>> env = InitialMapping(connection_graph=(3,3))
 
     By default,  :class:`InitialMapping` uses the
     :class:`~qgym.envs.initial_mapping.BasicRewarder`. As an example, we would like to
@@ -139,9 +139,7 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_instance
 
 if TYPE_CHECKING:
-    Gridspecs = (
-        list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
-    )
+    Gridspecs = list[int] | tuple[int, ...]
 
 
 class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
@@ -158,11 +156,9 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
+        connection_graph: nx.Graph | ArrayLike | Gridspecs,
         graph_generator: GraphGenerator | None = None,
         *,
-        connection_graph: nx.Graph | None = None,
-        connection_graph_matrix: ArrayLike | None = None,
-        connection_grid_size: Gridspecs | None = None,
         rewarder: Rewarder | None = None,
         render_mode: str | None = None,
     ) -> None:
@@ -174,34 +170,26 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         ``"rgb_array"``.
 
         Args:
+            connection_graph: Graph representation of the QPU topology. Each node
+                represents a physical qubit and each node represents a connection in the
+                QPU topology. See
+                :func:`~qgym.utils.input_parsing.parse_connection_graph` for supported
+                formats.
             graph_generator: Graph generator for generating interaction graphs. This
                 generator is used to generate a new interaction graph when
                 :func:`InitialMapping.reset` is called without an interaction
                 graph. If ``None`` is provided a new
                 :class:`~qgym.envs.initial_mapping.graph_generation.BasicGraphGenerator`
                 with the same number of nodes as the interaction graph will be made.
-            connection_graph: ``networkx`` graph representation of the QPU topology.
-                Each node represents a physical qubit and each node represents a
-                connection in the QPU topology.
-            connection_graph_matrix: Adjacency matrix representation of the QPU
-                topology.
-            connection_grid_size: Size of the connection graph when the connection graph
-                has a grid topology. For more information on the allowed values and
-                types, see ``networkx`` `grid_graph`_ documentation.
             rewarder: Rewarder to use for the environment. Must inherit from
                 :class:`qgym.templates.Rewarder`. If ``None`` (default), then
                 :class:`~qgym.envs.initial_mapping.BasicRewarder` is used.
             render_mode: If ``"human"`` open a ``pygame`` screen visualizing the step.
                 If ``"rgb_array"``, return an RGB array encoding of the rendered frame
                 on each render call.
-
-        .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
-            networkx.generators.lattice.grid_graph.html#grid-graph
         """
         # Check user input and parse it to a uniform format
-        connection_graph = parse_connection_graph(
-            connection_graph, connection_graph_matrix, connection_grid_size
-        )
+        connection_graph = parse_connection_graph(connection_graph)
 
         if graph_generator is None:
             graph_generator = BasicGraphGenerator(seed=self.rng)

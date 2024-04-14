@@ -86,7 +86,7 @@ def test_init_custom_connection_graph(
 def test_init_custom_connection_graph_matrix(
     small_graph: nx.Graph, connection_graph_matrix: ArrayLike
 ) -> None:
-    env = InitialMapping(connection_graph_matrix=connection_graph_matrix)
+    env = InitialMapping(connection_graph=connection_graph_matrix)
     assert isinstance(env._state, InitialMappingState)
     assert nx.is_isomorphic(env._state.graphs["connection"]["graph"], small_graph)
     np.testing.assert_array_equal(
@@ -101,7 +101,7 @@ def test_init_custom_connection_graph_matrix(
 def test_init_custom_connection_grid_size(
     small_graph: nx.Graph, connection_grid_size: list[int] | tuple[int, ...]
 ) -> None:
-    env = InitialMapping(connection_grid_size=connection_grid_size)
+    env = InitialMapping(connection_graph=connection_grid_size)
     assert isinstance(env._state, InitialMappingState)
     assert nx.is_isomorphic(env._state.graphs["connection"]["graph"], small_graph)
     np.testing.assert_array_equal(
@@ -118,7 +118,7 @@ def test_init_custom_connection_grid_size(
     ],
 )
 def test_init_custom_rewarder(rewarder: Rewarder) -> None:
-    env = InitialMapping(connection_grid_size=(2, 2), rewarder=rewarder)
+    env = InitialMapping(connection_graph=(2, 2), rewarder=rewarder)
     assert env.rewarder == rewarder
     # Check that we made a copy for safety
     assert env.rewarder is not rewarder
