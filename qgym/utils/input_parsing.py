@@ -7,10 +7,8 @@ assured that the data has the same format.
 
 from __future__ import annotations
 
-import warnings
-from collections.abc import Iterable
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, SupportsInt
+from typing import Any, SupportsInt
 
 import networkx as nx
 from numpy.random import Generator, default_rng
