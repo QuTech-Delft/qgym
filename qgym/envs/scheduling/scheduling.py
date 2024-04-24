@@ -228,9 +228,7 @@ class Scheduling(
         else:
             check_instance(circuit_generator, "circuit_generator", CircuitGenerator)
             if circuit_generator.finite:
-                raise ValueError(
-                    "'circuit_generator' should not be an infinite iterator"
-                )
+                raise ValueError("'circuit_generator' should be an infinite iterator")
             circuit_generator = deepcopy(circuit_generator)
         circuit_generator.set_state_attributes(
             machine_properties=machine_properties,

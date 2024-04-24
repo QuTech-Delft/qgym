@@ -33,7 +33,7 @@ class GraphGenerator(Iterator[nx.Graph]):
         """
 
     @abstractmethod
-    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+    def set_state_attributes(self, **kwargs: Any) -> None:
         """Set attributes that the state can receive.
 
         This method is called inside the mapping environment to receive information
@@ -92,17 +92,19 @@ class BasicGraphGenerator(GraphGenerator):
             n=self.n_nodes, p=self.interaction_graph_edge_probability, seed=self.rng
         )
 
-    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
-        """Set the `n_nodes` attribute.
-
-        Number of nodes is the number of nodes (qubits) of the connections graph.
+    def set_state_attributes(
+        self, *, connection_graph: nx.Graph | None = None, **kwargs: Any
+    ) -> None:
+        """Set the `n_qubits` attribute.
 
         Args:
-            kwargs: Keyword arguments. Must have the key ``"connection_graph"`` which
-                must be a :class:~`networkx.Graph`.
+            connection_graph: A :class:`~networkx.Graph` representation of the
+                connection graph.
+            kwargs: Additional keyword arguments. These are not used
         """
-        connection_graph: nx.Graph = kwargs["connection_graph"]
-        check_graph_is_valid_topology(connection_graph, "connection_graph")
+        connection_graph = check_graph_is_valid_topology(
+            connection_graph, "connection_graph"
+        )
         self.n_nodes = connection_graph.number_of_nodes()
 
 
@@ -124,7 +126,7 @@ class NullGraphGenerator(GraphGenerator):
         """String representation of the :class:`NullGraphGenerator`."""
         return f"NullGraphGenerator[finite={self.finite}]"
 
-    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+    def set_state_attributes(self, **kwargs: Any) -> None:
         """Receive state attributes, but do nothing with it.
 
         Args:

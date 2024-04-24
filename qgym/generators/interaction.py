@@ -30,14 +30,14 @@ class InteractionGenerator(Iterator[NDArray[np.int_]]):
 
         The ``__next__`` method of a :class:`InteractionGenerator` should generate a
         :class:`~numpy.ndarray` of shape (len_circuit, 2) with dtype ``int``. Each pair
-        represent the indices of two qubits that have an interaction in the circuit.
+        represents the indices of two qubits that have an interaction in the circuit.
         """
 
     @abstractmethod
     def set_state_attributes(self, **kwargs: Any) -> None:
         """Set attributes that the state can receive.
 
-        This method is called inside the scheduling environment to receive information
+        This method is called inside the routing environment to receive information
         about the state. The same keywords as for the the init of the
         :class:`~qgym.envs.routing.RoutingState` are provided.
         """
@@ -68,15 +68,19 @@ class BasicInteractionGenerator(InteractionGenerator):
         self.n_qubits: int
         super().__init__()
 
-    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+    def set_state_attributes(
+        self, *, connection_graph: nx.Graph | None = None, **kwargs: Any
+    ) -> None:
         """Set the `n_qubits` attribute.
 
         Args:
-            kwargs: Keyword arguments. Must have the ``"connection_graph"`` key with a
-                :class:`~networkx.Graph` representation of the connection graph.
+            connection_graph: A :class:`~networkx.Graph` representation of the
+                connection graph.
+            kwargs: Additional keyword arguments. These are not used.
         """
-        connection_graph: nx.Graph = kwargs["connection_graph"]
-        check_graph_is_valid_topology(connection_graph, "connection_graph")
+        connection_graph = check_graph_is_valid_topology(
+            connection_graph, "connection_graph"
+        )
         self.n_qubits = connection_graph.number_of_nodes()
 
     def __repr__(self) -> str:
@@ -117,7 +121,7 @@ class NullInteractionGenerator(InteractionGenerator):
         """String representation of the :class:`NullInteractionGenerator`."""
         return f"NullInteractionGenerator[finite={self.finite}]"
 
-    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+    def set_state_attributes(self, **kwargs: Any) -> None:
         """Receive state attributes, but do nothing with it.
 
         Args:

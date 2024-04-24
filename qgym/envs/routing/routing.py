@@ -135,7 +135,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
 
         Args:
             connection_graph: Graph representation of the QPU topology. Each node
-                represents a physical qubit and each node represents a connection in the
+                represents a physical qubit and each edge represents a connection in the
                 QPU topology. See
                 :func:`~qgym.utils.input_parsing.parse_connection_graph` for supported
                 formats.

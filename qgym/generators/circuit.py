@@ -60,22 +60,23 @@ class BasicCircuitGenerator(CircuitGenerator):
         self.n_qubits: int
         self.max_gates: int
 
-    def set_state_attributes(self, **kwargs: dict[str, Any]) -> None:
+    def set_state_attributes(
+        self, machine_properties: Any = None, max_gates: SupportsInt = 0, **kwargs: Any
+    ) -> None:
         """Set the `n_qubits` and `max_gates` attributes.
 
         Args:
-            kwargs: Keyword arguments. Must have the keys ``"machine_properties"`` and
-                ``"max_gates"`` with values of type
-                :class:`~qgym.envs.scheduling.MachineProperties` and integerlike
-                (``SupportsInt``) respectively.
+            machine_properties: :class:`~qgym.envs.scheduling.MachineProperties`
+                containing at least the number of qubits of the machine.
+            max_gates: Maximum number of gates allowed in the circuit.
+            kwargs: Additional keyword arguments. These are not used.
         """
-        machine_properties = kwargs["machine_properties"]
         if not hasattr(machine_properties, "n_qubits"):
             raise AttributeError(
                 "'machine_properties' did not have the 'n_qubits' attribute"
             )
         self.n_qubits = machine_properties.n_qubits
-        self.max_gates = check_int(kwargs["max_gates"], "max_gates", l_bound=1)
+        self.max_gates = check_int(max_gates, "max_gates", l_bound=1)
 
     def __repr__(self) -> str:
         """String representation of the :class:`BasicCircuitGenerator`."""

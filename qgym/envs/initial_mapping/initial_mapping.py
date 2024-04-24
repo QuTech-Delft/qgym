@@ -154,7 +154,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         "_visualiser",
     )
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         connection_graph: nx.Graph | ArrayLike | Gridspecs,
         graph_generator: GraphGenerator | None = None,
@@ -171,7 +171,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
 
         Args:
             connection_graph: Graph representation of the QPU topology. Each node
-                represents a physical qubit and each node represents a connection in the
+                represents a physical qubit and each edge represents a connection in the
                 QPU topology. See
                 :func:`~qgym.utils.input_parsing.parse_connection_graph` for supported
                 formats.
@@ -196,7 +196,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         else:
             check_instance(graph_generator, "graph_generator", GraphGenerator)
             if graph_generator.finite:
-                raise ValueError("'graph_generator' should not be an infinite iterator")
+                raise ValueError("'graph_generator' should be an infinite iterator")
             graph_generator = deepcopy(graph_generator)
         graph_generator.set_state_attributes(connection_graph=connection_graph)
 
