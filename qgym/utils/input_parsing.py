@@ -1,16 +1,17 @@
 """This module contains function which parse user input.
 
 With parsing we mean that the user input is validated and transformed to a predictable
-format. In this way, user can give different input formats, but internally we are
-assured that the data has the same format."""
+format. In this way, users can give different input formats, but internally we are
+assured that the data has the same format.
+"""
 
 from __future__ import annotations
 
-import warnings
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Iterable, Type
+from typing import Any, SupportsInt
 
 import networkx as nx
+from numpy.random import Generator, default_rng
 from numpy.typing import ArrayLike
 
 from qgym.templates import Rewarder, Visualiser
@@ -21,13 +22,8 @@ from qgym.utils.input_validation import (
     check_string,
 )
 
-if TYPE_CHECKING:
-    Gridspecs = (
-        list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
-    )
 
-
-def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Rewarder:
+def parse_rewarder(rewarder: Rewarder | None, default: type[Rewarder]) -> Rewarder:
     """Parse a `rewarder` given by the user.
 
     Args:
@@ -46,7 +42,7 @@ def parse_rewarder(rewarder: Rewarder | None, default: Type[Rewarder]) -> Reward
 
 
 def parse_visualiser(
-    render_mode: str | None, vis_type: Type[Visualiser], args: list[Any]
+    render_mode: str | None, vis_type: type[Visualiser], args: list[Any]
 ) -> None | Visualiser:
     """Parse a `Visualiser` by the render mode.
 
@@ -69,49 +65,35 @@ def parse_visualiser(
 
 
 def parse_connection_graph(
-    graph: nx.Graph | None = None,
-    matrix: ArrayLike | None = None,
-    grid_size: Gridspecs | None = None,
+    graph: nx.Graph | ArrayLike | list[int] | tuple[int, ...]
 ) -> nx.Graph:
     """Parse the user input (given in ``__init__``) to create a connection graph.
 
     Args:
-        graph: ``networkx.Graph`` representation of the QPU topology.
-        matrix: Adjacency matrix representation of the QPU topology.
-        grid_size: Size of the connection graph when the topology is a grid.
-
-    Raises:
-        ValueError: When `graph`, `matrix` and `grid_size` are all ``None``.
+        graph: A graph representation of a connection graph. Supported input formats are
+            a graph represented as a :class:`~networkx.Graph`, an adjacency  matrix
+            represented as an :class:`~numpy.ArrayLike` or gridsize specification.
 
     Returns:
-        Connection graph as a ``networkx.Graph``.
+        Connection graph as a :class:`~networkx.Graph`.
     """
-    if graph is not None:
-        if matrix is not None:
-            warnings.warn("Both 'graph' and 'matrix' were given. Using 'graph'.")
-        if grid_size is not None:
-            warnings.warn("Both 'graph' and 'grid_size' were given. Using 'graph'.")
-
+    if isinstance(graph, nx.Graph):
         check_graph_is_valid_topology(graph, "graph")
-
         # deepcopy the graphs for safety
         return deepcopy(graph)
 
-    if matrix is not None:
-        if grid_size is not None:
-            warnings.warn("Both 'matrix' and 'grid_size' were given. Using 'matrix'.")
-        matrix = check_adjacency_matrix(matrix)
-        return nx.from_numpy_array(matrix)
-
-    if grid_size is not None:
-        # Generate connection grid graph
-        graph = nx.grid_graph(grid_size)
-
+    if isinstance(graph, (list, tuple)) and isinstance(graph[0], int):
+        grid_graph = nx.grid_graph(graph)
         # Relabel the nodes to be integers
-        graph = nx.convert_node_labels_to_integers(graph)
-        return graph
+        return nx.convert_node_labels_to_integers(grid_graph)
+    try:
+        adj_mat = check_adjacency_matrix(graph)
+    except ValueError as err:
+        raise ValueError(
+            "No valid arguments for a connection graph were given"
+        ) from err
 
-    raise ValueError("No valid arguments for a connection graph were given")
+    return nx.from_numpy_array(adj_mat)
 
 
 def has_fidelity(graph: nx.Graph) -> bool:
@@ -130,3 +112,29 @@ def has_fidelity(graph: nx.Graph) -> bool:
         if weight is not None and weight not in (0, 1):
             return True
     return False
+
+
+def parse_seed(seed: Generator | SupportsInt | None) -> Generator:
+    """Parse a give seed to produce a numpy.random.Generator.
+
+    Args:
+        seed: Seed to parse.
+
+    Returns:
+        A generator created from the given `seed`.
+
+    Raises:
+        TypeError: If `seed` is not a ``Generator``, ``SupportsInt`` or ``None``.
+    """
+    if seed is None:
+        return default_rng(None)
+
+    if isinstance(seed, SupportsInt):
+        return default_rng(int(seed))
+
+    if isinstance(seed, Generator):
+        return seed
+
+    raise TypeError(
+        f"seed must be a Generator, SupportsInt or None, but was of type {type(seed)}"
+    )

@@ -17,8 +17,8 @@ Usage:
 
 from __future__ import annotations
 
-import typing
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 import gymnasium.spaces
 from numpy.random import Generator
@@ -30,7 +30,7 @@ class Dict(gymnasium.spaces.Dict):
     def __init__(
         self,
         spaces: (
-            typing.Dict[str, gymnasium.Space[Any]]
+            dict[str, gymnasium.Space[Any]]
             | Sequence[tuple[str, gymnasium.Space[Any]]]
             | None
         ) = None,

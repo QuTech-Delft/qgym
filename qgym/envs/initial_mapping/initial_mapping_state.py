@@ -6,9 +6,11 @@ the :class:`~qgym.envs.InitialMapping` environment.
 
 Usage:
     >>> from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
+    >>> from qgym.envs.initial_mapping.graph_generation import BasicGraphGenerator
     >>> import networkx as nx
     >>> connection_graph = nx.grid_graph((3,3))
-    >>> state = InitialMappingState(connection_graph, 0.5)
+    >>> graph_generator = BasicGraphGenerator(9, 0.5)
+    >>> state = InitialMappingState(connection_graph, graph_generator)
 
 """
 
@@ -22,6 +24,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from qgym import spaces
+from qgym.generators.graph import GraphGenerator
 from qgym.templates.state import State
 
 
@@ -37,7 +40,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     )
 
     def __init__(
-        self, connection_graph: nx.Graph, interaction_graph_edge_probability: float
+        self, connection_graph: nx.Graph, graph_generator: GraphGenerator
     ) -> None:
         # pylint: disable=line-too-long
         """Init of the :class:`~qgym.envs.initial_mapping.InitialMappingState` class.
@@ -46,21 +49,17 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             connection_graph: `networkx Graph <https://networkx.org/documentation/stable/reference/classes/graph.html>`_
                 representation of the QPU topology. Each node represents a physical
                 qubit and each edge represents a connection in the QPU topology.
-            interaction_graph_edge_probability: Probability that an edge between any
-                pair of qubits in the random interaction graph exists. The interaction
-                graph will have the same amount of nodes as the connection graph. Nodes
-                without any interactions can be seen as 'null' nodes. Must be a value in
-                the range $[0,1]$.
+            graph_generator: Graph generator for generating interaction graphs. This
+                generator is used to generate a new interaction graph when
+                :func:`InitialMappingState.reset` is called without an interaction
+                graph.
         """
         # pylint: enable=line-too-long
 
         # Create a random connection graph with `n_nodes` and with edges existing with
         # probability `interaction_graph_edge_probability` (nodes without connections
         # can be seen as 'null' nodes)
-        interaction_graph = nx.fast_gnp_random_graph(
-            connection_graph.number_of_nodes(),
-            interaction_graph_edge_probability,
-        )
+        interaction_graph = next(graph_generator)
 
         self.steps_done: int = 0
         """Number of steps done since the last reset."""
@@ -75,7 +74,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
             "interaction": {
                 "graph": deepcopy(interaction_graph),
                 "matrix": nx.to_numpy_array(interaction_graph, dtype=np.int8).flatten(),
-                "edge_probability": interaction_graph_edge_probability,
+                "generator": graph_generator,
             },
         }
         """Dictionary containing the graph and matrix representations of the both the
@@ -139,8 +138,8 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         # Reset the state
         if interaction_graph is None:
-            self.graphs["interaction"]["graph"] = nx.fast_gnp_random_graph(
-                self.n_nodes, self.graphs["interaction"]["edge_probability"]
+            self.graphs["interaction"]["graph"] = next(
+                self.graphs["interaction"]["generator"]
             )
         else:
             self.graphs["interaction"]["graph"] = deepcopy(interaction_graph)
