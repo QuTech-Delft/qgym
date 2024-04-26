@@ -75,6 +75,9 @@ dev = [
 include = ["qgym*"]
 exclude = ["tests*"]
 
+[tool.setuptools.dynamic]
+version = {attr = "qgym.__version__"}
+
 [tool.black]
 force-exclude="(deps|docs|docs_build|docs_html|images|openql_output|pybuild|qgym.egg-info|venv|wsl_venv)"
 
