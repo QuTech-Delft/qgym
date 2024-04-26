@@ -20,4 +20,3 @@ qgym.utils package
    qgym.utils.gate_encoder
    qgym.utils.input_parsing
    qgym.utils.input_validation
-   qgym.utils.random_circuit_generator

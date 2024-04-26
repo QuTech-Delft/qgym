@@ -11,6 +11,7 @@ qgym package
 
 
    qgym.envs
+   qgym.generators
    qgym.spaces
    qgym.templates
    qgym.utils

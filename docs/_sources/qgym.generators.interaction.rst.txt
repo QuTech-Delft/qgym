@@ -1,0 +1,7 @@
+qgym.generators.interaction module
+==================================
+
+.. automodule:: qgym.generators.interaction
+   :members:
+   :undoc-members:
+   :show-inheritance:

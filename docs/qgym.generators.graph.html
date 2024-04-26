@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qgym.generators.graph module &mdash; qgym</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="qgym.generators.interaction module" href="qgym.generators.interaction.html" />
+    <link rel="prev" title="qgym.generators.circuit module" href="qgym.generators.circuit.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            qgym
+          </a>
+              <div class="version">
+                0.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="qgym.html">qgym package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="qgym.envs.html">qgym.envs package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.__init__"><code class="docutils literal notranslate"><span class="pre">InitialMapping.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.action_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.metadata"><code class="docutils literal notranslate"><span class="pre">InitialMapping.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.observation_space"><code class="docutils literal notranslate"><span class="pre">InitialMapping.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping.reset"><code class="docutils literal notranslate"><span class="pre">InitialMapping.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing.__init__"><code class="docutils literal notranslate"><span class="pre">Routing.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Routing.reset"><code class="docutils literal notranslate"><span class="pre">Routing.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.__init__"><code class="docutils literal notranslate"><span class="pre">Scheduling.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.get_circuit"><code class="docutils literal notranslate"><span class="pre">Scheduling.get_circuit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.html#qgym.envs.Scheduling.reset"><code class="docutils literal notranslate"><span class="pre">Scheduling.reset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.initial_mapping.html">qgym.envs.initial_mapping package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMapping"><code class="docutils literal notranslate"><span class="pre">InitialMapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState"><code class="docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.SingleStepRewarder"><code class="docutils literal notranslate"><span class="pre">SingleStepRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping.html">qgym.envs.initial_mapping.initial_mapping module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_rewarders.html">qgym.envs.initial_mapping.initial_mapping_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_state.html">qgym.envs.initial_mapping.initial_mapping_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.initial_mapping.initial_mapping_visualiser.html">qgym.envs.initial_mapping.initial_mapping_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.routing.html">qgym.envs.routing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.Routing"><code class="docutils literal notranslate"><span class="pre">Routing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.RoutingState"><code class="docutils literal notranslate"><span class="pre">RoutingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.html#qgym.envs.routing.SwapQualityRewarder"><code class="docutils literal notranslate"><span class="pre">SwapQualityRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing.html">qgym.envs.routing.routing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_rewarders.html">qgym.envs.routing.routing_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_state.html">qgym.envs.routing.routing_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.routing.routing_visualiser.html">qgym.envs.routing.routing_visualiser module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.envs.scheduling.html">qgym.envs.scheduling package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.BasicRewarder"><code class="docutils literal notranslate"><span class="pre">BasicRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.CommutationRulebook"><code class="docutils literal notranslate"><span class="pre">CommutationRulebook</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.EpisodeRewarder"><code class="docutils literal notranslate"><span class="pre">EpisodeRewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.MachineProperties"><code class="docutils literal notranslate"><span class="pre">MachineProperties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.Scheduling"><code class="docutils literal notranslate"><span class="pre">Scheduling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.html#qgym.envs.scheduling.SchedulingState"><code class="docutils literal notranslate"><span class="pre">SchedulingState</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.machine_properties.html">qgym.envs.scheduling.machine_properties module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.rulebook.html">qgym.envs.scheduling.rulebook module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling.html">qgym.envs.scheduling.scheduling module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_dataclasses.html">qgym.envs.scheduling.scheduling_dataclasses module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_rewarders.html">qgym.envs.scheduling.scheduling_rewarders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_state.html">qgym.envs.scheduling.scheduling_state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.envs.scheduling.scheduling_visualiser.html">qgym.envs.scheduling.scheduling_visualiser module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="qgym.generators.html">qgym.generators package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">BasicCircuitGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">BasicCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicCircuitGenerator.__next__"><code class="docutils literal notranslate"><span class="pre">BasicCircuitGenerator.__next__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">BasicCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicCircuitGenerator.set_state_attributes"><code class="docutils literal notranslate"><span class="pre">BasicCircuitGenerator.set_state_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicGraphGenerator"><code class="docutils literal notranslate"><span class="pre">BasicGraphGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicGraphGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">BasicGraphGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicGraphGenerator.__next__"><code class="docutils literal notranslate"><span class="pre">BasicGraphGenerator.__next__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicGraphGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">BasicGraphGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicGraphGenerator.set_state_attributes"><code class="docutils literal notranslate"><span class="pre">BasicGraphGenerator.set_state_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicInteractionGenerator"><code class="docutils literal notranslate"><span class="pre">BasicInteractionGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicInteractionGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">BasicInteractionGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicInteractionGenerator.__next__"><code class="docutils literal notranslate"><span class="pre">BasicInteractionGenerator.__next__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicInteractionGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">BasicInteractionGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.BasicInteractionGenerator.set_state_attributes"><code class="docutils literal notranslate"><span class="pre">BasicInteractionGenerator.set_state_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">NullCircuitGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">NullCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullCircuitGenerator.__next__"><code class="docutils literal notranslate"><span class="pre">NullCircuitGenerator.__next__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">NullCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullCircuitGenerator.set_state_attributes"><code class="docutils literal notranslate"><span class="pre">NullCircuitGenerator.set_state_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullGraphGenerator"><code class="docutils literal notranslate"><span class="pre">NullGraphGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullGraphGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">NullGraphGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullGraphGenerator.__next__"><code class="docutils literal notranslate"><span class="pre">NullGraphGenerator.__next__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullGraphGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">NullGraphGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullGraphGenerator.set_state_attributes"><code class="docutils literal notranslate"><span class="pre">NullGraphGenerator.set_state_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullInteractionGenerator"><code class="docutils literal notranslate"><span class="pre">NullInteractionGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullInteractionGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">NullInteractionGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullInteractionGenerator.__next__"><code class="docutils literal notranslate"><span class="pre">NullInteractionGenerator.__next__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullInteractionGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">NullInteractionGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.NullInteractionGenerator.set_state_attributes"><code class="docutils literal notranslate"><span class="pre">NullInteractionGenerator.set_state_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.html#qgym.generators.WorkshopCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">WorkshopCircuitGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.WorkshopCircuitGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">WorkshopCircuitGenerator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.WorkshopCircuitGenerator.__next__"><code class="docutils literal notranslate"><span class="pre">WorkshopCircuitGenerator.__next__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.WorkshopCircuitGenerator.__repr__"><code class="docutils literal notranslate"><span class="pre">WorkshopCircuitGenerator.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.html#qgym.generators.WorkshopCircuitGenerator.set_state_attributes"><code class="docutils literal notranslate"><span class="pre">WorkshopCircuitGenerator.set_state_attributes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.circuit.html">qgym.generators.circuit module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.circuit.html#qgym.generators.circuit.BasicCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">BasicCircuitGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.circuit.html#qgym.generators.circuit.CircuitGenerator"><code class="docutils literal notranslate"><span class="pre">CircuitGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.circuit.html#qgym.generators.circuit.NullCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">NullCircuitGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.circuit.html#qgym.generators.circuit.WorkshopCircuitGenerator"><code class="docutils literal notranslate"><span class="pre">WorkshopCircuitGenerator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">qgym.generators.graph module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.generators.graph.BasicGraphGenerator"><code class="docutils literal notranslate"><span class="pre">BasicGraphGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.generators.graph.GraphGenerator"><code class="docutils literal notranslate"><span class="pre">GraphGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qgym.generators.graph.NullGraphGenerator"><code class="docutils literal notranslate"><span class="pre">NullGraphGenerator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.generators.interaction.html">qgym.generators.interaction module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.interaction.html#qgym.generators.interaction.BasicInteractionGenerator"><code class="docutils literal notranslate"><span class="pre">BasicInteractionGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.interaction.html#qgym.generators.interaction.InteractionGenerator"><code class="docutils literal notranslate"><span class="pre">InteractionGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.generators.interaction.html#qgym.generators.interaction.NullInteractionGenerator"><code class="docutils literal notranslate"><span class="pre">NullInteractionGenerator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.spaces.html">qgym.spaces package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Box.__init__"><code class="docutils literal notranslate"><span class="pre">Box.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Dict.__init__"><code class="docutils literal notranslate"><span class="pre">Dict.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.Discrete.__init__"><code class="docutils literal notranslate"><span class="pre">Discrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiBinary.__init__"><code class="docutils literal notranslate"><span class="pre">MultiBinary.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.html#qgym.spaces.MultiDiscrete.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.box.html">qgym.spaces.box module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.box.html#qgym.spaces.box.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.dict.html">qgym.spaces.dict module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.dict.html#qgym.spaces.dict.Dict"><code class="docutils literal notranslate"><span class="pre">Dict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.discrete.html">qgym.spaces.discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.discrete.html#qgym.spaces.discrete.Discrete"><code class="docutils literal notranslate"><span class="pre">Discrete</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.multi_binary.html">qgym.spaces.multi_binary module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.multi_binary.html#qgym.spaces.multi_binary.MultiBinary"><code class="docutils literal notranslate"><span class="pre">MultiBinary</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.spaces.multi_discrete.html">qgym.spaces.multi_discrete module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.spaces.multi_discrete.html#qgym.spaces.multi_discrete.MultiDiscrete"><code class="docutils literal notranslate"><span class="pre">MultiDiscrete</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.templates.html">qgym.templates package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.action_space"><code class="docutils literal notranslate"><span class="pre">Environment.action_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.close"><code class="docutils literal notranslate"><span class="pre">Environment.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.observation_space"><code class="docutils literal notranslate"><span class="pre">Environment.observation_space</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.render"><code class="docutils literal notranslate"><span class="pre">Environment.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.reset"><code class="docutils literal notranslate"><span class="pre">Environment.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.rewarder"><code class="docutils literal notranslate"><span class="pre">Environment.rewarder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.rng"><code class="docutils literal notranslate"><span class="pre">Environment.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Environment.step"><code class="docutils literal notranslate"><span class="pre">Environment.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.__eq__"><code class="docutils literal notranslate"><span class="pre">Rewarder.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.compute_reward"><code class="docutils literal notranslate"><span class="pre">Rewarder.compute_reward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Rewarder.reward_range"><code class="docutils literal notranslate"><span class="pre">Rewarder.reward_range</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.create_observation_space"><code class="docutils literal notranslate"><span class="pre">State.create_observation_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_done"><code class="docutils literal notranslate"><span class="pre">State.is_done()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.is_truncated"><code class="docutils literal notranslate"><span class="pre">State.is_truncated()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_info"><code class="docutils literal notranslate"><span class="pre">State.obtain_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.obtain_observation"><code class="docutils literal notranslate"><span class="pre">State.obtain_observation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.reset"><code class="docutils literal notranslate"><span class="pre">State.reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.rng"><code class="docutils literal notranslate"><span class="pre">State.rng</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.seed"><code class="docutils literal notranslate"><span class="pre">State.seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.steps_done"><code class="docutils literal notranslate"><span class="pre">State.steps_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.State.update_state"><code class="docutils literal notranslate"><span class="pre">State.update_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.close"><code class="docutils literal notranslate"><span class="pre">Visualiser.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.colors"><code class="docutils literal notranslate"><span class="pre">Visualiser.colors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.font"><code class="docutils literal notranslate"><span class="pre">Visualiser.font</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.is_open"><code class="docutils literal notranslate"><span class="pre">Visualiser.is_open</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.render"><code class="docutils literal notranslate"><span class="pre">Visualiser.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.render_data"><code class="docutils literal notranslate"><span class="pre">Visualiser.render_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen_height"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.screen_width"><code class="docutils literal notranslate"><span class="pre">Visualiser.screen_width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.html#qgym.templates.Visualiser.step"><code class="docutils literal notranslate"><span class="pre">Visualiser.step()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.environment.html">qgym.templates.environment module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.environment.html#qgym.templates.environment.Environment"><code class="docutils literal notranslate"><span class="pre">Environment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.rewarder.html">qgym.templates.rewarder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.rewarder.html#qgym.templates.rewarder.Rewarder"><code class="docutils literal notranslate"><span class="pre">Rewarder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.state.html">qgym.templates.state module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.state.html#qgym.templates.state.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.templates.visualiser.html">qgym.templates.visualiser module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.RenderData"><code class="docutils literal notranslate"><span class="pre">RenderData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.templates.visualiser.html#qgym.templates.visualiser.Visualiser"><code class="docutils literal notranslate"><span class="pre">Visualiser</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.utils.html">qgym.utils package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.__init__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.__repr__"><code class="docutils literal notranslate"><span class="pre">GateEncoder.__repr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.decode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.decode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.encode_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.encode_gates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.html#qgym.utils.GateEncoder.learn_gates"><code class="docutils literal notranslate"><span class="pre">GateEncoder.learn_gates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.visualisation.html">qgym.utils.visualisation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.colors.html">qgym.utils.visualisation.colors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.typing.html">qgym.utils.visualisation.typing module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.visualisation.wrappers.html">qgym.utils.visualisation.wrappers module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.gate_encoder.html">qgym.utils.gate_encoder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.gate_encoder.html#qgym.utils.gate_encoder.GateEncoder"><code class="docutils literal notranslate"><span class="pre">GateEncoder</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_parsing.html">qgym.utils.input_parsing module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.has_fidelity"><code class="docutils literal notranslate"><span class="pre">has_fidelity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_connection_graph"><code class="docutils literal notranslate"><span class="pre">parse_connection_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_rewarder"><code class="docutils literal notranslate"><span class="pre">parse_rewarder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_seed"><code class="docutils literal notranslate"><span class="pre">parse_seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_parsing.html#qgym.utils.input_parsing.parse_visualiser"><code class="docutils literal notranslate"><span class="pre">parse_visualiser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="qgym.utils.input_validation.html">qgym.utils.input_validation module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_adjacency_matrix"><code class="docutils literal notranslate"><span class="pre">check_adjacency_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_bool"><code class="docutils literal notranslate"><span class="pre">check_bool()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_graph_is_valid_topology"><code class="docutils literal notranslate"><span class="pre">check_graph_is_valid_topology()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_instance"><code class="docutils literal notranslate"><span class="pre">check_instance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_int"><code class="docutils literal notranslate"><span class="pre">check_int()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_real"><code class="docutils literal notranslate"><span class="pre">check_real()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.check_string"><code class="docutils literal notranslate"><span class="pre">check_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_negative"><code class="docutils literal notranslate"><span class="pre">warn_if_negative()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.utils.input_validation.html#qgym.utils.input_validation.warn_if_positive"><code class="docutils literal notranslate"><span class="pre">warn_if_positive()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qgym.custom_types.html">qgym.custom_types module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate"><code class="docutils literal notranslate"><span class="pre">Gate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.name"><code class="docutils literal notranslate"><span class="pre">Gate.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.q1"><code class="docutils literal notranslate"><span class="pre">Gate.q1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="qgym.custom_types.html#qgym.custom_types.Gate.q2"><code class="docutils literal notranslate"><span class="pre">Gate.q2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">qgym</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="qgym.html">qgym package</a></li>
+          <li class="breadcrumb-item"><a href="qgym.generators.html">qgym.generators package</a></li>
+      <li class="breadcrumb-item active">qgym.generators.graph module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/qgym.generators.graph.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-qgym.generators.graph">
+<span id="qgym-generators-graph-module"></span><h1>qgym.generators.graph module<a class="headerlink" href="#module-qgym.generators.graph" title="Link to this heading"></a></h1>
+<p>This module contains graph generators for <a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping" title="qgym.envs.InitialMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialMapping</span></code></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.generators.graph.BasicGraphGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.generators.graph.</span></span><span class="sig-name descname"><span class="pre">BasicGraphGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction_graph_edge_probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#BasicGraphGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.BasicGraphGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qgym.generators.graph.GraphGenerator" title="qgym.generators.graph.GraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphGenerator</span></code></a></p>
+<p><a class="reference internal" href="#qgym.generators.graph.BasicGraphGenerator" title="qgym.generators.graph.BasicGraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicGraphGenerator</span></code></a> is a simple graph generation implementation.</p>
+<p>It uses <a class="reference external" href="https://networkx.org/documentation/stable/reference/generated/networkx.generators.random_graphs.fast_gnp_random_graph.html#networkx.generators.random_graphs.fast_gnp_random_graph" title="(in NetworkX v3.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">fast_gnp_random_graph()</span></code></a> to generate
+graphs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.BasicGraphGenerator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction_graph_edge_probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#BasicGraphGenerator.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.BasicGraphGenerator.__init__" title="Link to this definition"></a></dt>
+<dd><p>Init of the <a class="reference internal" href="#qgym.generators.graph.BasicGraphGenerator" title="qgym.generators.graph.BasicGraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicGraphGenerator</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interaction_graph_edge_probability</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.SupportsFloat" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SupportsFloat</span></code></a></span>) – Probability to add an edge between two
+nodes. See the documentation of
+<a class="reference external" href="https://networkx.org/documentation/stable/reference/generated/networkx.generators.random_graphs.fast_gnp_random_graph.html#networkx.generators.random_graphs.fast_gnp_random_graph" title="(in NetworkX v3.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">fast_gnp_random_graph()</span></code></a> for
+more information.</p></li>
+<li><p><strong>seed</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.SupportsInt" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SupportsInt</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Seed to use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.BasicGraphGenerator.__next__">
+<span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#BasicGraphGenerator.__next__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.BasicGraphGenerator.__next__" title="Link to this definition"></a></dt>
+<dd><p>Create a new randomly generated :class:~`networkx.Graph`.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.BasicGraphGenerator.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#BasicGraphGenerator.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.BasicGraphGenerator.__repr__" title="Link to this definition"></a></dt>
+<dd><p>String representation of the <a class="reference internal" href="#qgym.generators.graph.BasicGraphGenerator" title="qgym.generators.graph.BasicGraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicGraphGenerator</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.BasicGraphGenerator.set_state_attributes">
+<span class="sig-name descname"><span class="pre">set_state_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#BasicGraphGenerator.set_state_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.BasicGraphGenerator.set_state_attributes" title="Link to this definition"></a></dt>
+<dd><p>Set the <cite>n_qubits</cite> attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection_graph</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – A <a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></a> representation of the
+connection graph.</p></li>
+<li><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Additional keyword arguments. These are not used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.generators.graph.GraphGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.generators.graph.</span></span><span class="sig-name descname"><span class="pre">GraphGenerator</span></span><a class="reference internal" href="_modules/qgym/generators/graph.html#GraphGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.GraphGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></a>]</p>
+<p>Abstract Base Class for graph generation.</p>
+<p>All graph generators should inherit from <a class="reference internal" href="#qgym.generators.graph.GraphGenerator" title="qgym.generators.graph.GraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphGenerator</span></code></a> to be compatible
+with the <a class="reference internal" href="qgym.envs.html#qgym.envs.InitialMapping" title="qgym.envs.InitialMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialMapping</span></code></a> environment.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.GraphGenerator.__next__">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#GraphGenerator.__next__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.GraphGenerator.__next__" title="Link to this definition"></a></dt>
+<dd><p>Make a new :class:~`networkx.Graph`, representing an interaction graph.</p>
+<p>The __next__ method of a <a class="reference internal" href="#qgym.generators.graph.GraphGenerator" title="qgym.generators.graph.GraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphGenerator</span></code></a> should generate a
+:class:~`networkx.Graph` representation of the interaction graph. To be a valid
+interaction graph, all nodes should have integer labels starting from 0 and up
+to the number of nodes minus 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qgym.generators.graph.GraphGenerator.finite">
+<span class="sig-name descname"><span class="pre">finite</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></em><a class="headerlink" href="#qgym.generators.graph.GraphGenerator.finite" title="Link to this definition"></a></dt>
+<dd><p>Boolean value stating whether the generator is finite.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.GraphGenerator.set_state_attributes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_state_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#GraphGenerator.set_state_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.GraphGenerator.set_state_attributes" title="Link to this definition"></a></dt>
+<dd><p>Set attributes that the state can receive.</p>
+<p>This method is called inside the mapping environment to receive information
+about the state. The same keywords as for the the init of the
+<a class="reference internal" href="qgym.envs.initial_mapping.html#qgym.envs.initial_mapping.InitialMappingState" title="qgym.envs.initial_mapping.InitialMappingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitialMappingState</span></code></a> are provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qgym.generators.graph.NullGraphGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qgym.generators.graph.</span></span><span class="sig-name descname"><span class="pre">NullGraphGenerator</span></span><a class="reference internal" href="_modules/qgym/generators/graph.html#NullGraphGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.NullGraphGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qgym.generators.graph.GraphGenerator" title="qgym.generators.graph.GraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphGenerator</span></code></a></p>
+<p>Generator class for generating empty <code class="xref py py-class docutils literal notranslate"><span class="pre">Graphs</span></code>.</p>
+<p>Useful for unit testing.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.NullGraphGenerator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#NullGraphGenerator.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.NullGraphGenerator.__init__" title="Link to this definition"></a></dt>
+<dd><p>Init of the <a class="reference internal" href="#qgym.generators.graph.NullGraphGenerator" title="qgym.generators.graph.NullGraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">NullGraphGenerator</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.NullGraphGenerator.__next__">
+<span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#NullGraphGenerator.__next__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.NullGraphGenerator.__next__" title="Link to this definition"></a></dt>
+<dd><p>Create a new null graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://networkx.org/documentation/stable/reference/classes/graph.html#networkx.Graph" title="(in NetworkX v3.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Graph</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.NullGraphGenerator.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#NullGraphGenerator.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.NullGraphGenerator.__repr__" title="Link to this definition"></a></dt>
+<dd><p>String representation of the <a class="reference internal" href="#qgym.generators.graph.NullGraphGenerator" title="qgym.generators.graph.NullGraphGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">NullGraphGenerator</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qgym.generators.graph.NullGraphGenerator.set_state_attributes">
+<span class="sig-name descname"><span class="pre">set_state_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qgym/generators/graph.html#NullGraphGenerator.set_state_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qgym.generators.graph.NullGraphGenerator.set_state_attributes" title="Link to this definition"></a></dt>
+<dd><p>Receive state attributes, but do nothing with it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Keyword arguments.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="qgym.generators.circuit.html" class="btn btn-neutral float-left" title="qgym.generators.circuit module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="qgym.generators.interaction.html" class="btn btn-neutral float-right" title="qgym.generators.interaction module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, QuTech &amp; TNO.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
