@@ -208,8 +208,12 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
             return self
 
         qubit1, qubit2 = self.edges[action]
+
+        # Get the logical qubits from the mapping
+        logical_qubit1, logical_qubit2 = (np.flatnonzero(self.mapping == p)[0] for p in (qubit1, qubit2))
+
         self._place_swap_gate(qubit1, qubit2)
-        self._update_mapping(qubit1, qubit2)
+        self._update_mapping(logical_qubit1, logical_qubit2)
 
         return self
 
