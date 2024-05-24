@@ -26,6 +26,7 @@ class InitialMappingSolutionQuality:
                 representation of the QPU topology. Each node represents a physical
                 qubit and each edge represents a connection in the QPU topology.
         """
+        self.connection_graph = connection_graph
 
     def distance_ratio_loss(
         self,
