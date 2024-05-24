@@ -19,6 +19,7 @@ def smallest_graph() -> nx.Graph:
     smallest_graph.add_edge(0, 4)
     return smallest_graph
 
+
 def small_graph() -> nx.Graph:
     small_graph = nx.Graph()
     small_graph.add_edge(0, 1)
@@ -26,7 +27,7 @@ def small_graph() -> nx.Graph:
     small_graph.add_edge(0, 3)
     small_graph.add_edge(0, 4)
     small_graph.add_edge(1, 2)
-    
+
     return small_graph
 
 

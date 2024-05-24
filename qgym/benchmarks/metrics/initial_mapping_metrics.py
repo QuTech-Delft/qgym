@@ -32,7 +32,7 @@ class InitialMappingSolutionQuality:
         self,
         interaction_graph: nx.Graph,
         mapping: NDArray[np.int_],
-    ):
+    ) -> int:
         distance_loss = 0
 
         for edge in interaction_graph.edges():
