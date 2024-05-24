@@ -4,7 +4,7 @@ import networkx as nx
 import numpy as np
 import pytest
 from numpy.typing import ArrayLike
-from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
 from qgym.benchmarks.metrics.routing_metrics import RoutingSolutionQuality
 
@@ -28,7 +28,7 @@ def circuit_1() -> QuantumCircuit:
 
 def test_distance_ratio_loss() -> None:
     quality_metric = RoutingSolutionQuality(circuit=circuit_1)
-    #TODO
+    # TODO
     initial_number_of_gates = circuit_1.count_ops()
     swaps_added = 2
     loss = quality_metric.gates_ratio_loss(swaps_added=swaps_added)
