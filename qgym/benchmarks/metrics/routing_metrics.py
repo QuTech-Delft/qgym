@@ -6,6 +6,7 @@ the better.
 Function named as ``*_error`` or ``*_loss`` return a scalar value to minimize:
 the lower the better.
 """
+from __future__ import annotations
 
 import warnings
 from collections import deque
@@ -21,8 +22,7 @@ class RoutingSolutionQuality:
     def __init__(
         self,
     ) -> None:
-        # pylint: disable=line-too-long
-        """Init of the :class:`~qgym.benchmarks.metrics.routing.RoutingSolutionQuality` class."""
+        """Init of the :class:`RoutingSolutionQuality` class."""
 
     def interaction_gates_ratio_loss(
         self,
@@ -32,23 +32,24 @@ class RoutingSolutionQuality:
     ) -> int:
         """Method to calculate the ratio of the final number of interactions divided by
         the initial number of interactions.
+
         At least two of three need to be specified.
 
         Args:
             swaps_added: int, represents the number of swaps added during the routing
-            process.
+                process.
             initial_interaction_circuit: An array of 2-tuples of integers, where every
-            tuple represents a, not specified, gate acting on the two qubits labeled by
-            the integers in the tuples. This is the interaction circuit considered
-            before adding the swaps.
+                tuple represents a, not specified, gate acting on the two qubits labeled
+                by the integers in the tuples. This is the interaction circuit
+                considered before adding the swaps.
             final_interaction_circuit: An array of 2-tuples of integers, where every
-            tuple represents a, not specified, gate acting on the two qubits labeled by
-            the integers in the tuples. This is the interaction circuit considered
-            after adding the swaps.
+                tuple represents a, not specified, gate acting on the two qubits labeled
+                by the integers in the tuples. This is the interaction circuit
+                considered after adding the swaps.
         """
-        if (initial_interaction_circuit == None) + (
-            final_interaction_circuit == None
-        ) + (swaps_added == None) < 2:
+        if (initial_interaction_circuit is None) + (
+            final_interaction_circuit is None
+        ) + (swaps_added is None) < 2:
             warnings.warn("At least two of the input variables have to be given")
             return
 
@@ -75,7 +76,7 @@ class RoutingSolutionQuality:
         Args:
             initial_number_of_gates: int
             swaps_added: int, represents the number of swaps added during the routing
-            process.
+                process.
             final_number_of_gates: int
         """
         if (initial_number_of_gates == None) + (final_number_of_gates == None) + (
@@ -106,9 +107,9 @@ class RoutingSolutionQuality:
             initial_interaction_circuit: An array of 2-tuples of integers, where every
                 tuple represents a, not specified, gate acting on the two qubits labeled
                 by the integers in the tuples.
-            connection_graph: ``networkx`` graph representation of the QPU topology.
-                Each node represents a physical qubit and each edge represents a
-                connection in the QPU topology.
+            connection_graph: :class:`networkx.Graph` representation of the QPU
+                topology. Each node represents a physical qubit and each edge represents
+                a connection in the QPU topology.
             swap_gates_inserted:  A deque of 3-tuples of integers, to register which
                 gates to insert and where. Every tuple (g, q1, q2) represents the
                 insertion of a SWAP-gate acting on logical qubits q1 and q2 before gate
@@ -168,9 +169,9 @@ class RoutingSolutionQuality:
             initial_interaction_circuit: An array of 2-tuples of integers, where every
                 tuple represents a, not specified, gate acting on the two qubits labeled
                 by the integers in the tuples.
-            connection_graph: ``networkx`` graph representation of the QPU topology.
-                Each node represents a physical qubit and each edge represents a
-                connection in the QPU topology.
+            connection_graph: :class:`networkx.Graph` representation of the QPU
+                topology. Each node represents a physical qubit and each edge represents
+                a connection in the QPU topology.
             final_interaction_circuit: An array of 2-tuples of integers, where every
                 tuple represents a, not specified, gate acting on the two qubits labeled
                 by the integers in the tuples.
