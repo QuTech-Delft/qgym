@@ -14,38 +14,29 @@ from numpy.typing import NDArray
 
 class InitialMappingSolutionQuality:
 
-    def __init__(
-        self,
-        connection_graph: nx.Graph,
-    ) -> None:
-        # pylint: disable=line-too-long
-        """Init of the :class:`~qgym.benchmarks.metrics.initial_mapping_metrics.InitialMappingSolutionQuality` class.
+    def __init__(self, connection_graph: nx.Graph) -> None:
+        """Init of the :class:`InitialMappingSolutionQuality` class.
 
         Args:
-            connection_graph: `networkx Graph <https://networkx.org/documentation/stable/reference/classes/graph.html>`_
-                representation of the QPU topology. Each node represents a physical
-                qubit and each edge represents a connection in the QPU topology.
+            connection_graph: :class:`networkx.Graph` representation of the QPU
+                topology. Each node represents a physical qubit and each edge represents
+                a connection in the QPU topology.
+
         """
         self.connection_graph = connection_graph
 
     def distance_ratio_loss(
-        self,
-        interaction_graph: nx.Graph,
-        mapping: NDArray[np.int_],
+        self, interaction_graph: nx.Graph, mapping: NDArray[np.int_]
     ) -> int:
         distance_loss = 0
 
         for edge in interaction_graph.edges():
             mapped_edge = (mapping[edge[0]], mapping[edge[1]])
-            if mapped_edge not in self.connection_graph.edges():
-                distance_loss += nx.shortest_path_length(
-                    self.connection_graph(),
-                    source=mapped_edge[0],
-                    target=mapped_edge[1],
-                )
+            distance_loss += nx.shortest_path_length(
+                self.connection_graph, *mapped_edge
+            )
 
-        total_routing_distance = interaction_graph.number_of_edges() + distance_loss
-        return total_routing_distance / interaction_graph.number_of_edges()
+        return distance_loss / interaction_graph.number_of_edges()
 
 
 class AgentPerformance:
@@ -53,8 +44,7 @@ class AgentPerformance:
     def __init__(
         self,
     ) -> None:
-        # pylint: disable=line-too-long
-        """Init of the :class:`~qgym.benchmarks.metrics.initial_mapping_metrics.AgentPerformance` class.
+        """Init of the :class:`AgentPerformance` class.
 
         Args:
         """
