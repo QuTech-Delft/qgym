@@ -24,17 +24,19 @@ class InitialMappingSolutionQuality:
 
         """
         self.connection_graph = connection_graph
+        n_qubits = len(self.connection_graph)
+        self.distance_matrix = np.zeros((n_qubits, n_qubits), dtype=np.int_)
+        for node_u, distances in nx.all_pairs_shortest_path_length(connection_graph):
+            for node_v in connection_graph:
+                self.distance_matrix[node_u, node_v] = distances[node_v]
 
     def distance_ratio_loss(
         self, interaction_graph: nx.Graph, mapping: NDArray[np.int_]
-    ) -> int:
+    ) -> float:
         distance_loss = 0
-
         for edge in interaction_graph.edges():
             mapped_edge = (mapping[edge[0]], mapping[edge[1]])
-            distance_loss += nx.shortest_path_length(
-                self.connection_graph, *mapped_edge
-            )
+            distance_loss += self.distance_matrix[mapped_edge]
 
         return distance_loss / interaction_graph.number_of_edges()
 
@@ -48,3 +50,8 @@ class AgentPerformance:
 
         Args:
         """
+
+if __name__ == "__main__":
+    metric = InitialMappingSolutionQuality(nx.cycle_graph(4))
+    
+    print(metric.distance_ratio_loss(nx.complete_graph(4), np.arange(4)))
