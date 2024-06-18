@@ -6,13 +6,28 @@ the better.
 Function named as ``*_error`` or ``*_loss`` return a scalar value to minimize:
 the lower the better.
 """
+from __future__ import annotations
+
+from collections import deque
+from collections.abc import Iterable
+from typing import Protocol, runtime_checkable
 
 import networkx as nx
 import numpy as np
-from numpy.typing import NDArray
+from numpy.typing import ArrayLike, NDArray
+
+from qgym.generators.graph import GraphGenerator
 
 
-class InitialMappingSolutionQuality:
+@runtime_checkable
+class InitialMappingMetric(Protocol):
+    def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float:...
+
+@runtime_checkable
+class Mapper(Protocol):
+    def compute_mapping(self, interaction_graph: nx.Graph) -> NDArray[np.int_]:...
+
+class DistanceRatioLoss(InitialMappingMetric):
 
     def __init__(self, connection_graph: nx.Graph) -> None:
         """Init of the :class:`InitialMappingSolutionQuality` class.
@@ -30,9 +45,8 @@ class InitialMappingSolutionQuality:
             for node_v in connection_graph:
                 self.distance_matrix[node_u, node_v] = distances[node_v]
 
-    def distance_ratio_loss(
-        self, interaction_graph: nx.Graph, mapping: NDArray[np.int_]
-    ) -> float:
+    def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float:
+        mapping = np.asarray(mapping, dtype=np.int_)
         distance_loss = 0
         for edge in interaction_graph.edges():
             mapped_edge = (mapping[edge[0]], mapping[edge[1]])
@@ -51,7 +65,26 @@ class AgentPerformance:
         Args:
         """
 
-if __name__ == "__main__":
-    metric = InitialMappingSolutionQuality(nx.cycle_graph(4))
+class InitialMappingBenchmarker:
+
+    def __init__(self, generator: GraphGenerator, metrics: Iterable[InitialMappingMetric]) -> None:
+        self.generator = generator
+        self.metrics = tuple(metrics)
     
-    print(metric.distance_ratio_loss(nx.complete_graph(4), np.arange(4)))
+    def run(self, mapper: Mapper, max_iter: int = 1000) -> NDArray[np.float_]:
+        results = [deque() for _ in self.metrics]
+        for i, interaction_graph in enumerate(self.generator):
+            mapping = mapper.compute_mapping(interaction_graph)
+            for metric, result_que in zip(self.metrics, results):
+                result_que.append(metric.compute(interaction_graph, mapping))
+
+            if i>=max_iter:
+                break
+
+        return np.array(results, dtype=np.float_)
+
+if __name__ == "__main__":
+    metric = DistanceRatioLoss(nx.cycle_graph(4))
+    
+    print(isinstance(metric, InitialMappingMetric))
+    print(metric.compute(nx.complete_graph(4), np.arange(4)))
