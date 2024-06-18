@@ -1,9 +1,100 @@
+[build-system]
+requires = ["setuptools>=64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qgym"
+authors = [{ name = "QuTech (TNO, TU Delft)"}]
+maintainers = [{ name = "QuTech (TNO, TU Delft)"}]
+description = "Reinforcement Learning Gym for Quantum Compilation"
+classifiers =[
+    "License :: OSI Approved :: Apache Software License",
+    "Private :: Do Not Upload to pypi server",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+readme = { file = "README.md", content-type = "text/markdown" }
+keywords =[
+    "Reinforcement Learning",
+    "QuTech",
+    "TNO",
+    "TU Delft",
+    "Quantum",
+    "Gym",
+    "Quantum Compilation",
+]
+dependencies = [
+    "gymnasium>=0.28.1",
+    "networkx[default]>=2.6.3",
+    "numpy>=1.21.6",
+    "pygame",
+]
+dynamic = ["version"]
+
+
+[project.optional-dependencies]
+tutorial = [
+    "matplotlib",
+    "notebook",
+    "stable-baselines3>=2.0.0",
+]
+test = [
+    "pytest",
+    "stable-baselines3>=2.0.0",
+    "scipy>=1.7.3",
+]
+dev = [
+    "black[jupyter]",
+    "isort",
+    "matplotlib",
+    "notebook",
+    "pytest",
+    "sphinx",
+    "sphinx-autodoc-typehints",
+    "sphinx-math-dollar",
+    "sphinx-rtd-theme~=1.0",
+    "stable-baselines3>=2.0.0",
+    "mypy",
+    "pylint",
+    "scipy>=1.7.3",
+]
+
+[tool.setuptools.packages.find]
+include = ["qgym*"]
+exclude = ["tests*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "qgym.__version__"}
+
 [tool.black]
 force-exclude="(deps|docs|docs_build|docs_html|images|openql_output|pybuild|qgym.egg-info|venv|wsl_venv)"
 
 [tool.isort]
 profile="black"
-extend_skip_glob = ["deps", "docs", "docs_build", "docs_files", "images", "openql_output", "pybuild", "qgym.egg-info", "venv", "wsl_venv"]
+extend_skip_glob = [
+    "deps",
+    "docs",
+    "docs_build",
+    "docs_files",
+    "images",
+    "openql_output",
+    "pybuild",
+    "qgym.egg-info",
+    "venv",
+    "wsl_venv"
+]
 
 [tool.mypy]
 plugins = ["numpy.typing.mypy_plugin"]

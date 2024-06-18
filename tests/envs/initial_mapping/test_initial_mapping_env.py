@@ -26,14 +26,35 @@ def small_graph() -> nx.Graph:
 
 @pytest.fixture
 def small_env(small_graph: nx.Graph) -> InitialMapping:
-    return InitialMapping(0.5, connection_graph=small_graph)
+    return InitialMapping(connection_graph=small_graph)
 
 
-def test_validity(small_env: InitialMapping) -> None:
-    check_env(
-        small_env, warn=True
-    )  # todo: maybe switch this to the gymnasium env checker
-    assert True
+class TestEnvironment:
+
+    def test_validity(self, small_env: InitialMapping) -> None:
+        # todo: maybe switch this to the gymnasium env checker
+        check_env(small_env, warn=True)
+
+    def test_episode(self, small_env: InitialMapping) -> None:
+        obs, reward, is_done, truncated, _ = small_env.step(np.array([0, 1]))
+        np.testing.assert_array_equal(obs["mapping"], [1, 2])
+        assert reward == 0
+        assert not is_done
+        assert not truncated
+
+        obs, reward, is_done, truncated, _ = small_env.step(np.array([1, 0]))
+        np.testing.assert_array_equal(obs["mapping"], [1, 0])
+        assert is_done
+        assert not truncated
+
+    def test_truncation(self, small_env: InitialMapping) -> None:
+        truncated = False
+        for _ in range(10000):
+            _, _, is_done, truncated, _ = small_env.step(np.array([0, 0]))
+            if is_done or truncated:
+                break
+        assert not is_done
+        assert truncated
 
 
 @pytest.mark.parametrize(
@@ -45,7 +66,7 @@ def test_unsupported_render_mode(
     small_graph: nx.Graph, render_mode: int | str, error_type: type[Exception]
 ) -> None:
     with pytest.raises(error_type):
-        InitialMapping(0.5, connection_graph=small_graph, render_mode=render_mode)  # type: ignore[arg-type]
+        InitialMapping(connection_graph=small_graph, render_mode=render_mode)  # type: ignore[arg-type]
 
 
 def test_init_custom_connection_graph(
@@ -65,7 +86,7 @@ def test_init_custom_connection_graph(
 def test_init_custom_connection_graph_matrix(
     small_graph: nx.Graph, connection_graph_matrix: ArrayLike
 ) -> None:
-    env = InitialMapping(0.5, connection_graph_matrix=connection_graph_matrix)
+    env = InitialMapping(connection_graph=connection_graph_matrix)
     assert isinstance(env._state, InitialMappingState)
     assert nx.is_isomorphic(env._state.graphs["connection"]["graph"], small_graph)
     np.testing.assert_array_equal(
@@ -80,7 +101,7 @@ def test_init_custom_connection_graph_matrix(
 def test_init_custom_connection_grid_size(
     small_graph: nx.Graph, connection_grid_size: list[int] | tuple[int, ...]
 ) -> None:
-    env = InitialMapping(0.5, connection_grid_size=connection_grid_size)
+    env = InitialMapping(connection_graph=connection_grid_size)
     assert isinstance(env._state, InitialMappingState)
     assert nx.is_isomorphic(env._state.graphs["connection"]["graph"], small_graph)
     np.testing.assert_array_equal(
@@ -97,7 +118,7 @@ def test_init_custom_connection_grid_size(
     ],
 )
 def test_init_custom_rewarder(rewarder: Rewarder) -> None:
-    env = InitialMapping(1, connection_grid_size=(2, 2), rewarder=rewarder)
+    env = InitialMapping(connection_graph=(2, 2), rewarder=rewarder)
     assert env.rewarder == rewarder
     # Check that we made a copy for safety
     assert env.rewarder is not rewarder

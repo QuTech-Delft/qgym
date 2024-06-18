@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Generator
 from copy import deepcopy
-from typing import Generator, cast
+from typing import cast
 
 import numpy as np
 import pytest
@@ -15,6 +16,7 @@ from qgym.envs.scheduling import (
     MachineProperties,
 )
 from qgym.envs.scheduling.scheduling_state import SchedulingState
+from qgym.generators import NullCircuitGenerator
 from qgym.templates import Rewarder
 
 
@@ -28,13 +30,12 @@ def _right_to_left_state_generator(
     """
     machine_properties = MachineProperties(2)
     machine_properties.add_gates({"x": 1, "y": 1, "measure": 5, "cnot": 2})
-    rulebook = CommutationRulebook()
     new_state = SchedulingState(
         machine_properties=machine_properties,
         max_gates=10,
         dependency_depth=1,
-        random_circuit_mode="workshop",
-        rulebook=rulebook,
+        circuit_generator=NullCircuitGenerator(),
+        rulebook=CommutationRulebook(),
     )
     new_state.reset(circuit=circuit)
 

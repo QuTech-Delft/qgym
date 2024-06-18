@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Collection
+from collections.abc import Collection
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
@@ -143,7 +144,6 @@ def test_legal_actions(diamond_env: Scheduling) -> None:
 
 def test_validity(diamond_env: Scheduling) -> None:
     check_env(diamond_env, warn=True)  # todo: maybe switch this to the gym env checker
-    assert True
 
 
 def test_full_cnot_circuit(diamond_env: Scheduling) -> None:
@@ -176,10 +176,3 @@ def test_parse_machine_properties() -> None:
         match="<class 'int'> is not a supported type for 'machine_properties'",
     ):
         Scheduling._parse_machine_properties(1)  # type: ignore[arg-type]
-
-
-def test_parse_random_circuit_mode() -> None:
-    with pytest.raises(
-        ValueError, match="'test' is not a supported random circuit mode"
-    ):
-        Scheduling._parse_random_circuit_mode("test")

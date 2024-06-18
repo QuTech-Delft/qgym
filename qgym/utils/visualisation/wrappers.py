@@ -30,7 +30,7 @@ def draw_wide_line(
     point1: ArrayLike,
     point2: ArrayLike,
     *,
-    width: int = 2
+    width: int = 2,
 ) -> None:
     """Draw a wide line on the screen.
 

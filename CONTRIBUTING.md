@@ -1,5 +1,5 @@
 # Contributing
-Currently, we are not looking for any new contributors. We are happy to receive any issues one encounters.
+Currently, we are not looking for any new contributors.
 
 # Developer notes
 Below is a list of useful information for developers.
@@ -15,9 +15,10 @@ This will install the `qgym` package together with all tools needed for developi
 
 ### Building a wheel
 To build a wheel from this source one can run the command below.
-This will create a built wheel in a folder called `dist`. Make sure that `pip`, `setuptools`, `wheel` are up-to-date.
+This will create a built wheel in a folder called `dist`.
 ```commandline
-python setup.py bdist_wheel
+pip install --upgrade build
+python -m build
 ```
 
 ### Building documentation

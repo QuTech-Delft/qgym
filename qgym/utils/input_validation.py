@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import warnings
 from numbers import Integral, Real
-from typing import Any
+from typing import Any, SupportsInt
 
 import networkx as nx
 import numpy as np
@@ -98,7 +98,7 @@ def check_int(  # pylint: disable=too-many-arguments
     Returns:
         Floating point representation of `x`.
     """
-    if not isinstance(x, Real):
+    if not isinstance(x, Real) or not isinstance(x, SupportsInt):
         raise TypeError(f"'{name}' should be an integer, but was of type {type(x)}")
 
     if not isinstance(x, Integral):
@@ -205,9 +205,9 @@ def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
     return numpy_matrix
 
 
-def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
-    """Check if `graph` with name 'name' is an instance of ``networkx.Graph`` and check
-    if the graph is valid topology graph.
+def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> nx.Graph:
+    """Check if `graph` with name 'name' is an instance of ``networkx.Graph``, check
+    if the graph is valid topology graph and check if the nodes are integers.
 
     Args:
         graph: Graph to check.
@@ -217,6 +217,9 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
     Raises:
         TypeError: If `graph` is not an instance of ``networkx.Graph``.
         ValueError: If `graph` is not a valid topology graph.
+
+    Returns:
+        The input graph.
     """
     check_instance(graph, name, nx.Graph)
 
@@ -225,6 +228,11 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> None:
 
     if len(graph) == 0:
         raise ValueError(f"'{name}' has no nodes")
+
+    if any(not isinstance(node, int) for node in graph):
+        raise TypeError(f"'{name}' has nodes that are not integers")
+
+    return graph
 
 
 def check_instance(x: Any, name: str, dtype: type) -> None:

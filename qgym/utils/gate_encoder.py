@@ -14,7 +14,8 @@ Usage:
 from __future__ import annotations
 
 import warnings
-from typing import Any, Iterable, Mapping, Sequence, TypeVar, cast, overload
+from collections.abc import Iterable, Mapping, Sequence
+from typing import Any, TypeVar, cast, overload
 
 from qgym.custom_types import Gate
 
@@ -100,11 +101,14 @@ class GateEncoder:
         if isinstance(gates, Mapping):
             return self._encode_mapping(gates)
 
-        if isinstance(gates, Sequence) and isinstance(gates[0], Gate):
+        if isinstance(gates, Sequence) and (
+            len(gates) == 0 or isinstance(gates[0], Gate)
+        ):
             # We assume that if the first element of gates is a Gate, then the whole
             # Sequence contains Gate objects.
             encoded_gates_list: list[Gate] = []
-            for gate in cast(Sequence[Gate], gates):
+            for gate in gates:
+                gate = cast(Gate, gate)
                 encoded_name = self._encoding_dct[gate.name]
                 encoded_gates_list.append(Gate(encoded_name, gate.q1, gate.q2))
             return encoded_gates_list
@@ -205,7 +209,8 @@ class GateEncoder:
             # We assume that if the first element of encoded_gates is a Gate, then the
             # whole Sequence contains Gate objects.
             decoded_gate_list: list[Gate] = []
-            for gate in cast(Sequence[Gate], encoded_gates):
+            for gate in encoded_gates:
+                gate = cast(Gate, gate)
                 decoded_gate_name = self._decoding_dct[gate.name]
                 decoded_gate_list.append(Gate(decoded_gate_name, gate.q1, gate.q2))
             return decoded_gate_list

@@ -44,8 +44,7 @@ State Space:
     * `edges`: List of edges of the connection graph used for decoding actions.
     * `mapping`: Array of which the index represents a physical qubit, and the value a
       virtual qubit. This is updated after each swap.
-    * `max_interaction_gates`: Maximum amount of gates allowed in the interaction 
-      circuit, when a new interaction circuit is (randomly) generated.
+    * `interaction_generator`: Generator for interaction circuits.
     * `interaction_circuit`: An array of 2-tuples of integers, where every tuple
       represents a, not specified, gate acting on the two qubits labeled by the
       integers in the tuples.
@@ -88,7 +87,9 @@ Action Space:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Mapping
+from collections.abc import Iterable, Mapping
+from copy import deepcopy
+from typing import TYPE_CHECKING, Any, Dict
 
 import networkx as nx
 import numpy as np
@@ -98,13 +99,14 @@ import qgym.spaces
 from qgym.envs.routing.routing_rewarders import BasicRewarder
 from qgym.envs.routing.routing_state import RoutingState
 from qgym.envs.routing.routing_visualiser import RoutingVisualiser
+from qgym.generators.interaction import BasicInteractionGenerator, InteractionGenerator
 from qgym.templates import Environment, Rewarder
 from qgym.utils.input_parsing import (
     parse_connection_graph,
     parse_rewarder,
     parse_visualiser,
 )
-from qgym.utils.input_validation import check_bool, check_int
+from qgym.utils.input_validation import check_bool, check_instance, check_int
 
 if TYPE_CHECKING:
     Gridspecs = (
@@ -117,14 +119,12 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        max_interaction_gates: int = 10,
+        connection_graph: nx.Graph | ArrayLike | Gridspecs,
+        interaction_generator: InteractionGenerator | None = None,
         max_observation_reach: int = 5,
         observe_legal_surpasses: bool = True,
         observe_connection_graph: bool = False,
         *,
-        connection_graph: nx.Graph | None = None,
-        connection_graph_matrix: ArrayLike | None = None,
-        connection_grid_size: Gridspecs | None = None,
         rewarder: Rewarder | None = None,
         render_mode: str | None = None,
     ) -> None:
@@ -134,8 +134,14 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
         ``"rgb_array"``.
 
         Args:
-            max_interaction_gates: Sets the maximum amount of gates in the
-                `interaction_circuit`, when a new `interaction_circuit` is generated.
+            connection_graph: Graph representation of the QPU topology. Each node
+                represents a physical qubit and each edge represents a connection in the
+                QPU topology. See
+                :func:`~qgym.utils.input_parsing.parse_connection_graph` for supported
+                formats.
+            interaction_generator: Interaction generator for generating interaction
+                circuits. This generator is used to generate a new interaction circuit
+                when :func:`Routing.reset` is called without an interaction circuit.
             max_observation_reach: Sets a cap on the maximum amount of gates the agent
                 can see ahead when making an observation. When bigger that
                 `max_interaction_gates` the agent will always see all gates ahead in an
@@ -149,37 +155,18 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
                 agent is typically trained for just one QPU-topology which can be
                 learned implicitly by rewards and/or the booleans if they are shown,
                 depending on the other flag above. Default is ``False``.
-            connection_graph: ``networkx`` graph representation of the QPU topology.
-                Each node represents a physical qubit and each node represents a
-                connection in the QPU topology.
-            connection_graph_matrix: Adjacency matrix representation of the QPU
-                topology.
-            connection_grid_size: Size of the connection graph when the connection graph
-                has a grid topology. For more information on the allowed values and
-                types, see ``networkx`` `grid_graph`_ documentation.
             rewarder: Rewarder to use for the environment. Must inherit from
                 :class:`~qgym.templates.Rewarder`. If ``None`` (default), then
                 :class:`~qgym.envs,routing.BasicRewarder` is used.
             render_mode: If ``"human"`` open a ``pygame`` screen visualizing the step.
                 If ``"rgb_array"``, return an RGB array encoding of the rendered frame
                 on each render call.
-
-        .. _grid_graph: https://networkx.org/documentation/stable/reference/generated/
-            networkx.generators.lattice.grid_graph.html#grid-graph
         """
         # Check user input and parse it to a uniform format
-        connection_graph = parse_connection_graph(
-            connection_graph, connection_graph_matrix, connection_grid_size
-        )
+        connection_graph = parse_connection_graph(connection_graph)
 
-        max_interaction_gates = check_int(
-            max_interaction_gates, "max_interaction_gates", l_bound=0
-        )
         max_observation_reach = check_int(
-            max_observation_reach,
-            "max_observation_reach",
-            l_bound=0,
-            u_bound=max_interaction_gates,
+            max_observation_reach, "max_observation_reach", l_bound=1
         )
         observe_legal_surpasses = check_bool(
             observe_legal_surpasses, "observe_legal_surpasses", safe=False
@@ -188,11 +175,29 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
             observe_connection_graph, "observe_connection_graph", safe=False
         )
 
+        if interaction_generator is None:
+            interaction_generator = BasicInteractionGenerator(seed=self.rng)
+        else:
+            check_instance(
+                interaction_generator, "interaction_generator", InteractionGenerator
+            )
+            if interaction_generator.finite:
+                raise ValueError(
+                    "'interaction_generator' should not be an infinite iterator"
+                )
+            interaction_generator = deepcopy(interaction_generator)
+        interaction_generator.set_state_attributes(
+            max_observation_reach=max_observation_reach,
+            connection_graph=connection_graph,
+            observe_legal_surpasses=observe_legal_surpasses,
+            observe_connection_graph=observe_connection_graph,
+        )
+
         # Define internal attributes
         self._rewarder = parse_rewarder(rewarder, BasicRewarder)
 
         self._state = RoutingState(
-            max_interaction_gates=max_interaction_gates,
+            interaction_generator=interaction_generator,
             max_observation_reach=max_observation_reach,
             connection_graph=connection_graph,
             observe_legal_surpasses=observe_legal_surpasses,

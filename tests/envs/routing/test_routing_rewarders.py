@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
 from copy import deepcopy
-from typing import Iterable, Iterator, cast
+from typing import cast
 
 import networkx as nx
 import numpy as np
@@ -14,19 +15,20 @@ from qgym.envs.routing import (
     RoutingState,
     SwapQualityRewarder,
 )
+from qgym.generators.interaction import NullInteractionGenerator
 from qgym.templates.rewarder import Rewarder
 
 
 def _episode_generator(
     interaction_circuit: ArrayLike,
-) -> Iterator[tuple[RoutingState, NDArray[np.int_], RoutingState]]:
+) -> Iterator[tuple[RoutingState, int, RoutingState]]:
     interaction_circuit = np.asarray(interaction_circuit)
 
     connection_graph = nx.Graph()
     connection_graph.add_edges_from([(0, 1), (1, 2), (2, 3), (3, 0)])
 
     new_state = RoutingState(
-        max_interaction_gates=10,
+        interaction_generator=NullInteractionGenerator(),
         max_observation_reach=5,
         connection_graph=connection_graph,
         observe_legal_surpasses=True,
