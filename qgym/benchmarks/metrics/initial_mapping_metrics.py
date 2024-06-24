@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections import deque
 from collections.abc import Iterable
 from copy import deepcopy
-from typing import Literal, Protocol, runtime_checkable
+from typing import Protocol, cast, runtime_checkable
 
 import networkx as nx
 import numpy as np
@@ -59,7 +59,7 @@ class DistanceRatioLoss(InitialMappingMetric):
             mapped_edge = (mapping[edge[0]], mapping[edge[1]])
             distance_loss += self.distance_matrix[mapped_edge]
 
-        return distance_loss / interaction_graph.number_of_edges()
+        return float(distance_loss / interaction_graph.number_of_edges())
 
 
 class AgentPerformance:
@@ -101,21 +101,22 @@ class InitialMappingBenchmarker:
         self,
         mapper: Mapper,
         max_iter: int = 1000,
-        return_type: Literal["raw", "quartiles", "median", "mean"] = "raw",
-    ) -> NDArray[np.float_]:
+        return_type: str = "raw",
+    ) -> NDArray[np.float64]:
         """Run the benchmark.
 
         Args:
             mapper: Mapper to benchmark.
             max_iter: Maximum number of iterations to benchmark.
-            return_type: Return type to return the results.
+            return_type: Return type to return the results. Choose from ["raw",
+                "quartiles", "median", "mean"]
 
         Returns:
             NDArray containing the results from the benchmark.
         """
         return_type = check_string(return_type, "return_type", lower=True)
 
-        results = [deque() for _ in self.metrics]
+        results: list[deque[float]] = [deque() for _ in self.metrics]
         for i, interaction_graph in enumerate(self.generator, start=1):
             mapping = mapper.compute_mapping(interaction_graph)
             for metric, result_que in zip(self.metrics, results):
@@ -125,10 +126,17 @@ class InitialMappingBenchmarker:
                 break
 
         if return_type == "raw":
-            return np.array(results, dtype=np.float_)
+            return cast(NDArray[np.float64], np.array(results, dtype=np.float64))
         if return_type == "quartiles":
-            return np.quantile(results, [0, 0.25, 0.5, 0.75, 1], axis=1)
+            return cast(
+                NDArray[np.float64],
+                np.quantile(results, [0, 0.25, 0.5, 0.75, 1], axis=1),
+            )
         if return_type == "median":
-            return np.median(results, axis=1)
+            return cast(NDArray[np.float64], np.median(results, axis=1))
         if return_type == "mean":
-            return np.mean(results, axis=1)
+            return cast(NDArray[np.float64], np.mean(results, axis=1))
+
+        raise ValueError(
+            "Unknown 'return_type'. Choose from ['raw', 'quartiles', 'median', 'mean']"
+        )
