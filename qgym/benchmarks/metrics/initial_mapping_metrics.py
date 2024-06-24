@@ -6,26 +6,30 @@ the better.
 Function named as ``*_error`` or ``*_loss`` return a scalar value to minimize:
 the lower the better.
 """
+
 from __future__ import annotations
 
 from collections import deque
 from collections.abc import Iterable
-from typing import Protocol, runtime_checkable
+from typing import Literal, Protocol, runtime_checkable
 
 import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-from qgym.generators.graph import GraphGenerator
+from qgym.generators.graph import BasicGraphGenerator, GraphGenerator
+from qgym.utils.input_validation import check_string
 
 
 @runtime_checkable
 class InitialMappingMetric(Protocol):
-    def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float:...
+    def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float: ...
+
 
 @runtime_checkable
 class Mapper(Protocol):
-    def compute_mapping(self, interaction_graph: nx.Graph) -> NDArray[np.int_]:...
+    def compute_mapping(self, interaction_graph: nx.Graph) -> NDArray[np.int_]: ...
+
 
 class DistanceRatioLoss(InitialMappingMetric):
 
@@ -65,26 +69,47 @@ class AgentPerformance:
         Args:
         """
 
+
 class InitialMappingBenchmarker:
 
-    def __init__(self, generator: GraphGenerator, metrics: Iterable[InitialMappingMetric]) -> None:
-        self.generator = generator
+    def __init__(
+        self, generator: GraphGenerator | None, metrics: Iterable[InitialMappingMetric]
+    ) -> None:
+        self.generator = BasicGraphGenerator() if generator is None else generator
         self.metrics = tuple(metrics)
-    
-    def run(self, mapper: Mapper, max_iter: int = 1000) -> NDArray[np.float_]:
+
+    def run(
+        self,
+        mapper: Mapper,
+        max_iter: int = 1000,
+        return_type: Literal["raw", "quartiles", "median", "mean"] = "raw",
+    ) -> NDArray[np.float_]:
+        self.generator.set_state_attributes
+        return_type = check_string(return_type, "return_type", lower=True)
+
         results = [deque() for _ in self.metrics]
         for i, interaction_graph in enumerate(self.generator):
             mapping = mapper.compute_mapping(interaction_graph)
             for metric, result_que in zip(self.metrics, results):
                 result_que.append(metric.compute(interaction_graph, mapping))
 
-            if i>=max_iter:
+            if i >= max_iter:
                 break
 
-        return np.array(results, dtype=np.float_)
+        if return_type == "raw":
+            return np.array(results, dtype=np.float_)
+        if return_type == "quartiles":
+            return np.quantile(results, [0, 0.25, 0.5, 0.75, 1], axis=1)
+        if return_type == "median":
+            return np.median(results, axis=1)
+        if return_type == "mean":
+            return np.mean(results, axis=1)
+
 
 if __name__ == "__main__":
     metric = DistanceRatioLoss(nx.cycle_graph(4))
-    
+
     print(isinstance(metric, InitialMappingMetric))
     print(metric.compute(nx.complete_graph(4), np.arange(4)))
+
+    benchmarker = InitialMappingBenchmarker()
