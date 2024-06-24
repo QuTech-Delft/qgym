@@ -3,44 +3,50 @@ from __future__ import annotations
 import networkx as nx
 import numpy as np
 import pytest
-from numpy.typing import ArrayLike
+from numpy.typing import NDArray
 
-from qgym.benchmarks.metrics.initial_mapping_metrics import (
-    InitialMappingSolutionQuality,
-)
+from qgym.benchmarks import DistanceRatioLoss, InitialMappingBenchmarker
 
 
 @pytest.fixture
 def smallest_graph() -> nx.Graph:
     smallest_graph = nx.Graph()
-    smallest_graph.add_edge(0, 1)
-    smallest_graph.add_edge(0, 2)
-    smallest_graph.add_edge(0, 3)
-    smallest_graph.add_edge(0, 4)
+    smallest_graph.add_edges_from([(0, 1), (0, 2), (0, 3), (0, 4)])
     return smallest_graph
 
 
 def small_graph() -> nx.Graph:
     small_graph = nx.Graph()
-    small_graph.add_edge(0, 1)
-    small_graph.add_edge(0, 2)
-    small_graph.add_edge(0, 3)
-    small_graph.add_edge(0, 4)
-    small_graph.add_edge(1, 2)
-
+    small_graph.add_edges_from([(0, 1), (0, 2), (0, 3), (0, 4), (1, 2)])
     return small_graph
 
 
 @pytest.mark.parametrize(
     "interaction_graph, ratio_loss",
-    [(small_graph(), 6 / 5)],
+    [(small_graph(), 6 / 5), (nx.cycle_graph(4), 1.5)],
 )
 def test_distance_ratio_loss(
     smallest_graph: nx.Graph, interaction_graph: nx.Graph, ratio_loss: float
 ) -> None:
-    quality_metric = InitialMappingSolutionQuality(connection_graph=smallest_graph)
-    result = quality_metric.distance_ratio_loss(
-        interaction_graph=interaction_graph, mapping=[0, 1, 2, 3, 4]
+    quality_metric = DistanceRatioLoss(connection_graph=smallest_graph)
+    result = quality_metric.compute(
+        interaction_graph=interaction_graph, mapping=np.arange(5)
     )
 
     assert result == ratio_loss
+
+
+def test_initial_mapping_metric(smallest_graph: nx.Graph) -> None:
+    metric = DistanceRatioLoss(nx.cycle_graph(4))
+    benchmarker = InitialMappingBenchmarker(metrics=metric)
+
+    class SimpleMapper:
+        connection_graph = smallest_graph
+
+        def compute_mapping(self, interaction_graph: nx.Graph) -> NDArray[np.int_]:
+            return np.arange(len(interaction_graph))
+
+    mapper = SimpleMapper()
+    results = benchmarker.run(mapper, max_iter=500)
+    assert results.shape == (1, 500)
+    np.testing.assert_array_equal(1, results >= 1)

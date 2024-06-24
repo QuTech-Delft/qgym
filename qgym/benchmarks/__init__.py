@@ -3,7 +3,9 @@ contains the :class:`InitialMappingSolutionQuality` metrics.
 """
 
 from qgym.benchmarks.metrics.initial_mapping_metrics import (
-    InitialMappingSolutionQuality,
+    DistanceRatioLoss,
+    InitialMappingBenchmarker,
+    InitialMappingMetric,
 )
 
-__all__ = ["InitialMappingSolutionQuality"]
+__all__ = ["DistanceRatioLoss", "InitialMappingBenchmarker", "InitialMappingMetric"]

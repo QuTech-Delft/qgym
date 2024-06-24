@@ -6,6 +6,7 @@ the better.
 Function named as ``*_error`` or ``*_loss`` return a scalar value to minimize:
 the lower the better.
 """
+
 from __future__ import annotations
 
 import warnings
