@@ -11,6 +11,9 @@ Please feel free to contact us via <s.feld@tudelft.nl> if you have any questions
 What follows are some simple steps to get you running.
 You could also have a look at some [Jupyter Notebooks](https://github.com/QuTech-Delft/qgym/tree/master/notebooks) that we have created for a tutorial at the [IEEE International Conference on Quantum Computing and Engineering (QCE’22)](https://qce.quantum.ieee.org/2022/tutorials-program/).
 
+We also gave an talk about the package at qhack 2024, which you can find by clicking the image below.
+[![qgym: A Gym for RL-based Quantum Compilation](https://img.youtube.com/vi/4copOSHxwSA/0.jpg)](https://www.youtube.com/watch?v=4copOSHxwSA "qgym: A Gym for RL-based Quantum Compilation")
+
 ### Installing with pip
 To install the `qgym` use
 ```terminal
@@ -22,7 +25,7 @@ In this case, use
 pip install qgym[tutorial]
 ```
 
-Currently `qgym` has support for Python 3.7, 3.8, 3.9, 3.10 and 3.11.
+Currently `qgym` has support for Python 3.8, 3.9, 3.10, 3.11 and 3.12.
 
 
 ## Publication
