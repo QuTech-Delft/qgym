@@ -146,7 +146,7 @@ class RoutingVisualiser(Visualiser):
         x_text: float,
         x_left: float,
         x_right: float,
-        y_lines: NDArray[np.float_],
+        y_lines: NDArray[np.float64],
     ) -> None:
         """Draw the circuit lines on the 'circuit' screen and label them.
 
@@ -177,8 +177,8 @@ class RoutingVisualiser(Visualiser):
         screen: Surface,
         *,
         state: RoutingState,
-        x_gates: NDArray[np.float_],
-        y_lines: NDArray[np.float_],
+        x_gates: NDArray[np.float64],
+        y_lines: NDArray[np.float64],
     ) -> None:
         """Draw the interaction gates on the 'circuit' screen.
 
@@ -245,8 +245,8 @@ class RoutingVisualiser(Visualiser):
         screen: Surface,
         *,
         state: RoutingState,
-        x_gates: NDArray[np.float_],
-        y_lines: NDArray[np.float_],
+        x_gates: NDArray[np.float64],
+        y_lines: NDArray[np.float64],
     ) -> None:
         """Draw the mapping on the 'circuit' screen.
 
@@ -357,7 +357,7 @@ class RoutingVisualiser(Visualiser):
 
     def _get_render_positions(
         self, graph: nx.Graph, padding: int = 20
-    ) -> dict[Any, NDArray[np.float_]]:
+    ) -> dict[Any, NDArray[np.float64]]:
         """Give the positions of the nodes of a graph on a given screen.
 
         Args:
@@ -368,7 +368,7 @@ class RoutingVisualiser(Visualiser):
             Dictionary where the keys are the names of the nodes, and the values are the
             coordinates of these nodes.
         """
-        node_positions: dict[Any, NDArray[np.float_]]
+        node_positions: dict[Any, NDArray[np.float64]]
         node_positions = nx.spring_layout(graph, threshold=1e-6)
 
         # Scale and move the node positions to be centered on the graph subscreen

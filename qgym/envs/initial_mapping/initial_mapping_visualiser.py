@@ -137,7 +137,7 @@ class InitialMappingVisualiser(Visualiser):
         return self._display()
 
     def _get_mapped_graph(
-        self, mapping: dict[int, int], interaction_graph_matrix: NDArray[np.float_]
+        self, mapping: dict[int, int], interaction_graph_matrix: NDArray[np.float64]
     ) -> nx.Graph:
         """Construct a mapped graph.
 
@@ -177,7 +177,7 @@ class InitialMappingVisualiser(Visualiser):
     def _add_colored_edge(
         self,
         graph: nx.Graph,
-        mapped_adjacency_matrix: NDArray[np.float_],
+        mapped_adjacency_matrix: NDArray[np.float64],
         edge: tuple[int, int],
     ) -> None:
         """Give an edge of the graph a color based on the mapping.
@@ -253,10 +253,12 @@ class InitialMappingVisualiser(Visualiser):
             pos_v = self.graphs["mapped"]["render_positions"][v]
             if mapped_graph.edges[u, v]["color"] == "red":
                 color = self.colors["missing_edge"]
-            if mapped_graph.edges[u, v]["color"] == "green":
+            elif mapped_graph.edges[u, v]["color"] == "green":
                 color = self.colors["used_edge"]
-            if mapped_graph.edges[u, v]["color"] == "gray":
+            elif mapped_graph.edges[u, v]["color"] == "gray":
                 color = self.colors["unused_edge"]
+            else:
+                raise ValueError("Unknow color")
             draw_wide_line(screen, color, pos_u, pos_v)
 
         for pos in self.graphs["mapped"]["render_positions"].values():
@@ -278,7 +280,7 @@ class InitialMappingVisualiser(Visualiser):
     @staticmethod
     def _get_render_positions(
         graph: nx.Graph, subscreen: pygame.Rect
-    ) -> dict[Any, NDArray[np.float_]]:
+    ) -> dict[Any, NDArray[np.float64]]:
         """Give the positions of the nodes of a graph on a given subscreen.
 
         Args:
@@ -289,7 +291,7 @@ class InitialMappingVisualiser(Visualiser):
             A dictionary where the keys are the names of the nodes, and the values are
             the coordinates of these nodes.
         """
-        node_positions: dict[Any, NDArray[np.float_]]
+        node_positions: dict[Any, NDArray[np.float64]]
         node_positions = nx.spring_layout(graph, threshold=1e-6)
 
         # Scale and move the node positions to be centered on the subscreen

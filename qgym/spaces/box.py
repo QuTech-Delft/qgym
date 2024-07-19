@@ -32,7 +32,7 @@ class Box(gymnasium.spaces.Box):
         low: SupportsFloat | ArrayLike,
         high: SupportsFloat | ArrayLike,
         shape: Sequence[int] | None = None,
-        dtype: type[np.floating[Any]] | type[np.integer[Any]] = np.float_,
+        dtype: type[np.floating[Any]] | type[np.integer[Any]] = np.float64,
         *,
         rng: Generator | None = None,
     ) -> None:

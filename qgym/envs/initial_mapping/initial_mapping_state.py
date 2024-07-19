@@ -66,7 +66,7 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
 
         connection = {
             "graph": deepcopy(connection_graph),
-            "matrix": nx.to_numpy_array(connection_graph, dtype=np.float_),
+            "matrix": nx.to_numpy_array(connection_graph, dtype=np.float64),
         }
 
         self.graphs = {

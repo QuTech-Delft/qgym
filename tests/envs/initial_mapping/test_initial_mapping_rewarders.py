@@ -216,7 +216,7 @@ Tests for the Fidelity
 """
 
 fidelity_graph = np.array(
-    ([[0, 0.2, 0.6], [0.2, 0, 0.74], [0.6, 0.74, 0]]), dtype=np.float_
+    ([[0, 0.2, 0.6], [0.2, 0, 0.74], [0.6, 0.74, 0]]), dtype=np.float64
 )
 
 

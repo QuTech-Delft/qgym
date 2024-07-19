@@ -103,7 +103,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         if observe_connection_graph:
             if has_fidelity(connection_graph):
                 self.connection_matrix = nx.to_numpy_array(
-                    connection_graph, dtype=np.float_
+                    connection_graph, dtype=np.float64
                 ).flatten()
             else:
                 self.connection_matrix = nx.to_numpy_array(
