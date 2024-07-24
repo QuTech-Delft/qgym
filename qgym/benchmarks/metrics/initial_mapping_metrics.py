@@ -17,6 +17,8 @@ from typing import Protocol, cast, runtime_checkable
 import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
+from qiskit import QuantumCircuit
+from qiskit.dagcircuit import DAGCircuit
 
 from qgym.generators.graph import BasicGraphGenerator, GraphGenerator
 from qgym.utils.input_validation import check_string
@@ -29,7 +31,9 @@ class InitialMappingMetric(Protocol):
 
 @runtime_checkable
 class Mapper(Protocol):
-    def compute_mapping(self, interaction_graph: nx.Graph) -> NDArray[np.int_]: ...
+    def compute_mapping(
+        self, circuit: QuantumCircuit | DAGCircuit
+    ) -> NDArray[np.int_]: ...
 
 
 class DistanceRatioLoss(InitialMappingMetric):
@@ -81,7 +85,7 @@ class InitialMappingBenchmarker:
         *,
         metrics: Iterable[InitialMappingMetric] | InitialMappingMetric,
     ) -> None:
-        """Init of the :clas:`InitialMappingBenchmarker` class.
+        """Init of the :class:`InitialMappingBenchmarker` class.
 
         Args:
             generator: Interaction graph generator to use during benchmarking

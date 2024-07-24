@@ -1,3 +1,5 @@
+"""This module contains utility functions for interactions with the qiskit library."""
+
 from __future__ import annotations
 
 from collections.abc import Hashable
@@ -8,15 +10,17 @@ from numpy.typing import NDArray
 from qiskit import QuantumCircuit
 from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGCircuit
+from qiskit.transpiler import Layout
 
 
 def get_ineraction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
     """Create and interaction graph from the provided `circuit`.
-    
+
     Args:
-        circuit: Circuit to produce the interactions from. Both ``QuantumCircuit`` and
-            ``DAGCircuit`` representations are accepted.
-    
+        circuit: Circuit to produce the interactions from. Both
+            :class:`~qiskit.circuit.QuantumCircuit` and
+            :class:`~qiskit.dagcircuit.DAGCircuit` representations are accepted.
+
     Returns:
         Interaction graph of the `circuit`.
     """
@@ -36,18 +40,45 @@ def get_ineraction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
 
     return interaction_graph
 
-def _parse_circuit(circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
-    return circuit if isinstance(circuit, DAGCircuit) else circuit_to_dag(circuit)   
 
-def _get_qreg_to_int_mapping(circuit: QuantumCircuit | DAGCircuit) -> dict[Hashable, int]:
-    return  {qubit: circuit.qubits.index(qubit) for qubit in circuit.qubits}
+def _parse_circuit(circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
+    """Create a DAGCircuit from a QuantumCircuit or DAGCircuit."""
+    return circuit if isinstance(circuit, DAGCircuit) else circuit_to_dag(circuit)
+
+
+def _get_qreg_to_int_mapping(
+    circuit: QuantumCircuit | DAGCircuit,
+) -> dict[Hashable, int]:
+    """Create a mapping from the qubits to integer values."""
+    return {qubit: circuit.qubits.index(qubit) for qubit in circuit.qubits}
+
 
 class QiskitMapperWrapper:
+    """Wrap any qiskit mapper (:class:`~qiskit.transpiler.Layout`) such that it becomes
+    compatible with the qgym framework. This class wraps the qiskit mapper, such that it
+    is compatible with the qgym Mapper protocol, which is required for the qgym
+    benchmarking tools.
+    """
 
-    def __init__(self, qiskit_mapper) -> None:
+    def __init__(self, qiskit_mapper: Layout) -> None:
+        """Init of the :class:`QiskitMapperWrapper`.
+
+        Args:
+            qiskit_mapper: The qiskit mapper (:class:`~qiskit.transpiler.Layout`) to
+                wrap.
+        """
         self.mapper = qiskit_mapper
-    
+
     def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
+        """Compute a mapping of the `circuit` using the provided `qiskit_mapper`.
+
+        Args:
+            circuit: Quantum circuit to map.
+
+        Returns:
+            Array of which the index represents a physical qubit, and the value a
+            virtual qubit.
+        """
         dag = _parse_circuit(circuit)
 
         self.mapper.run(dag)
@@ -64,7 +95,7 @@ if __name__ == "__main__":
     from qiskit.transpiler import CouplingMap
     from qiskit.transpiler.passes import VF2Layout
 
-    coupling_map = CouplingMap([[0,1], [1,2], [2,3], [3,4], [4,5], [5,0]])
+    coupling_map = CouplingMap([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]])
     circuit = get_benchmark("graphstate", "nativegates", 6)
 
     qiskit_mapper = VF2Layout(coupling_map)
@@ -72,6 +103,3 @@ if __name__ == "__main__":
     mapping = mapper.compute_mapping(circuit)
 
     print(mapping)
-
-
-    
