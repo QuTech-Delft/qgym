@@ -14,6 +14,7 @@ from qgym.utils.input_validation import check_int, check_real
 
 
 class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
+    """Generate simple QAOA circuits for random MaxCut problems."""
 
     def __init__(
         self,
@@ -22,7 +23,7 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
         n_layers: SupportsInt = 1,
         seed: Generator | SupportsInt | None = None,
     ) -> None:
-        """Generate simple QAOA circuits for random MaxCut problems.
+        """Init of the :class:`MaxCutQAOAGenerator`.
 
         The QAOA circuit is made for the MaxCut problem defined on a randomly generated
         Erdős-Rényi graph of size `n_nodes` with and edge probability of
@@ -80,3 +81,10 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
             circuit.rx(beta_i, range(self.n_nodes))
         circuit.measure_all()
         return circuit
+
+    def __repr__(self) -> str:
+        """String representation of :class:`MaxCutQAOAGenerator`."""
+        return (
+            f"{self.__class__.__name__}[n_nodes={self.n_nodes}, edge_probability="
+            f"{self.edge_probability}, n_layers={self.n_layers}, rng={self.rng}]"
+        )

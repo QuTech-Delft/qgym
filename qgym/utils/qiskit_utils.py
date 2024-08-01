@@ -90,3 +90,7 @@ class QiskitMapperWrapper:
         qreg_to_int = _get_qreg_to_int_mapping(dag)
         iterable = (qreg_to_int[layout[i]] for i in range(dag.num_qubits()))
         return np.fromiter(iterable, int, dag.num_qubits())
+
+    def __repr__(self) -> str:
+        """String representation of the wrapper."""
+        return f"{self.__class__.__name__}[{self.mapper}]"

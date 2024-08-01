@@ -34,3 +34,11 @@ class TestMaxCutQAOAGenerator:
         assert ops["measure"] == 5
         assert ops["rx"] == n_layers * 5
         assert ops["rzz"] == n_layers * 5
+
+    def test_repr(self) -> None:
+        generator = MaxCutQAOAGenerator(1, 0.1, 1, 1)
+        expected_string = (
+            "MaxCutQAOAGenerator[n_nodes=1, edge_probability=0.1, n_layers=1, "
+            "rng=Generator(PCG64)]"
+        )
+        assert repr(generator) == expected_string
