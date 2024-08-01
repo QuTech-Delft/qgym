@@ -13,7 +13,7 @@ from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler import Layout
 
 
-def get_ineraction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
+def get_interaction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
     """Create and interaction graph from the provided `circuit`.
 
     Args:
@@ -27,7 +27,8 @@ def get_ineraction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
     dag = _parse_circuit(circuit)
 
     if dag.multi_qubit_ops():
-        raise ValueError("No 3+ qubit operations are supported.")
+        msg = "no 3+ qubit operations are supported"
+        raise ValueError(msg)
 
     qreg_to_int = _get_qreg_to_int_mapping(dag)
     interaction_graph: nx.Graph = nx.empty_graph(dag.num_qubits())
@@ -35,7 +36,8 @@ def get_ineraction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
     for op_node in dag.op_nodes(include_directives=False):
         if len(op_node.qargs) == 1:
             continue
-        qubit1, qubit2 = map(qreg_to_int, op_node.qargs)
+        qubit1 = qreg_to_int[op_node.qargs[0]]
+        qubit2 = qreg_to_int[op_node.qargs[1]]
         interaction_graph.add_edge(qubit1, qubit2)
 
     return interaction_graph
@@ -88,18 +90,3 @@ class QiskitMapperWrapper:
         qreg_to_int = _get_qreg_to_int_mapping(dag)
         iterable = (qreg_to_int[layout[i]] for i in range(dag.num_qubits()))
         return np.fromiter(iterable, int, dag.num_qubits())
-
-
-if __name__ == "__main__":
-    from mqt.bench import get_benchmark
-    from qiskit.transpiler import CouplingMap
-    from qiskit.transpiler.passes import VF2Layout
-
-    coupling_map = CouplingMap([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0]])
-    circuit = get_benchmark("graphstate", "nativegates", 6)
-
-    qiskit_mapper = VF2Layout(coupling_map)
-    mapper = QiskitMapperWrapper(qiskit_mapper)
-    mapping = mapper.compute_mapping(circuit)
-
-    print(mapping)
