@@ -26,7 +26,7 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
         """Init of the :class:`MaxCutQAOAGenerator`.
 
         The QAOA circuit is made for the MaxCut problem defined on a randomly generated
-        Erdős-Rényi graph of size `n_nodes` with and edge probability of
+        Erdős-Rényi graph of size `n_nodes` with an edge probability of
         `edge_probability`. The QAOA circuit is a simple circuit which initializes all
         qubits in the |+⟩ state. Next repeated cost and mixer layers are added
         `n_layers` times. The mixer layer consists of parameterized Rx gate on all
