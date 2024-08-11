@@ -29,7 +29,7 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
         Erdős-Rényi graph of size `n_nodes` with an edge probability of
         `edge_probability`. The QAOA circuit is a simple circuit which initializes all
         qubits in the |+⟩ state. Next repeated cost and mixer layers are added
-        `n_layers` times. The mixer layer consists of parameterized Rx gate on all
+        `n_layers` times. The mixer layer consists of parameterized Rx gates on all
         qubits. The parameters for the circuit are randomly generated values in
         $[0, pi)$.
 
