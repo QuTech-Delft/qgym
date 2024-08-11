@@ -33,12 +33,11 @@ def get_interaction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
     qreg_to_int = _get_qreg_to_int_mapping(dag)
     interaction_graph: nx.Graph = nx.empty_graph(dag.num_qubits())
 
-    for op_node in dag.op_nodes(include_directives=False):
-        if len(op_node.qargs) == 1:
-            continue
-        qubit1 = qreg_to_int[op_node.qargs[0]]
-        qubit2 = qreg_to_int[op_node.qargs[1]]
-        interaction_graph.add_edge(qubit1, qubit2)
+    interaction_graph.add_edges_from(
+        (qreg_to_int[op_node.qargs[0]], qreg_to_int[op_node.qargs[1]])
+        for op_node in dag.op_nodes(include_directives=False)
+        if len(op_node.qargs) == 2
+    )
 
     return interaction_graph
 

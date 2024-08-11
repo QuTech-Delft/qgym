@@ -95,6 +95,7 @@ class InitialMappingBenchmarker:
         self.metrics = (
             (metrics,) if isinstance(metrics, InitialMappingMetric) else tuple(metrics)
         )
+
         for metric in self.metrics:
             if hasattr(metric, "connection_graph"):
                 connection_graph = deepcopy(metric.connection_graph)
