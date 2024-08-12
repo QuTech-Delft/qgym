@@ -9,6 +9,7 @@ the lower the better.
 
 from __future__ import annotations
 
+from abc import abstractmethod
 from collections import deque
 from collections.abc import Iterable
 from copy import deepcopy
@@ -23,23 +24,32 @@ from qiskit.dagcircuit import DAGCircuit
 from qgym.benchmarks import BenchmarkResult
 from qgym.generators.graph import BasicGraphGenerator, GraphGenerator
 
+# pylint: disable=too-few-public-methods
+
 
 @runtime_checkable
 class InitialMappingMetric(Protocol):
-    def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float: ...
+    """Protocol that an metric for initial mapping should follow."""
+
+    @abstractmethod
+    def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float:
+        """Compute the metric for the provided `interaction_graph` and `mapping`."""
 
 
 @runtime_checkable
 class Mapper(Protocol):
-    def compute_mapping(
-        self, circuit: QuantumCircuit | DAGCircuit
-    ) -> NDArray[np.int_]: ...
+    """Mapper protocol."""
+
+    @abstractmethod
+    def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
+        """Compute a mapping for a provided quantum `circuit`."""
 
 
 class DistanceRatioLoss(InitialMappingMetric):
+    """The :class:`DistanceRatioLoss` class."""
 
     def __init__(self, connection_graph: nx.Graph) -> None:
-        """Init of the :class:`InitialMappingSolutionQuality` class.
+        """Init of the :class:`DistanceRatioLoss` class.
 
         Args:
             connection_graph: :class:`networkx.Graph` representation of the QPU
@@ -55,6 +65,15 @@ class DistanceRatioLoss(InitialMappingMetric):
                 self.distance_matrix[node_u, node_v] = distances[node_v]
 
     def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float:
+        """Compute the distance ratio loss.
+
+        Args:
+            interaction_graph: interaction graph of a quantum circuit.
+            mapping: 1D-ArrayLike representing a qubit mapping.
+
+        Returns:
+            The distance ratio loss.
+        """
         if interaction_graph.number_of_edges() == 0:
             return 1.0
         mapping = np.asarray(mapping, dtype=np.int_)
@@ -67,6 +86,7 @@ class DistanceRatioLoss(InitialMappingMetric):
 
 
 class AgentPerformance:
+    """The :class:`AgentPerformance` class."""
 
     def __init__(
         self,
@@ -78,6 +98,7 @@ class AgentPerformance:
 
 
 class InitialMappingBenchmarker:
+    """The :class:`InitialMappingBenchmarker` class."""
 
     def __init__(
         self,

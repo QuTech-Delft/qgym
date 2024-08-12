@@ -7,6 +7,7 @@ from numpy.typing import ArrayLike, DTypeLike, NDArray
 
 
 class BenchmarkResult:
+    """The :class:`BenchmarkResult` class."""
 
     def __init__(self, data: ArrayLike) -> None:
         """Init of the :class:`BenchmarkResult`.

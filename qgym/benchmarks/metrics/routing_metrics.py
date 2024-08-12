@@ -9,9 +9,7 @@ the lower the better.
 
 from __future__ import annotations
 
-import warnings
-from collections import deque, defaultdict
-from statistics import mean
+from collections import defaultdict
 
 import networkx as nx
 import numpy as np
@@ -19,6 +17,7 @@ from numpy.typing import NDArray
 
 
 class RoutingSolutionQuality:
+    """The :class:`RoutingSolutionQuality` class."""
 
     def __init__(
         self,
@@ -51,23 +50,28 @@ class RoutingSolutionQuality:
         if initial_interaction_circuit is not None and swaps_added is not None:
             num_initial_interactions = len(initial_interaction_circuit)
             return (num_initial_interactions + swaps_added) / num_initial_interactions
+
         if final_interaction_circuit is not None and swaps_added is not None:
             num_final_interactions = len(final_interaction_circuit)
             return num_final_interactions / (num_final_interactions - swaps_added)
-        if initial_interaction_circuit is not None and final_interaction_circuit is not None:
+
+        if (
+            initial_interaction_circuit is not None
+            and final_interaction_circuit is not None
+        ):
             num_final_interactions = len(final_interaction_circuit)
             num_initial_interactions = len(initial_interaction_circuit)
-            return num_final_interactions / initial_interaction_circuit
-        
+            return num_final_interactions / num_initial_interactions
+
         msg = "at least two of the input variables have to be given"
         raise ValueError(msg)
 
     def gates_ratio_loss(
         self,
-        initial_number_of_gates: int = None,
-        swaps_added: int = None,
-        final_number_of_gates: int = None,
-    ) -> int:
+        initial_number_of_gates: int | None = None,
+        swaps_added: int | None = None,
+        final_number_of_gates: int | None = None,
+    ) -> float:
         """Method to calculate the ratio of the final number of gates divided by
         the initial number of gates in a circuit.
 
@@ -77,29 +81,29 @@ class RoutingSolutionQuality:
                 process.
             final_number_of_gates: int
         """
-        if (initial_number_of_gates == None) + (final_number_of_gates == None) + (
-            swaps_added == None
-        ) < 2:
-            warnings.warn("At least two of the input variables have to be given")
-            return
-
-        if final_number_of_gates is None:
+        if initial_number_of_gates is not None and swaps_added is not None:
             return (initial_number_of_gates + swaps_added) / initial_number_of_gates
-        elif initial_number_of_gates is None:
+
+        if final_number_of_gates is not None and swaps_added is not None:
             return final_number_of_gates / (final_number_of_gates - swaps_added)
-        elif swaps_added is None:
+
+        if final_number_of_gates is not None and initial_number_of_gates is not None:
             return final_number_of_gates / initial_number_of_gates
+
+        msg = "at least two of the input variables have to be given"
+        raise ValueError(msg)
 
     def average_edge_fidelity_ratio_loss(
         self,
         initial_interaction_circuit: NDArray[np.int_],
         connection_graph: nx.Graph,
-        swaps_gates_inserted: deque[tuple[int, int, int]],
-    ):
-        """Method which calculates the average fidelity on edges, where the fidelity of
-        one edge is calculated by connection_graph_edge_fidelity^(number of interaction
-        gates on edge). The averages over all edges before and after adding swaps are
-        calculated and divided to get the ratio.
+        final_interaction_circuit: NDArray[np.int_],
+    ) -> float:
+        """Method which calculates the average fidelity on the edges, where the fidelity
+        of one edge is calculated by consecutively multiplying 1 with the
+        connection_graph_edge_fidelity for the used interactions in the interaction
+        graph. The averages over all edges before and after adding swaps are calculated
+        and divided to get the ratio.
 
         Args:
             initial_interaction_circuit: An array of 2-tuples of integers, where every
@@ -108,55 +112,35 @@ class RoutingSolutionQuality:
             connection_graph: :class:`networkx.Graph` representation of the QPU
                 topology. Each node represents a physical qubit and each edge represents
                 a connection in the QPU topology.
-            swap_gates_inserted:  A deque of 3-tuples of integers, to register which
-                gates to insert and where. Every tuple (g, q1, q2) represents the
-                insertion of a SWAP-gate acting on logical qubits q1 and q2 before gate
-                g in the interaction_circuit.
+            final_interaction_circuit: An array of 2-tuples of integers, where every
+                tuple represents a, not specified, gate acting on the two qubits labeled
+                by the integers in the tuples.
         """
 
-        # TODO: method needs thorough revision, these choices are neither obvous nor
+        # TODO: method needs thorough revision, these choices are neither obvious nor
         # correct perse.
-        interactions = []
-        interaction_fidelities = []
+        initial_fidelities: dict[tuple[int, int], float] = defaultdict(lambda: 1.0)
+        for qubit1, qubit2 in initial_interaction_circuit:
+            initial_fidelities[qubit1, qubit2] *= connection_graph[qubit1][qubit2][
+                "weight"
+            ]
+        initial_fidelity_mean = np.mean(list(initial_fidelities.values()))
 
-        for interaction in initial_interaction_circuit:
-            (qubit1, qubit2) = interaction
-            if interaction in interactions:
-                index = interactions.index(interaction)
-                interaction_fidelities[index] *= connection_graph[qubit1][qubit2][
-                    "weight"
-                ]
-            else:
-                interactions.append(interaction)
-                interaction_fidelities.append(
-                    connection_graph[qubit1][qubit2]["weight"]
-                )
+        final_fidelities: dict[tuple[int, int], float] = defaultdict(lambda: 1.0)
+        for qubit1, qubit2 in final_interaction_circuit:
+            final_fidelities[qubit1, qubit2] *= connection_graph[qubit1][qubit2][
+                "weight"
+            ]
+        final_fidelity_mean = np.mean(list(final_fidelities.values()))
 
-        initial_fidelity_mean = mean(interaction_fidelities)
-
-        for interaction in swaps_gates_inserted:
-            (_, qubit1, qubit2) = interaction
-            if interaction in interactions:
-                index = interactions.index(interaction)
-                interaction_fidelities[index] *= connection_graph[qubit1][qubit2][
-                    "weight"
-                ]
-            else:
-                interactions.append(interaction)
-                interaction_fidelities.append(
-                    connection_graph[qubit1][qubit2]["weight"]
-                )
-
-        final_fidelity_mean = mean(interaction_fidelities)
-
-        return initial_fidelity_mean / final_fidelity_mean
+        return float(initial_fidelity_mean / final_fidelity_mean)
 
     def average_qubit_fidelity_ratio_loss(
         self,
         initial_interaction_circuit: NDArray[np.int_],
         connection_graph: nx.Graph,
         final_interaction_circuit: NDArray[np.int_],
-    ) -> int:
+    ) -> float:
         """Method which calculates the average fidelity on qubits, where the fidelity of
         one qubit is calculated by consecutively multiplying 1 with the
         connection_graph_edge_fidelity for those edge in the interaction graph that are
@@ -181,12 +165,12 @@ class RoutingSolutionQuality:
             final_interaction_circuit, connection_graph
         )
 
-        return initial_qubit_fidelity_mean / final_qubit_fidelity_mean
+        return float(initial_qubit_fidelity_mean / final_qubit_fidelity_mean)
 
     def _compute_mean_fidelity(
         self, interaction_circuit: NDArray[np.int_], connection_graph: nx.Graph
     ) -> float:
-        qubit_fidelities = defaultdict(lambda: 1.0)
+        qubit_fidelities: dict[int, float] = defaultdict(lambda: 1.0)
         for qubit1, qubit2 in interaction_circuit:
             fidelity = connection_graph[qubit1][qubit2]["weight"]
             qubit_fidelities[qubit1] *= fidelity
