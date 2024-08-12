@@ -258,7 +258,8 @@ class InitialMappingVisualiser(Visualiser):
             elif mapped_graph.edges[u, v]["color"] == "gray":
                 color = self.colors["unused_edge"]
             else:
-                raise ValueError("Unknow color")
+                msg = "unknown color"
+                raise ValueError(msg)
             draw_wide_line(screen, color, pos_u, pos_v)
 
         for pos in self.graphs["mapped"]["render_positions"].values():
