@@ -42,7 +42,7 @@ def test_distance_ratio_loss(
 
 def test_initial_mapping_metric(smallest_graph: nx.Graph) -> None:
     metric = DistanceRatioLoss(nx.cycle_graph(4))
-    benchmarker = InitialMappingBenchmarker(metrics=metric)
+    benchmarker = InitialMappingBenchmarker(metrics=[metric])
 
     class SimpleMapper:
         connection_graph = smallest_graph

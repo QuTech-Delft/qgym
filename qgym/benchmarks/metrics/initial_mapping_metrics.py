@@ -104,7 +104,7 @@ class InitialMappingBenchmarker:
         self,
         generator: GraphGenerator | None = None,
         *,
-        metrics: Iterable[InitialMappingMetric] | InitialMappingMetric,
+        metrics: Iterable[InitialMappingMetric],
     ) -> None:
         """Init of the :class:`InitialMappingBenchmarker` class.
 
@@ -113,9 +113,7 @@ class InitialMappingBenchmarker:
             metrics: Metrics to compute.
         """
         self.generator = BasicGraphGenerator() if generator is None else generator
-        self.metrics = (
-            (metrics,) if isinstance(metrics, InitialMappingMetric) else tuple(metrics)
-        )
+        self.metrics = tuple(metrics)
 
         for metric in self.metrics:
             if hasattr(metric, "connection_graph"):
