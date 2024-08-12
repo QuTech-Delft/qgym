@@ -6,4 +6,8 @@ from qgym.benchmarks.metrics.initial_mapping_metrics import (
     InitialMappingMetric,
 )
 
-__all__ = ["DistanceRatioLoss", "InitialMappingBenchmarker", "InitialMappingMetric"]
+__all__ = [
+    "DistanceRatioLoss",
+    "InitialMappingBenchmarker",
+    "InitialMappingMetric",
+]

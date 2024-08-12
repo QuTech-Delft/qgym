@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections import deque
 from collections.abc import Iterable
 from copy import deepcopy
-from typing import Protocol, cast, runtime_checkable
+from typing import Protocol, runtime_checkable
 
 import networkx as nx
 import numpy as np
@@ -20,8 +20,8 @@ from numpy.typing import ArrayLike, NDArray
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
 
+from qgym.benchmarks import BenchmarkResult
 from qgym.generators.graph import BasicGraphGenerator, GraphGenerator
-from qgym.utils.input_validation import check_string
 
 
 @runtime_checkable
@@ -102,25 +102,17 @@ class InitialMappingBenchmarker:
                 self.generator.set_state_attributes(connection_graph=connection_graph)
                 break
 
-    def run(
-        self,
-        mapper: Mapper,
-        max_iter: int = 1000,
-        return_type: str = "raw",
-    ) -> NDArray[np.float64]:
+    def run(self, mapper: Mapper, max_iter: int = 1000) -> BenchmarkResult:
         """Run the benchmark.
 
         Args:
             mapper: Mapper to benchmark.
             max_iter: Maximum number of iterations to benchmark.
-            return_type: Return type to return the results. Choose from ["raw",
-                "quartiles", "median", "mean"]
 
         Returns:
-            NDArray containing the results from the benchmark.
+            :class:`~qgym.benchmarks.metrics.BenchmarkResult` containing the results
+            from the benchmark.
         """
-        return_type = check_string(return_type, "return_type", lower=True)
-
         results: list[deque[float]] = [deque() for _ in self.metrics]
         for i, interaction_graph in enumerate(self.generator, start=1):
             mapping = mapper.compute_mapping(interaction_graph)
@@ -130,18 +122,4 @@ class InitialMappingBenchmarker:
             if i >= max_iter:
                 break
 
-        if return_type == "raw":
-            return cast(NDArray[np.float64], np.array(results, dtype=np.float64))
-        if return_type == "quartiles":
-            return cast(
-                NDArray[np.float64],
-                np.quantile(results, [0, 0.25, 0.5, 0.75, 1], axis=1),
-            )
-        if return_type == "median":
-            return cast(NDArray[np.float64], np.median(results, axis=1))
-        if return_type == "mean":
-            return cast(NDArray[np.float64], np.mean(results, axis=1))
-
-        raise ValueError(
-            "Unknown 'return_type'. Choose from ['raw', 'quartiles', 'median', 'mean']"
-        )
+        return BenchmarkResult(results)

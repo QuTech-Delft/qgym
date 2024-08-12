@@ -5,7 +5,11 @@ import numpy as np
 import pytest
 from numpy.typing import NDArray
 
-from qgym.benchmarks import DistanceRatioLoss, InitialMappingBenchmarker
+from qgym.benchmarks import (
+    BenchmarkResult,
+    DistanceRatioLoss,
+    InitialMappingBenchmarker,
+)
 
 
 @pytest.fixture
@@ -47,6 +51,7 @@ def test_initial_mapping_metric(smallest_graph: nx.Graph) -> None:
             return np.arange(len(interaction_graph))
 
     mapper = SimpleMapper()
-    results = benchmarker.run(mapper, max_iter=500)
-    assert results.shape == (1, 500)
-    np.testing.assert_array_equal(1, results >= 1)
+    result = benchmarker.run(mapper, max_iter=500)
+    assert isinstance(result, BenchmarkResult)
+    assert result.raw_data.shape == (1, 500)
+    np.testing.assert_array_equal(1, result.raw_data >= 1)
