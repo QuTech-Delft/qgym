@@ -17,12 +17,11 @@ from typing import Protocol, runtime_checkable
 
 import networkx as nx
 import numpy as np
-from numpy.typing import ArrayLike, NDArray
-from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
+from numpy.typing import ArrayLike
 
 from qgym.benchmarks import BenchmarkResult
 from qgym.generators.graph import BasicGraphGenerator, GraphGenerator
+from qgym.templates.pass_protocols import Mapper
 
 # pylint: disable=too-few-public-methods
 
@@ -34,15 +33,6 @@ class InitialMappingMetric(Protocol):
     @abstractmethod
     def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float:
         """Compute the metric for the provided `interaction_graph` and `mapping`."""
-
-
-@runtime_checkable
-class Mapper(Protocol):
-    """Mapper protocol."""
-
-    @abstractmethod
-    def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
-        """Compute a mapping for a provided quantum `circuit`."""
 
 
 class DistanceRatioLoss(InitialMappingMetric):
