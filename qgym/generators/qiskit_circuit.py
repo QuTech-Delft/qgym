@@ -23,15 +23,15 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
         n_layers: SupportsInt = 1,
         seed: Generator | SupportsInt | None = None,
     ) -> None:
-        """Init of the :class:`MaxCutQAOAGenerator`.
+        r"""Init of the :class:`MaxCutQAOAGenerator`.
 
         The QAOA circuit is made for the MaxCut problem defined on a randomly generated
         Erdős-Rényi graph of size `n_nodes` with an edge probability of
         `edge_probability`. The QAOA circuit is a simple circuit which initializes all
-        qubits in the |+⟩ state. Next repeated cost and mixer layers are added
+        qubits in the \|+⟩ state. Next repeated cost and mixer layers are added
         `n_layers` times. The mixer layer consists of parameterized Rx gates on all
         qubits. The parameters for the circuit are randomly generated values in
-        $[0, pi)$.
+        $[0, \pi)$.
 
         Args:
             n_nodes: Number of nodes in the generated graphs for the underlying MaxCut
@@ -60,9 +60,9 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
         return self._maxcut_qaoa_circuit(graph)
 
     def _maxcut_qaoa_circuit(self, graph: nx.Graph) -> QuantumCircuit:
-        """Create a simple QAOA circuit for the MaxCut problem on the provided `graph`.
+        r"""Create a simple QAOA circuit for the MaxCut problem on the provided `graph`.
 
-        The parameters for the circuit are randomly generated values in $[0, pi)$
+        The parameters for the circuit are randomly generated values in $[0, \pi)$
         and the number of repeated layers is `self.p`.
 
         Args:
