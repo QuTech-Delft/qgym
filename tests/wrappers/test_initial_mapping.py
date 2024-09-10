@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import networkx as nx
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
 from qiskit.transpiler import CouplingMap
 from qiskit.transpiler.passes import SabreLayout, TrivialLayout, VF2Layout
+from stable_baselines3 import PPO
 
-from qgym.wrappers.initial_mapping import QiskitMapperWrapper
+from qgym.envs.initial_mapping import EpisodeRewarder, InitialMapping
+from qgym.wrappers.initial_mapping import AgentMapperWrapper, QiskitMapperWrapper
 
 
 class TestQiskitMapperWrapper:
@@ -52,3 +55,34 @@ class TestQiskitMapperWrapper:
         qiskit_mapper = SabreLayout(coupling_map)
         mapper = QiskitMapperWrapper(qiskit_mapper)
         mapper.compute_mapping(circuit)
+
+
+class TestAgentMapperWrapper:
+
+    @pytest.fixture(name="circuit")
+    def circuit_fixture(self) -> QuantumCircuit:
+        """Create a circuit with a cycle of cx gates."""
+        circuit = QuantumCircuit(3)
+        circuit.cx((0, 1), (1, 2))
+        return circuit
+
+    @pytest.fixture(name="env")
+    def env_fixture(self) -> InitialMapping:
+        connection_graph = nx.from_edgelist([(0, 1), (1, 2)])
+        rewarder = EpisodeRewarder()
+        env = InitialMapping(connection_graph=connection_graph, rewarder=rewarder)
+        env.rng = np.random.default_rng(42)
+        return env
+
+    @pytest.fixture(name="agent")
+    def agent_fixture(self, env: InitialMapping) -> PPO:
+        agent = PPO("MultiInputPolicy", env, seed=42)
+        agent.learn(100)
+        return agent
+
+    def test_wrapper(
+        self, agent: PPO, env: InitialMapping, circuit: QuantumCircuit
+    ) -> None:
+        mapper = AgentMapperWrapper(agent, env, 10)
+        mapping = mapper.compute_mapping(circuit)
+        assert set(mapping) == {0, 1, 2}

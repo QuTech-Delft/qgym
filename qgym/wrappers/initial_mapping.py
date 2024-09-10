@@ -65,7 +65,7 @@ class AgentMapperWrapper:
             virtual qubit.
         """
         interaction_graph = get_interaction_graph(circuit)
-        obs, _ = self.env.reset({"interaction_graph": interaction_graph})
+        obs, _ = self.env.reset(options={"interaction_graph": interaction_graph})
 
         predict_kwargs = {"observation": obs}
         for _ in range(self.max_steps):
