@@ -4,22 +4,16 @@ on: push
 
 jobs:
   mypy:
-    env:
-      UV_SYSTEM_PYTHON: 1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v2
       - name: Setup Python
         uses: actions/setup-python@v5
-      - name: Setup venv
-        run: |
-          uv venv
-          source .venv/bin/activate
       - name: Install requirements
-        run: uv pip install mypy .
+        run: |
+          pip install --upgrade pip
+          pip install mypy .
       - name: Run mypy
         run: mypy qgym --strict
 
