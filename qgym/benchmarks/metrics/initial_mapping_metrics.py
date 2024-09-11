@@ -99,8 +99,7 @@ class InitialMappingBenchmarker:
 
     def __init__(
         self,
-        generator: MaxCutQAOAGenerator | None = None,
-        *,
+        generator: MaxCutQAOAGenerator,
         metrics: Iterable[InitialMappingMetric],
     ) -> None:
         """Init of the :class:`InitialMappingBenchmarker` class.
