@@ -15,7 +15,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v2
       - name: Install requirements
-        run: uv pip install mypy .
+        run: uv pip install mypy . --system
       - name: Run mypy --strict
         run: mypy qgym
 
