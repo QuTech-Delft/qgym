@@ -1,4 +1,5 @@
 """This module contains wrappers for :class:`~qgym.envs.InitialMapping`."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     from qgym.envs import InitialMapping
 
 
-class AgentMapperWrapper: # pylint: disable=too-few-public-methods
+class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
     """Wrap any trained stable baselines 3 agent that inherit from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
 
