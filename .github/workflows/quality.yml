@@ -19,7 +19,7 @@ jobs:
       - name: Install requirements
         run: uv pip install mypy .
       - name: Run mypy --strict
-        run: mypy qgym
+        run: python3 -m mypy qgym
 
   pylint:
     runs-on: ubuntu-latest
