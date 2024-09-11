@@ -15,7 +15,7 @@ jobs:
       - name: Setup venv
         run: |
           uv venv
-          source .venv\bin\activate
+          source .venv/bin/activate
       - name: Install requirements
         run: uv pip install mypy .
       - name: Run mypy --strict
