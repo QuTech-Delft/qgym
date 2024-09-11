@@ -14,7 +14,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install mypy .
-      - name: Run mypy
+      - name: Run mypy --strict
         run: mypy qgym
 
   pylint:
