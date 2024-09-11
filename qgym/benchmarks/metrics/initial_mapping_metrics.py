@@ -12,7 +12,6 @@ from __future__ import annotations
 from abc import abstractmethod
 from collections import deque
 from collections.abc import Iterable
-from copy import deepcopy
 from typing import Protocol, runtime_checkable
 
 import networkx as nx
@@ -24,7 +23,7 @@ from qiskit.dagcircuit import DAGCircuit
 from qgym.benchmarks import BenchmarkResult
 from qgym.generators.qiskit_circuit import MaxCutQAOAGenerator
 from qgym.templates.pass_protocols import Mapper
-from qgym.utils.qiskit_utils import get_interaction_graph, parse_circuit
+from qgym.utils.qiskit_utils import get_interaction_graph
 
 # pylint: disable=too-few-public-methods
 
