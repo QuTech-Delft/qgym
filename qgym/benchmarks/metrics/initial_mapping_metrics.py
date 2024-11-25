@@ -30,7 +30,7 @@ from qgym.utils.qiskit_utils import get_interaction_graph
 
 @runtime_checkable
 class InitialMappingMetric(Protocol):
-    """Protocol that an metric for initial mapping should follow."""
+    """Protocol that a metric for initial mapping should follow."""
 
     @abstractmethod
     def compute(
