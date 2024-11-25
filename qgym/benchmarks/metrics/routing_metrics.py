@@ -117,7 +117,7 @@ class RoutingSolutionQuality:
                 by the integers in the tuples.
         """
 
-        # TODO: method needs thorough revision, these choices are neither obvious nor
+        # method needs thorough revision, these choices are neither obvious nor
         # correct perse.
         initial_fidelities: dict[tuple[int, int], float] = defaultdict(lambda: 1.0)
         for qubit1, qubit2 in initial_interaction_circuit:

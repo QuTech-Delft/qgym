@@ -20,7 +20,7 @@ from numpy.typing import ArrayLike
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
 
-from qgym.benchmarks import BenchmarkResult
+from qgym.benchmarks.benchmark_result import BenchmarkResult
 from qgym.generators.qiskit_circuit import MaxCutQAOAGenerator
 from qgym.templates.pass_protocols import Mapper
 from qgym.utils.qiskit_utils import get_interaction_graph

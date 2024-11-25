@@ -72,7 +72,8 @@ class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
         predict_kwargs = {"observation": obs}
         for _ in range(self.max_steps):
             if self.use_action_masking:
-                predict_kwargs["action_masks"] = self.env.action_masks()  # type: ignore[attr-defined]
+                action_masks = self.env.action_masks()  # type: ignore[attr-defined]
+                predict_kwargs["action_masks"] = action_masks
 
             action, _ = self.agent.predict(**predict_kwargs)  # type: ignore[arg-type]
             predict_kwargs["observation"], _, done, _, _ = self.env.step(action)
