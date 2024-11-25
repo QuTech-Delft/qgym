@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
-    """Wrap any trained stable baselines 3 agent that inherit from
+    """Wrap any trained stable baselines 3 agent that inherits from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
 
     The wrapper makes sure the agent upholds the Mapper protocol , which is required for
