@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Hashable, Iterable
+from copy import deepcopy
 
 import networkx as nx
 import numpy as np
@@ -77,18 +78,35 @@ def get_interaction_circuit(circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.
     return np.empty((0, 2), dtype=np.int_)
 
 
-def add_swaps_to_circuit(
+def insert_swaps_in_circuit(
     circuit: QuantumCircuit | DAGCircuit, swaps_inserted: Iterable[tuple[int, int, int]]
 ) -> DAGCircuit:
+    """Insert the provided swap gates in the quantum circuit.
+
+    Args:
+        circuit: Quantum circuit to insert the swap gates into.
+        swaps_insterted: Swap gated to insert. Iterable of tuples (g_idx, q1, q2). Each
+            tuple represents a swap gate, where g_idx is the index of the two qubit gate
+            before which the swap gate needs to be inserted. The swap is performed on q1
+            and q2.
+
+    Returns:
+        A DAGCircuit with the provided swap gates inserted.
+    """
     dag = parse_circuit(circuit)
     output_dag = dag.copy_empty_like()
     current_layout = Layout.generate_trivial_layout(dag.qregs["q"])
     swaps_iter = iter(swaps_inserted)
-    swap_idx, qubit1, qubit2 = next(swaps_iter)
+    try:
+        swap_idx, qubit1, qubit2 = next(swaps_iter)
+    except StopIteration:
+        # No swaps to insert
+        return deepcopy(dag)
+    interaction_idx = 0
 
     for layer in dag.serial_layers():
         subdag = layer["graph"]
-        for interaction_idx in enumerate(subdag.two_qubit_ops()):
+        for _ in subdag.two_qubit_ops():
             while interaction_idx == swap_idx:
                 # Insert a new layer with the SWAP(s).
                 swap_layer = DAGCircuit()
@@ -96,7 +114,10 @@ def add_swaps_to_circuit(
 
                 # create the swap operation
                 swap_layer.apply_operation_back(
-                    SwapGate(), (qubit1, qubit2), cargs=(), check=False
+                    SwapGate(),
+                    (current_layout[qubit1], current_layout[qubit2]),
+                    cargs=(),
+                    check=False,
                 )
 
                 # layer insertion
@@ -111,6 +132,8 @@ def add_swaps_to_circuit(
                     swap_idx, qubit1, qubit2 = next(swaps_iter)
                 except StopIteration:
                     swap_idx = -1
+
+            interaction_idx += 1
 
         order = current_layout.reorder_bits(output_dag.qubits)
         output_dag.compose(subdag, qubits=order)

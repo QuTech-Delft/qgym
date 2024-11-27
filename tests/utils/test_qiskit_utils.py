@@ -8,12 +8,14 @@ import numpy as np
 import pytest
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Qubit
+from qiskit.converters import dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 
 from qgym.utils.qiskit_utils import (
     _get_qreg_to_int_mapping,
     get_interaction_circuit,
     get_interaction_graph,
+    insert_swaps_in_circuit,
     parse_circuit,
 )
 
@@ -147,3 +149,81 @@ class TestGetInteractionCircuit:
         expected_msg = "Interaction circuits are defined for physical circuits only"
         with pytest.raises(ValueError, match=expected_msg):
             get_interaction_circuit(circuit)
+
+
+class TestAddSwapsToCircuit:
+
+    def test_multiple_swaps(self) -> None:
+        """
+        Input:                              Expected Output:
+        q_0: ──■─────────────────           q_0: ──■────────────────────
+             ┌─┴─┐                               ┌─┴─┐             ┌───┐
+        q_1: ┤ X ├──■────────────           q_1: ┤ X ├─────■────X──┤ X ├
+             └───┘┌─┴─┐                          └───┘     │    │  └─┬─┘
+        q_2: ─────┤ X ├──■───────           q_2: ──────X───┼────X────┼──
+                  └───┘┌─┴─┐                           │ ┌─┴─┐       │
+        q_3: ──────────┤ X ├──■──           q_3: ──X───X─┤ X ├──■────┼──
+                       └───┘┌─┴─┐                  │     └───┘┌─┴─┐  │
+        q_4: ───────────────┤ X ├           q_4: ──X──────────┤ X ├──■──
+                            └───┘                             └───┘
+        """
+        circuit = QuantumCircuit(5)
+        circuit.cx(0, 1)
+        circuit.cx(1, 2)
+        circuit.cx(2, 3)
+        circuit.cx(3, 4)
+
+        swaps = [(1, 3, 4), (1, 2, 3), (3, 1, 2)]
+
+        expected_circuit = QuantumCircuit(5)
+        expected_circuit.cx(0, 1)
+        expected_circuit.swap(3, 4)
+        expected_circuit.swap(2, 3)
+        expected_circuit.cx(1, 3)
+        expected_circuit.swap(1, 2)
+        expected_circuit.cx(3, 4)
+        expected_circuit.cx(4, 1)
+
+        routed_dag = insert_swaps_in_circuit(circuit, swaps)
+        assert expected_circuit == dag_to_circuit(routed_dag)
+
+    def test_preserve_single_qubit_gates(self) -> None:
+        """
+        Input:                              Expected Output:
+             ┌───┐                               ┌───┐             ┌───┐┌───┐
+        q_0: ┤ H ├──■─────────────────      q_0: ┤ H ├──■────────X─┤ X ├┤ H ├
+             └───┘┌─┴─┐┌───┐                     └───┘┌─┴─┐┌───┐ │ └─┬─┘└───┘
+        q_1: ─────┤ X ├┤ H ├──■───────      q_1: ─────┤ X ├┤ H ├─┼───■───────
+                  └───┘└───┘┌─┴─┐┌───┐                └───┘└───┘ │
+        q_2: ───────────────┤ X ├┤ H ├      q_2: ────────────────X───────────
+                            └───┘└───┘
+        """
+        circuit = QuantumCircuit(3)
+        circuit.h(0)
+        circuit.cx(0, 1)
+        circuit.h(1)
+        circuit.cx(1, 2)
+        circuit.h(2)
+
+        swaps = [(1, 0, 2)]
+
+        expected_circuit = QuantumCircuit(3)
+        expected_circuit.h(0)
+        expected_circuit.cx(0, 1)
+        expected_circuit.h(1)
+        expected_circuit.swap(0, 2)
+        expected_circuit.cx(1, 0)
+        expected_circuit.h(0)
+
+        routed_dag = insert_swaps_in_circuit(circuit, swaps)
+        assert expected_circuit == dag_to_circuit(routed_dag)
+
+    def test_empty_swap(self) -> None:
+        circuit = QuantumCircuit(2)
+        circuit.h(0)
+        circuit.cx(0, 1)
+
+        swaps = []
+
+        routed_dag = insert_swaps_in_circuit(circuit, swaps)
+        assert circuit == dag_to_circuit(routed_dag)

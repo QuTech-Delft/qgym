@@ -12,8 +12,8 @@ from qiskit.transpiler import Layout
 
 from qgym.utils.qiskit_utils import (
     _get_qreg_to_int_mapping,
-    add_swaps_to_circuit,
     get_interaction_circuit,
+    insert_swaps_in_circuit,
     parse_circuit,
 )
 
@@ -61,7 +61,7 @@ class AgentRoutingWrapper:  # pylint: disable=too-few-public-methods
             raise TypeError(msg)
 
     def compute_routing(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
-        """Compute a mapping of the `circuit` using the provided `agent` and `env`.
+        """Route the `circuit` using the provided `agent` and `env`.
 
         Args:
             circuit: Quantum circuit to route. The circuit must be a physical circuit,
@@ -93,7 +93,7 @@ class AgentRoutingWrapper:  # pylint: disable=too-few-public-methods
             )
             raise ValueError(msg)
 
-        return add_swaps_to_circuit(circuit, self.env._state.swap_gates_inserted)
+        return insert_swaps_in_circuit(circuit, self.env._state.swap_gates_inserted)
 
 
 class QiskitMapperWrapper:
