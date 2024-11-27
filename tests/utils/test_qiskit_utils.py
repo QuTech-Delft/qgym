@@ -4,6 +4,7 @@ import itertools
 from collections.abc import Hashable
 
 import networkx as nx
+import numpy as np
 import pytest
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit import Qubit
@@ -11,6 +12,7 @@ from qiskit.dagcircuit import DAGCircuit
 
 from qgym.utils.qiskit_utils import (
     _get_qreg_to_int_mapping,
+    get_interaction_circuit,
     get_interaction_graph,
     parse_circuit,
 )
@@ -91,3 +93,57 @@ class TestGetInteractionGraph:
         circuit.ccx(0, 1, 2)
         with pytest.raises(ValueError, match="no 3\+ qubit operations are supported"):
             get_interaction_graph(circuit)
+
+
+class TestGetInteractionCircuit:
+
+    @pytest.mark.parametrize("circuit_size", range(1, 6))
+    def test_empty_circuit(self, circuit_size: int) -> None:
+        circuit = QuantumCircuit(circuit_size)
+        interaction_circuit = get_interaction_circuit(circuit)
+        np.testing.assert_array_equal(interaction_circuit, np.empty((0, 2)))
+
+    @pytest.mark.parametrize("circuit_size", range(2, 6))
+    def test_dense_circuit(self, circuit_size: int) -> None:
+        circuit = QuantumCircuit(circuit_size)
+        circuit.h(range(circuit_size))
+        circuit.cx(*zip(*itertools.combinations(range(circuit_size), 2)))
+        circuit.h(range(circuit_size))
+
+        expected_result = np.array([*itertools.combinations(range(circuit_size), 2)])
+        interaction_circuit = get_interaction_circuit(circuit)
+        np.testing.assert_array_equal(interaction_circuit, expected_result)
+
+    @pytest.mark.parametrize("circuit_size", range(2, 6))
+    def test_line_circuit(self, circuit_size: int) -> None:
+        circuit = QuantumCircuit(circuit_size)
+        circuit.h(range(circuit_size))
+        circuit.cx(range(circuit_size - 1), range(1, circuit_size))
+        circuit.h(range(circuit_size))
+
+        expected_result = np.array(
+            [np.arange(circuit_size - 1), np.arange(1, circuit_size)]
+        ).T
+        interaction_circuit = get_interaction_circuit(circuit)
+        np.testing.assert_array_equal(interaction_circuit, expected_result)
+
+    def test_multi_qubit_value_error(self) -> None:
+        circuit = QuantumCircuit(3)
+        circuit.ccx(0, 1, 2)
+        with pytest.raises(ValueError, match="no 3\+ qubit operations are supported"):
+            get_interaction_graph(circuit)
+
+    @pytest.mark.parametrize(
+        "circuit",
+        [
+            QuantumCircuit(),
+            QuantumCircuit(QuantumRegister(1, "q"), QuantumRegister(1, "a")),
+            QuantumCircuit(QuantumRegister(1, "a")),
+        ],
+        ids=["no registers", "multiple registers", "wrong name"],
+    )
+    def test_non_physical_circuit_error(self, circuit: QuantumCircuit) -> None:
+
+        expected_msg = "Interaction circuits are defined for physical circuits only"
+        with pytest.raises(ValueError, match=expected_msg):
+            get_interaction_circuit(circuit)

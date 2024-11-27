@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+from collections import deque
 from collections.abc import Hashable
 
 import networkx as nx
+import numpy as np
+from numpy.typing import NDArray
 from qiskit import QuantumCircuit
 from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGCircuit
+from qiskit.transpiler import Layout
 
 
 def get_interaction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
@@ -37,6 +41,41 @@ def get_interaction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
     )
 
     return interaction_graph
+
+
+def get_interaction_circuit(circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
+    """Create and interaction circuit from the provided `circuit`.
+
+    Args:
+        circuit: Circuit to produce the interactions circuit. Both
+            :class:`~qiskit.circuit.QuantumCircuit` and
+            :class:`~qiskit.dagcircuit.DAGCircuit` representations are accepted.
+
+    Returns:
+        Interaction circuit of the `circuit`.
+    """
+    dag = parse_circuit(circuit)
+
+    if dag.multi_qubit_ops():
+        msg = "no 3+ qubit operations are supported"
+        raise ValueError(msg)
+
+    if len(dag.qregs) != 1 or dag.qregs.get("q", None) is None:
+        msg = "Interaction circuits are defined for physical circuits only"
+        raise ValueError(msg)
+
+    layout = Layout.generate_trivial_layout(dag.qregs["q"])
+    interaction_circuit: deque[tuple[int, int]] = deque()
+
+    for op_node in dag.op_nodes(include_directives=False):
+        if len(op_node.qargs) == 2:
+            qubit1 = layout[op_node.qargs[0]]
+            qubit2 = layout[op_node.qargs[1]]
+            interaction_circuit.append((qubit1, qubit2))
+
+    if len(interaction_circuit):
+        return np.array(interaction_circuit, dtype=np.int_)
+    return np.empty((0, 2), dtype=np.int_)
 
 
 def parse_circuit(circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
