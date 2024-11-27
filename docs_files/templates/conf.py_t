@@ -56,6 +56,7 @@ intersphinx_mapping = {
     "gymnasium": ("https://gymnasium.farama.org/", None),
     "pygame": ("https://www.pygame.org/docs/", None),
     "qiskit": ("https://docs.quantum.ibm.com/api/qiskit", None),
+    "stable_baselines3" : ("https://stable-baselines3.readthedocs.io/en/master/", None),
 }
 
 mathjax3_config = {

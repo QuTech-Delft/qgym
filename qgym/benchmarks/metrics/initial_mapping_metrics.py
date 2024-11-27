@@ -12,37 +12,31 @@ from __future__ import annotations
 from abc import abstractmethod
 from collections import deque
 from collections.abc import Iterable
-from copy import deepcopy
 from typing import Protocol, runtime_checkable
 
 import networkx as nx
 import numpy as np
-from numpy.typing import ArrayLike, NDArray
+from numpy.typing import ArrayLike
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
 
-from qgym.benchmarks import BenchmarkResult
-from qgym.generators.graph import BasicGraphGenerator, GraphGenerator
+from qgym.benchmarks.benchmark_result import BenchmarkResult
+from qgym.generators.qiskit_circuit import MaxCutQAOAGenerator
+from qgym.templates.pass_protocols import Mapper
+from qgym.utils.qiskit_utils import get_interaction_graph
 
 # pylint: disable=too-few-public-methods
 
 
 @runtime_checkable
 class InitialMappingMetric(Protocol):
-    """Protocol that an metric for initial mapping should follow."""
+    """Protocol that a metric for initial mapping should follow."""
 
     @abstractmethod
-    def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float:
-        """Compute the metric for the provided `interaction_graph` and `mapping`."""
-
-
-@runtime_checkable
-class Mapper(Protocol):
-    """Mapper protocol."""
-
-    @abstractmethod
-    def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
-        """Compute a mapping for a provided quantum `circuit`."""
+    def compute(
+        self, circuit: QuantumCircuit | DAGCircuit, mapping: ArrayLike
+    ) -> float:
+        """Compute the metric for the provided `circuit` and `mapping`."""
 
 
 class DistanceRatioLoss(InitialMappingMetric):
@@ -64,16 +58,19 @@ class DistanceRatioLoss(InitialMappingMetric):
             for node_v in connection_graph:
                 self.distance_matrix[node_u, node_v] = distances[node_v]
 
-    def compute(self, interaction_graph: nx.Graph, mapping: ArrayLike) -> float:
+    def compute(
+        self, circuit: QuantumCircuit | DAGCircuit, mapping: ArrayLike
+    ) -> float:
         """Compute the distance ratio loss.
 
         Args:
-            interaction_graph: interaction graph of a quantum circuit.
+            circuit: Quantum circuit to compute the metric for.
             mapping: 1D-ArrayLike representing a qubit mapping.
 
         Returns:
             The distance ratio loss.
         """
+        interaction_graph = get_interaction_graph(circuit)
         if interaction_graph.number_of_edges() == 0:
             return 1.0
         mapping = np.asarray(mapping, dtype=np.int_)
@@ -102,24 +99,18 @@ class InitialMappingBenchmarker:
 
     def __init__(
         self,
-        generator: GraphGenerator | None = None,
-        *,
+        generator: MaxCutQAOAGenerator,
         metrics: Iterable[InitialMappingMetric],
     ) -> None:
         """Init of the :class:`InitialMappingBenchmarker` class.
 
         Args:
-            generator: Interaction graph generator to use during benchmarking
+            generator: Circuit generator. Currently only the ``MaxCutQAOAGenerator`` is
+                supported.
             metrics: Metrics to compute.
         """
-        self.generator = BasicGraphGenerator() if generator is None else generator
+        self.generator = generator
         self.metrics = tuple(metrics)
-
-        for metric in self.metrics:
-            if hasattr(metric, "connection_graph"):
-                connection_graph = deepcopy(metric.connection_graph)
-                self.generator.set_state_attributes(connection_graph=connection_graph)
-                break
 
     def run(self, mapper: Mapper, max_iter: int = 1000) -> BenchmarkResult:
         """Run the benchmark.
@@ -133,10 +124,10 @@ class InitialMappingBenchmarker:
             from the benchmark.
         """
         results: list[deque[float]] = [deque() for _ in self.metrics]
-        for i, interaction_graph in enumerate(self.generator, start=1):
-            mapping = mapper.compute_mapping(interaction_graph)
+        for i, circuit in enumerate(self.generator, start=1):
+            mapping = mapper.compute_mapping(circuit)
             for metric, result_que in zip(self.metrics, results):
-                result_que.append(metric.compute(interaction_graph, mapping))
+                result_que.append(metric.compute(circuit, mapping))
 
             if i >= max_iter:
                 break
