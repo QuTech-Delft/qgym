@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from collections import deque
-from collections.abc import Hashable
+from collections.abc import Hashable, Iterable
 
 import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
 from qiskit import QuantumCircuit
+from qiskit.circuit.library.standard_gates import SwapGate
 from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler import Layout
@@ -36,8 +37,7 @@ def get_interaction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
 
     interaction_graph.add_edges_from(
         (qreg_to_int[op_node.qargs[0]], qreg_to_int[op_node.qargs[1]])
-        for op_node in dag.op_nodes(include_directives=False)
-        if len(op_node.qargs) == 2
+        for op_node in dag.two_qubit_ops()
     )
 
     return interaction_graph
@@ -67,15 +67,55 @@ def get_interaction_circuit(circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.
     layout = Layout.generate_trivial_layout(dag.qregs["q"])
     interaction_circuit: deque[tuple[int, int]] = deque()
 
-    for op_node in dag.op_nodes(include_directives=False):
-        if len(op_node.qargs) == 2:
-            qubit1 = layout[op_node.qargs[0]]
-            qubit2 = layout[op_node.qargs[1]]
-            interaction_circuit.append((qubit1, qubit2))
+    for op_node in dag.two_qubit_ops():
+        qubit1 = layout[op_node.qargs[0]]
+        qubit2 = layout[op_node.qargs[1]]
+        interaction_circuit.append((qubit1, qubit2))
 
     if len(interaction_circuit):
         return np.array(interaction_circuit, dtype=np.int_)
     return np.empty((0, 2), dtype=np.int_)
+
+
+def add_swaps_to_circuit(
+    circuit: QuantumCircuit | DAGCircuit, swaps_inserted: Iterable[tuple[int, int, int]]
+) -> DAGCircuit:
+    dag = parse_circuit(circuit)
+    output_dag = dag.copy_empty_like()
+    current_layout = Layout.generate_trivial_layout(dag.qregs["q"])
+    swaps_iter = iter(swaps_inserted)
+    swap_idx, qubit1, qubit2 = next(swaps_iter)
+
+    for layer in dag.serial_layers():
+        subdag = layer["graph"]
+        for interaction_idx in enumerate(subdag.two_qubit_ops()):
+            while interaction_idx == swap_idx:
+                # Insert a new layer with the SWAP(s).
+                swap_layer = DAGCircuit()
+                swap_layer.add_qreg(dag.qregs["q"])
+
+                # create the swap operation
+                swap_layer.apply_operation_back(
+                    SwapGate(), (qubit1, qubit2), cargs=(), check=False
+                )
+
+                # layer insertion
+                order = current_layout.reorder_bits(output_dag.qubits)
+                output_dag.compose(swap_layer, qubits=order)
+
+                # update current_layout
+                current_layout.swap(qubit1, qubit2)
+
+                # get next swap
+                try:
+                    swap_idx, qubit1, qubit2 = next(swaps_iter)
+                except StopIteration:
+                    swap_idx = -1
+
+        order = current_layout.reorder_bits(output_dag.qubits)
+        output_dag.compose(subdag, qubits=order)
+
+    return output_dag
 
 
 def parse_circuit(circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
