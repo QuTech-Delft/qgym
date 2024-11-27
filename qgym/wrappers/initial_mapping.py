@@ -55,6 +55,9 @@ class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
         self.env = env
         self.max_steps = max_steps
         self.use_action_masking = use_action_masking
+        if self.use_action_masking and not hasattr(self.env, "action_masks"):
+            msg = "use_action_mask is True, but env has no action_masks attribute"
+            raise TypeError(msg)
 
     def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
         """Compute a mapping of the `circuit` using the provided `agent` and `env`.
@@ -72,7 +75,7 @@ class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
         predict_kwargs = {"observation": obs}
         for _ in range(self.max_steps):
             if self.use_action_masking:
-                action_masks = self.env.action_masks()  # type: ignore[attr-defined]
+                action_masks = self.env.action_masks()
                 predict_kwargs["action_masks"] = action_masks
 
             action, _ = self.agent.predict(**predict_kwargs)  # type: ignore[arg-type]
