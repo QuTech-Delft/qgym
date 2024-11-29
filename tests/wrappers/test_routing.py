@@ -90,7 +90,11 @@ class TestAgentMapperWrapper:
         assert operations["swap"] >= 1
 
         layout = Layout.generate_trivial_layout(routed_dag.qregs["q"])
+        supported_connections = [{0, 1}, {1, 2}]
         for gate in routed_dag.two_qubit_ops():
+            breakpoint()
             qubit1 = layout[gate.qargs[0]]
             qubit2 = layout[gate.qargs[1]]
-            assert {qubit1, qubit2} in [{0, 1}, {1, 2}], f"gate not in topology: {gate}"
+            assert (
+                {qubit1, qubit2} in supported_connections
+            ), f"{gate.name} uses unavailable connection ({qubit1}, {qubit2})"
