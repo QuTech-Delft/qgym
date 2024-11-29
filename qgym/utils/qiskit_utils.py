@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import deque
-from collections.abc import Hashable, Iterable
+from collections.abc import Iterable
 from copy import deepcopy
 
 import networkx as nx

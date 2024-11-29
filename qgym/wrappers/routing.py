@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
@@ -13,14 +13,17 @@ from qgym.utils.qiskit_utils import (
     insert_swaps_in_circuit,
     parse_circuit,
 )
+from qgym.envs.routing import RoutingState
+from qgym.templates.wrappers import AgentWrapper
 
 if TYPE_CHECKING:
+    import numpy as np
+    from numpy.typing import NDArray
     from stable_baselines3.common.base_class import BaseAlgorithm
+    from qgym.envs.routing import Routing
 
-    from qgym.envs import Routing
 
-
-class AgentRoutingWrapper:  # pylint: disable=too-few-public-methods
+class AgentRoutingWrapper(AgentWrapper[DAGCircuit]):  # pylint: disable=too-few-public-methods
     """Wrap any trained stable baselines 3 agent that inherits from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
 
@@ -28,7 +31,7 @@ class AgentRoutingWrapper:  # pylint: disable=too-few-public-methods
     required for the qgym benchmarking tools.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=useless-parent-delegation
         self,
         agent: BaseAlgorithm,
         env: Routing,
@@ -49,13 +52,25 @@ class AgentRoutingWrapper:  # pylint: disable=too-few-public-methods
                 and the `predict` method of `agent` should accept the keyword argument
                 `"action_masks"`. If ``False`` (default) no action masking is used.
         """
-        self.agent = agent
-        self.env = env
-        self.max_steps = max_steps
-        self.use_action_masking = use_action_masking
-        if self.use_action_masking and not hasattr(self.env, "action_masks"):
-            msg = "use_action_mask is True, but env has no action_masks attribute"
-            raise TypeError(msg)
+        super().__init__(agent, env, max_steps, use_action_masking=use_action_masking)
+
+    def _prepare_episode(
+        self, circuit: QuantumCircuit | DAGCircuit
+    ) -> dict[str, NDArray[np.int_]]:
+        """Extract the interaction circuit from `circuit`."""
+        interaction_circuit = get_interaction_circuit(circuit)
+        return {"interaction_circuit": interaction_circuit}
+
+    def _postprocess_episode(self, circuit: DAGCircuit) -> DAGCircuit:
+        """Route `circuit` based on the findings of the current episode."""
+        state = cast(RoutingState, self.env._state)  # pylint: disable=protected-access
+        if not state.is_done():
+            msg = (
+                "routing not found, "
+                "the episode was truncated or 'max_steps' was reached"
+            )
+            raise ValueError(msg)
+        return insert_swaps_in_circuit(circuit, state.swap_gates_inserted)
 
     def compute_routing(self, circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
         """Route the `circuit` using the provided `agent` and `env`.
@@ -69,31 +84,7 @@ class AgentRoutingWrapper:  # pylint: disable=too-few-public-methods
             Routed circuit, i.e. a quantum circuit that only contains two qubit gates
             between qubits that are part of the connection graph.
         """
-        interaction_circuit = get_interaction_circuit(circuit)
-        obs, _ = self.env.reset(options={"interaction_circuit": interaction_circuit})
-
-        predict_kwargs = {"observation": obs}
-        for _ in range(self.max_steps):
-            if self.use_action_masking:
-                action_masks = self.env.action_masks()  # type: ignore[attr-defined]
-                predict_kwargs["action_masks"] = action_masks
-
-            action, _ = self.agent.predict(**predict_kwargs)
-            predict_kwargs["observation"], _, done, _, _ = self.env.step(action)
-            if done:
-                break
-
-        if not done:
-            msg = (
-                "routing not found, "
-                "the episode was truncated or 'max_steps' was reached"
-            )
-            raise ValueError(msg)
-
-        return insert_swaps_in_circuit(
-            circuit,
-            self.env._state.swap_gates_inserted,  # type: ignore[attr-defined]
-        )
+        return self.run(circuit)
 
 
 class QiskitRoutingWrapper:

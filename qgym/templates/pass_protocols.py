@@ -20,3 +20,12 @@ class Mapper(Protocol):
     @abstractmethod
     def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
         """Compute a mapping for a provided quantum `circuit`."""
+
+
+@runtime_checkable
+class Router(Protocol):
+    """Qubit router protocol."""
+
+    @abstractmethod
+    def compute_routing(self, circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
+        """Compute a qubit routing for a provided quantum `circuit`."""
