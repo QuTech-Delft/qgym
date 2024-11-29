@@ -8,10 +8,9 @@ import numpy as np
 from numpy.typing import NDArray
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
-from qiskit.transpiler import Layout
+from qiskit.transpiler import Layout, AnalysisPass
 
 from qgym.utils.qiskit_utils import (
-    _get_qreg_to_int_mapping,
     get_interaction_graph,
     parse_circuit,
 )
@@ -94,13 +93,12 @@ class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
 
 
 class QiskitMapperWrapper:
-    """Wrap any qiskit mapper (:class:`~qiskit.transpiler.Layout`) such that it becomes
-    compatible with the qgym framework. This class wraps the qiskit mapper, such that it
-    is compatible with the qgym Mapper protocol, which is required for the qgym
-    benchmarking tools.
+    """Wrap any qiskit mapper (Layout algorithm) such that it becomes compatible with
+    the qgym framework. This class wraps the qiskit mapper, such that it  is compatible
+    with the qgym Mapper protocol, which is required for the qgym benchmarking tools.
     """
 
-    def __init__(self, qiskit_mapper: Layout) -> None:
+    def __init__(self, qiskit_mapper: AnalysisPass) -> None:
         """Init of the :class:`QiskitMapperWrapper`.
 
         Args:
@@ -122,12 +120,8 @@ class QiskitMapperWrapper:
         dag = parse_circuit(circuit)
 
         self.mapper.run(dag)
-        layout = self.mapper.property_set["layout"]
-
-        # Convert qiskit layout to qgym mapping
-        qreg_to_int = _get_qreg_to_int_mapping(dag)
-        iterable = (qreg_to_int[layout[i]] for i in range(dag.num_qubits()))
-        return np.fromiter(iterable, int, dag.num_qubits())
+        layout: Layout = self.mapper.property_set["layout"]
+        return np.fromiter(map(layout.__getitem__, dag.qubits), int, dag.num_qubits())
 
     def __repr__(self) -> str:
         """String representation of the wrapper."""

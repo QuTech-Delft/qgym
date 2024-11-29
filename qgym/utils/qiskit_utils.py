@@ -33,12 +33,11 @@ def get_interaction_graph(circuit: QuantumCircuit | DAGCircuit) -> nx.Graph:
         msg = "no 3+ qubit operations are supported"
         raise ValueError(msg)
 
-    qreg_to_int = _get_qreg_to_int_mapping(dag)
+    layout = Layout.generate_trivial_layout(*dag.qregs.values())
     interaction_graph: nx.Graph = nx.empty_graph(dag.num_qubits())
 
     interaction_graph.add_edges_from(
-        (qreg_to_int[op_node.qargs[0]], qreg_to_int[op_node.qargs[1]])
-        for op_node in dag.two_qubit_ops()
+        tuple(map(layout.__getitem__, gate.qargs)) for gate in dag.two_qubit_ops()
     )
 
     return interaction_graph
@@ -151,10 +150,3 @@ def parse_circuit(circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
         DAGCircuit representation of the circuit.
     """
     return circuit if isinstance(circuit, DAGCircuit) else circuit_to_dag(circuit)
-
-
-def _get_qreg_to_int_mapping(
-    circuit: QuantumCircuit | DAGCircuit,
-) -> dict[Hashable, int]:
-    """Create a mapping from the qubits to integer values."""
-    return {qubit: circuit.qubits.index(qubit) for qubit in circuit.qubits}

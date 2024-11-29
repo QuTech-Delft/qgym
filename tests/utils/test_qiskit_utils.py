@@ -12,7 +12,6 @@ from qiskit.converters import dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 
 from qgym.utils.qiskit_utils import (
-    _get_qreg_to_int_mapping,
     get_interaction_circuit,
     get_interaction_graph,
     insert_swaps_in_circuit,
@@ -32,39 +31,6 @@ class TestParseCircuit:
     def test_dag_circuit(self) -> None:
         dag_circuit = DAGCircuit()
         assert dag_circuit is parse_circuit(dag_circuit)
-
-
-@pytest.mark.parametrize(
-    ("circuit", "expected_output"),
-    [
-        (
-            QuantumCircuit(2),
-            {
-                Qubit(QuantumRegister(2, "q"), 0): 0,
-                Qubit(QuantumRegister(2, "q"), 1): 1,
-            },
-        ),
-        (
-            QuantumCircuit(QuantumRegister(2, "q")),
-            {
-                Qubit(QuantumRegister(2, "q"), 0): 0,
-                Qubit(QuantumRegister(2, "q"), 1): 1,
-            },
-        ),
-        (
-            QuantumCircuit(QuantumRegister(2, "q"), QuantumRegister(1, "a")),
-            {
-                Qubit(QuantumRegister(2, "q"), 0): 0,
-                Qubit(QuantumRegister(2, "q"), 1): 1,
-                Qubit(QuantumRegister(1, "a"), 0): 2,
-            },
-        ),
-    ],
-)
-def test_get_qreg_to_int_mapping(
-    circuit: QuantumCircuit, expected_output: dict[Hashable, int]
-) -> None:
-    assert _get_qreg_to_int_mapping(circuit) == expected_output
 
 
 class TestGetInteractionGraph:

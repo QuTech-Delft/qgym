@@ -37,7 +37,7 @@ class TestQiskitMapperWrapper:
     def test_vf2_layout(
         self, circuit: QuantumCircuit, coupling_map: CouplingMap
     ) -> None:
-        qiskit_mapper = VF2Layout(coupling_map)
+        qiskit_mapper = VF2Layout(coupling_map, seed=42)
         mapper = QiskitMapperWrapper(qiskit_mapper)
         mapping = mapper.compute_mapping(circuit)
         optimal_mapping_found = False
@@ -47,6 +47,7 @@ class TestQiskitMapperWrapper:
             if np.array_equal(mapping, opt_map1) or np.array_equal(mapping, opt_map2):
                 optimal_mapping_found = True
                 break
+
         assert optimal_mapping_found
 
     def test_sabre_layout(
