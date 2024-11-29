@@ -19,7 +19,6 @@ def test_abc() -> None:
 
 
 class TestNullInteractionGenerator:
-
     @pytest.fixture(name="generator")
     def null_interaction_generator_fixture(self) -> NullInteractionGenerator:
         return NullInteractionGenerator()
@@ -53,7 +52,6 @@ class TestNullInteractionGenerator:
 
 
 class TestBasicGraphGenerator:
-
     @pytest.fixture(name="simple_generator")
     def null_interaction_generator_fixture(self) -> BasicInteractionGenerator:
         generator = BasicInteractionGenerator()

@@ -4,18 +4,16 @@ import networkx as nx
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
-from qiskit.transpiler import CouplingMap
-from qiskit.transpiler.passes import SabreSwap, BasicSwap
-from stable_baselines3 import PPO
 from qiskit.converters import dag_to_circuit
-from qgym.envs.routing import BasicRewarder, Routing
-from qgym.wrappers.routing import QiskitRoutingWrapper, AgentRoutingWrapper
+from qiskit.transpiler import CouplingMap, Layout
+from qiskit.transpiler.passes import BasicSwap, SabreSwap
+from stable_baselines3 import PPO
 
-from qiskit.transpiler import Layout
+from qgym.envs.routing import BasicRewarder, Routing
+from qgym.wrappers.routing import AgentRoutingWrapper, QiskitRoutingWrapper
 
 
 class TestQiskitRoutingWrapper:
-
     @pytest.fixture(name="circuit")
     def circuit_fixture(self) -> QuantumCircuit:
         """Create a circuit with a cycle of cx gates."""
@@ -58,7 +56,6 @@ class TestQiskitRoutingWrapper:
 
 
 class TestAgentMapperWrapper:
-
     @pytest.fixture(name="circuit")
     def circuit_fixture(self) -> QuantumCircuit:
         """Create a circuit with a cycle of cx gates."""

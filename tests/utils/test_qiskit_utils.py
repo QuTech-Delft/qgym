@@ -20,7 +20,6 @@ from qgym.utils.qiskit_utils import (
 
 
 class TestParseCircuit:
-
     def test_quantum_circuit(self) -> None:
         circuit = QuantumCircuit(1)
         dag_circuit = parse_circuit(circuit)
@@ -34,7 +33,6 @@ class TestParseCircuit:
 
 
 class TestGetInteractionGraph:
-
     @pytest.mark.parametrize("circuit_size", range(6))
     def test_empty_circuit(self, circuit_size: int) -> None:
         circuit = QuantumCircuit(circuit_size)
@@ -64,7 +62,6 @@ class TestGetInteractionGraph:
 
 
 class TestGetInteractionCircuit:
-
     @pytest.mark.parametrize("circuit_size", range(1, 6))
     def test_empty_circuit(self, circuit_size: int) -> None:
         circuit = QuantumCircuit(circuit_size)
@@ -111,14 +108,12 @@ class TestGetInteractionCircuit:
         ids=["no registers", "multiple registers", "wrong name"],
     )
     def test_non_physical_circuit_error(self, circuit: QuantumCircuit) -> None:
-
         expected_msg = "Interaction circuits are defined for physical circuits only"
         with pytest.raises(ValueError, match=expected_msg):
             get_interaction_circuit(circuit)
 
 
 class TestAddSwapsToCircuit:
-
     def test_multiple_swaps(self) -> None:
         """
         Input:                              Expected Output:

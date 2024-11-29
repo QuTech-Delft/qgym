@@ -8,12 +8,9 @@ import numpy as np
 from numpy.typing import NDArray
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
-from qiskit.transpiler import Layout, AnalysisPass
+from qiskit.transpiler import AnalysisPass, Layout
 
-from qgym.utils.qiskit_utils import (
-    get_interaction_graph,
-    parse_circuit,
-)
+from qgym.utils.qiskit_utils import get_interaction_graph, parse_circuit
 
 if TYPE_CHECKING:
     from stable_baselines3.common.base_class import BaseAlgorithm

@@ -206,7 +206,7 @@ class MachineProperties:
 
     @staticmethod
     def _check_machine_properties_mapping(
-        machine_properties: Mapping[str, Any]
+        machine_properties: Mapping[str, Any],
     ) -> dict[str, Any]:
         """Check if the given machine properties ``Mapping`` is a valid descriptions of
         the machine properties and returns a ``Dict`` to easily initialize a

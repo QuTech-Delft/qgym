@@ -13,7 +13,6 @@ from qgym.wrappers.initial_mapping import AgentMapperWrapper, QiskitMapperWrappe
 
 
 class TestQiskitMapperWrapper:
-
     @pytest.fixture(name="circuit")
     def circuit_fixture(self) -> QuantumCircuit:
         """Create a circuit with a cycle of cx gates."""
@@ -59,7 +58,6 @@ class TestQiskitMapperWrapper:
 
 
 class TestAgentMapperWrapper:
-
     @pytest.fixture(name="circuit")
     def circuit_fixture(self) -> QuantumCircuit:
         """Create a circuit with a line of cx gates."""

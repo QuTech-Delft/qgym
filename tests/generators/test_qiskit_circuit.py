@@ -6,7 +6,6 @@ from qgym.generators import MaxCutQAOAGenerator
 
 
 class TestMaxCutQAOAGenerator:
-
     @pytest.mark.parametrize("n_nodes", range(1, 6))
     def test_iterating(self, n_nodes: int) -> None:
         generator = MaxCutQAOAGenerator(n_nodes, 0.5, seed=42)

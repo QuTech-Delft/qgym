@@ -91,7 +91,8 @@ class AgentRoutingWrapper:  # pylint: disable=too-few-public-methods
             raise ValueError(msg)
 
         return insert_swaps_in_circuit(
-            circuit, self.env._state.swap_gates_inserted  # type: ignore[attr-defined]
+            circuit,
+            self.env._state.swap_gates_inserted,  # type: ignore[attr-defined]
         )
 
 
