@@ -26,6 +26,8 @@ jobs:
 
   pylint:
     runs-on: ubuntu-latest
+    env:
+      UV_SYSTEM_PYTHON: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
