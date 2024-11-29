@@ -38,6 +38,6 @@ jobs:
             pip install --upgrade pip
             pip install uv
       - name: Install requirements
-        run: pip install pylint .
+        run: uv pip install pylint .
       - name: Run pylint
         run: pylint qgym
