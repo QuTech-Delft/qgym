@@ -10,9 +10,9 @@ from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler import AnalysisPass, Layout
 
+from qgym.envs.initial_mapping import InitialMappingState
 from qgym.templates import AgentWrapper
 from qgym.utils.qiskit_utils import get_interaction_graph, parse_circuit
-from qgym.envs.initial_mapping import InitialMappingState
 
 if TYPE_CHECKING:
     import networkx as nx
@@ -21,7 +21,9 @@ if TYPE_CHECKING:
     from qgym.envs.initial_mapping import InitialMapping
 
 
-class AgentMapperWrapper(AgentWrapper[NDArray[np.int_]]):  # pylint: disable=too-few-public-methods
+class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
+    AgentWrapper[NDArray[np.int_]]
+):
     """Wrap any trained stable baselines 3 agent that inherits from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
 
@@ -57,7 +59,9 @@ class AgentMapperWrapper(AgentWrapper[NDArray[np.int_]]):  # pylint: disable=too
         interaction_graph = get_interaction_graph(circuit)
         return {"interaction_graph": interaction_graph}
 
-    def _postprocess_episode(self, circuit: DAGCircuit) -> NDArray[np.int_]:  # pylint: disable=unused-argument
+    def _postprocess_episode(  # pylint: disable=unused-argument
+        self, circuit: DAGCircuit
+    ) -> NDArray[np.int_]:
         state = cast(InitialMappingState, self.env._state)  # pylint: disable=protected-access
         if not state.is_done():
             msg = (

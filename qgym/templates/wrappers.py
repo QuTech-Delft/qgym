@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from qiskit import QuantumCircuit
     from qiskit.dagcircuit import DAGCircuit
     from stable_baselines3.common.base_class import BaseAlgorithm
+
     from qgym.templates.environment import Environment
 
 WrapperOutputT = TypeVar("WrapperOutputT")

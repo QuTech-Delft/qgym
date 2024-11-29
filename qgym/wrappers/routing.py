@@ -8,22 +8,25 @@ from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 
+from qgym.envs.routing import RoutingState
+from qgym.templates.wrappers import AgentWrapper
 from qgym.utils.qiskit_utils import (
     get_interaction_circuit,
     insert_swaps_in_circuit,
     parse_circuit,
 )
-from qgym.envs.routing import RoutingState
-from qgym.templates.wrappers import AgentWrapper
 
 if TYPE_CHECKING:
     import numpy as np
     from numpy.typing import NDArray
     from stable_baselines3.common.base_class import BaseAlgorithm
+
     from qgym.envs.routing import Routing
 
 
-class AgentRoutingWrapper(AgentWrapper[DAGCircuit]):  # pylint: disable=too-few-public-methods
+class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
+    AgentWrapper[DAGCircuit]
+):
     """Wrap any trained stable baselines 3 agent that inherits from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
 
