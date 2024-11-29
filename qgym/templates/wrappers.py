@@ -22,7 +22,9 @@ if TYPE_CHECKING:
 WrapperOutputT = TypeVar("WrapperOutputT")
 
 
-class AgentWrapper(ABC, Generic[WrapperOutputT]):  # pylint: disable=too-few-public-methods
+class AgentWrapper(  # pylint: disable=too-few-public-methods
+    ABC, Generic[WrapperOutputT]
+):
     """Wrap any trained stable baselines 3 agent that inherits from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
     """

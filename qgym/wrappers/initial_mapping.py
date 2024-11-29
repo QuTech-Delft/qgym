@@ -62,7 +62,10 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
     def _postprocess_episode(  # pylint: disable=unused-argument
         self, circuit: DAGCircuit
     ) -> NDArray[np.int_]:
-        state = cast(InitialMappingState, self.env._state)  # pylint: disable=protected-access
+        state = cast(
+            InitialMappingState,
+            self.env._state,  # pylint: disable=protected-access
+        )
         if not state.is_done():
             msg = (
                 "mapping not found, "
