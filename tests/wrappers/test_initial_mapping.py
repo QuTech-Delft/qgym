@@ -61,7 +61,7 @@ class TestAgentMapperWrapper:
 
     @pytest.fixture(name="circuit")
     def circuit_fixture(self) -> QuantumCircuit:
-        """Create a circuit with a cycle of cx gates."""
+        """Create a circuit with a line of cx gates."""
         circuit = QuantumCircuit(3)
         circuit.cx((0, 1), (1, 2))
         return circuit
