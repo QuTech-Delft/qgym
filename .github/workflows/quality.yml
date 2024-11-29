@@ -31,9 +31,13 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
-      - name: Install requirements
+        with:
+          python-version: '3.12' 
+      - name: Setup UV
         run: |
-          pip install --upgrade pip
-          pip install pylint .
+            pip install --upgrade pip
+            pip install uv
+      - name: Install requirements
+        run: pip install pylint .
       - name: Run pylint
         run: pylint qgym
