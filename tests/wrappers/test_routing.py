@@ -93,5 +93,4 @@ class TestAgentMapperWrapper:
         for gate in routed_dag.two_qubit_ops():
             qubit1 = layout[gate.qargs[0]]
             qubit2 = layout[gate.qargs[1]]
-            if {qubit1, qubit2} not in [{0, 1}, {1, 2}]:
-                breakpoint()
+            assert {qubit1, qubit2} in [{0, 1}, {1, 2}], f"gate not in topology: {gate}"
