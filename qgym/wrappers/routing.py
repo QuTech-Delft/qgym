@@ -92,8 +92,9 @@ class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
 
 class QiskitRoutingWrapper:
     """Wrap any qiskit Router such that it becomes compatible with the qgym framework.
-    This class wraps the qiskit mapper, such that it is compatible with the qgym Routing
-    protocol, which is required for the qgym benchmarking tools.
+
+    This class wraps qiskit qubit routers, such that it is compatible with the qgym
+    Routing protocol, which is required for the qgym benchmarking tools.
     """
 
     def __init__(self, qiskit_router: TransformationPass) -> None:

@@ -8,171 +8,159 @@ the lower the better.
 """
 
 from __future__ import annotations
-
+from typing import Protocol, runtime_checkable
+from abc import abstractmethod
 from collections import defaultdict
 
 import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
+from qiskit import QuantumCircuit
+from qiskit.dagcircuit import DAGCircuit
+from numpy.typing import ArrayLike
+from qgym.utils.qiskit_utils import parse_circuit
+from qgym.utils.input_validation import check_int
+from qgym.utils.input_parsing import parse_connection_graph, has_fidelity
+from typing import SupportsInt
+from qiskit.transpiler import Layout
 
 
-class RoutingSolutionQuality:
-    """The :class:`RoutingSolutionQuality` class."""
+@runtime_checkable
+class RoutingMetric(Protocol):
+    """Protocol that a metric for qubit routing should follow."""
+
+    @abstractmethod
+    def compute(
+        self,
+        input_circuit: QuantumCircuit | DAGCircuit,
+        routed_circuit: QuantumCircuit | DAGCircuit,
+    ) -> float:
+        """Compute the metric for the provided `input_circuit` and `routed_circuit`."""
+
+
+class InteractionRatioLoss(RoutingMetric):
+    """The :class:`InteractionRatioLoss` class."""
+
+    def __init__(self, swap_penalty: SupportsInt = 3) -> None:
+        """Init of :class:`InteractionRatioLoss`.
+
+        Args:
+            swap_penalty: Number of gates to use to decompose the SWAP gate. Since a
+                SWAP gate is often decomposed using 3 CNOT gates, the default is 3.
+        """
+        self.swap_penalty = check_int(swap_penalty, "swap_penalty", l_bound=1)
+
+    def compute(
+        self,
+        input_circuit: QuantumCircuit | DAGCircuit,
+        routed_circuit: QuantumCircuit | DAGCircuit,
+    ) -> float:
+        """Method to calculate the ratio of the input and output circuit.
+
+        The ratio loss is defined by the number of 2 qubit gates in the `output_circuit`
+        devided by the number of 2 qubit gates in the `input_circut`. A score of 1 is
+        thus a perfect score and the lowest value that can be returned.
+
+        Args:
+            input_circuit: Input circuit before routing was performed.
+            routed_circut: Routed version of the input circuit.
+
+        Returns:
+            The routing solution quality ratio.
+        """
+        input_num_iteractions = self.get_num_interactions(input_circuit)
+        routed_num_iteractions = self.get_num_interactions(routed_circuit)
+        return routed_num_iteractions / input_num_iteractions
+
+    def get_num_interactions(self, circuit: QuantumCircuit | DAGCircuit) -> int:
+        """Get the number of interactions from the `circuit`.
+
+        Args:
+            circuit: Circuit to count the number of interactions from.
+            swap_penalty: Number of gates to use to decompose the SWAP gate. Since a
+                SWAP gate is often decomposed using 3 CNOT gates, the default is 3.
+
+        Returns:
+            Number of 2 qubit interactions, where each SWAP gate is counted
+            `swap_penalty` times.
+        """
+        dag = parse_circuit(circuit)
+        return sum(
+            self.swap_penalty if gate.name == "swap" else 1
+            for gate in dag.two_qubit_ops()
+        )
+
+
+class MinEdgeFidelityRatioLoss(RoutingMetric):
+    """The :class:`InteractionRatioLoss` class."""
 
     def __init__(
-        self,
+        self, connection_graph: nx.Graph, swap_penalty: SupportsInt = 3
     ) -> None:
-        """Init of the :class:`RoutingSolutionQuality` class."""
-
-    def interaction_gates_ratio_loss(
-        self,
-        initial_interaction_circuit: NDArray[np.int_] | None = None,
-        swaps_added: int | None = None,
-        final_interaction_circuit: NDArray[np.int_] | None = None,
-    ) -> float:
-        """Method to calculate the ratio of the final number of interactions divided by
-        the initial number of interactions.
-
-        At least two of three need to be specified.
+        """Init of :class:`InteractionRatioLoss`.
 
         Args:
-            swaps_added: int, represents the number of swaps added during the routing
-                process.
-            initial_interaction_circuit: An array of 2-tuples of integers, where every
-                tuple represents a, not specified, gate acting on the two qubits labeled
-                by the integers in the tuples. This is the interaction circuit
-                considered before adding the swaps.
-            final_interaction_circuit: An array of 2-tuples of integers, where every
-                tuple represents a, not specified, gate acting on the two qubits labeled
-                by the integers in the tuples. This is the interaction circuit
-                considered after adding the swaps.
-        """
-        if initial_interaction_circuit is not None and swaps_added is not None:
-            num_initial_interactions = len(initial_interaction_circuit)
-            return (num_initial_interactions + swaps_added) / num_initial_interactions
-
-        if final_interaction_circuit is not None and swaps_added is not None:
-            num_final_interactions = len(final_interaction_circuit)
-            return num_final_interactions / (num_final_interactions - swaps_added)
-
-        if (
-            initial_interaction_circuit is not None
-            and final_interaction_circuit is not None
-        ):
-            num_final_interactions = len(final_interaction_circuit)
-            num_initial_interactions = len(initial_interaction_circuit)
-            return num_final_interactions / num_initial_interactions
-
-        msg = "at least two of the input variables have to be given"
-        raise ValueError(msg)
-
-    def gates_ratio_loss(
-        self,
-        initial_number_of_gates: int | None = None,
-        swaps_added: int | None = None,
-        final_number_of_gates: int | None = None,
-    ) -> float:
-        """Method to calculate the ratio of the final number of gates divided by
-        the initial number of gates in a circuit.
-
-        Args:
-            initial_number_of_gates: int
-            swaps_added: int, represents the number of swaps added during the routing
-                process.
-            final_number_of_gates: int
-        """
-        if initial_number_of_gates is not None and swaps_added is not None:
-            return (initial_number_of_gates + swaps_added) / initial_number_of_gates
-
-        if final_number_of_gates is not None and swaps_added is not None:
-            return final_number_of_gates / (final_number_of_gates - swaps_added)
-
-        if final_number_of_gates is not None and initial_number_of_gates is not None:
-            return final_number_of_gates / initial_number_of_gates
-
-        msg = "at least two of the input variables have to be given"
-        raise ValueError(msg)
-
-    def average_edge_fidelity_ratio_loss(
-        self,
-        initial_interaction_circuit: NDArray[np.int_],
-        connection_graph: nx.Graph,
-        final_interaction_circuit: NDArray[np.int_],
-    ) -> float:
-        """Method which calculates the average fidelity on the edges, where the fidelity
-        of one edge is calculated by consecutively multiplying 1 with the
-        connection_graph_edge_fidelity for the used interactions in the interaction
-        graph. The averages over all edges before and after adding swaps are calculated
-        and divided to get the ratio.
-
-        Args:
-            initial_interaction_circuit: An array of 2-tuples of integers, where every
-                tuple represents a, not specified, gate acting on the two qubits labeled
-                by the integers in the tuples.
             connection_graph: :class:`networkx.Graph` representation of the QPU
                 topology. Each node represents a physical qubit and each edge represents
                 a connection in the QPU topology.
-            final_interaction_circuit: An array of 2-tuples of integers, where every
-                tuple represents a, not specified, gate acting on the two qubits labeled
-                by the integers in the tuples.
+            swap_penalty: Number of gates to use to decompose the SWAP gate. Since a
+                SWAP gate is often decomposed using 3 CNOT gates, the default is 3.
         """
+        self.connection_graph = parse_connection_graph(connection_graph)
+        if not has_fidelity(self.connection_graph):
+            msg = "connection_graph does not contain fidelity"
+            raise ValueError(msg)
+        self.swap_penalty = check_int(swap_penalty, "swap_penalty", l_bound=1)
 
-        # method needs thorough revision, these choices are neither obvious nor
-        # correct perse.
-        initial_fidelities: dict[tuple[int, int], float] = defaultdict(lambda: 1.0)
-        for qubit1, qubit2 in initial_interaction_circuit:
-            initial_fidelities[qubit1, qubit2] *= connection_graph[qubit1][qubit2][
-                "weight"
-            ]
-        initial_fidelity_mean = np.mean(list(initial_fidelities.values()))
+    def get_n_interactions_per_connection(
+        self, circuit: QuantumCircuit | DAGCircuit
+    ) -> defaultdict[frozenset[int], int]:
+        dag = parse_circuit(circuit)
+        if len(dag.qregs) != 1 or dag.qregs.get("q", None) is None:
+            msg = "minimum fidelity ratio can only be computed for physical circuits"
+            raise ValueError(msg)
 
-        final_fidelities: dict[tuple[int, int], float] = defaultdict(lambda: 1.0)
-        for qubit1, qubit2 in final_interaction_circuit:
-            final_fidelities[qubit1, qubit2] *= connection_graph[qubit1][qubit2][
-                "weight"
-            ]
-        final_fidelity_mean = np.mean(list(final_fidelities.values()))
+        layout = Layout.generate_trivial_layout(dag.qregs["q"])
+        n_interactions = defaultdict(int)
+        for gate in dag.two_qubit_ops():
+            qubit1 = layout[gate.qargs[0]]
+            qubit2 = layout[gate.qargs[1]]
+            count = self.swap_penalty if gate.name == "swap" else 1
+            n_interactions[frozenset(qubit1, qubit2)] += count
 
-        return float(initial_fidelity_mean / final_fidelity_mean)
+        return n_interactions
 
-    def average_qubit_fidelity_ratio_loss(
+    def compute(
         self,
-        initial_interaction_circuit: NDArray[np.int_],
-        connection_graph: nx.Graph,
-        final_interaction_circuit: NDArray[np.int_],
+        input_circuit: QuantumCircuit | DAGCircuit,
+        routed_circuit: QuantumCircuit | DAGCircuit,
     ) -> float:
-        """Method which calculates the average fidelity on qubits, where the fidelity of
-        one qubit is calculated by consecutively multiplying 1 with the
-        connection_graph_edge_fidelity for those edge in the interaction graph that are
-        connected to that particular qubit. The averages over all qubits before and
-        after adding swaps are calculated and divided to get the ratio.
+        """Method to calculate the ratio of the input and output circuit.
+
+        The minimum edge fidelity is computed as $\min(\{f_e^{n_e}| e \in E\})$. Here
+        $E$ is the edge set of the connection graph $G=(V,E)$, `f(e)` is the fidelity of
+        edge $e$ and $n_e$ is the number of times edge $e$ is used in the quantum
+        circuit. The minimum edge fidelity routing solution quality ratio that is
+        returned is the minimum edge fidelity of the input circuit divided by the
+        minimum edge fidelity of the routed circuit.
 
         Args:
-            initial_interaction_circuit: An array of 2-tuples of integers, where every
-                tuple represents a, not specified, gate acting on the two qubits labeled
-                by the integers in the tuples.
-            connection_graph: :class:`networkx.Graph` representation of the QPU
-                topology. Each node represents a physical qubit and each edge represents
-                a connection in the QPU topology.
-            final_interaction_circuit: An array of 2-tuples of integers, where every
-                tuple represents a, not specified, gate acting on the two qubits labeled
-                by the integers in the tuples.
+            input_circuit: Input circuit before routing was performed.
+            routed_circut: Routed version of the input circuit.
+
+        Returns:
+            The minimum edge fidelity routing solution quality ratio.
         """
-        initial_qubit_fidelity_mean = self._compute_mean_fidelity(
-            initial_interaction_circuit, connection_graph
+        n_interactions_input = self.get_n_interactions_per_connection(input_circuit)
+        n_interactions_routed = self.get_n_interactions_per_connection(routed_circuit)
+
+        min_fidelity_input = min(
+            pow(self.connection_graph[qubit1][qubit2]["weight"], n_interactions)
+            for (qubit1, qubit2), n_interactions in n_interactions_input.items()
         )
-        final_qubit_fidelity_mean = self._compute_mean_fidelity(
-            final_interaction_circuit, connection_graph
+        min_fidelity_routed = min(
+            pow(self.connection_graph[qubit1][qubit2]["weight"], n_interactions)
+            for (qubit1, qubit2), n_interactions in n_interactions_routed.items()
         )
 
-        return float(initial_qubit_fidelity_mean / final_qubit_fidelity_mean)
-
-    def _compute_mean_fidelity(
-        self, interaction_circuit: NDArray[np.int_], connection_graph: nx.Graph
-    ) -> float:
-        qubit_fidelities: dict[int, float] = defaultdict(lambda: 1.0)
-        for qubit1, qubit2 in interaction_circuit:
-            fidelity = connection_graph[qubit1][qubit2]["weight"]
-            qubit_fidelities[qubit1] *= fidelity
-            qubit_fidelities[qubit2] *= fidelity
-        return float(np.mean(list(qubit_fidelities.values())))
+        return float(min_fidelity_input / min_fidelity_routed)

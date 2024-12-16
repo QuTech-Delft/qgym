@@ -42,7 +42,7 @@ class InitialMappingMetric(Protocol):
 class DistanceRatioLoss(InitialMappingMetric):
     """The :class:`DistanceRatioLoss` class."""
 
-    def __init__(self, connection_graph: nx.Graph) -> None:
+    def __init__(self, connection_graph: nx.Graph | ArrayLike) -> None:
         """Init of the :class:`DistanceRatioLoss` class.
 
         Args:
