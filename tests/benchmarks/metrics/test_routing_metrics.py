@@ -4,8 +4,15 @@ import numpy as np
 import pytest
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
-from qgym.utils.qiskit_utils import parse_circuit
+
 from qgym.benchmarks import BenchmarkResult
+from qgym.benchmarks.metrics import (
+    InteractionRatioLoss,
+    RoutingBenchmarker,
+    RoutingMetric,
+)
+from qgym.generators import MaxCutQAOAGenerator
+from qgym.utils.qiskit_utils import parse_circuit
 
 from qgym.benchmarks import BenchmarkResult
 from qgym.benchmarks.metrics import (
