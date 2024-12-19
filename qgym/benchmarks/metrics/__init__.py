@@ -8,12 +8,14 @@ from qgym.benchmarks.metrics.initial_mapping_metrics import (
 from qgym.benchmarks.metrics.routing_metrics import (
     RoutingMetric,
     InteractionRatioLoss,
+    RoutingBenchmarker,
 )
 
 __all__ = [
     "DistanceRatioLoss",
     "InitialMappingBenchmarker",
     "InitialMappingMetric",
-    "RoutingMetric",
     "InteractionRatioLoss",
+    "RoutingMetric",
+    "RoutingBenchmarker",
 ]

@@ -10,16 +10,15 @@ the lower the better.
 from __future__ import annotations
 from typing import Protocol, runtime_checkable
 from abc import abstractmethod
-from collections import defaultdict
-
-import networkx as nx
+from collections import deque
+from collections.abc import Iterable, Iterator
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
 from qgym.utils.qiskit_utils import parse_circuit
 from qgym.utils.input_validation import check_int
-from qgym.utils.input_parsing import parse_connection_graph, has_fidelity
 from typing import SupportsInt
-from qiskit.transpiler import Layout
+from qgym.templates.pass_protocols import Router
+from qgym.benchmarks.benchmark_result import BenchmarkResult
 
 
 @runtime_checkable
@@ -91,3 +90,44 @@ class InteractionRatioLoss(RoutingMetric):
             self.swap_penalty if gate.name == "swap" else 1
             for gate in dag.two_qubit_ops()
         )
+
+
+class RoutingBenchmarker:
+    """The :class:`RoutingBenchmarker` class."""
+
+    def __init__(
+        self,
+        generator: Iterator[QuantumCircuit],
+        metrics: Iterable[RoutingMetric],
+    ) -> None:
+        """Init of the :class:`RoutingBenchmarker` class.
+
+        Args:
+            generator: Circuit generator. Currently only the ``MaxCutQAOAGenerator`` is
+                supported.
+            metrics: Metrics to compute.
+        """
+        self.generator = generator
+        self.metrics = tuple(metrics)
+
+    def run(self, router: Router, max_iter: int = 1000) -> BenchmarkResult:
+        """Run the benchmark.
+
+        Args:
+            router: Router to benchmark.
+            max_iter: Maximum number of iterations to benchmark.
+
+        Returns:
+            :class:`~qgym.benchmarks.metrics.BenchmarkResult` containing the results
+            from the benchmark.
+        """
+        results: list[deque[float]] = [deque() for _ in self.metrics]
+        for i, circuit in enumerate(self.generator, start=1):
+            routed_circuit = router.compute_routing(circuit)
+            for metric, result_que in zip(self.metrics, results):
+                result_que.append(metric.compute(circuit, routed_circuit))
+
+            if i >= max_iter:
+                break
+
+        return BenchmarkResult(results)

@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import itertools
-from collections.abc import Hashable
 
 import networkx as nx
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.circuit import Qubit
 from qiskit.converters import dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 

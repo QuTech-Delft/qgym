@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections import deque
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from typing import Protocol, runtime_checkable
 
 import networkx as nx
@@ -21,7 +21,6 @@ from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
 
 from qgym.benchmarks.benchmark_result import BenchmarkResult
-from qgym.generators.qiskit_circuit import MaxCutQAOAGenerator
 from qgym.templates.pass_protocols import Mapper
 from qgym.utils.qiskit_utils import get_interaction_graph
 
@@ -82,24 +81,12 @@ class DistanceRatioLoss(InitialMappingMetric):
         return float(distance_loss / interaction_graph.number_of_edges())
 
 
-class AgentPerformance:
-    """The :class:`AgentPerformance` class."""
-
-    def __init__(
-        self,
-    ) -> None:
-        """Init of the :class:`AgentPerformance` class.
-
-        Args:
-        """
-
-
 class InitialMappingBenchmarker:
     """The :class:`InitialMappingBenchmarker` class."""
 
     def __init__(
         self,
-        generator: MaxCutQAOAGenerator,
+        generator: Iterator[QuantumCircuit],
         metrics: Iterable[InitialMappingMetric],
     ) -> None:
         """Init of the :class:`InitialMappingBenchmarker` class.

@@ -1,11 +1,16 @@
 from __future__ import annotations
-import networkx as nx
 from qgym.benchmarks.metrics import (
     RoutingMetric,
     InteractionRatioLoss,
+    RoutingBenchmarker,
 )
+import numpy as np
+from qgym.generators import MaxCutQAOAGenerator
 import pytest
 from qiskit import QuantumCircuit
+from qiskit.dagcircuit import DAGCircuit
+from qgym.utils.qiskit_utils import parse_circuit
+from qgym.benchmarks import BenchmarkResult
 
 
 def circuit1() -> QuantumCircuit:
@@ -76,3 +81,19 @@ class TestInteractionRatioLoss:
         loss: float,
     ) -> None:
         assert metric.compute(circuit, routed_circuit) == loss
+
+
+def test_routing_benchmarker() -> None:
+    metric = InteractionRatioLoss()
+    generator = MaxCutQAOAGenerator(4, 0.5, seed=42)
+    benchmarker = RoutingBenchmarker(metrics=[metric], generator=generator)
+
+    class SimpleRouter:
+        def compute_routing(self, circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
+            return parse_circuit(circuit)
+
+    router = SimpleRouter()
+    result = benchmarker.run(router, max_iter=500)
+    assert isinstance(result, BenchmarkResult)
+    assert result.raw_data.shape == (1, 500)
+    np.testing.assert_array_equal(1, result.raw_data >= 1)

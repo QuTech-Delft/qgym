@@ -43,7 +43,7 @@ def test_quartiles(result: BenchmarkResult) -> None:
 
 
 def test_ineq(result: BenchmarkResult) -> None:
-    assert result != None
+    assert result is not None
 
 
 def test_eq(result: BenchmarkResult) -> None:
