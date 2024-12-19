@@ -1,16 +1,18 @@
 from __future__ import annotations
-from qgym.benchmarks.metrics import (
-    RoutingMetric,
-    InteractionRatioLoss,
-    RoutingBenchmarker,
-)
+
 import numpy as np
-from qgym.generators import MaxCutQAOAGenerator
 import pytest
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
-from qgym.utils.qiskit_utils import parse_circuit
+
 from qgym.benchmarks import BenchmarkResult
+from qgym.benchmarks.metrics import (
+    InteractionRatioLoss,
+    RoutingBenchmarker,
+    RoutingMetric,
+)
+from qgym.generators import MaxCutQAOAGenerator
+from qgym.utils.qiskit_utils import parse_circuit
 
 
 def circuit1() -> QuantumCircuit:

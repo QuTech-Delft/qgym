@@ -8,19 +8,22 @@ the lower the better.
 """
 
 from __future__ import annotations
-from typing import Protocol, runtime_checkable
+
 from abc import abstractmethod
 from collections import deque
 from collections.abc import Iterable, Iterator
+from typing import Protocol, SupportsInt, runtime_checkable
+
 from qiskit import QuantumCircuit
 from qiskit.dagcircuit import DAGCircuit
-from qgym.utils.qiskit_utils import parse_circuit
-from qgym.utils.input_validation import check_int
-from typing import SupportsInt
-from qgym.templates.pass_protocols import Router
+
 from qgym.benchmarks.benchmark_result import BenchmarkResult
+from qgym.templates.pass_protocols import Router
+from qgym.utils.input_validation import check_int
+from qgym.utils.qiskit_utils import parse_circuit
 
 
+# pylint: disable=too-few-public-methods
 @runtime_checkable
 class RoutingMetric(Protocol):
     """Protocol that a metric for qubit routing should follow."""

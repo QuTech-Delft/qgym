@@ -22,6 +22,7 @@ from qiskit.dagcircuit import DAGCircuit
 
 from qgym.benchmarks.benchmark_result import BenchmarkResult
 from qgym.templates.pass_protocols import Mapper
+from qgym.utils.input_parsing import parse_connection_graph
 from qgym.utils.qiskit_utils import get_interaction_graph
 
 # pylint: disable=too-few-public-methods
@@ -50,11 +51,13 @@ class DistanceRatioLoss(InitialMappingMetric):
                 a connection in the QPU topology.
 
         """
-        self.connection_graph = connection_graph
+        self.connection_graph = parse_connection_graph(connection_graph)
         n_qubits = len(self.connection_graph)
         self.distance_matrix = np.zeros((n_qubits, n_qubits), dtype=np.int_)
-        for node_u, distances in nx.all_pairs_shortest_path_length(connection_graph):
-            for node_v in connection_graph:
+        for node_u, distances in nx.all_pairs_shortest_path_length(
+            self.connection_graph
+        ):
+            for node_v in self.connection_graph:
                 self.distance_matrix[node_u, node_v] = distances[node_v]
 
     def compute(
