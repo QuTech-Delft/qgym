@@ -32,11 +32,11 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """The :class:`~qgym.envs.initial_mapping.InitialMappingState` class."""
 
     __slots__ = (
-        "steps_done",
         "graphs",
+        "mapped_qubits",
         "mapping",
         "mapping_dict",
-        "mapped_qubits",
+        "steps_done",
     )
 
     def __init__(
@@ -227,4 +227,4 @@ class InitialMappingState(State[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     @property
     def n_nodes(self) -> int:
         """The number of physical qubits."""
-        return cast(int, self.graphs["connection"]["graph"].number_of_nodes())
+        return cast("int", self.graphs["connection"]["graph"].number_of_nodes())

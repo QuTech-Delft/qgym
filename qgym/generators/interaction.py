@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any, Iterator, SupportsInt
+from collections.abc import Iterator
+from typing import Any, SupportsInt
 
 import networkx as nx
 import numpy as np

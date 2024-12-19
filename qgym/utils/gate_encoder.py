@@ -108,7 +108,7 @@ class GateEncoder:
             # Sequence contains Gate objects.
             encoded_gates_list: list[Gate] = []
             for gate in gates:
-                gate = cast(Gate, gate)
+                gate = cast("Gate", gate)
                 encoded_name = self._encoding_dct[gate.name]
                 encoded_gates_list.append(Gate(encoded_name, gate.q1, gate.q2))
             return encoded_gates_list
@@ -210,7 +210,7 @@ class GateEncoder:
             # whole Sequence contains Gate objects.
             decoded_gate_list: list[Gate] = []
             for gate in encoded_gates:
-                gate = cast(Gate, gate)
+                gate = cast("Gate", gate)
                 decoded_gate_name = self._decoding_dct[gate.name]
                 decoded_gate_list.append(Gate(decoded_gate_name, gate.q1, gate.q2))
             return decoded_gate_list

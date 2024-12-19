@@ -139,7 +139,7 @@ def test_reward_range_episode_rewarder(
 
 @pytest.fixture(name="rewarder", params=(BasicRewarder(), EpisodeRewarder()))
 def _rewarder(request: pytest.FixtureRequest) -> Rewarder:
-    return cast(Rewarder, request.param)
+    return cast("Rewarder", request.param)
 
 
 def test_illegal_actions(rewarder: Rewarder) -> None:

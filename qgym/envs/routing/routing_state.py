@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 from collections import deque
+from itertools import starmap
 from typing import Any, Dict
 
 import networkx as nx
@@ -284,7 +285,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
 
         if self.observe_legal_surpasses:
             is_legal_surpass = np.fromiter(
-                (self.is_legal_surpass(*gate) for gate in interaction_gates_ahead),
+                starmap(self.is_legal_surpass, interaction_gates_ahead),
                 dtype=np.bool,
             )
             observation["is_legal_surpass"] = is_legal_surpass

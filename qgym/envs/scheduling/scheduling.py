@@ -293,7 +293,7 @@ class Scheduling(
             Human or encoded quantum circuit.
         """
         mode = check_string(mode, "mode", lower=True)
-        state = cast(SchedulingState, self._state)
+        state = cast("SchedulingState", self._state)
         encoded_circuit = state.circuit_info.encoded
         if mode == "encoded":
             return deepcopy(encoded_circuit)

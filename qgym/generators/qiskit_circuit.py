@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Iterator, SupportsFloat, SupportsInt
+from collections.abc import Iterator
+from typing import SupportsFloat, SupportsInt
 
 import networkx as nx
 import numpy as np
