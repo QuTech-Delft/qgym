@@ -4,7 +4,6 @@ import networkx as nx
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
-from qiskit.converters import dag_to_circuit
 from qiskit.transpiler import CouplingMap, Layout
 from qiskit.transpiler.passes import BasicSwap, SabreSwap
 from stable_baselines3 import PPO
@@ -31,28 +30,28 @@ class TestQiskitRoutingWrapper:
     ) -> None:
         qiskit_router = BasicSwap(coupling_map)
         router = QiskitRoutingWrapper(qiskit_router)
-        routed_dag = router.compute_routing(circuit)
+        routed_circuit = router.compute_routing(circuit)
 
         expected_circuit = QuantumCircuit(6)
         expected_circuit.cx(range(5), range(1, 6))
         expected_circuit.swap(range(5, 1, -1), range(4, 0, -1))
         expected_circuit.cx(1, 0)
 
-        assert expected_circuit == dag_to_circuit(routed_dag)
+        assert expected_circuit == routed_circuit.get_qiskit_quantum_circuit()
 
     def test_sabre_swap(
         self, circuit: QuantumCircuit, coupling_map: CouplingMap
     ) -> None:
         qiskit_router = SabreSwap(coupling_map, seed=42)
         router = QiskitRoutingWrapper(qiskit_router)
-        routed_dag = router.compute_routing(circuit)
+        routed_circuit = router.compute_routing(circuit)
 
         expected_circuit = QuantumCircuit(6)
         expected_circuit.cx(range(5), range(1, 6))
         expected_circuit.swap([0, 1, 4, 3], [1, 2, 5, 4])
         expected_circuit.cx(3, 2)
 
-        assert expected_circuit == dag_to_circuit(routed_dag)
+        assert expected_circuit == routed_circuit.get_qiskit_quantum_circuit()
 
 
 class TestAgentMapperWrapper:
@@ -83,14 +82,16 @@ class TestAgentMapperWrapper:
 
     def test_wrapper(self, agent: PPO, env: Routing, circuit: QuantumCircuit) -> None:
         router = AgentRoutingWrapper(agent, env, 100)
-        routed_dag = router.compute_routing(circuit)
-        properties = routed_dag.properties()
+        routed_circuit = router.compute_routing(circuit)
+
+        dag = routed_circuit.dag
+        properties = dag.properties()
         operations = properties["operations"]
         assert operations["cx"] == 3
         assert operations["swap"] >= 1
 
-        layout = Layout.generate_trivial_layout(routed_dag.qregs["q"])
-        for gate in routed_dag.two_qubit_ops():
+        layout = Layout.generate_trivial_layout(dag.qregs["q"])
+        for gate in dag.two_qubit_ops():
             qubit1 = layout[gate.qargs[0]]
             qubit2 = layout[gate.qargs[1]]
             assert {qubit1, qubit2} in [

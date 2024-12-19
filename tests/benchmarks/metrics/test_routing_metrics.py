@@ -3,7 +3,6 @@ from __future__ import annotations
 import numpy as np
 import pytest
 from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
 
 from qgym.benchmarks import BenchmarkResult
 from qgym.benchmarks.metrics import (
@@ -12,7 +11,7 @@ from qgym.benchmarks.metrics import (
     RoutingMetric,
 )
 from qgym.generators import MaxCutQAOAGenerator
-from qgym.utils.qiskit_utils import parse_circuit
+from qgym.utils import Circuit, CircuitLike
 
 
 def circuit1() -> QuantumCircuit:
@@ -91,8 +90,8 @@ def test_routing_benchmarker() -> None:
     benchmarker = RoutingBenchmarker(metrics=[metric], generator=generator)
 
     class SimpleRouter:
-        def compute_routing(self, circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
-            return parse_circuit(circuit)
+        def compute_routing(self, circuit: CircuitLike) -> Circuit:
+            return Circuit(circuit)
 
     router = SimpleRouter()
     result = benchmarker.run(router, max_iter=500)

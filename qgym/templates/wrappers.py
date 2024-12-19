@@ -8,16 +8,15 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from qgym.utils.qiskit_utils import parse_circuit
+from qgym.utils.qiskit import Circuit
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from qiskit import QuantumCircuit
-    from qiskit.dagcircuit import DAGCircuit
     from stable_baselines3.common.base_class import BaseAlgorithm
 
     from qgym.templates.environment import Environment
+    from qgym.utils.qiskit import CircuitLike
 
 WrapperOutputT = TypeVar("WrapperOutputT")
 
@@ -57,7 +56,7 @@ class AgentWrapper(  # pylint: disable=too-few-public-methods
             raise TypeError(msg)
 
     @abstractmethod
-    def _prepare_episode(self, circuit: DAGCircuit) -> Mapping[str, Any]:
+    def _prepare_episode(self, circuit: Circuit) -> Mapping[str, Any]:
         """Prepare the episode options with the information from the provided circuit.
 
         Args:
@@ -88,13 +87,13 @@ class AgentWrapper(  # pylint: disable=too-few-public-methods
                 break
 
     @abstractmethod
-    def _postprocess_episode(self, circuit: DAGCircuit) -> WrapperOutputT:
+    def _postprocess_episode(self, circuit: Circuit) -> WrapperOutputT:
         """Postprocess the epsiode.
 
         Extract the useful information from ``self.env`` and do something with it.
         """
 
-    def run(self, circuit: QuantumCircuit | DAGCircuit) -> WrapperOutputT:
+    def run(self, circuit: CircuitLike) -> WrapperOutputT:
         """Prepare, run and postprocess an episode.
 
         Output is based on the provided agent, env and circuit combination.
@@ -105,7 +104,7 @@ class AgentWrapper(  # pylint: disable=too-few-public-methods
         Returns:
             Some useful information extracted from the episode.
         """
-        circuit = parse_circuit(circuit)
+        circuit = Circuit(circuit)
         options = self._prepare_episode(circuit)
         self._run_epsiode(options)
         return self._postprocess_episode(circuit)

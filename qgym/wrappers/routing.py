@@ -4,17 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler.basepasses import TransformationPass
 
 from qgym.envs.routing import RoutingState
 from qgym.templates.wrappers import AgentWrapper
-from qgym.utils.qiskit_utils import (
-    get_interaction_circuit,
-    insert_swaps_in_circuit,
-    parse_circuit,
-)
+from qgym.utils import Circuit
 
 if TYPE_CHECKING:
     import numpy as np
@@ -22,10 +16,11 @@ if TYPE_CHECKING:
     from stable_baselines3.common.base_class import BaseAlgorithm
 
     from qgym.envs.routing import Routing
+    from qgym.utils import CircuitLike
 
 
 class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
-    AgentWrapper[DAGCircuit]
+    AgentWrapper[Circuit]
 ):
     """Wrap any trained stable baselines 3 agent that inherits from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
@@ -57,14 +52,12 @@ class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
         """
         super().__init__(agent, env, max_steps, use_action_masking=use_action_masking)
 
-    def _prepare_episode(
-        self, circuit: QuantumCircuit | DAGCircuit
-    ) -> dict[str, NDArray[np.int_]]:
+    def _prepare_episode(self, circuit: Circuit) -> dict[str, NDArray[np.int_]]:
         """Extract the interaction circuit from `circuit`."""
-        interaction_circuit = get_interaction_circuit(circuit)
+        interaction_circuit = circuit.get_interaction_circuit()
         return {"interaction_circuit": interaction_circuit}
 
-    def _postprocess_episode(self, circuit: DAGCircuit) -> DAGCircuit:
+    def _postprocess_episode(self, circuit: Circuit) -> Circuit:
         """Route `circuit` based on the findings of the current episode."""
         state = cast(RoutingState, self.env._state)  # pylint: disable=protected-access
         if not state.is_done():
@@ -73,9 +66,9 @@ class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
                 "the episode was truncated or 'max_steps' was reached"
             )
             raise ValueError(msg)
-        return insert_swaps_in_circuit(circuit, state.swap_gates_inserted)
+        return circuit.insert_swaps_in_circuit(state.swap_gates_inserted)
 
-    def compute_routing(self, circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
+    def compute_routing(self, circuit: CircuitLike) -> Circuit:
         """Route the `circuit` using the provided `agent` and `env`.
 
         Args:
@@ -105,7 +98,7 @@ class QiskitRoutingWrapper:
         """
         self.routing = qiskit_router
 
-    def compute_routing(self, circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
+    def compute_routing(self, circuit: CircuitLike) -> Circuit:
         """Compute a routed version of the `circuit` using the provided `qiskit_router`.
 
         Args:
@@ -114,8 +107,9 @@ class QiskitRoutingWrapper:
         Returns:
             Routed version of the input circuit.
         """
-        dag = parse_circuit(circuit)
-        return self.routing.run(dag)
+        circuit = Circuit(circuit)
+        routed_dag = self.routing.run(circuit.dag)
+        return Circuit(routed_dag)
 
     def __repr__(self) -> str:
         """String representation of the wrapper."""

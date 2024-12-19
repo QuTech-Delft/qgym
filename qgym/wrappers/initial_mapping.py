@@ -6,13 +6,11 @@ from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from numpy.typing import NDArray
-from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler import AnalysisPass, Layout
 
 from qgym.envs.initial_mapping import InitialMappingState
 from qgym.templates import AgentWrapper
-from qgym.utils.qiskit_utils import get_interaction_graph, parse_circuit
+from qgym.utils.qiskit import Circuit, CircuitLike
 
 if TYPE_CHECKING:
     import networkx as nx
@@ -54,13 +52,13 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
         """
         super().__init__(agent, env, max_steps, use_action_masking=use_action_masking)
 
-    def _prepare_episode(self, circuit: DAGCircuit) -> dict[str, nx.Graph]:
+    def _prepare_episode(self, circuit: Circuit) -> dict[str, nx.Graph]:
         """Extract the interaction graph from `circuit`."""
-        interaction_graph = get_interaction_graph(circuit)
+        interaction_graph = circuit.get_interaction_graph()
         return {"interaction_graph": interaction_graph}
 
     def _postprocess_episode(  # pylint: disable=unused-argument
-        self, circuit: DAGCircuit
+        self, circuit: Circuit
     ) -> NDArray[np.int_]:
         state = cast(
             InitialMappingState,
@@ -74,7 +72,7 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
             raise ValueError(msg)
         return state.mapping
 
-    def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
+    def compute_mapping(self, circuit: CircuitLike) -> NDArray[np.int_]:
         """Compute a mapping of the `circuit` using the provided `agent` and `env`.
 
         Alias for ``run``.
@@ -104,7 +102,7 @@ class QiskitMapperWrapper:
         """
         self.mapper = qiskit_mapper
 
-    def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
+    def compute_mapping(self, circuit: CircuitLike) -> NDArray[np.int_]:
         """Compute a mapping of the `circuit` using the provided `qiskit_mapper`.
 
         Args:
@@ -114,11 +112,13 @@ class QiskitMapperWrapper:
             Array of which the index represents a physical qubit, and the value a
             virtual qubit.
         """
-        dag = parse_circuit(circuit)
+        circuit = Circuit(circuit)
 
-        self.mapper.run(dag)
+        self.mapper.run(circuit.dag)
         layout: Layout = self.mapper.property_set["layout"]
-        return np.fromiter(map(layout.__getitem__, dag.qubits), int, dag.num_qubits())
+        return np.fromiter(
+            map(layout.__getitem__, circuit.dag.qubits), int, circuit.dag.num_qubits()
+        )
 
     def __repr__(self) -> str:
         """String representation of the wrapper."""

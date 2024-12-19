@@ -17,13 +17,11 @@ from typing import Protocol, runtime_checkable
 import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike
-from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
 
 from qgym.benchmarks.benchmark_result import BenchmarkResult
 from qgym.templates.pass_protocols import Mapper
+from qgym.utils import Circuit, CircuitLike
 from qgym.utils.input_parsing import parse_connection_graph
-from qgym.utils.qiskit_utils import get_interaction_graph
 
 # pylint: disable=too-few-public-methods
 
@@ -33,9 +31,7 @@ class InitialMappingMetric(Protocol):
     """Protocol that a metric for initial mapping should follow."""
 
     @abstractmethod
-    def compute(
-        self, circuit: QuantumCircuit | DAGCircuit, mapping: ArrayLike
-    ) -> float:
+    def compute(self, circuit: CircuitLike, mapping: ArrayLike) -> float:
         """Compute the metric for the provided `circuit` and `mapping`."""
 
 
@@ -60,9 +56,7 @@ class DistanceRatioLoss(InitialMappingMetric):
             for node_v in self.connection_graph:
                 self.distance_matrix[node_u, node_v] = distances[node_v]
 
-    def compute(
-        self, circuit: QuantumCircuit | DAGCircuit, mapping: ArrayLike
-    ) -> float:
+    def compute(self, circuit: CircuitLike, mapping: ArrayLike) -> float:
         """Compute the distance ratio loss.
 
         Args:
@@ -72,7 +66,8 @@ class DistanceRatioLoss(InitialMappingMetric):
         Returns:
             The distance ratio loss.
         """
-        interaction_graph = get_interaction_graph(circuit)
+        circuit = Circuit(circuit)
+        interaction_graph = circuit.get_interaction_graph()
         if interaction_graph.number_of_edges() == 0:
             return 1.0
         mapping = np.asarray(mapping, dtype=np.int_)
@@ -89,7 +84,7 @@ class InitialMappingBenchmarker:
 
     def __init__(
         self,
-        generator: Iterator[QuantumCircuit],
+        generator: Iterator[CircuitLike],
         metrics: Iterable[InitialMappingMetric],
     ) -> None:
         """Init of the :class:`InitialMappingBenchmarker` class.

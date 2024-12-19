@@ -14,13 +14,10 @@ from collections import deque
 from collections.abc import Iterable, Iterator
 from typing import Protocol, SupportsInt, runtime_checkable
 
-from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
-
 from qgym.benchmarks.benchmark_result import BenchmarkResult
 from qgym.templates.pass_protocols import Router
+from qgym.utils import Circuit, CircuitLike
 from qgym.utils.input_validation import check_int
-from qgym.utils.qiskit_utils import parse_circuit
 
 
 # pylint: disable=too-few-public-methods
@@ -29,11 +26,7 @@ class RoutingMetric(Protocol):
     """Protocol that a metric for qubit routing should follow."""
 
     @abstractmethod
-    def compute(
-        self,
-        input_circuit: QuantumCircuit | DAGCircuit,
-        routed_circuit: QuantumCircuit | DAGCircuit,
-    ) -> float:
+    def compute(self, input_circuit: CircuitLike, routed_circuit: CircuitLike) -> float:
         """Compute the metric for the provided `input_circuit` and `routed_circuit`."""
 
 
@@ -49,11 +42,7 @@ class InteractionRatioLoss(RoutingMetric):
         """
         self.swap_penalty = check_int(swap_penalty, "swap_penalty", l_bound=1)
 
-    def compute(
-        self,
-        input_circuit: QuantumCircuit | DAGCircuit,
-        routed_circuit: QuantumCircuit | DAGCircuit,
-    ) -> float:
+    def compute(self, input_circuit: CircuitLike, routed_circuit: CircuitLike) -> float:
         """Method to calculate the ratio of the input and output circuit.
 
         The ratio loss is defined by the number of 2 qubit gates in the `output_circuit`
@@ -76,22 +65,20 @@ class InteractionRatioLoss(RoutingMetric):
                 return 1.0
             return float("inf")
 
-    def get_num_interactions(self, circuit: QuantumCircuit | DAGCircuit) -> int:
+    def get_num_interactions(self, circuit: CircuitLike) -> int:
         """Get the number of interactions from the `circuit`.
 
         Args:
             circuit: Circuit to count the number of interactions from.
-            swap_penalty: Number of gates to use to decompose the SWAP gate. Since a
-                SWAP gate is often decomposed using 3 CNOT gates, the default is 3.
 
         Returns:
             Number of 2 qubit interactions, where each SWAP gate is counted
             `swap_penalty` times.
         """
-        dag = parse_circuit(circuit)
+        circuit = Circuit(circuit)
         return sum(
             self.swap_penalty if gate.name == "swap" else 1
-            for gate in dag.two_qubit_ops()
+            for gate in circuit.dag.two_qubit_ops()
         )
 
 
@@ -100,7 +87,7 @@ class RoutingBenchmarker:
 
     def __init__(
         self,
-        generator: Iterator[QuantumCircuit],
+        generator: Iterator[CircuitLike],
         metrics: Iterable[RoutingMetric],
     ) -> None:
         """Init of the :class:`RoutingBenchmarker` class.
