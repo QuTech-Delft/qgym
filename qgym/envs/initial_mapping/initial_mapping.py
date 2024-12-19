@@ -148,10 +148,10 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
     __slots__ = (
         "_rewarder",
         "_state",
-        "observation_space",
+        "_visualiser",
         "action_space",
         "metadata",
-        "_visualiser",
+        "observation_space",
     )
 
     def __init__(

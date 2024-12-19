@@ -44,7 +44,7 @@ def _episode_generator(
     ),
 )
 def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
-    return cast(Rewarder, request.param)
+    return cast("Rewarder", request.param)
 
 
 @pytest.fixture(
@@ -56,7 +56,7 @@ def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
     ),
 )
 def rewarder_class_fixture(request: pytest.FixtureRequest) -> type[Rewarder]:
-    return cast(Type[Rewarder], request.param)
+    return cast("Type[Rewarder]", request.param)
 
 
 def test_illegal_actions(rewarder: Rewarder) -> None:

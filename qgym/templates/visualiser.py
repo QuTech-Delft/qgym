@@ -18,7 +18,7 @@ from qgym.utils.visualisation.typing import Color, Font, Surface
 class RenderData:
     """Class containing usefull data for rendering like screen, font and colors."""
 
-    __slots__ = ["screen", "font", "colors", "render_mode"]
+    __slots__ = ["colors", "font", "render_mode", "screen"]
 
     def __init__(
         self,

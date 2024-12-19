@@ -64,7 +64,7 @@ def _episode_generator(
     ),
 )
 def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
-    return cast(Rewarder, request.param)
+    return cast("Rewarder", request.param)
 
 
 def test_illegal_actions(rewarder: Rewarder) -> None:

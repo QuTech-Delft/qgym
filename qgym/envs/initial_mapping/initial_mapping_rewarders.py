@@ -41,8 +41,8 @@ class BasicRewarder(Rewarder):
 
     __slots__ = (
         "_illegal_action_penalty",
-        "_reward_per_edge",
         "_penalty_per_edge",
+        "_reward_per_edge",
         "_reward_range",
     )
 

@@ -70,9 +70,9 @@ class SchedulingState(
         """
 
         # At the start no gates should be excluded
-        gate_cycle_lengths = cast(Dict[int, int], machine_properties.gates)
+        gate_cycle_lengths = cast("Dict[int, int]", machine_properties.gates)
         not_in_same_cycle = cast(
-            Dict[int, Set[int]], machine_properties.not_in_same_cycle
+            "Dict[int, Set[int]]", machine_properties.not_in_same_cycle
         )
         self.gates = {
             gate_name: GateInfo(

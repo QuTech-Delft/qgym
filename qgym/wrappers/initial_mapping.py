@@ -61,7 +61,7 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
         self, circuit: Circuit
     ) -> NDArray[np.int_]:
         state = cast(
-            InitialMappingState,
+            "InitialMappingState",
             self.env._state,  # pylint: disable=protected-access
         )
         if not state.is_done():

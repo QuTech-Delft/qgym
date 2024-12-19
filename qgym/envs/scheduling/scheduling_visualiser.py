@@ -87,7 +87,7 @@ class SchedulingVisualiser(Visualiser):
             if scheduled_cycle != -1:
                 gate = state.circuit_info.encoded[gate_idx]
                 gate_cycle_length = cast(
-                    Dict[int, int], state.machine_properties.gates
+                    "Dict[int, int]", state.machine_properties.gates
                 )[gate.name]
                 gate_name = state.utils.gate_encoder.decode_gates(gate.name)
                 self._draw_scheduled_gate(

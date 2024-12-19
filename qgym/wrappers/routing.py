@@ -59,7 +59,7 @@ class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
 
     def _postprocess_episode(self, circuit: Circuit) -> Circuit:
         """Route `circuit` based on the findings of the current episode."""
-        state = cast(RoutingState, self.env._state)  # pylint: disable=protected-access
+        state = cast("RoutingState", self.env._state)  # pylint: disable=protected-access
         if not state.is_done():
             msg = (
                 "routing not found, "

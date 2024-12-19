@@ -101,8 +101,8 @@ class State(Generic[ObservationT, ActionT]):
         text = f"{self.__class__.__name__}:\n"
         if hasattr(self, "__slots__"):
             for attribute_name in self.__slots__:
-                text += f"{attribute_name}: {repr(getattr(self, attribute_name))}\n"
+                text += f"{attribute_name}: {getattr(self, attribute_name)!r}\n"
         if hasattr(self, "__dir__"):
             for attribute_name, attribute_value in self.__dict__.items():
-                text += f"{attribute_name}: {repr(attribute_value)}\n"
+                text += f"{attribute_name}: {attribute_value!r}\n"
         return text

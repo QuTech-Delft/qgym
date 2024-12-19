@@ -5,7 +5,7 @@ from qgym.wrappers.routing import AgentRoutingWrapper, QiskitRoutingWrapper
 
 __all__ = [
     "AgentMapperWrapper",
-    "QiskitMapperWrapper",
     "AgentRoutingWrapper",
+    "QiskitMapperWrapper",
     "QiskitRoutingWrapper",
 ]

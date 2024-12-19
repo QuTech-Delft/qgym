@@ -23,7 +23,7 @@ from qgym.utils.input_validation import (
 class TestCheckReal:
     @pytest.mark.parametrize(
         "input,expected_output",
-        [(0.0, 0.0), (float("inf"), float("inf")), (int(1), 1.0)],
+        [(0.0, 0.0), (float("inf"), float("inf")), (1, 1.0)],
         ids=["float_0", "float_inf", "int_1"],
     )
     def test_no_bounds(self, input: float, expected_output: float) -> None:

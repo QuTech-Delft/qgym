@@ -11,9 +11,9 @@ from qgym.envs.initial_mapping.initial_mapping_rewarders import (
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 
 __all__ = [
-    "InitialMapping",
-    "InitialMappingState",
     "BasicRewarder",
     "EpisodeRewarder",
+    "InitialMapping",
+    "InitialMappingState",
     "SingleStepRewarder",
 ]
