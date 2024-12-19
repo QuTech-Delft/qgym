@@ -39,7 +39,6 @@ dependencies = [
     "gymnasium>=0.28.1",
     "networkx[default]>=2.6.3",
     "numpy>=1.21.6",
-    "numpy.typing",
     "pygame",
     "qiskit>=1.0.0",
 ]

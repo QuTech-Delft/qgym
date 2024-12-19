@@ -283,8 +283,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
             observation["connection_graph"] = self.connection_matrix
 
         if self.observe_legal_surpasses:
-            is_legal_surpass = np.array(
-                [self.is_legal_surpass(*gate) for gate in interaction_gates_ahead]
+            is_legal_surpass = np.fromiter(
+                (self.is_legal_surpass(*gate) for gate in interaction_gates_ahead),
+                dtype=np.bool,
             )
             observation["is_legal_surpass"] = is_legal_surpass
 
