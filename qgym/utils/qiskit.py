@@ -1,3 +1,5 @@
+"""This method contains utility functions for qiskit object."""
+
 from __future__ import annotations
 
 from collections import deque
@@ -30,6 +32,7 @@ class Circuit:
         self.dag = self._parse_circuit_like(circuit)
 
     def get_qiskit_quantum_circuit(self) -> QuantumCircuit:
+        """Convert the circuit to a qiskit ``QuantumCircuit``."""
         return dag_to_circuit(self.dag)
 
     @staticmethod
