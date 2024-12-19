@@ -292,7 +292,7 @@ class InitialMappingVisualiser(Visualiser):
             A dictionary where the keys are the names of the nodes, and the values are
             the coordinates of these nodes.
         """
-        node_positions: dict[Any, NDArray[np.float64]]
+        node_positions: dict[Any, NDArray[np.floating[Any]]]
         node_positions = nx.spring_layout(graph, threshold=1e-6)
 
         # Scale and move the node positions to be centered on the subscreen
