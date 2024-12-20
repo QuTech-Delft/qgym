@@ -23,7 +23,7 @@ from qgym.envs.routing.routing import Routing
 class TestEnvironment:
     def test_validity(self, kwargs: dict[str, tuple[int, int] | bool]) -> None:
         env = Routing(**kwargs)  # type: ignore[arg-type]
-        check_env(env, warn=True)  # todo: maybe switch this to the gym env checker
+        check_env(env, warn=True)
 
     def test_step(self, kwargs: dict[str, tuple[int, int] | bool]) -> None:
         env = Routing(**kwargs)  # type: ignore[arg-type]

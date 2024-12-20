@@ -22,12 +22,12 @@ from qgym.utils.input_validation import (
 
 class TestCheckReal:
     @pytest.mark.parametrize(
-        "input,expected_output",
+        ("x_value", "expected_output"),
         [(0.0, 0.0), (float("inf"), float("inf")), (1, 1.0)],
         ids=["float_0", "float_inf", "int_1"],
     )
-    def test_no_bounds(self, input: float, expected_output: float) -> None:
-        output = check_real(input, "test")
+    def test_no_bounds(self, x_value: float, expected_output: float) -> None:
+        output = check_real(x_value, "test")
         assert isinstance(output, float)
         assert output == expected_output
 
@@ -148,7 +148,7 @@ class TestAdjacencyMatrix:
         "arg", [np.zeros(2), np.zeros((2, 3)), None], ids=["1d", "not_square", "None"]
     )
     def test_check_adjacency_matrix_errors(self, arg: Any) -> None:
-        msg = "The provided value should be a square 2-D adjacency matrix."
+        msg = "the provided value should be a square 2-D adjacency matrix"
         with pytest.raises(ValueError, match=msg):
             check_adjacency_matrix(arg)
 

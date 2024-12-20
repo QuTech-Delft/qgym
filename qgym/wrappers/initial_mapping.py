@@ -6,17 +6,16 @@ from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from numpy.typing import NDArray
-from qiskit.transpiler import AnalysisPass, Layout
 
-from qgym.envs.initial_mapping import InitialMappingState
 from qgym.templates import AgentWrapper
 from qgym.utils.qiskit import Circuit, CircuitLike
 
 if TYPE_CHECKING:
     import networkx as nx
+    from qiskit.transpiler import AnalysisPass, Layout
     from stable_baselines3.common.base_class import BaseAlgorithm
 
-    from qgym.envs.initial_mapping import InitialMapping
+    from qgym.envs.initial_mapping import InitialMapping, InitialMappingState
 
 
 class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
@@ -62,7 +61,7 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
     ) -> NDArray[np.int_]:
         state = cast(
             "InitialMappingState",
-            self.env._state,  # pylint: disable=protected-access
+            self.env._state,  # noqa: SLF001
         )
         if not state.is_done():
             msg = (
@@ -97,8 +96,7 @@ class QiskitMapperWrapper:
         """Init of the :class:`QiskitMapperWrapper`.
 
         Args:
-            qiskit_mapper: The qiskit mapper (:class:`~qiskit.transpiler.Layout`) to
-                wrap.
+            qiskit_mapper: The qiskit mapper wrap.
         """
         self.mapper = qiskit_mapper
 

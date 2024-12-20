@@ -6,10 +6,12 @@ All states should inherit from ``State``.
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from gymnasium.spaces import Space
 from numpy.random import Generator, default_rng
+
+if TYPE_CHECKING:
+    from gymnasium.spaces import Space
 
 ObservationT = TypeVar("ObservationT")
 ActionT = TypeVar("ActionT")

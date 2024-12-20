@@ -6,19 +6,23 @@ All environments should inherit from ``Environment``.
 from __future__ import annotations
 
 from abc import abstractmethod
-from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import gymnasium
-import numpy as np
 from gymnasium import Space
 from numpy.random import Generator, default_rng
-from numpy.typing import NDArray
 
-from qgym.templates.rewarder import Rewarder
 from qgym.templates.state import ActionT, ObservationT, State
-from qgym.templates.visualiser import Visualiser
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    import numpy as np
+    from numpy.typing import NDArray
+
+    from qgym.templates.rewarder import Rewarder
+    from qgym.templates.visualiser import Visualiser
 
 
 class Environment(gymnasium.Env[ObservationT, ActionT]):
@@ -103,7 +107,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
             self._visualiser.step(self._state)
         return self._state.obtain_observation(), self._state.obtain_info()
 
-    def render(self) -> None | NDArray[np.int_]:  # type: ignore[override]
+    def render(self) -> NDArray[np.int_] | None:  # type: ignore[override]
         """Render the current state using pygame.
 
         Returns:

@@ -1,18 +1,21 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from copy import deepcopy
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pytest
-from gymnasium import Space
 
 from qgym.spaces import Box, Dict, Discrete, MultiBinary, MultiDiscrete
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from gymnasium import Space
+
 
 @pytest.mark.parametrize(
-    "space, args",
+    ("space", "args"),
     [
         (Box, (0, 10, (10, 10))),
         (Discrete, (10,)),

@@ -5,14 +5,17 @@ environment.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
-from numpy.typing import NDArray
 
-from qgym.custom_types import Gate
-from qgym.envs.scheduling.rulebook import CommutationRulebook
-from qgym.generators.circuit import CircuitGenerator
-from qgym.utils.gate_encoder import GateEncoder
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
+    from qgym.custom_types import Gate
+    from qgym.envs.scheduling.rulebook import CommutationRulebook
+    from qgym.generators.circuit import CircuitGenerator
+    from qgym.utils.gate_encoder import GateEncoder
 
 
 @dataclass

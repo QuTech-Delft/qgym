@@ -3,18 +3,21 @@
 from __future__ import annotations
 
 from collections import deque
-from collections.abc import Iterable
 from copy import deepcopy
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 import networkx as nx
 import numpy as np
-from numpy.typing import NDArray
 from qiskit import QuantumCircuit
 from qiskit.circuit.library.standard_gates import SwapGate
 from qiskit.converters import circuit_to_dag, dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler import Layout
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from numpy.typing import NDArray
 
 
 class Circuit:

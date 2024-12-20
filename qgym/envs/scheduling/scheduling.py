@@ -158,13 +158,12 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any, Dict, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.custom_types import Gate
 from qgym.envs.scheduling.machine_properties import MachineProperties
 from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
@@ -175,9 +174,12 @@ from qgym.templates import Environment, Rewarder
 from qgym.utils.input_parsing import parse_rewarder, parse_visualiser
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
+if TYPE_CHECKING:
+    from qgym.custom_types import Gate
+
 
 class Scheduling(
-    Environment[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
+    Environment[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
 ):
     """RL environment for the scheduling problem."""
 
@@ -228,7 +230,8 @@ class Scheduling(
         else:
             check_instance(circuit_generator, "circuit_generator", CircuitGenerator)
             if circuit_generator.finite:
-                raise ValueError("'circuit_generator' should be an infinite iterator")
+                msg = "'circuit_generator' should be an infinite iterator"
+                raise ValueError(msg)
             circuit_generator = deepcopy(circuit_generator)
         circuit_generator.set_state_attributes(
             machine_properties=machine_properties,
@@ -302,7 +305,8 @@ class Scheduling(
             gate_encoder = state.utils.gate_encoder
             return gate_encoder.decode_gates(encoded_circuit)
 
-        raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
+        msg = f"mode must be 'human' or 'encoded', but was {mode}"
+        raise ValueError(msg)
 
     @staticmethod
     def _parse_machine_properties(

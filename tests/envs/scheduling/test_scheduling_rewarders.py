@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Generator
 from copy import deepcopy
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 import pytest
-from numpy.typing import NDArray
 
 from qgym.custom_types import Gate
 from qgym.envs.scheduling import (
@@ -17,7 +15,13 @@ from qgym.envs.scheduling import (
 )
 from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.generators import NullCircuitGenerator
-from qgym.templates import Rewarder
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from numpy.typing import NDArray
+
+    from qgym.templates import Rewarder
 
 
 def _right_to_left_state_generator(
@@ -58,7 +62,7 @@ def basic_rewarder() -> BasicRewarder:
 
 
 @pytest.mark.parametrize(
-    "circuit,expected_reward",
+    ("circuit", "expected_reward"),
     [
         ([Gate("x", 1, 1)], [100]),
         ([Gate("x", 1, 1), Gate("x", 1, 1)], [100, -1, 100]),
@@ -85,7 +89,7 @@ def episode_rewarder() -> EpisodeRewarder:
 
 
 @pytest.mark.parametrize(
-    "circuit,expected_reward",
+    ("circuit", "expected_reward"),
     [
         ([Gate("x", 1, 1)], [-1]),
         ([Gate("x", 1, 1), Gate("x", 1, 1)], [0, 0, -2]),
@@ -104,7 +108,7 @@ def test_episode_rewarder_rewards(
 
 
 @pytest.mark.parametrize(
-    "illegal_action_p,update_cycle_p,schedule_gate_b,reward_range",
+    ("illegal_action_p", "update_cycle_p", "schedule_gate_b", "reward_range"),
     [
         (-1, 0, 0, (-float("inf"), 0)),
         (0, 0, 1, (0, float("inf"))),
@@ -123,7 +127,7 @@ def test_reward_range_basic_rewarder(
 
 @pytest.mark.filterwarnings("ignore::UserWarning")
 @pytest.mark.parametrize(
-    "illegal_action_p,cycle_used_p,reward_range",
+    ("illegal_action_p", "cycle_used_p", "reward_range"),
     [
         (-1, 0, (-float("inf"), 0)),
         (0, 1, (0, float("inf"))),

@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
-import numpy as np
-from numpy.typing import NDArray
-from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
+if TYPE_CHECKING:
+    import numpy as np
+    from numpy.typing import NDArray
+
+    from qgym.utils import Circuit, CircuitLike
 
 # pylint: disable=too-few-public-methods
 
@@ -18,7 +19,7 @@ class Mapper(Protocol):
     """Mapper protocol."""
 
     @abstractmethod
-    def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
+    def compute_mapping(self, circuit: CircuitLike) -> NDArray[np.int_]:
         """Compute a mapping for a provided quantum `circuit`."""
 
 
@@ -27,5 +28,5 @@ class Router(Protocol):
     """Qubit router protocol."""
 
     @abstractmethod
-    def compute_routing(self, circuit: QuantumCircuit | DAGCircuit) -> DAGCircuit:
+    def compute_routing(self, circuit: CircuitLike) -> Circuit:
         """Compute a qubit routing for a provided quantum `circuit`."""

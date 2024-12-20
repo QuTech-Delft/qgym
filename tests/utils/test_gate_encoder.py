@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from typing import Any
 
 import pytest
 
@@ -44,7 +45,7 @@ def test_duplicate_gates_warning(empty_encoder: GateEncoder) -> None:
 
 
 @pytest.mark.parametrize(
-    "gates, encoded_gates",
+    ("gates", "encoded_gates"),
     [
         ("x", 1),
         ({"cnot": 1, "z": 2}, {4: 1, 3: 2}),
@@ -52,12 +53,14 @@ def test_duplicate_gates_warning(empty_encoder: GateEncoder) -> None:
         (["x", "cnot", "y"], [1, 4, 2]),
     ],
 )
-def test_encode_gates(trained_encoder: GateEncoder, gates, encoded_gates) -> None:  # type: ignore[no-untyped-def]
+def test_encode_gates(
+    trained_encoder: GateEncoder, gates: Any, encoded_gates: Any
+) -> None:
     assert trained_encoder.encode_gates(gates) == encoded_gates
 
 
 @pytest.mark.parametrize(
-    "gates, encoded_gates",
+    ("gates", "encoded_gates"),
     [
         ("x", 1),
         ({"cnot": 1, "z": 2}, {4: 1, 3: 2}),
@@ -65,11 +68,17 @@ def test_encode_gates(trained_encoder: GateEncoder, gates, encoded_gates) -> Non
         (["x", "cnot", "y"], [1, 4, 2]),
     ],
 )
-def test_decode_gates(trained_encoder: GateEncoder, gates, encoded_gates) -> None:  # type: ignore[no-untyped-def]
+def test_decode_gates(
+    trained_encoder: GateEncoder, gates: Any, encoded_gates: Any
+) -> None:
     assert trained_encoder.decode_gates(encoded_gates) == gates
 
 
-def test_type_error(trained_encoder: GateEncoder) -> None:
+def test_type_error_encode(trained_encoder: GateEncoder) -> None:
     with pytest.raises(TypeError):
         trained_encoder.encode_gates(None)  # type: ignore[call-overload]
+
+
+def test_type_error_decode(trained_encoder: GateEncoder) -> None:
+    with pytest.raises(TypeError):
         trained_encoder.decode_gates(None)  # type: ignore[call-overload]

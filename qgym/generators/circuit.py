@@ -4,17 +4,19 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections.abc import Iterator
-from typing import Any, List, SupportsInt
+from typing import TYPE_CHECKING, Any, SupportsInt
 
 import numpy as np
-from numpy.random import Generator
 
 from qgym.custom_types import Gate
 from qgym.utils.input_parsing import parse_seed
 from qgym.utils.input_validation import check_int
 
+if TYPE_CHECKING:
+    from numpy.random import Generator
 
-class CircuitGenerator(Iterator[List[Gate]]):
+
+class CircuitGenerator(Iterator[list[Gate]]):
     """Abstract Base Class for circuit generation used for scheduling.
 
     All interaction circuit generators should inherit from :class:`CircuitGenerator`
@@ -73,9 +75,8 @@ class BasicCircuitGenerator(CircuitGenerator):
             kwargs: Additional keyword arguments. These are not used.
         """
         if not hasattr(machine_properties, "n_qubits"):
-            raise AttributeError(
-                "'machine_properties' did not have the 'n_qubits' attribute"
-            )
+            msg = "'machine_properties' did not have the 'n_qubits' attribute"
+            raise AttributeError(msg)
         self.n_qubits = machine_properties.n_qubits
         self.max_gates = check_int(max_gates, "max_gates", l_bound=1)
 
@@ -98,10 +99,7 @@ class BasicCircuitGenerator(CircuitGenerator):
         gate_names = ["x", "y", "z", "cnot", "measure"]
         probabilities = [0.16, 0.16, 0.16, 0.5, 0.02]
 
-        circuit: list[Gate] = []
-
-        for qubit in range(self.n_qubits):
-            circuit.append(Gate("prep", qubit, qubit))
+        circuit = [Gate("prep", qubit, qubit) for qubit in range(self.n_qubits)]
 
         for _ in range(self.n_qubits, n_gates):
             name = self.rng.choice(gate_names, p=probabilities)
@@ -146,9 +144,8 @@ class WorkshopCircuitGenerator(CircuitGenerator):
         """
         machine_properties = kwargs["machine_properties"]
         if not hasattr(machine_properties, "n_qubits"):
-            raise AttributeError(
-                "'machine_properties' did not have the 'n_qubits' attribute"
-            )
+            msg = "'machine_properties' did not have the 'n_qubits' attribute"
+            raise AttributeError(msg)
         self.n_qubits = machine_properties.n_qubits
         self.max_gates = check_int(kwargs["max_gates"], "max_gates", l_bound=1)
 

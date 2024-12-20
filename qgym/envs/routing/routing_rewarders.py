@@ -177,7 +177,9 @@ class SwapQualityRewarder(BasicRewarder):
         self._good_swap_reward = check_real(good_swap_reward, "reward_per_good_swap")
 
         if not 0 <= self._good_swap_reward < -self._penalty_per_swap:
-            warnings.warn("Good swaps should not result in positive rewards.")
+            warnings.warn(
+                "Good swaps should not result in positive rewards.", stacklevel=2
+            )
 
         warn_if_negative(self._good_swap_reward, "reward_per_good_swap")
 
@@ -245,7 +247,7 @@ class SwapQualityRewarder(BasicRewarder):
                 msg = "observe_legal_surpasses needs to be True to compute"
                 msg += "observation_enhancement_factor"
                 raise ValueError(msg) from error
-            raise error
+            raise
 
         return (
             new_executable_gates_ahead - old_executable_gates_ahead

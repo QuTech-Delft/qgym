@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import networkx as nx
 import numpy as np
 import pytest
-from numpy.typing import ArrayLike
 from scipy.sparse import csr_matrix
 from stable_baselines3.common.env_checker import check_env
 
@@ -14,7 +15,11 @@ from qgym.envs.initial_mapping import (
     InitialMappingState,
     SingleStepRewarder,
 )
-from qgym.templates import Rewarder
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
+
+    from qgym.templates import Rewarder
 
 
 @pytest.fixture
@@ -31,7 +36,6 @@ def small_env(small_graph: nx.Graph) -> InitialMapping:
 
 class TestEnvironment:
     def test_validity(self, small_env: InitialMapping) -> None:
-        # todo: maybe switch this to the gymnasium env checker
         check_env(small_env, warn=True)
 
     def test_episode(self, small_env: InitialMapping) -> None:
@@ -57,7 +61,7 @@ class TestEnvironment:
 
 
 @pytest.mark.parametrize(
-    "render_mode,error_type",
+    ("render_mode", "error_type"),
     [(1, TypeError), ("test", ValueError)],
     ids=["TypeError", "ValueError"],
 )

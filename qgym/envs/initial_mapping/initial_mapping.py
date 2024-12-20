@@ -13,14 +13,14 @@ two qubits in the QPU.
               QUANTUM CIRCUIT                        INTERACTION GRAPH
            ┌───┐               ┌───┐
     |q3>───┤ R ├───┬───────────┤ M ╞══                 q1 ────── q2
-           └───┘   │           └───┘                            ╱
-           ┌───┐ ┌─┴─┐         ┌───┐                           ╱
-    |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        ╱
-           └───┘ └───┘   │     └───┘                         ╱
-           ┌───┐       ┌─┴─┐   ┌───┐                        ╱
-    |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     ╱
-           └───┘   │   └───┘   └───┘                      ╱
-           ┌───┐ ┌─┴─┐         ┌───┐                     ╱
+           └───┘   │           └───┘                            /
+           ┌───┐ ┌─┴─┐         ┌───┐                           /
+    |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        /
+           └───┘ └───┘   │     └───┘                         /
+           ┌───┐       ┌─┴─┐   ┌───┐                        /
+    |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     /
+           └───┘   │   └───┘   └───┘                      /
+           ┌───┐ ┌─┴─┐         ┌───┐                     /
     |q0>───┤ R ├─┤ X ├─────────┤ M ╞══                q3 ─────── q4
            └───┘ └───┘         └───┘
 
@@ -115,11 +115,9 @@ Example 2:
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 
-import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
@@ -139,10 +137,13 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_instance
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    import networkx as nx
     Gridspecs = list[int] | tuple[int, ...]
 
 
-class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]]):
+class InitialMapping(Environment[dict[str, NDArray[np.int_]], NDArray[np.int_]]):
     """RL environment for the initial mapping problem of OpenQL."""
 
     __slots__ = (
@@ -196,7 +197,8 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
         else:
             check_instance(graph_generator, "graph_generator", GraphGenerator)
             if graph_generator.finite:
-                raise ValueError("'graph_generator' should be an infinite iterator")
+                msg = "'graph_generator' should be an infinite iterator"
+                raise ValueError(msg)
             graph_generator = deepcopy(graph_generator)
         graph_generator.set_state_attributes(connection_graph=connection_graph)
 
@@ -230,7 +232,7 @@ class InitialMapping(Environment[Dict[str, NDArray[np.int_]], NDArray[np.int_]])
                 (optionally) on the first reset call i.e., before any learning is done.
             return_info: Whether to receive debugging info. Default is ``False``.
             options: Mapping with keyword arguments with additional options for the
-                reset. Keywords can be found in the description of 
+                reset. Keywords can be found in the description of
                 :class:`~qgym.envs.initial_mapping.InitialMappingState`.\
                 :func:`~qgym.envs.initial_mapping.InitialMappingState.reset()`.
 

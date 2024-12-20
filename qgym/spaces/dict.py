@@ -17,11 +17,14 @@ Usage:
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import gymnasium.spaces
-from numpy.random import Generator
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from numpy.random import Generator
 
 
 class Dict(gymnasium.spaces.Dict):
@@ -51,4 +54,4 @@ class Dict(gymnasium.spaces.Dict):
         super().__init__(spaces, seed=None, **spaces_kwargs)
         for space in self.spaces.values():
             # override the default behaviour of the gym space
-            space._np_random = rng  # pylint: disable=protected-access
+            space._np_random = rng  # noqa: SLF001

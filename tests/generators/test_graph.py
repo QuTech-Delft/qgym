@@ -20,8 +20,7 @@ def test_abc() -> None:
 class TestNullGraphGenerator:
     @pytest.fixture(name="generator")
     def null_graph_generator_fixture(self) -> NullGraphGenerator:
-        generator = NullGraphGenerator()
-        return generator
+        return NullGraphGenerator()
 
     def test_set_state_attributes(self, generator: NullGraphGenerator) -> None:
         assert len(vars(generator)) == 1

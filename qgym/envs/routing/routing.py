@@ -15,14 +15,14 @@ the QPU.
               QUANTUM CIRCUIT                        INTERACTION GRAPH
            ┌───┐               ┌───┐
     |q3>───┤ R ├───┬───────────┤ M ╞══                 q1 ────── q2
-           └───┘   │           └───┘                            ╱
-           ┌───┐ ┌─┴─┐         ┌───┐                           ╱
-    |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        ╱
-           └───┘ └───┘   │     └───┘                         ╱
-           ┌───┐       ┌─┴─┐   ┌───┐                        ╱
-    |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     ╱
-           └───┘   │   └───┘   └───┘                      ╱
-           ┌───┐ ┌─┴─┐         ┌───┐                     ╱
+           └───┘   │           └───┘                            /
+           ┌───┐ ┌─┴─┐         ┌───┐                           /
+    |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        /
+           └───┘ └───┘   │     └───┘                         /
+           ┌───┐       ┌─┴─┐   ┌───┐                        /
+    |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     /
+           └───┘   │   └───┘   └───┘                      /
+           ┌───┐ ┌─┴─┐         ┌───┐                     /
     |q0>───┤ R ├─┤ X ├─────────┤ M ╞══                q3 ─────── q4
            └───┘ └───┘         └───┘
 
@@ -87,11 +87,9 @@ Action Space:
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 
-import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
@@ -109,12 +107,16 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_bool, check_instance, check_int
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping
+
+    import networkx as nx
+
     Gridspecs = (
         list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
     )
 
 
-class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
+class Routing(Environment[dict[str, NDArray[np.int_]], int]):
     """RL environment for the routing problem of OpenQL."""
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -122,9 +124,9 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
         connection_graph: nx.Graph | ArrayLike | Gridspecs,
         interaction_generator: InteractionGenerator | None = None,
         max_observation_reach: int = 5,
+        *,
         observe_legal_surpasses: bool = True,
         observe_connection_graph: bool = False,
-        *,
         rewarder: Rewarder | None = None,
         render_mode: str | None = None,
     ) -> None:
@@ -182,9 +184,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
                 interaction_generator, "interaction_generator", InteractionGenerator
             )
             if interaction_generator.finite:
-                raise ValueError(
-                    "'interaction_generator' should not be an infinite iterator"
-                )
+                msg = "'interaction_generator' should not be an infinite iterator"
+                raise ValueError(msg)
             interaction_generator = deepcopy(interaction_generator)
         interaction_generator.set_state_attributes(
             max_observation_reach=max_observation_reach,
