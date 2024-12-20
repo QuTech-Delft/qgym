@@ -1,5 +1,7 @@
-"""Module containing the environment, rewarders, visualizer and other utils for the
-scheduling problem of OpenQL.
+"""This subpackage handles the scheduling problem.
+
+It contains the environment, rewarders, visualizer and other utils for the scheduling
+problem of OpenQL.
 """
 
 from qgym.envs.scheduling.machine_properties import MachineProperties

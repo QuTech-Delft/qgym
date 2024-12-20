@@ -1,6 +1,7 @@
-"""This package contains general spaces that are to be used as action or observation
-space in custom RL Environments. All spaces inherit from spaces of the ``gymnasium``
-package.
+"""This package contains general spaces.
+
+These spaces are to be used as action or observation space in custom RL Environments.
+All spaces inherit from spaces of the ``gymnasium`` package.
 """
 
 from qgym.spaces.box import Box

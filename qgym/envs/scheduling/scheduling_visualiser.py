@@ -1,4 +1,6 @@
-"""This module contains a class used for rendering the :class:`~qgym.envs.Scheduling`
+"""This module contains the the :class:`SchedulingVisualiser` class.
+
+:class:`SchedulingVisualiser` is used for rendering the :class:`~qgym.envs.Scheduling`
 environment.
 """
 

@@ -135,8 +135,8 @@ class RoutingState(State[dict[str, NDArray[np.int_]], int]):
         Args:
             seed: Seed for the random number generator, should only be provided
                 (optionally) on the first reset call, i.e., before any learning is done.
-            circuit: Optional list of tuples of ints that the interaction gates via the
-                qubits the gates are acting on.
+            interaction_circuit: Optional 2D-Array of ints that the interaction gates
+                via the qubits the gates are acting on.
             _kwargs: Additional options to configure the reset.
 
         Returns:

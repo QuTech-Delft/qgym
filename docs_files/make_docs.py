@@ -1,3 +1,5 @@
+"""Script that creates the documentation using ``sphinx``."""
+
 import shutil
 
 import sphinx.cmd.build as sphinx_build

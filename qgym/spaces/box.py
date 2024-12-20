@@ -1,5 +1,6 @@
-"""This module contains the ``Box`` space, i.e., a possibly open-ended interval in $n$
-dimensions.
+"""This module contains the ``Box`` space.
+
+A ``Box`` is a possibly open-ended interval in $n$ dimensions.
 
 Usage:
     >>> from qgym.spaces import Box
@@ -26,8 +27,9 @@ if TYPE_CHECKING:
 
 
 class Box(gymnasium.spaces.Box):
-    """An $n$-dimensional box space, i.e., collection of (possibly) open-ended
-    intervals.
+    """An $n$-dimensional box space.
+
+    A box is a collection of (possibly) open-ended intervals.
     """
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -39,8 +41,9 @@ class Box(gymnasium.spaces.Box):
         *,
         rng: Generator | None = None,
     ) -> None:
-        """Initialize a ``Box`` space, i.e., a possibly open-ended interval in $n$
-        dimensions.
+        """Initialize a ``Box`` space.
+
+        A ``Box`` is a possibly open-ended interval in $n$ dimensions.
 
         Args:
             low: Either one lower bound for all intervals, or an ``NDArray`` with the

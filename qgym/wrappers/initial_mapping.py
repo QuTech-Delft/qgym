@@ -21,11 +21,12 @@ if TYPE_CHECKING:
 class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
     AgentWrapper[NDArray[np.int_]]
 ):
-    """Wrap any trained stable baselines 3 agent that inherits from
-    :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
+    """Wrap a trained stable baselines 3 agent.
 
-    The wrapper makes sure the agent upholds the Mapper protocol , which is required for
-    the qgym benchmarking tools.
+    The agent shoul inherit from
+    :class:`~stable_baselines3.common.base_class.BaseAlgorithm`. The wrapper makes sure
+    the agent upholds the Mapper protocol , which is required for the qgym benchmarking
+    tools.
     """
 
     def __init__(  # pylint: disable=useless-parent-delegation
@@ -87,9 +88,11 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
 
 
 class QiskitMapperWrapper:
-    """Wrap any qiskit mapper (Layout algorithm) such that it becomes compatible with
-    the qgym framework. This class wraps the qiskit mapper, such that it  is compatible
-    with the qgym Mapper protocol, which is required for the qgym benchmarking tools.
+    """Wrap any qiskit mapper (Layout algorithm).
+
+    This wrapper ensures that the mapper becomes compatible with the qgym framework.
+    This class wraps the qiskit mapper, such that it  is compatible with the qgym
+    Mapper protocol, which is required for the qgym benchmarking tools.
     """
 
     def __init__(self, qiskit_mapper: AnalysisPass) -> None:

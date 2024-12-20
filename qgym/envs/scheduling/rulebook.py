@@ -1,5 +1,4 @@
-"""This module contains the :class:`CommutationRulebook` class together with basic
-commutation rules used in the :class:`~qgym.envs.Scheduling` environment.
+"""This module contains the :class:`CommutationRulebook` and some commutation rules.
 
 Example:
     The code block below shows how to set up a :class:`CommutationRulebook`, with the
@@ -46,7 +45,6 @@ class CommutationRulebook:
                 that gates with disjoint qubits commute and that gates that are exactly
                 the same commute. If ``False``, then no rules will be initialized.
         """
-
         self._rules: list[Callable[[Gate, Gate], bool]]
         if default_rules:
             self._rules = [disjoint_qubits, same_gate]
@@ -54,8 +52,10 @@ class CommutationRulebook:
             self._rules = []
 
     def make_blocking_matrix(self, circuit: list[Gate]) -> NDArray[np.int_]:
-        """Make a square array of shape (len(circuit), len(circuit)), with dependencies
-        based on the given commutation rules.
+        """Make a square array of shape (len(circuit), len(circuit)).
+
+        The values of the blocking matrix are computed using the provided commutation
+        rules.
 
         Args:
             circuit: Circuit to check dependencies for.

@@ -1,5 +1,7 @@
-"""Module containing the environment, rewarders and visualizer for the initial mapping
-problem of OpenQL.
+"""This subpackage handles the initial mapping problem.
+
+It contains the environment, rewarders, visualizer and other utils for the initial
+mapping problem of OpenQL.
 """
 
 from qgym.envs.initial_mapping.initial_mapping import InitialMapping

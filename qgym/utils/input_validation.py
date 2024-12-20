@@ -211,8 +211,7 @@ def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
 
 
 def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> nx.Graph:
-    """Check if `graph` with name 'name' is an instance of ``networkx.Graph``, check
-    if the graph is valid topology graph and check if the nodes are integers.
+    """Check if `graph` with name 'name' is an valid topology.
 
     Args:
         graph: Graph to check.
@@ -221,7 +220,8 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> nx.Graph:
 
     Raises:
         TypeError: If `graph` is not an instance of ``networkx.Graph``.
-        ValueError: If `graph` is not a valid topology graph.
+        ValueError: If `graph` is not a valid topology graph. A valid topology has at
+            least one node, no self loops and the node labels are integers.
 
     Returns:
         The input graph.
@@ -244,12 +244,13 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> nx.Graph:
 
 
 def check_instance(x: Any, name: str, dtype: type) -> None:
-    """Check if `x` with name 'name' is an instance of dtype.
+    """Check if `x` with name 'name' is an instance of `dtype`.
 
     Args:
         x: Variable to check.
         name: Name of the variable. This name will be displayed in possible error
             messages.
+        dtype: Type to check instance from.
 
     Raises:
         TypeError: If `x` is not an instance of `dtype`.

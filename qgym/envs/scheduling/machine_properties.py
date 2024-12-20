@@ -1,5 +1,7 @@
-"""This module contains the :class:`MachineProperties` class, which helps with
-conveniently setting up machine properties for the scheduling environment.
+"""This module contains the :class:`MachineProperties` class.
+
+The :class:`MachineProperties` class helps with conveniently setting up machine
+properties for the scheduling environment.
 
 Usage:
     The code below will create :class:`MachineProperties` which will have the following
@@ -35,13 +37,13 @@ from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
 class MachineProperties:
-    """:class:`MachineProperties` is a class to conveniently setup machine properties
-    for the :class:`~qgym.envs.Scheduling` environment.
+    """:class:`MachineProperties` is a class to conveniently setup machine properties.
+
+    To be used in the :class:`~qgym.envs.Scheduling` environment.
     """
 
     def __init__(self, n_qubits: int) -> None:
-        """
-        Init of the MachineProperties class.
+        """Init of the MachineProperties class.
 
         Args:
             n_qubits: Number of qubits of the machine.
@@ -53,8 +55,9 @@ class MachineProperties:
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
-        """Initialize the :class:`MachineProperties` class from a ``Mapping`` containing
-        valid machines properties.
+        """Initialize the :class:`MachineProperties` class from a ``Mapping``.
+
+        The ``Mapping`` should contain valid machines properties.
 
         Args:
             machine_properties: ``Mapping`` containing valid machine properties.
@@ -101,8 +104,7 @@ class MachineProperties:
         return self
 
     def add_same_start(self, gates: Iterable[str]) -> MachineProperties:
-        """Add gates that should start in the same cycle, or wait till the previous gate
-        is done.
+        """Add gates that should start in the same cycle.
 
         Args:
             gates: ``Iterable`` of gate names that should start in the same cycle.
@@ -184,8 +186,10 @@ class MachineProperties:
 
     @property
     def gates(self) -> dict[str, int] | dict[int, int]:
-        """Return a``Dict`` with the gate names the machine can perform as keys, and the
-        number of machine cycles (time) as values.
+        """Return a ``dict`` with the gate names and cycles.
+
+        The keys of this dict are gate names that the machine can perform. The values
+        are the number of machine cycles (time) it takes to execute that gate.
         """
         return self._gates
 
@@ -196,9 +200,7 @@ class MachineProperties:
 
     @property
     def same_start(self) -> set[str] | set[int]:
-        """Set of gate names that should start in the same cycle, or wait till the
-        previous gate is done.
-        """
+        """Set of gate names that should start in the same cycle."""
         return self._same_start
 
     @property
@@ -210,9 +212,7 @@ class MachineProperties:
     def _check_machine_properties_mapping(
         machine_properties: Mapping[str, Any],
     ) -> dict[str, Any]:
-        """Check if the given machine properties ``Mapping`` is a valid descriptions of
-        the machine properties and returns a ``Dict`` to easily initialize a
-        ``MachineProperties`` object.
+        """Check if the given machine properties ``Mapping`` is a valid descriptions.
 
         Args:
             machine_properties: ``Mapping`` containing the machine properties.

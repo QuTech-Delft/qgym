@@ -1,5 +1,4 @@
-"""This module contains the :class:`~qgym.envs.initial_mapping.InitialMappingState`
-class.
+"""This module contains the :class:`InitialMappingState` class.
 
 This :class:`~qgym.envs.InitialMapping` represents the :class:`~qgym.templates.State` of
 the :class:`~qgym.envs.InitialMapping` environment.

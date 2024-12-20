@@ -54,7 +54,7 @@ class InteractionRatioLoss(RoutingMetric):
 
         Args:
             input_circuit: Input circuit before routing was performed.
-            routed_circut: Routed version of the input circuit.
+            routed_circuit: Routed version of the input circuit.
 
         Returns:
             The routing solution quality ratio.

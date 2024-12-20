@@ -72,7 +72,6 @@ class Circuit:
         Returns:
             Interaction circuit representation of the circuit.
         """
-
         if self.dag.multi_qubit_ops():
             msg = "no 3+ qubit operations are supported"
             raise ValueError(msg)
@@ -99,7 +98,7 @@ class Circuit:
         """Insert the provided swap gates in the quantum circuit.
 
         Args:
-            swaps_insterted: Swap gated to insert. Iterable of tuples (g_idx, q1, q2).
+            swaps_inserted: Swap gated to insert. Iterable of tuples (g_idx, q1, q2).
                 Each tuple represents a swap gate, where g_idx is the index of the two
                 qubit gate before which the swap gate needs to be inserted. The swap is
                 performed on q1 and q2.

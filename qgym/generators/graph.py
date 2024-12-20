@@ -118,7 +118,7 @@ class NullGraphGenerator(GraphGenerator):
     """
 
     def __init__(self) -> None:
-        """Init of the :class:`NullGraphGenerator`"""
+        """Init of the :class:`NullGraphGenerator`."""
         self.finite = False
 
     def __next__(self) -> nx.Graph:
