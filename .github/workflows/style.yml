@@ -3,16 +3,22 @@ name: style
 on: push
 
 jobs:
-  black:
+  format:
     runs-on: ubuntu-latest
+    env:
+      UV_SYSTEM_PYTHON: 1
     steps:
-      - uses: actions/checkout@v4
-      - uses: psf/black@stable
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          jupyter: true
-
-  isort:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: isort/isort-action@master
+          python-version: '3.12' 
+      - name: Setup UV
+        run: |
+            pip install --upgrade pip
+            pip install uv
+      - name: Install requirements
+        run: uv pip install ruff
+      - name: Run ruff format
+        run: ruff format --check
