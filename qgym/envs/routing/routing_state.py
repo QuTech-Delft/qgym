@@ -289,8 +289,9 @@ class RoutingState(State[dict[str, NDArray[np.int_]], int]):
 
         if self.observe_legal_surpasses:
             is_legal_surpass = np.fromiter(
-                starmap(self.is_legal_surpass, interaction_gates_ahead),
-                dtype=np.bool,
+                iter=starmap(self.is_legal_surpass, interaction_gates_ahead),
+                count=len(interaction_gates_ahead),
+                dtype=np.int8,
             )
             observation["is_legal_surpass"] = is_legal_surpass
 

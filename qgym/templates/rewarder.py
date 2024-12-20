@@ -47,6 +47,7 @@ class Rewarder(ABC):
             return False
 
         if hasattr(self, "__slots__"):
+            attr: str
             for attr in self.__slots__:
                 if getattr(self, attr) != getattr(other, attr):
                     return False
