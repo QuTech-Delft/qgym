@@ -15,7 +15,7 @@ Usage:
             schedule_gate_bonus: = 3,
             )
 
-    After initialization, the rewarders can be given to the 
+    After initialization, the rewarders can be given to the
     :class:`~qgym.envs.Scheduling` environment.
 
 .. note::

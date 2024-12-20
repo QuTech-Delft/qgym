@@ -22,7 +22,6 @@ def test_abc() -> None:
 
 
 class TestNullCircuitGenerator:
-
     @pytest.fixture(name="generator")
     def null_circuit_generator_fixture(self) -> NullCircuitGenerator:
         return NullCircuitGenerator()
@@ -54,7 +53,6 @@ class TestNullCircuitGenerator:
 
 
 class TestBasicCircuitGenerator:
-
     @pytest.fixture(name="simple_generator")
     def basic_circuit_generator_fixture(self) -> BasicCircuitGenerator:
         generator = BasicCircuitGenerator(seed=42)
@@ -142,7 +140,6 @@ class TestBasicCircuitGenerator:
 
 
 class TestWorkshopCircuitGenerator:
-
     @pytest.fixture(name="simple_generator")
     def workshop_circuit_generator_fixture(self) -> WorkshopCircuitGenerator:
         generator = WorkshopCircuitGenerator(seed=42)

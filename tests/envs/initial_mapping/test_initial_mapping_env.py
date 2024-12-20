@@ -30,7 +30,6 @@ def small_env(small_graph: nx.Graph) -> InitialMapping:
 
 
 class TestEnvironment:
-
     def test_validity(self, small_env: InitialMapping) -> None:
         # todo: maybe switch this to the gymnasium env checker
         check_env(small_env, warn=True)

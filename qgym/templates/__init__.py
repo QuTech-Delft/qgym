@@ -9,5 +9,6 @@ from qgym.templates.environment import Environment
 from qgym.templates.rewarder import Rewarder
 from qgym.templates.state import State
 from qgym.templates.visualiser import Visualiser
+from qgym.templates.wrappers import AgentWrapper
 
-__all__ = ["Environment", "Rewarder", "State", "Visualiser"]
+__all__ = ["AgentWrapper", "Environment", "Rewarder", "State", "Visualiser"]

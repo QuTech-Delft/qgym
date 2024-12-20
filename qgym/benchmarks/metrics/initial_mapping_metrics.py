@@ -11,19 +11,17 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections import deque
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from typing import Protocol, runtime_checkable
 
 import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike
-from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
 
 from qgym.benchmarks.benchmark_result import BenchmarkResult
-from qgym.generators.qiskit_circuit import MaxCutQAOAGenerator
 from qgym.templates.pass_protocols import Mapper
-from qgym.utils.qiskit_utils import get_interaction_graph
+from qgym.utils import Circuit, CircuitLike
+from qgym.utils.input_parsing import parse_connection_graph
 
 # pylint: disable=too-few-public-methods
 
@@ -33,16 +31,14 @@ class InitialMappingMetric(Protocol):
     """Protocol that a metric for initial mapping should follow."""
 
     @abstractmethod
-    def compute(
-        self, circuit: QuantumCircuit | DAGCircuit, mapping: ArrayLike
-    ) -> float:
+    def compute(self, circuit: CircuitLike, mapping: ArrayLike) -> float:
         """Compute the metric for the provided `circuit` and `mapping`."""
 
 
 class DistanceRatioLoss(InitialMappingMetric):
     """The :class:`DistanceRatioLoss` class."""
 
-    def __init__(self, connection_graph: nx.Graph) -> None:
+    def __init__(self, connection_graph: nx.Graph | ArrayLike) -> None:
         """Init of the :class:`DistanceRatioLoss` class.
 
         Args:
@@ -51,16 +47,16 @@ class DistanceRatioLoss(InitialMappingMetric):
                 a connection in the QPU topology.
 
         """
-        self.connection_graph = connection_graph
+        self.connection_graph = parse_connection_graph(connection_graph)
         n_qubits = len(self.connection_graph)
         self.distance_matrix = np.zeros((n_qubits, n_qubits), dtype=np.int_)
-        for node_u, distances in nx.all_pairs_shortest_path_length(connection_graph):
-            for node_v in connection_graph:
+        for node_u, distances in nx.all_pairs_shortest_path_length(
+            self.connection_graph
+        ):
+            for node_v in self.connection_graph:
                 self.distance_matrix[node_u, node_v] = distances[node_v]
 
-    def compute(
-        self, circuit: QuantumCircuit | DAGCircuit, mapping: ArrayLike
-    ) -> float:
+    def compute(self, circuit: CircuitLike, mapping: ArrayLike) -> float:
         """Compute the distance ratio loss.
 
         Args:
@@ -70,7 +66,8 @@ class DistanceRatioLoss(InitialMappingMetric):
         Returns:
             The distance ratio loss.
         """
-        interaction_graph = get_interaction_graph(circuit)
+        circuit = Circuit(circuit)
+        interaction_graph = circuit.get_interaction_graph()
         if interaction_graph.number_of_edges() == 0:
             return 1.0
         mapping = np.asarray(mapping, dtype=np.int_)
@@ -82,24 +79,12 @@ class DistanceRatioLoss(InitialMappingMetric):
         return float(distance_loss / interaction_graph.number_of_edges())
 
 
-class AgentPerformance:
-    """The :class:`AgentPerformance` class."""
-
-    def __init__(
-        self,
-    ) -> None:
-        """Init of the :class:`AgentPerformance` class.
-
-        Args:
-        """
-
-
 class InitialMappingBenchmarker:
     """The :class:`InitialMappingBenchmarker` class."""
 
     def __init__(
         self,
-        generator: MaxCutQAOAGenerator,
+        generator: Iterator[CircuitLike],
         metrics: Iterable[InitialMappingMetric],
     ) -> None:
         """Init of the :class:`InitialMappingBenchmarker` class.

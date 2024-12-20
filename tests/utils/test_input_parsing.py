@@ -69,7 +69,6 @@ class TestHasFidelity:
 
 
 class TestParseSeed:
-
     def test_none(self) -> None:
         rng = parse_seed(None)
         assert isinstance(rng, Generator)

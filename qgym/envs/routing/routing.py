@@ -75,7 +75,7 @@ Action Space:
     A valid action is an integer in the domain [0, n_connections]. The values 0 to
     n_connections-1 represent an added SWAP gate. The value of n_connections indicates
     that the agents wants to surpass the current gate and move to the next gate.
-    
+
     Illegal actions will not be executed. An action is considered illegal when the agent
     want to surpass a gate that cannot be executed with the current mapping.
 
@@ -117,7 +117,7 @@ if TYPE_CHECKING:
 class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
     """RL environment for the routing problem of OpenQL."""
 
-    def __init__(  # pylint: disable=too-many-arguments, too-many-positional-arguments
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         connection_graph: nx.Graph | ArrayLike | Gridspecs,
         interaction_generator: InteractionGenerator | None = None,

@@ -7,7 +7,7 @@ from typing import cast
 import networkx as nx
 import numpy as np
 import pytest
-from numpy.typing import ArrayLike, NDArray
+from numpy.typing import ArrayLike
 
 from qgym.envs.routing import (
     BasicRewarder,

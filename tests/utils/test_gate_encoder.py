@@ -25,7 +25,7 @@ def trained_encoder(empty_encoder: GateEncoder) -> GateEncoder:
     ],
 )
 def test_learn_gates(empty_encoder: GateEncoder, gates: Iterable[str]) -> None:
-    assert type(empty_encoder.learn_gates(gates)) == GateEncoder
+    assert type(empty_encoder.learn_gates(gates)) is GateEncoder
 
     assert empty_encoder._encoding_dct == {"x": 1, "y": 2, "z": 3, "cnot": 4, "h": 5}
     assert empty_encoder._decoding_dct == {1: "x", 2: "y", 3: "z", 4: "cnot", 5: "h"}

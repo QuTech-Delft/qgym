@@ -13,7 +13,6 @@ from qgym.wrappers.initial_mapping import AgentMapperWrapper, QiskitMapperWrappe
 
 
 class TestQiskitMapperWrapper:
-
     @pytest.fixture(name="circuit")
     def circuit_fixture(self) -> QuantumCircuit:
         """Create a circuit with a cycle of cx gates."""
@@ -37,7 +36,7 @@ class TestQiskitMapperWrapper:
     def test_vf2_layout(
         self, circuit: QuantumCircuit, coupling_map: CouplingMap
     ) -> None:
-        qiskit_mapper = VF2Layout(coupling_map)
+        qiskit_mapper = VF2Layout(coupling_map, seed=42)
         mapper = QiskitMapperWrapper(qiskit_mapper)
         mapping = mapper.compute_mapping(circuit)
         optimal_mapping_found = False
@@ -47,6 +46,7 @@ class TestQiskitMapperWrapper:
             if np.array_equal(mapping, opt_map1) or np.array_equal(mapping, opt_map2):
                 optimal_mapping_found = True
                 break
+
         assert optimal_mapping_found
 
     def test_sabre_layout(
@@ -58,10 +58,9 @@ class TestQiskitMapperWrapper:
 
 
 class TestAgentMapperWrapper:
-
     @pytest.fixture(name="circuit")
     def circuit_fixture(self) -> QuantumCircuit:
-        """Create a circuit with a cycle of cx gates."""
+        """Create a circuit with a line of cx gates."""
         circuit = QuantumCircuit(3)
         circuit.cx((0, 1), (1, 2))
         return circuit

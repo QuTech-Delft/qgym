@@ -114,7 +114,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         self.swap_gates_inserted: deque[tuple[int, int, int]] = deque()
         """A deque of 3-tuples of integers, to register which gates to insert and where.
         Every tuple (g, q1, q2) represents the insertion of a SWAP-gate acting on
-        logical qubits q1 and q2 before gate g in the interaction_circuit.
+        physical qubits q1 and q2 before gate g in the interaction_circuit.
         """
 
     def reset(
@@ -283,8 +283,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
             observation["connection_graph"] = self.connection_matrix
 
         if self.observe_legal_surpasses:
-            is_legal_surpass = np.array(
-                [self.is_legal_surpass(*gate) for gate in interaction_gates_ahead]
+            is_legal_surpass = np.fromiter(
+                (self.is_legal_surpass(*gate) for gate in interaction_gates_ahead),
+                dtype=np.bool,
             )
             observation["is_legal_surpass"] = is_legal_surpass
 

@@ -1,39 +1,100 @@
 from __future__ import annotations
 
-import networkx as nx
 import numpy as np
 import pytest
-from numpy.typing import ArrayLike
+from qiskit import QuantumCircuit
 
-"""
-from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
-
-from qgym.benchmarks.metrics.routing_metrics import RoutingSolutionQuality
-
-
-@pytest.fixture
-def circuit_1() -> QuantumCircuit:
-    qr = QuantumRegister(3, "q")
-    anc = QuantumRegister(1, "ancilla")
-    cr = ClassicalRegister(3, "c")
-    qc = QuantumCircuit(qr, anc, cr)
-
-    qc.x(anc[0])
-    qc.h(anc[0])
-    qc.h(qr[0:3])
-    qc.cx(qr[0:3], anc[0])
-    qc.h(qr[0:3])
-    qc.barrier(qr)
-    qc.measure(qr, cr)
-    return qc
+from qgym.benchmarks import BenchmarkResult
+from qgym.benchmarks.metrics import (
+    InteractionRatioLoss,
+    RoutingBenchmarker,
+    RoutingMetric,
+)
+from qgym.generators import MaxCutQAOAGenerator
+from qgym.utils import Circuit, CircuitLike
 
 
-def test_distance_ratio_loss() -> None:
-    quality_metric = RoutingSolutionQuality(circuit=circuit_1)
-    # TODO
-    initial_number_of_gates = circuit_1.count_ops()
-    swaps_added = 2
-    loss = quality_metric.gates_ratio_loss(swaps_added=swaps_added)
+def circuit1() -> QuantumCircuit:
+    circuit = QuantumCircuit(5)
+    circuit.cx((0, 0, 0, 0, 1), (1, 2, 3, 4, 2))
+    return circuit
 
-    assert loss == (initial_number_of_gates + swaps_added) / initial_number_of_gates
-"""
+
+def circuit1_routed() -> QuantumCircuit:
+    # Routed on a ring topology
+    circuit = QuantumCircuit(5)
+    circuit.cx((0, 0, 1), (1, 4, 2))
+    circuit.swap(0, 1)
+    circuit.cx(1, 2)
+    circuit.swap(1, 2)
+    circuit.cx(2, 3)
+    return circuit
+
+
+def circuit2() -> QuantumCircuit:
+    circuit = QuantumCircuit(4)
+    circuit.x(range(4))
+    return circuit
+
+
+def circuit2_badly_routed() -> QuantumCircuit:
+    circuit = QuantumCircuit(4)
+    circuit.x(range(4))
+    circuit.swap(1, 2)
+    return circuit
+
+
+class TestInteractionRatioLoss:
+    @pytest.fixture(name="metric")
+    def metric_fixture(self) -> InteractionRatioLoss:
+        return InteractionRatioLoss()
+
+    def test_instance_routing_metric(self, metric: InteractionRatioLoss) -> None:
+        assert isinstance(metric, RoutingMetric)
+
+    @pytest.mark.parametrize(
+        ("circuit", "n_interactions"),
+        [
+            (circuit1(), 5),
+            (circuit1_routed(), 11),
+            (circuit2(), 0),
+            (circuit2_badly_routed(), 3),
+        ],
+    )
+    def test_get_num_interactions(
+        self, metric: InteractionRatioLoss, circuit: QuantumCircuit, n_interactions: int
+    ) -> None:
+        assert metric.get_num_interactions(circuit) == n_interactions
+
+    @pytest.mark.parametrize(
+        ("circuit", "routed_circuit", "loss"),
+        [
+            (circuit1(), circuit1_routed(), 2.2),
+            (circuit2(), circuit2(), 1),
+            (circuit2(), circuit2_badly_routed(), float("inf")),
+        ],
+    )
+    def test_compute(
+        self,
+        metric: InteractionRatioLoss,
+        circuit: QuantumCircuit,
+        routed_circuit: int,
+        loss: float,
+    ) -> None:
+        assert metric.compute(circuit, routed_circuit) == loss
+
+
+def test_routing_benchmarker() -> None:
+    metric = InteractionRatioLoss()
+    generator = MaxCutQAOAGenerator(4, 0.5, seed=42)
+    benchmarker = RoutingBenchmarker(metrics=[metric], generator=generator)
+
+    class SimpleRouter:
+        def compute_routing(self, circuit: CircuitLike) -> Circuit:
+            return Circuit(circuit)
+
+    router = SimpleRouter()
+    result = benchmarker.run(router, max_iter=500)
+    assert isinstance(result, BenchmarkResult)
+    assert result.raw_data.shape == (1, 500)
+    np.testing.assert_array_equal(1, result.raw_data >= 1)

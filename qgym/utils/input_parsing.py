@@ -65,7 +65,7 @@ def parse_visualiser(
 
 
 def parse_connection_graph(
-    graph: nx.Graph | ArrayLike | list[int] | tuple[int, ...]
+    graph: nx.Graph | ArrayLike | list[int] | tuple[int, ...],
 ) -> nx.Graph:
     """Parse the user input (given in ``__init__``) to create a connection graph.
 

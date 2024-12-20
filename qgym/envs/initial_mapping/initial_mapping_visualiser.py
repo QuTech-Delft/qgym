@@ -297,7 +297,8 @@ class InitialMappingVisualiser(Visualiser):
 
         # Scale and move the node positions to be centered on the subscreen
         for node, position in node_positions.items():
-            node_positions[node] = position * 0.45 * subscreen.size + subscreen.center
+            new_position = 0.45 * position * subscreen.size + subscreen.center
+            node_positions[node] = np.asarray(new_position, dtype=np.float64)
 
         return node_positions
 

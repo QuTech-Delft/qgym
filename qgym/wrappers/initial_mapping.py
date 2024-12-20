@@ -2,27 +2,26 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from numpy.typing import NDArray
-from qiskit import QuantumCircuit
-from qiskit.dagcircuit import DAGCircuit
-from qiskit.transpiler import Layout
+from qiskit.transpiler import AnalysisPass, Layout
 
-from qgym.utils.qiskit_utils import (
-    _get_qreg_to_int_mapping,
-    get_interaction_graph,
-    parse_circuit,
-)
+from qgym.envs.initial_mapping import InitialMappingState
+from qgym.templates import AgentWrapper
+from qgym.utils.qiskit import Circuit, CircuitLike
 
 if TYPE_CHECKING:
+    import networkx as nx
     from stable_baselines3.common.base_class import BaseAlgorithm
 
-    from qgym.envs import InitialMapping
+    from qgym.envs.initial_mapping import InitialMapping
 
 
-class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
+class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
+    AgentWrapper[NDArray[np.int_]]
+):
     """Wrap any trained stable baselines 3 agent that inherits from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
 
@@ -30,7 +29,7 @@ class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
     the qgym benchmarking tools.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=useless-parent-delegation
         self,
         agent: BaseAlgorithm,
         env: InitialMapping,
@@ -51,16 +50,32 @@ class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
                 and the `predict` method of `agent` should accept the keyword argument
                 `"action_masks"`. If ``False`` (default) no action masking is used.
         """
-        self.agent = agent
-        self.env = env
-        self.max_steps = max_steps
-        self.use_action_masking = use_action_masking
-        if self.use_action_masking and not hasattr(self.env, "action_masks"):
-            msg = "use_action_mask is True, but env has no action_masks attribute"
-            raise TypeError(msg)
+        super().__init__(agent, env, max_steps, use_action_masking=use_action_masking)
 
-    def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
+    def _prepare_episode(self, circuit: Circuit) -> dict[str, nx.Graph]:
+        """Extract the interaction graph from `circuit`."""
+        interaction_graph = circuit.get_interaction_graph()
+        return {"interaction_graph": interaction_graph}
+
+    def _postprocess_episode(  # pylint: disable=unused-argument
+        self, circuit: Circuit
+    ) -> NDArray[np.int_]:
+        state = cast(
+            InitialMappingState,
+            self.env._state,  # pylint: disable=protected-access
+        )
+        if not state.is_done():
+            msg = (
+                "mapping not found, "
+                "the episode was truncated or 'max_steps' was reached"
+            )
+            raise ValueError(msg)
+        return state.mapping
+
+    def compute_mapping(self, circuit: CircuitLike) -> NDArray[np.int_]:
         """Compute a mapping of the `circuit` using the provided `agent` and `env`.
+
+        Alias for ``run``.
 
         Args:
             circuit: Quantum circuit to map.
@@ -69,38 +84,16 @@ class AgentMapperWrapper:  # pylint: disable=too-few-public-methods
             Array of which the index represents a physical qubit, and the value a
             virtual qubit.
         """
-        interaction_graph = get_interaction_graph(circuit)
-        obs, _ = self.env.reset(options={"interaction_graph": interaction_graph})
-
-        predict_kwargs = {"observation": obs}
-        for _ in range(self.max_steps):
-            if self.use_action_masking:
-                action_masks = self.env.action_masks()  # type: ignore[attr-defined]
-                predict_kwargs["action_masks"] = action_masks
-
-            action, _ = self.agent.predict(**predict_kwargs)
-            predict_kwargs["observation"], _, done, _, _ = self.env.step(action)
-            if done:
-                break
-
-        if not done:
-            msg = (
-                "mapping not found, "
-                "the episode was truncated or 'max_steps' was reached"
-            )
-            raise ValueError(msg)
-
-        return obs["mapping"]
+        return self.run(circuit)
 
 
 class QiskitMapperWrapper:
-    """Wrap any qiskit mapper (:class:`~qiskit.transpiler.Layout`) such that it becomes
-    compatible with the qgym framework. This class wraps the qiskit mapper, such that it
-    is compatible with the qgym Mapper protocol, which is required for the qgym
-    benchmarking tools.
+    """Wrap any qiskit mapper (Layout algorithm) such that it becomes compatible with
+    the qgym framework. This class wraps the qiskit mapper, such that it  is compatible
+    with the qgym Mapper protocol, which is required for the qgym benchmarking tools.
     """
 
-    def __init__(self, qiskit_mapper: Layout) -> None:
+    def __init__(self, qiskit_mapper: AnalysisPass) -> None:
         """Init of the :class:`QiskitMapperWrapper`.
 
         Args:
@@ -109,7 +102,7 @@ class QiskitMapperWrapper:
         """
         self.mapper = qiskit_mapper
 
-    def compute_mapping(self, circuit: QuantumCircuit | DAGCircuit) -> NDArray[np.int_]:
+    def compute_mapping(self, circuit: CircuitLike) -> NDArray[np.int_]:
         """Compute a mapping of the `circuit` using the provided `qiskit_mapper`.
 
         Args:
@@ -119,15 +112,13 @@ class QiskitMapperWrapper:
             Array of which the index represents a physical qubit, and the value a
             virtual qubit.
         """
-        dag = parse_circuit(circuit)
+        circuit = Circuit(circuit)
 
-        self.mapper.run(dag)
-        layout = self.mapper.property_set["layout"]
-
-        # Convert qiskit layout to qgym mapping
-        qreg_to_int = _get_qreg_to_int_mapping(dag)
-        iterable = (qreg_to_int[layout[i]] for i in range(dag.num_qubits()))
-        return np.fromiter(iterable, int, dag.num_qubits())
+        self.mapper.run(circuit.dag)
+        layout: Layout = self.mapper.property_set["layout"]
+        return np.fromiter(
+            map(layout.__getitem__, circuit.dag.qubits), int, circuit.dag.num_qubits()
+        )
 
     def __repr__(self) -> str:
         """String representation of the wrapper."""

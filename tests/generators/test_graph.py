@@ -18,7 +18,6 @@ def test_abc() -> None:
 
 
 class TestNullGraphGenerator:
-
     @pytest.fixture(name="generator")
     def null_graph_generator_fixture(self) -> NullGraphGenerator:
         generator = NullGraphGenerator()
@@ -51,7 +50,6 @@ class TestNullGraphGenerator:
 
 
 class TestBasicGraphGenerator:
-
     @pytest.fixture(name="simple_generator")
     def basic_graph_generator_fixture(self) -> BasicGraphGenerator:
         generator = BasicGraphGenerator()

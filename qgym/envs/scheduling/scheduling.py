@@ -306,7 +306,7 @@ class Scheduling(
 
     @staticmethod
     def _parse_machine_properties(
-        machine_properties: Mapping[str, Any] | str | MachineProperties
+        machine_properties: Mapping[str, Any] | str | MachineProperties,
     ) -> MachineProperties:
         """
         Parse the machine_properties given by the user and return a
