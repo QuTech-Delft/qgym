@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import networkx as nx
 import numpy as np
 import pytest
-from numpy.typing import NDArray
 from qiskit import QuantumCircuit
 
 from qgym.benchmarks import (
@@ -12,6 +13,9 @@ from qgym.benchmarks import (
     InitialMappingBenchmarker,
 )
 from qgym.generators import MaxCutQAOAGenerator
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 
 @pytest.fixture(name="connection_graph")

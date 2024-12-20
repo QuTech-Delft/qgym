@@ -48,7 +48,7 @@ class BenchmarkResult:
         """
         return cast("NDArray[Any]", np.mean(self._data, axis=1))
 
-    def __array__(self, dtype: DTypeLike = None, copy: bool = True) -> NDArray[Any]:
+    def __array__(self, dtype: DTypeLike = None, *, copy: bool = True) -> NDArray[Any]:
         """Convert the :class:`BenchmarkResult` data to an array."""
         return np.array(self._data, dtype=dtype, copy=copy)
 

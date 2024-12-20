@@ -4,18 +4,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from qiskit.transpiler.basepasses import TransformationPass
-
-from qgym.envs.routing import RoutingState
 from qgym.templates.wrappers import AgentWrapper
 from qgym.utils import Circuit
 
 if TYPE_CHECKING:
     import numpy as np
     from numpy.typing import NDArray
+    from qiskit.transpiler.basepasses import TransformationPass
     from stable_baselines3.common.base_class import BaseAlgorithm
 
-    from qgym.envs.routing import Routing
+    from qgym.envs.routing import Routing, RoutingState
     from qgym.utils import CircuitLike
 
 
@@ -59,7 +57,7 @@ class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
 
     def _postprocess_episode(self, circuit: Circuit) -> Circuit:
         """Route `circuit` based on the findings of the current episode."""
-        state = cast("RoutingState", self.env._state)  # pylint: disable=protected-access
+        state = cast("RoutingState", self.env._state)  # noqa: SLF001
         if not state.is_done():
             msg = (
                 "routing not found, "

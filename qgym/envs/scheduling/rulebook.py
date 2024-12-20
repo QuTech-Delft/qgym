@@ -25,18 +25,20 @@ Example:
 
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
-from numpy.typing import NDArray
 
-from qgym.custom_types import Gate
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
+    from qgym.custom_types import Gate
 
 
 class CommutationRulebook:
     """Commutation rulebook used in the :class:`~qgym.envs.Scheduling` environment."""
 
-    def __init__(self, default_rules: bool = True) -> None:
+    def __init__(self, *, default_rules: bool = True) -> None:
         """Init of the :class:`CommutationRulebook`.
 
         Args:
@@ -83,10 +85,7 @@ class CommutationRulebook:
         Returns:
             Boolean value indicating whether `gate1` commutes with `gate2`.
         """
-        for rule in self._rules:
-            if rule(gate1, gate2):
-                return True
-        return False
+        return any(rule(gate1, gate2) for rule in self._rules)
 
     def add_rule(self, rule: Callable[[Gate, Gate], bool]) -> None:
         """Add a new commutation rule to the rulebook.
@@ -106,8 +105,7 @@ class CommutationRulebook:
                 text += f"{rule.__name__}, "
             else:
                 text += f"{rule}, "
-        text = text[:-2] + "])"
-        return text
+        return text[:-2] + "])"
 
 
 def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:

@@ -17,7 +17,7 @@ class TestParseCircuitLike:
         dag_circuit = Circuit._parse_circuit_like(circuit)
         assert circuit is not dag_circuit
         assert dag_circuit.qregs == {"q": QuantumRegister(1, "q")}
-        assert len([x for x in dag_circuit.nodes()]) == 2
+        assert len(list(dag_circuit.nodes())) == 2
 
     def test_dag_circuit(self) -> None:
         dag_circuit = DAGCircuit()
@@ -28,7 +28,7 @@ class TestParseCircuitLike:
         dag_circuit = Circuit._parse_circuit_like(circuit)
         assert circuit is not dag_circuit
         assert dag_circuit.qregs == {"q": QuantumRegister(1, "q")}
-        assert len([x for x in dag_circuit.nodes()]) == 2
+        assert len(list(dag_circuit.nodes())) == 2
 
 
 class TestGetInteractionGraph:

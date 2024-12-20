@@ -74,9 +74,8 @@ class MachineProperties:
     @classmethod
     def from_file(cls, filename: str) -> MachineProperties:
         """Load MachineProperties from a JSON file. Not implemented."""
-        raise NotImplementedError(
-            "Loading machine properties from files is not yet implemented."
-        )
+        msg = "loading machine properties from files is not yet implemented"
+        raise NotImplementedError(msg)
 
     def add_gates(self, gates: Mapping[str, int]) -> MachineProperties:
         """Add gates to the machine properties that should be supported.
@@ -96,7 +95,7 @@ class MachineProperties:
             if gate_name in self._gates:
                 msg = f"Gate '{gate_name}' was already given. Overwriting it with the "
                 msg += "new value."
-                warnings.warn(msg)
+                warnings.warn(msg, stacklevel=2)
             self._gates[gate_name] = n_cycles
             self._not_in_same_cycle[gate_name] = set()
         return self
@@ -116,7 +115,8 @@ class MachineProperties:
         for gate_name in gates:
             gate_name = check_string(gate_name, "gate name", lower=True)
             if gate_name not in self.gates:
-                raise ValueError(f"unknown gate '{gate_name}'")
+                msg = f"unknown gate '{gate_name}'"
+                raise ValueError(msg)
             self._same_start.add(gate_name)
         return self
 
@@ -141,9 +141,11 @@ class MachineProperties:
             gate1 = check_string(gate1, "gate", lower=True)
             gate2 = check_string(gate2, "gate", lower=True)
             if gate1 not in self.gates:
-                raise ValueError(f"unknown gate '{gate1}'")
+                msg = f"unknown gate '{gate1}'"
+                raise ValueError(msg)
             if gate2 not in self.gates:
-                raise ValueError(f"unknown gate '{gate2}'")
+                msg = f"unknown gate '{gate2}'"
+                raise ValueError(msg)
 
             self._not_in_same_cycle[gate1].add(gate2)
             self._not_in_same_cycle[gate2].add(gate1)

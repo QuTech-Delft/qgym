@@ -70,7 +70,7 @@ def write_text(
         color: Color of the text.
     """
     pos_x, pos_y = np.asarray(pos, dtype=int)
-    pygame_text = font.render(text, True, color)
+    pygame_text = font.render(text, antialias=True, color=color)
     text_position = pygame_text.get_rect(center=(pos_x, pos_y))
     screen.blit(pygame_text, text_position)
 

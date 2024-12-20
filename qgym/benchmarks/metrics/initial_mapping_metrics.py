@@ -11,17 +11,21 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections import deque
-from collections.abc import Iterable, Iterator
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 import networkx as nx
 import numpy as np
-from numpy.typing import ArrayLike
 
 from qgym.benchmarks.benchmark_result import BenchmarkResult
-from qgym.templates.pass_protocols import Mapper
 from qgym.utils import Circuit, CircuitLike
 from qgym.utils.input_parsing import parse_connection_graph
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
+    from numpy.typing import ArrayLike
+
+    from qgym.templates.pass_protocols import Mapper
 
 # pylint: disable=too-few-public-methods
 

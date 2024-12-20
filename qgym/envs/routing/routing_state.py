@@ -21,21 +21,24 @@ from __future__ import annotations
 
 from collections import deque
 from itertools import starmap
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any
 
 import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.generators.interaction import InteractionGenerator
 from qgym.templates.state import State
 from qgym.utils.input_parsing import has_fidelity
+
+if TYPE_CHECKING:
+    from qgym.generators.interaction import InteractionGenerator
+
 
 # pylint: disable=too-many-instance-attributes
 
 
-class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
+class RoutingState(State[dict[str, NDArray[np.int_]], int]):
     """The :class:`RoutingState` class."""
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -147,10 +150,11 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         else:
             interaction_circuit = np.array(interaction_circuit)
             if interaction_circuit.ndim != 2 or interaction_circuit.shape[1] != 2:
-                raise ValueError(
+                msg = (
                     "'interaction_circuit' should have be an ArrayLike with shape "
                     "(n_interactions,2)."
                 )
+                raise ValueError(msg)
             self.interaction_circuit = interaction_circuit
 
         # Reset position, counters

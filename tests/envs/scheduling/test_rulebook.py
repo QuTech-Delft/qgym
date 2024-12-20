@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 import pytest
-from numpy.typing import ArrayLike
 
 from qgym.custom_types import Gate
 from qgym.envs.scheduling.rulebook import (
@@ -13,9 +12,12 @@ from qgym.envs.scheduling.rulebook import (
     same_gate,
 )
 
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
+
 
 @pytest.mark.parametrize(
-    "default_rules, rules",
+    ("default_rules", "rules"),
     [(False, []), (True, [disjoint_qubits, same_gate])],
 )
 def test_init(default_rules: bool, rules: list[Callable[[Gate, Gate], bool]]) -> None:
@@ -29,7 +31,7 @@ def default_rulebook() -> CommutationRulebook:
 
 
 @pytest.mark.parametrize(
-    "gate1, gate2, commutes",
+    ("gate1", "gate2", "commutes"),
     [
         (Gate("x", 1, 1), Gate("x", 1, 1), True),
         (Gate("x", 1, 1), Gate("x", 2, 2), True),
@@ -48,7 +50,7 @@ def test_commutes(
 
 
 @pytest.mark.parametrize(
-    "circuit, expected_matrix",
+    ("circuit", "expected_matrix"),
     [
         ([Gate("x", 1, 1)], [[0]]),
         ([Gate("x", 1, 1), Gate("y", 2, 2)], [[0, 0], [0, 0]]),

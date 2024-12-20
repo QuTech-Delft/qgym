@@ -52,7 +52,9 @@ class TestParseConnectionGraph:
 
 
 def test_parse_connection_graph_exception() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="no valid arguments for a connection graph were given"
+    ):
         parse_connection_graph("test")
 
 

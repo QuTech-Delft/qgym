@@ -46,7 +46,9 @@ class GateEncoder:
         self.n_gates = 0
         for idx, gate_name in enumerate(gates, 1):
             if gate_name in self._encoding_dct:
-                warnings.warn(f"'gates' contains multiple entries of {gate_name}")
+                warnings.warn(
+                    f"'gates' contains multiple entries of {gate_name}", stacklevel=2
+                )
             else:
                 self._encoding_dct[gate_name] = idx
                 self._decoding_dct[idx] = gate_name
@@ -95,8 +97,7 @@ class GateEncoder:
             ``str`` will return an ``int``.
         """
         if isinstance(gates, str):
-            encoded_str = self._encoding_dct[gates]
-            return encoded_str
+            return self._encoding_dct[gates]
 
         if isinstance(gates, Mapping):
             return self._encode_mapping(gates)
@@ -127,9 +128,8 @@ class GateEncoder:
                 encoded_names_list.append(gate_encoding)
             return encoded_names_list
 
-        raise TypeError(
-            f"gates type must be str, Mapping or Sequence, got {type(gates)}."
-        )
+        msg = f"gates type must be str, Mapping or Sequence, got {type(gates)}"
+        raise TypeError(msg)
 
     def _encode_mapping(self, mapping: Mapping[str, Any]) -> dict[int, Any]:
         """Encode a mapping with gate names.
@@ -144,12 +144,11 @@ class GateEncoder:
             if isinstance(item, int):
                 encoded_dict[gate_encoding] = item
             elif isinstance(item, Iterable):
-                item_encoded = []
-                for i in item:
-                    item_encoded.append(self._encoding_dct[i])
+                item_encoded = [self._encoding_dct[i] for i in item]
                 encoded_dict[gate_encoding] = item_encoded
             else:
-                raise ValueError("Unknown mapping")
+                msg = "unknown mapping"
+                raise TypeError(msg)
         return encoded_dict
 
     @overload
@@ -194,8 +193,7 @@ class GateEncoder:
             ``int`` will return a ``str``.
         """
         if isinstance(encoded_gates, int):
-            decoded_int = self._decoding_dct[encoded_gates]
-            return decoded_int
+            return self._decoding_dct[encoded_gates]
 
         if isinstance(encoded_gates, Mapping):
             decoded_dict: dict[str, Any] = {}
@@ -229,10 +227,10 @@ class GateEncoder:
                 decoded_name_list.append(decoded_gate)
             return decoded_name_list
 
-        raise TypeError(
-            "encoded_gates must be int, Mapping or Sequence, got "
-            f"{type(encoded_gates)}."
+        msg = (
+            f"encoded_gates must be int, Mapping or Sequence, got {type(encoded_gates)}"
         )
+        raise TypeError(msg)
 
     def __repr__(self) -> str:
         """Make a string representation without endline characters."""

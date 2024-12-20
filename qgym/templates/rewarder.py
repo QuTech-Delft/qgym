@@ -51,7 +51,4 @@ class Rewarder:
                 if getattr(self, attr) != getattr(other, attr):
                     return False
 
-        if hasattr(self, "__dict__") and self.__dict__ != other.__dict__:
-            return False
-
-        return True
+        return hasattr(self, "__dict__") and self.__dict__ == other.__dict__

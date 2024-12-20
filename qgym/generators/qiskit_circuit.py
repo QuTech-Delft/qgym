@@ -3,15 +3,17 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import SupportsFloat, SupportsInt
+from typing import TYPE_CHECKING, SupportsFloat, SupportsInt
 
 import networkx as nx
 import numpy as np
-from numpy.random import Generator
 from qiskit import QuantumCircuit
 
 from qgym.utils.input_parsing import parse_seed
 from qgym.utils.input_validation import check_int, check_real
+
+if TYPE_CHECKING:
+    from numpy.random import Generator
 
 
 class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):

@@ -11,8 +11,12 @@ Usage:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import gymnasium.spaces
-from numpy.random import Generator
+
+if TYPE_CHECKING:
+    from numpy.random import Generator
 
 
 class Discrete(gymnasium.spaces.Discrete):

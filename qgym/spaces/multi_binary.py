@@ -9,10 +9,14 @@ Usage:
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import gymnasium.spaces
 import numpy as np
-from numpy.random import Generator
-from numpy.typing import ArrayLike
+
+if TYPE_CHECKING:
+    from numpy.random import Generator
+    from numpy.typing import ArrayLike
 
 
 class MultiBinary(gymnasium.spaces.MultiBinary):

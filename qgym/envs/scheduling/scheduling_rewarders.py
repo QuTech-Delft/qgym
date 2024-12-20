@@ -30,12 +30,16 @@ Usage:
 
 from __future__ import annotations
 
-import numpy as np
-from numpy.typing import NDArray
+from typing import TYPE_CHECKING
 
-from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.templates import Rewarder
 from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_positive
+
+if TYPE_CHECKING:
+    import numpy as np
+    from numpy.typing import NDArray
+
+    from qgym.envs.scheduling.scheduling_state import SchedulingState
 
 
 class BasicRewarder(Rewarder):

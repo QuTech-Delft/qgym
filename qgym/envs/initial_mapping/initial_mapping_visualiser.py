@@ -4,19 +4,21 @@ environment.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import networkx as nx
 import numpy as np
 import pygame
-from networkx import Graph
-from numpy.typing import NDArray
 
-from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.templates.visualiser import RenderData, Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, GREEN, RED, WHITE
-from qgym.utils.visualisation.typing import Font, Surface
 from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
+    from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
+    from qgym.utils.visualisation.typing import Font, Surface
 
 # pylint: disable=invalid-name
 
@@ -24,7 +26,7 @@ from qgym.utils.visualisation.wrappers import draw_point, draw_wide_line
 class InitialMappingVisualiser(Visualiser):
     """Visualiser class for the :class:`~qgym.envs.InitialMapping` environment."""
 
-    def __init__(self, render_mode: str, connection_graph: Graph) -> None:
+    def __init__(self, render_mode: str, connection_graph: nx.Graph) -> None:
         # pylint: disable=line-too-long
         """Init of the :class:`~qgym.envs.initial_mapping.InitialMappingVisualiser`.
 
@@ -101,7 +103,7 @@ class InitialMappingVisualiser(Visualiser):
         subscreen3 = pygame.Rect(screen3_pos, large_screen_shape)
         return subscreen1, subscreen2, subscreen3
 
-    def render(self, state: InitialMappingState) -> None | NDArray[np.int_]:
+    def render(self, state: InitialMappingState) -> NDArray[np.int_] | None:
         """Render the current state using ``pygame``.
 
         The upper left screen shows the connection graph. The lower left screen the
@@ -170,9 +172,7 @@ class InitialMappingVisualiser(Visualiser):
 
         # Relabel nodes for drawing
         nodes_mapping = dict(list(enumerate(self.graphs["connection"]["nodes"])))
-        graph = nx.relabel_nodes(graph, nodes_mapping)
-
-        return graph
+        return nx.relabel_nodes(graph, nodes_mapping)
 
     def _add_colored_edge(
         self,
@@ -273,7 +273,9 @@ class InitialMappingVisualiser(Visualiser):
             subscreen: Subscreen to draw the header above.
             screen: Main screen to draw on.
         """
-        pygame_text = self.font["header"].render(text, True, self.colors["text"])
+        pygame_text = self.font["header"].render(
+            text, antialias=True, color=self.colors["text"]
+        )
         text_center = (subscreen.center[0], subscreen.y - self.header_spacing / 2)
         text_position = pygame_text.get_rect(center=text_center)
         screen.blit(pygame_text, text_position)

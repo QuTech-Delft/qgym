@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import warnings
 from numbers import Integral, Real
-from typing import Any, SupportsInt
+from typing import TYPE_CHECKING, Any, SupportsInt
 
 import networkx as nx
 import numpy as np
-from numpy.typing import ArrayLike, NDArray
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike, NDArray
 
 # pylint: disable=invalid-name
 
@@ -45,24 +47,25 @@ def check_real(  # pylint: disable=too-many-arguments
         Floating point representation of `x`.
     """
     if not isinstance(x, Real):
-        raise TypeError(f"'{name}' should be a real number, but was of type {type(x)}")
+        msg = f"'{name}' should be a real number, but was of type {type(x)}"
+        raise TypeError(msg)
     x_float = float(x)
     error_msg = "'" + name + "' has an {} {} bound of {}, but was " + str(x)
     if l_bound is not None:
-        if l_inclusive:
-            if x_float < l_bound:
-                raise ValueError(error_msg.format("inclusive", "lower", l_bound))
-        else:
-            if x_float <= l_bound:
-                raise ValueError(error_msg.format("exclusive", "lower", l_bound))
+        if l_inclusive and x_float < l_bound:
+            msg = error_msg.format("inclusive", "lower", l_bound)
+            raise ValueError(msg)
+        if not l_inclusive and x_float <= l_bound:
+            msg = error_msg.format("exclusive", "lower", l_bound)
+            raise ValueError(msg)
 
     if u_bound is not None:
-        if u_inclusive:
-            if x_float > u_bound:
-                raise ValueError(error_msg.format("inclusive", "upper", u_bound))
-        else:
-            if x_float >= u_bound:
-                raise ValueError(error_msg.format("exclusive", "upper", u_bound))
+        if u_inclusive and x_float > u_bound:
+            msg = error_msg.format("inclusive", "upper", u_bound)
+            raise ValueError(msg)
+        if not u_inclusive and x_float >= u_bound:
+            msg = error_msg.format("exclusive", "upper", u_bound)
+            raise ValueError(msg)
 
     return x_float
 
@@ -76,7 +79,7 @@ def check_int(  # pylint: disable=too-many-arguments
     l_inclusive: bool = True,
     u_inclusive: bool = True,
 ) -> int:
-    """Check if the variable `x` with name 'name' is a real number.
+    """Check if the variable `x` with name 'name' is a integer.
 
     Optionally, lower and upper bounds can also be checked.
 
@@ -99,33 +102,32 @@ def check_int(  # pylint: disable=too-many-arguments
         Floating point representation of `x`.
     """
     if not isinstance(x, Real) or not isinstance(x, SupportsInt):
-        raise TypeError(f"'{name}' should be an integer, but was of type {type(x)}")
+        msg = f"'{name}' should be an integer, but was of type {type(x)}"
+        raise TypeError(msg)
 
-    if not isinstance(x, Integral):
-        int_x = int(x)
-        if x - int_x != 0:
-            msg = f"'{name}' with value {x} could not be safely converted to an integer"
-            raise ValueError(msg)
+    int_x = int(x)
+    if not isinstance(x, Integral) and x - int_x != 0:
+        msg = f"'{name}' with value {x} could not be safely converted to an integer"
+        raise ValueError(msg)
 
     error_msg = "'" + name + "' has an {} {} bound of {}, but was " + str(x)
-    x_int = int(x)
     if l_bound is not None:
-        if l_inclusive:
-            if x_int < l_bound:
-                raise ValueError(error_msg.format("inclusive", "lower", l_bound))
-        else:
-            if x_int <= l_bound:
-                raise ValueError(error_msg.format("exclusive", "lower", l_bound))
+        if l_inclusive and int_x < l_bound:
+            msg = error_msg.format("inclusive", "lower", l_bound)
+            raise ValueError(msg)
+        if not l_inclusive and int_x <= l_bound:
+            msg = error_msg.format("exclusive", "lower", l_bound)
+            raise ValueError(msg)
 
     if u_bound is not None:
-        if u_inclusive:
-            if x_int > u_bound:
-                raise ValueError(error_msg.format("inclusive", "upper", u_bound))
-        else:
-            if x_int >= u_bound:
-                raise ValueError(error_msg.format("exclusive", "upper", u_bound))
+        if u_inclusive and int_x > u_bound:
+            msg = error_msg.format("inclusive", "upper", u_bound)
+            raise ValueError(msg)
+        if not u_inclusive and int_x >= u_bound:
+            msg = error_msg.format("exclusive", "upper", u_bound)
+            raise ValueError(msg)
 
-    return x_int
+    return int_x
 
 
 def check_string(x: str, name: str, *, lower: bool = False, upper: bool = False) -> str:
@@ -149,7 +151,8 @@ def check_string(x: str, name: str, *, lower: bool = False, upper: bool = False)
         Input string. Optionally, in lowercase or uppercase letters.
     """
     if not isinstance(x, str):
-        raise TypeError(f"'{name}' must be a string, but was of type {type(x)}")
+        msg = f"'{name}' must be a string, but was of type {type(x)}"
+        raise TypeError(msg)
 
     if lower:
         x = x.lower()
@@ -177,7 +180,8 @@ def check_bool(x: Any, name: str, *, safe: bool = False) -> bool:
         Boolean representation of the input.
     """
     if not isinstance(x, bool) and safe:
-        raise TypeError(f"'{name}' must be a Boolean value, but was of type {type(x)}")
+        msg = f"'{name}' must be a Boolean value, but was of type {type(x)}"
+        raise TypeError(msg)
     return bool(x)
 
 
@@ -200,7 +204,8 @@ def check_adjacency_matrix(adjacency_matrix: ArrayLike) -> NDArray[Any]:
         numpy_matrix = np.array(adjacency_matrix)
 
     if numpy_matrix.ndim != 2 or numpy_matrix.shape[0] != numpy_matrix.shape[1]:
-        raise ValueError("The provided value should be a square 2-D adjacency matrix.")
+        msg = "the provided value should be a square 2-D adjacency matrix"
+        raise ValueError(msg)
 
     return numpy_matrix
 
@@ -224,13 +229,16 @@ def check_graph_is_valid_topology(graph: nx.Graph, name: str) -> nx.Graph:
     check_instance(graph, name, nx.Graph)
 
     if nx.number_of_selfloops(graph) > 0:
-        raise ValueError(f"'{name}' contains self-loops")
+        msg = f"'{name}' contains self-loops"
+        raise ValueError(msg)
 
     if len(graph) == 0:
-        raise ValueError(f"'{name}' has no nodes")
+        msg = f"'{name}' has no nodes"
+        raise ValueError(msg)
 
     if any(not isinstance(node, int) for node in graph):
-        raise TypeError(f"'{name}' has nodes that are not integers")
+        msg = f"'{name}' has nodes that are not integers"
+        raise TypeError(msg)
 
     return graph
 
@@ -259,7 +267,7 @@ def warn_if_positive(x: float, name: str) -> None:
         name: Name of the variable. This name will be displayed in the warning.
     """
     if x > 0:
-        warnings.warn(f"'{name}' was positive")
+        warnings.warn(f"'{name}' was positive", stacklevel=2)
 
 
 def warn_if_negative(x: float, name: str) -> None:
@@ -270,4 +278,4 @@ def warn_if_negative(x: float, name: str) -> None:
         name: Name of the variable. This name will be displayed in the warning.
     """
     if x < 0:
-        warnings.warn(f"'{name}' was negative")
+        warnings.warn(f"'{name}' was negative", stacklevel=2)

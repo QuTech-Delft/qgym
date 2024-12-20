@@ -12,14 +12,17 @@ Usage:
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from numbers import Integral
-from typing import Any, SupportsFloat
+from typing import TYPE_CHECKING, Any, SupportsFloat
 
 import gymnasium.spaces
 import numpy as np
-from numpy.random import Generator
-from numpy.typing import ArrayLike
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from numpy.random import Generator
+    from numpy.typing import ArrayLike
 
 
 class Box(gymnasium.spaces.Box):
