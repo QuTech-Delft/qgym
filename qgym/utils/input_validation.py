@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 # pylint: disable=invalid-name
 
 
-def check_real(  # pylint: disable=too-many-arguments
+def check_real(
     x: Any,
     name: str,
     *,
@@ -70,7 +70,7 @@ def check_real(  # pylint: disable=too-many-arguments
     return x_float
 
 
-def check_int(  # pylint: disable=too-many-arguments
+def check_int(
     x: Any,
     name: str,
     *,

@@ -52,7 +52,7 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
         """
         super().__init__(agent, env, max_steps, use_action_masking=use_action_masking)
 
-    def _prepare_episode(self, circuit: Circuit) -> dict[str, nx.Graph]:
+    def _prepare_episode(self, circuit: Circuit) -> dict[str, nx.Graph]:  # noqa: PLR6301
         """Extract the interaction graph from `circuit`."""
         interaction_graph = circuit.get_interaction_graph()
         return {"interaction_graph": interaction_graph}

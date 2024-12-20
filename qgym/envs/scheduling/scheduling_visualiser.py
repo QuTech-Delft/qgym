@@ -168,7 +168,8 @@ class SchedulingVisualiser(Visualiser):
             color=self.colors["gate_text"],
         )
 
-    def _start_font(self) -> dict[str, Font]:
+    @staticmethod
+    def _start_font() -> dict[str, Font]:
         """Start the ``pygame`` fonts for the gate and axis font.
 
         Returns:

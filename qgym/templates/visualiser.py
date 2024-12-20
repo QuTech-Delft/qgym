@@ -113,8 +113,9 @@ class Visualiser(ABC):
         msg += " supported modes are 'human' and 'rgb_array'."
         raise ValueError(msg)
 
+    @staticmethod
     def _start_screen(
-        self, screen_name: str, render_mode: str, screen_dimensions: tuple[int, int]
+        screen_name: str, render_mode: str, screen_dimensions: tuple[int, int]
     ) -> Surface:
         """Start a pygame screen in the given mode.
 
@@ -147,7 +148,8 @@ class Visualiser(ABC):
         pygame.display.set_caption(screen_name)
         return screen
 
-    def close(self) -> None:
+    @staticmethod
+    def close() -> None:
         """Close the screen used for rendering."""
         # Sometimes when we try to quit pygame we get a TypeError and the environment
         # crashes. This is a botch to prevent that.

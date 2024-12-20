@@ -295,8 +295,8 @@ class RoutingVisualiser(Visualiser):
                 color=self.colors["mapping"],
             )
 
+    @staticmethod
     def _update_mapping(
-        self,
         *,
         mapping: NDArray[np.int_],
         swap_gates_inserted: Sequence[tuple[int, int, int]],
@@ -388,7 +388,8 @@ class RoutingVisualiser(Visualiser):
 
         return node_positions
 
-    def _setup_fonts(self) -> dict[str, Font]:
+    @staticmethod
+    def _setup_fonts() -> dict[str, Font]:
         """Setup the fonts for rendering with pygame."""
         pygame.font.init()
         return {

@@ -87,7 +87,7 @@ class State(ABC, Generic[ObservationT, ActionT]):
         """Boolean value stating whether we are in a final state."""
         raise NotImplementedError
 
-    def is_truncated(self) -> bool:
+    def is_truncated(self) -> bool:  # noqa: PLR6301 # Default is False, but should be overwritten
         """Boolean value stating whether the episode is truncated."""
         return False
 

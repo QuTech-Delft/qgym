@@ -92,8 +92,8 @@ class MachineProperties:
         """
         check_instance(gates, "gates", Mapping)
 
-        for gate_name, n_cycles in gates.items():
-            gate_name = check_string(gate_name, "gate name", lower=True)
+        for gate, n_cycles in gates.items():
+            gate_name = check_string(gate, "gate name", lower=True)
             n_cycles = check_int(n_cycles, "n cycles", l_bound=1)
             if gate_name in self._gates:
                 msg = f"Gate '{gate_name}' was already given. Overwriting it with the "
@@ -114,8 +114,8 @@ class MachineProperties:
         """
         check_instance(gates, "gates", Iterable)
 
-        for gate_name in gates:
-            gate_name = check_string(gate_name, "gate name", lower=True)
+        for gate in gates:
+            gate_name = check_string(gate, "gate name", lower=True)
             if gate_name not in self.gates:
                 msg = f"unknown gate '{gate_name}'"
                 raise ValueError(msg)
@@ -140,17 +140,17 @@ class MachineProperties:
         check_instance(gates, "gates", Iterable)
         for gate1, gate2 in gates:
             # Check if the gates are strings and known.
-            gate1 = check_string(gate1, "gate", lower=True)
-            gate2 = check_string(gate2, "gate", lower=True)
+            string_gate1 = check_string(gate1, "gate", lower=True)
+            string_gate2 = check_string(gate2, "gate", lower=True)
             if gate1 not in self.gates:
-                msg = f"unknown gate '{gate1}'"
+                msg = f"unknown gate '{string_gate1}'"
                 raise ValueError(msg)
             if gate2 not in self.gates:
-                msg = f"unknown gate '{gate2}'"
+                msg = f"unknown gate '{string_gate2}'"
                 raise ValueError(msg)
 
-            self._not_in_same_cycle[gate1].add(gate2)
-            self._not_in_same_cycle[gate2].add(gate1)
+            self._not_in_same_cycle[string_gate1].add(string_gate2)
+            self._not_in_same_cycle[string_gate2].add(string_gate1)
 
         return self
 

@@ -306,7 +306,8 @@ class InitialMappingVisualiser(Visualiser):
 
         return node_positions
 
-    def _start_font(self) -> dict[str, Font]:
+    @staticmethod
+    def _start_font() -> dict[str, Font]:
         """Start the pygame font.
 
         Returns:

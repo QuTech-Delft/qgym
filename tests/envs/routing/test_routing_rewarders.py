@@ -48,7 +48,7 @@ def _episode_generator(
             action = new_state.n_connections
         else:
             physical_qubit1 = new_state.mapping[next_gate[0]]
-            if physical_qubit1 in (0, 1):
+            if physical_qubit1 in {0, 1}:
                 action = new_state.edges.index((2, 3))
             else:
                 action = new_state.edges.index((0, 1))
