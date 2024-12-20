@@ -38,7 +38,7 @@ keywords =[
 dependencies = [
     "gymnasium>=0.28.1",
     "networkx[default]>=2.6.3",
-    "numpy>=1.21.6",
+    "numpy>=1.21.6, !=2.2.0",
     "pygame",
     "qiskit>=1.0.0",
 ]
