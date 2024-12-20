@@ -1,5 +1,4 @@
-"""This module contains some vanilla Rewarders for the
-:class:`~qgym.envs.InitialMapping` environment.
+"""This module contains Rewarders for :class:`~qgym.envs.InitialMapping`.
 
 Usage:
     The rewarders in this module can be customized by initializing the rewarders with
@@ -172,8 +171,9 @@ class BasicRewarder(Rewarder):
 
 
 class SingleStepRewarder(BasicRewarder):
-    """Rewarder for the :class:`~qgym.envs.InitialMapping` environment, which gives a
-    reward based on the improvement in the current step.
+    """Rewarder for the :class:`~qgym.envs.InitialMapping` environment.
+
+    This specific rewarder gives a reward based on the improvement in the current step.
     """
 
     def compute_reward(
@@ -208,8 +208,10 @@ class SingleStepRewarder(BasicRewarder):
 
 
 class EpisodeRewarder(BasicRewarder):
-    """Rewarder for the :class:`~qgym.envs.InitialMapping` environment, which only gives
-    a reward at the end of the episode or when an illegal action is taken.
+    """Rewarder for the :class:`~qgym.envs.InitialMapping` environment.
+
+    This specific rewarder only gives a reward at the end of the episode or when an
+    illegal action is taken.
     """
 
     def compute_reward(

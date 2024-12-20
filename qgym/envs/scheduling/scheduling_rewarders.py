@@ -1,5 +1,4 @@
-"""This module contains some vanilla Rewarders for the :class:`~qgym.envs.Scheduling`
-environment.
+"""This module contains Rewarders for the :class:`~qgym.envs.Scheduling` environment.
 
 Usage:
     The rewarders in this module can be customized by initializing the rewarders with
@@ -86,8 +85,7 @@ class BasicRewarder(Rewarder):
         action: NDArray[np.int_],
         new_state: SchedulingState,
     ) -> float:
-        """Compute a reward, based on the new state, and the given action. Specifically
-        the 'legal_actions' actions array.
+        """Compute a reward, based on the new state, and the given action.
 
         Args:
             old_state: State of the :class:`~qgym.envs.Scheduling` environment before
@@ -111,8 +109,9 @@ class BasicRewarder(Rewarder):
 
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: SchedulingState) -> bool:
-        """Check if the given action is illegal. An action is illegal if ``action[0]``
-        is not in ``old_state["legal_actions"]``.
+        """Check if the given action is illegal.
+
+        An action is illegal if ``action[0]`` is not in ``old_state["legal_actions"]``.
 
         Args:
             action: Action that has just been taken.
@@ -147,8 +146,10 @@ class BasicRewarder(Rewarder):
 
 
 class EpisodeRewarder(Rewarder):
-    """Rewarder for the :class:`~qgym.envs.Scheduling` environment, which only gives a
-    reward at the end of the episode or when an illegal action is taken.
+    """Rewarder for the :class:`~qgym.envs.Scheduling` environment.
+
+    This specific rewarder only gives a reward at the end of the episode or when an
+    illegal action is taken.
     """
 
     def __init__(
@@ -213,8 +214,9 @@ class EpisodeRewarder(Rewarder):
 
     @staticmethod
     def _is_illegal(action: NDArray[np.int_], old_state: SchedulingState) -> bool:
-        """Check if the given action is illegal. An action is illegal if ``action[0]``
-        is not in ``old_state["legal_actions"]``.
+        """Check if the given action is illegal.
+
+        An action is illegal if ``action[0]`` is not in ``old_state["legal_actions"]``.
 
         Args:
             action: Action that has just been taken.

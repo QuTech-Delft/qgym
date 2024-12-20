@@ -5,7 +5,7 @@ All environments should inherit from ``Environment``.
 
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from qgym.templates.visualiser import Visualiser
 
 
-class Environment(gymnasium.Env[ObservationT, ActionT]):
+class Environment(ABC, gymnasium.Env[ObservationT, ActionT]):
     """RL Environment containing the current state of the problem.
 
     Each subclass should set at least the following attributes:
@@ -152,6 +152,7 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         self._rng = rng
 
     def __del__(self) -> None:
+        """Cleanup."""
         if hasattr(self, "_visualiser"):
             self.close()
 
@@ -162,8 +163,9 @@ class Environment(gymnasium.Env[ObservationT, ActionT]):
         *args: Any,
         **kwargs: Any,
     ) -> float:
-        """Ask the ``Rewarder`` to compute a reward, based on the given old state, the
-        given action and the updated state.
+        """Ask the ``Rewarder`` to compute a reward.
+
+        The reward is based on the old state, the given action and the updated state.
 
         Args:
             old_state: The state of the ``Environment`` before the action was taken.

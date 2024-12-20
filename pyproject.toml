@@ -131,7 +131,7 @@ select = [
     "COM", #flake8-commas
     "C4", #flake8-comprehensions
     "C90", # mccabe
-    #"D", # pydocstyle
+    "D", # pydocstyle
     "DTZ", # flake8-datetimez
     "E", # pycodestyle (error)
     "ERA", # eradicate

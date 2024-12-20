@@ -1,6 +1,6 @@
 """Generic abstract base class for RL agent wrappers.
 
-All agnet wrappers should inherit from ``AgentWrapper``.
+All agent wrappers should inherit from ``AgentWrapper``.
 """
 
 from __future__ import annotations
@@ -24,7 +24,9 @@ WrapperOutputT = TypeVar("WrapperOutputT")
 class AgentWrapper(  # pylint: disable=too-few-public-methods
     ABC, Generic[WrapperOutputT]
 ):
-    """Wrap any trained stable baselines 3 agent that inherits from
+    """Wrap a trained stable baselines 3 agent.
+
+    The agent should inherits from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
     """
 

@@ -1,5 +1,6 @@
-"""This module contains the ``GateEncoder`` class which can be used for encoding gates
-to integers and back.
+"""This module contains the :class:`GateEncoder` class.
+
+The :class:`GateEncoder` can be used for encoding gates to integers and back.
 
 Usage:
     >>> from qgym.utils import GateEncoder
@@ -15,11 +16,14 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Any, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, TypeVar, cast, overload
 
 from qgym.custom_types import Gate
 
-T = TypeVar("T")
+if TYPE_CHECKING:
+    from typing import Self
+
+    T = TypeVar("T")
 
 
 class GateEncoder:
@@ -32,9 +36,11 @@ class GateEncoder:
         self._decoding_dct: dict[int, str] = {}
         self._longest_name = 0
 
-    def learn_gates(self, gates: Iterable[str]) -> GateEncoder:
-        """Learns the gates names from an ``Iterable`` and creates a mapping from unique
-        gate names to integers and back.
+    def learn_gates(self, gates: Iterable[str]) -> Self:
+        """Learns the gate names from `gates`.
+
+        This method creates an internal mapping from unique gate names to integers and
+        back.
 
         Args:
             gates: ``Iterable`` containing the names of the gates that should be
@@ -83,8 +89,9 @@ class GateEncoder:
             | tuple[str, ...]
         ),
     ) -> int | dict[int, Any] | list[Gate] | set[int] | list[int]:
-        """Encode the gate names (of type ``str``) in `gates` to integers, based on the
-        gates seen in ``learn_gates``.
+        """Encode the gate names (of type ``str``) in `gates` to integers.
+
+        The encoding scheme is based on the gates seen in ``learn_gates``.
 
         Args:
             gates: Gates to encode. The input type determines the return type.
@@ -177,8 +184,9 @@ class GateEncoder:
             | tuple[int, ...]
         ),
     ) -> str | dict[str, Any] | list[Gate] | set[str] | list[str]:
-        """Decode integer encoded gate names to the original gate names based on the
-        gates seen in ``learn_gates``.
+        """Decode integer encoded gate names to the original gate names.
+
+        The decoding scheme is based on the gates seen in ``learn_gates``.
 
         Args:
             encoded_gates: Encoded gates that are to be decoded. The input type

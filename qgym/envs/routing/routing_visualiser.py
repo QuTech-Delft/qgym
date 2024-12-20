@@ -1,4 +1,6 @@
-"""This module contains a class used for rendering a
+"""This module contains the :class:`RoutingVisualiser` class.
+
+:class:`RoutingVisualiser` is used for rendering a
 :class:`~qgym.envs.Routing` environment.
 """
 
@@ -368,7 +370,7 @@ class RoutingVisualiser(Visualiser):
 
         Args:
             graph: Graph of which the node positions must be determined.
-            screen: the subscreen on which the graph will be drawn.
+            padding: Amount of padding to use.
 
         Returns:
             Dictionary where the keys are the names of the nodes, and the values are the

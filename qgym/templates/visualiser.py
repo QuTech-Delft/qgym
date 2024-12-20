@@ -6,7 +6,7 @@ All visualisers should inherit from ``Visualiser``.
 from __future__ import annotations
 
 import contextlib
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -30,6 +30,14 @@ class RenderData:
         colors: dict[str, Color],
         render_mode: str,
     ) -> None:
+        """Init of the :class:`RenderData` class.
+
+        Args:
+            screen: Screen to store.
+            font: Dictionary of fonts to store.
+            colors: Dictionary of colors to store.
+            render_mode: Render mode to store.
+        """
         self.screen = screen
         self.font = font
         self.colors = colors
@@ -46,7 +54,7 @@ class RenderData:
         return self.screen.get_height()
 
 
-class Visualiser:
+class Visualiser(ABC):
     """Visualizer for the the current state of the problem."""
 
     # --- These attributes should be set in any subclass ---
@@ -54,7 +62,13 @@ class Visualiser:
 
     @abstractmethod
     def __init__(self, render_mode: str, *args: list[Any]) -> None:
-        raise NotImplementedError
+        """Init of the :class:`Visualiser`.
+
+        Args:
+            render_mode: Render mode to use. Should be stored in an instance
+                of :class:`RenderData`.
+            args: Extra positional arguments.
+        """
 
     @abstractmethod
     def render(self, state: Any) -> NDArray[np.int_] | None:
@@ -107,7 +121,7 @@ class Visualiser:
         Args:
             screen_name: Name of the screen.
             render_mode: The render mode to use. Choose from 'human' or 'rgb_array'.
-            screen_dimension: Width and height of the screen.
+            screen_dimensions: Width and height of the screen.
 
         Raises:
             ValueError: When an invalid mode is provided.

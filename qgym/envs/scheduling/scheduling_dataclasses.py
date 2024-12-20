@@ -1,6 +1,4 @@
-"""This module contains dataclasses used in the :class:`~qgym.envs.Scheduling`
-environment.
-"""
+"""This module contains dataclasses for :class:`~qgym.envs.Scheduling` environments."""
 
 from __future__ import annotations
 
@@ -29,9 +27,7 @@ class SchedulingUtils:
 
 @dataclass
 class GateInfo:
-    """
-    Info of a specific gate used in the :class:`~qgym.envs.Scheduling` environment.
-    """
+    """Info of a specific gate in the :class:`~qgym.envs.Scheduling` environment."""
 
     cycle_length: int
     not_in_same_cycle: set[int]
@@ -54,9 +50,7 @@ class GateInfo:
 
 @dataclass
 class CircuitInfo:
-    """Info of the circuit of the current episode of :class:`~qgym.envs.Scheduling`
-    environment.
-    """
+    """Info of a circuit in the :class:`~qgym.envs.Scheduling` environment."""
 
     encoded: list[Gate]
     names: NDArray[np.int_]

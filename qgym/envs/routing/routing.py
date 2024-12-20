@@ -1,4 +1,6 @@
-r"""This module contains an environment for training an RL agent on the routing problem
+r"""This module contains the :class:`Routing` environment.
+
+The :class:`Routing` environment is used for training an RL agent on the routing problem
 of OpenQL. The routing problem is aimed at enabling to execute the quantum circuit
 by putting those physical qubits into connection that have an interaction in the quantum
 circuit. This problem arises when there are mismatches between the interaction graph and
@@ -78,11 +80,6 @@ Action Space:
 
     Illegal actions will not be executed. An action is considered illegal when the agent
     want to surpass a gate that cannot be executed with the current mapping.
-
-
-# TODO: create Examples
-
-
 """
 
 from __future__ import annotations

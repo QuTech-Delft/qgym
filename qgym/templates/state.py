@@ -5,7 +5,7 @@ All states should inherit from ``State``.
 
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from numpy.random import Generator, default_rng
@@ -17,7 +17,7 @@ ObservationT = TypeVar("ObservationT")
 ActionT = TypeVar("ActionT")
 
 
-class State(Generic[ObservationT, ActionT]):
+class State(ABC, Generic[ObservationT, ActionT]):
     """RL State containing the current state of the problem."""
 
     steps_done: int
@@ -49,8 +49,10 @@ class State(Generic[ObservationT, ActionT]):
 
     @property
     def rng(self) -> Generator:
-        """Return the random number generator of this environment. If none is set yet,
-        this will generate a new one using ``numpy.random.default_rng``.
+        """Return the random number generator of this environment.
+
+        If none is set yet, this will generate a new one using
+        ``numpy.random.default_rng``.
 
         Returns:
             Random number generator used by this ``Environment``.
@@ -100,6 +102,7 @@ class State(Generic[ObservationT, ActionT]):
         raise NotImplementedError
 
     def __repr__(self) -> str:
+        """String representation of self."""
         text = f"{self.__class__.__name__}:\n"
         if hasattr(self, "__slots__"):
             for attribute_name in self.__slots__:

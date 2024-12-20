@@ -112,7 +112,7 @@ class NullInteractionGenerator(InteractionGenerator):
     """
 
     def __init__(self) -> None:
-        """Init of the :class:`NullInteractionGenerator`"""
+        """Init of the :class:`NullInteractionGenerator`."""
         self.finite = False
         super().__init__()
 

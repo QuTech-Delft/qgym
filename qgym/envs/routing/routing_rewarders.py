@@ -1,5 +1,4 @@
-"""This module will contain some vanilla Rewarders for the :class:`~qgym.envs.Routing`
-environment.
+"""This module contains Rewarders for the :class:`~qgym.envs.Routing` environment.
 
 Usage:
     The rewarders in this module can be customized by initializing the rewarders with
@@ -36,9 +35,7 @@ from qgym.utils.input_validation import check_real, warn_if_negative, warn_if_po
 
 
 class BasicRewarder(Rewarder):
-    """RL Rewarder, for computing rewards on the
-    :class:`~qgym.envs.routing.RoutingState`.
-    """
+    """Rewarder for the :class:`~qgym.envs.routing.RoutingState`."""
 
     def __init__(
         self,
@@ -86,7 +83,6 @@ class BasicRewarder(Rewarder):
         Returns:
             The reward for this action.
         """
-
         if self._is_illegal(action, old_state):
             return self._illegal_action_penalty
 
@@ -133,8 +129,9 @@ class BasicRewarder(Rewarder):
 
 
 class SwapQualityRewarder(BasicRewarder):
-    """Rewarder for the :class:`~qgym.envs.Routing` environment which takes swap
-    qualities into account.
+    """Rewarder for the :class:`~qgym.envs.Routing` environment.
+
+    This specific rewarder takes swap qualities into account.
 
     The :class:`SwapQualityRewarder` has an adjusted reward w.r.t. the
     :class:`BasicRewarder` in the sense that good SWAPs give lower penalties and bad
@@ -277,10 +274,12 @@ class SwapQualityRewarder(BasicRewarder):
 
 
 class EpisodeRewarder(BasicRewarder):
-    """Rewarder for the ``Routing`` environment, which only gives a reward after at
-    the end of a full episode. The reward is the highest for the lowest amount of SWAPs.
-    This could be improved for setting for taking into account the fidelity of edges and
-    scoring good and looking at what edges the circuit is executed.
+    """Rewarder for the ``Routing`` environment.
+
+    This specific rewarder only gives a reward after at the end of a full episode. The
+    reward is the highest for the lowest amount of SWAPs. This could be improved for
+    setting for taking into account the fidelity of edges and scoring good and looking
+    at what edges the circuit is executed.
     """
 
     def compute_reward(

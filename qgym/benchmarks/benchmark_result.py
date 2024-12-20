@@ -60,7 +60,7 @@ class BenchmarkResult:
         """Check if this :class:`BenchmarkResult` is equal to `other`.
 
         Args:
-            Other: object to compare to.
+            other: object to compare to.
 
         Returns:
             Boolean value stating wether `self` is equal to `other`.

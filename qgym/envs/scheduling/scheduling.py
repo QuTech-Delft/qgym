@@ -1,4 +1,6 @@
-r"""This module contains an environment for training an RL agent on the quantum
+r"""This module contains the :class:`Scheduling` environment.
+
+The :class:`Scheduling` environment is used for training an RL agent on the quantum
 operation scheduling problem of OpenQL. The quantum operations scheduling problem is
 aimed at finding the shortest possible schedules of operations defined by a **quantum
 circuit**, whilst taking **hardware constraints** and **commutation rules** into
@@ -194,8 +196,7 @@ class Scheduling(
         rewarder: Rewarder | None = None,
         render_mode: str | None = None,
     ) -> None:
-        """Initialize the action space, observation space, and initial states for the
-        scheduling environment.
+        """Initialize the action space, observation space, and initial states.
 
         Args:
             machine_properties: A :class:`~qgym.envs.scheduling.MachineProperties`
@@ -312,9 +313,7 @@ class Scheduling(
     def _parse_machine_properties(
         machine_properties: Mapping[str, Any] | str | MachineProperties,
     ) -> MachineProperties:
-        """
-        Parse the machine_properties given by the user and return a
-        ``MachineProperties`` object.
+        """Parse the machine_properties given by the user.
 
         Args:
             machine_properties: A ``MachineProperties`` object, a ``Mapping`` of machine

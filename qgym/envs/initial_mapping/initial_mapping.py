@@ -1,11 +1,13 @@
-r"""This module contains an environment for training an RL agent on the initial mapping
-problem of OpenQL. The initial mapping problem is aimed at mapping virtual qubits of a
-circuit to physical qubits that have a certain connection topology. The quantum circuit
-is represented as an **interaction graph**, where each node represent a qubit and each
-edge represent an interaction between two qubits as defined by the circuit (See the
-example below). The QPU structure is called the **connection graph**. In the connection
-graph each node represents a physical qubit and each edge represent a connection between
-two qubits in the QPU.
+r"""This module contains the :class:`InitialMapping` environment.
+
+The :class:`InitialMapping` environment is used for training an RL agent on the initial
+mapping problem of OpenQL. The initial mapping problem is aimed at mapping virtual
+qubits of a circuit to physical qubits that have a certain connection topology. The
+quantum circuit is represented as an **interaction graph**, where each node represent a
+qubit and each edge represent an interaction between two qubits as defined by the
+circuit (See the example below). The QPU structure is called the **connection graph**.
+In the connection graph each node represents a physical qubit and each edge represent a
+connection between two qubits in the QPU.
 
 
 .. code-block:: console
@@ -140,6 +142,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     import networkx as nx
+
     Gridspecs = list[int] | tuple[int, ...]
 
 
@@ -164,6 +167,7 @@ class InitialMapping(Environment[dict[str, NDArray[np.int_]], NDArray[np.int_]])
         render_mode: str | None = None,
     ) -> None:
         """Initialize the action space, observation space, and initial states.
+
         Furthermore, the connection graph and edge probability for the random
         interaction graph of each episode is defined.
 

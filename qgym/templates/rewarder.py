@@ -5,11 +5,11 @@ All rewarders should inherit from ``Rewarder``.
 
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any
 
 
-class Rewarder:
+class Rewarder(ABC):
     """RL Rewarder, for computing rewards on a state."""
 
     _reward_range: tuple[float, float]

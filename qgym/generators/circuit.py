@@ -48,9 +48,7 @@ class CircuitGenerator(Iterator[list[Gate]]):
 
 
 class BasicCircuitGenerator(CircuitGenerator):
-    """:class:`BasicCircuitGenerator` is a basic random circuit generation
-    implementation.
-    """
+    """:class:`BasicCircuitGenerator` is a basic random circuit generator."""
 
     def __init__(self, seed: Generator | SupportsInt | None = None) -> None:
         """Init of the :class:`BasicInteractionGenerator`.
@@ -118,9 +116,7 @@ class BasicCircuitGenerator(CircuitGenerator):
 
 
 class WorkshopCircuitGenerator(CircuitGenerator):
-    """:class:`WorkshopCircuitGenerator` is a simplified random circuit generation
-    implementation.
-    """
+    """:class:`WorkshopCircuitGenerator` is a simplified random circuit generator."""
 
     def __init__(self, seed: Generator | SupportsInt | None = None) -> None:
         """Init of the :class:`WorkshopCircuitGenerator`.
@@ -193,7 +189,7 @@ class NullCircuitGenerator(CircuitGenerator):
     """
 
     def __init__(self) -> None:
-        """Init of the :class:`NullCircuitGenerator`"""
+        """Init of the :class:`NullCircuitGenerator` class."""
         self.finite = False
 
     def __next__(self) -> list[Gate]:

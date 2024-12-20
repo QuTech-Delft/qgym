@@ -1,5 +1,7 @@
-"""This module contains a class used for rendering a :class:`~qgym.envs.InitialMapping`
-environment.
+"""This module contains the :class:`InitialMappingVisualiser` class.
+
+:class:`InitialMappingVisualiser` is used for rendering a
+:class:`~qgym.envs.InitialMapping` environment.
 """
 
 from __future__ import annotations
@@ -288,7 +290,7 @@ class InitialMappingVisualiser(Visualiser):
 
         Args:
             graph: Graph of which the node positions must be determined.
-            ubscreen: the subscreen on which the graph will be drawn.
+            subscreen: the subscreen on which the graph will be drawn.
 
         Returns:
             A dictionary where the keys are the names of the nodes, and the values are

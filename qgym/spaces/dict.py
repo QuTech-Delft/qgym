@@ -1,5 +1,6 @@
-"""This module contains the ``Dict`` space, i.e., a dictionary with fixed strings as
-keys and spaces as values.
+"""This module contains the ``Dict`` space.
+
+The ``Dict`` space is a dictionary with fixed strings as keys and spaces as values.
 
 Usage:
     >>> from qgym.spaces import Box, Dict
@@ -41,8 +42,9 @@ class Dict(gymnasium.spaces.Dict):
         rng: Generator | None = None,
         **spaces_kwargs: gymnasium.Space[Any],
     ) -> None:
-        """Initialize a ``Dict`` space, with string valued keys and spaces inheriting
-        from ``gym.Space`` as values.
+        """Initialize a ``Dict`` space.
+
+        The string valued keys and spaces inheriting from ``gym.Space`` as values.
 
         Args:
             spaces: Dictionary containing string valued keys and spaces that are to form
