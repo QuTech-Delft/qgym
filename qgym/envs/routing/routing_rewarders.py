@@ -95,7 +95,8 @@ class BasicRewarder(Rewarder):
 
         return reward
 
-    def _is_illegal(self, action: int, old_state: RoutingState) -> bool:
+    @staticmethod
+    def _is_illegal(action: int, old_state: RoutingState) -> bool:
         """Checks whether an action chosen by the agent is illegal.
 
         Returns:
@@ -218,10 +219,9 @@ class SwapQualityRewarder(BasicRewarder):
             * self._observation_enhancement_factor(old_state, new_state)
         )
 
+    @staticmethod
     def _observation_enhancement_factor(
-        self,
-        old_state: RoutingState,
-        new_state: RoutingState,
+        old_state: RoutingState, new_state: RoutingState
     ) -> float:
         """Calculates the change of the observation reach as an effect of a swap.
 

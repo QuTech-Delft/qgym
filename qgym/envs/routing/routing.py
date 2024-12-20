@@ -116,7 +116,7 @@ if TYPE_CHECKING:
 class Routing(Environment[dict[str, NDArray[np.int_]], int]):
     """RL environment for the routing problem of OpenQL."""
 
-    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    def __init__(  # noqa: PLR0913
         self,
         connection_graph: nx.Graph | ArrayLike | Gridspecs,
         interaction_generator: InteractionGenerator | None = None,

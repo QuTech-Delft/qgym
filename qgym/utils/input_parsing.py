@@ -110,7 +110,7 @@ def has_fidelity(graph: nx.Graph) -> bool:
         Boolean value stating wether the graph has fidelity encoded.
     """
     for _, _, weight in graph.edges.data("weight"):
-        if weight is not None and weight not in (0, 1):
+        if weight is not None and weight not in {0, 1}:
             return True
     return False
 

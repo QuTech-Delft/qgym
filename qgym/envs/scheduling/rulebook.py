@@ -118,12 +118,7 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     Returns:
         Boolean value stating whether the gates are disjoint.
     """
-    return bool(
-        gate1.q1 != gate2.q1
-        and gate1.q1 != gate2.q2
-        and gate1.q2 != gate2.q1
-        and gate1.q2 != gate2.q2
-    )
+    return {gate1.q1, gate1.q2}.isdisjoint({gate2.q1, gate2.q2})
 
 
 def same_gate(gate1: Gate, gate2: Gate) -> bool:

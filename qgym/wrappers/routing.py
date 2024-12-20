@@ -51,7 +51,7 @@ class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
         """
         super().__init__(agent, env, max_steps, use_action_masking=use_action_masking)
 
-    def _prepare_episode(self, circuit: Circuit) -> dict[str, NDArray[np.int_]]:
+    def _prepare_episode(self, circuit: Circuit) -> dict[str, NDArray[np.int_]]:  # noqa: PLR6301
         """Extract the interaction circuit from `circuit`."""
         interaction_circuit = circuit.get_interaction_circuit()
         return {"interaction_circuit": interaction_circuit}
