@@ -1,5 +1,7 @@
-"""This module contains the :class:`MachineProperties` class, which helps with
-conveniently setting up machine properties for the scheduling environment.
+"""This module contains the :class:`MachineProperties` class.
+
+The :class:`MachineProperties` class helps with conveniently setting up machine
+properties for the scheduling environment.
 
 Usage:
     The code below will create :class:`MachineProperties` which will have the following
@@ -35,13 +37,13 @@ from qgym.utils.input_validation import check_instance, check_int, check_string
 
 
 class MachineProperties:
-    """:class:`MachineProperties` is a class to conveniently setup machine properties
-    for the :class:`~qgym.envs.Scheduling` environment.
+    """:class:`MachineProperties` is a class to conveniently setup machine properties.
+
+    To be used in the :class:`~qgym.envs.Scheduling` environment.
     """
 
     def __init__(self, n_qubits: int) -> None:
-        """
-        Init of the MachineProperties class.
+        """Init of the MachineProperties class.
 
         Args:
             n_qubits: Number of qubits of the machine.
@@ -53,8 +55,9 @@ class MachineProperties:
 
     @classmethod
     def from_mapping(cls, machine_properties: Mapping[str, Any]) -> MachineProperties:
-        """Initialize the :class:`MachineProperties` class from a ``Mapping`` containing
-        valid machines properties.
+        """Initialize the :class:`MachineProperties` class from a ``Mapping``.
+
+        The ``Mapping`` should contain valid machines properties.
 
         Args:
             machine_properties: ``Mapping`` containing valid machine properties.
@@ -65,18 +68,17 @@ class MachineProperties:
         """
         checked_mp = cls._check_machine_properties_mapping(machine_properties)
 
-        _machine_properties = cls(checked_mp["n_qubits"])
-        _machine_properties.add_gates(checked_mp["gates"])
-        _machine_properties.add_same_start(checked_mp["same_start"])
-        _machine_properties.add_not_in_same_cycle(checked_mp["not_in_same_cycle"])
-        return _machine_properties
+        machine_properties_ = cls(checked_mp["n_qubits"])
+        machine_properties_.add_gates(checked_mp["gates"])
+        machine_properties_.add_same_start(checked_mp["same_start"])
+        machine_properties_.add_not_in_same_cycle(checked_mp["not_in_same_cycle"])
+        return machine_properties_
 
     @classmethod
     def from_file(cls, filename: str) -> MachineProperties:
         """Load MachineProperties from a JSON file. Not implemented."""
-        raise NotImplementedError(
-            "Loading machine properties from files is not yet implemented."
-        )
+        msg = "loading machine properties from files is not yet implemented"
+        raise NotImplementedError(msg)
 
     def add_gates(self, gates: Mapping[str, int]) -> MachineProperties:
         """Add gates to the machine properties that should be supported.
@@ -90,20 +92,19 @@ class MachineProperties:
         """
         check_instance(gates, "gates", Mapping)
 
-        for gate_name, n_cycles in gates.items():
-            gate_name = check_string(gate_name, "gate name", lower=True)
+        for gate, n_cycles in gates.items():
+            gate_name = check_string(gate, "gate name", lower=True)
             n_cycles = check_int(n_cycles, "n cycles", l_bound=1)
             if gate_name in self._gates:
                 msg = f"Gate '{gate_name}' was already given. Overwriting it with the "
                 msg += "new value."
-                warnings.warn(msg)
+                warnings.warn(msg, stacklevel=2)
             self._gates[gate_name] = n_cycles
             self._not_in_same_cycle[gate_name] = set()
         return self
 
     def add_same_start(self, gates: Iterable[str]) -> MachineProperties:
-        """Add gates that should start in the same cycle, or wait till the previous gate
-        is done.
+        """Add gates that should start in the same cycle.
 
         Args:
             gates: ``Iterable`` of gate names that should start in the same cycle.
@@ -113,10 +114,11 @@ class MachineProperties:
         """
         check_instance(gates, "gates", Iterable)
 
-        for gate_name in gates:
-            gate_name = check_string(gate_name, "gate name", lower=True)
+        for gate in gates:
+            gate_name = check_string(gate, "gate name", lower=True)
             if gate_name not in self.gates:
-                raise ValueError(f"unknown gate '{gate_name}'")
+                msg = f"unknown gate '{gate_name}'"
+                raise ValueError(msg)
             self._same_start.add(gate_name)
         return self
 
@@ -138,15 +140,17 @@ class MachineProperties:
         check_instance(gates, "gates", Iterable)
         for gate1, gate2 in gates:
             # Check if the gates are strings and known.
-            gate1 = check_string(gate1, "gate", lower=True)
-            gate2 = check_string(gate2, "gate", lower=True)
+            string_gate1 = check_string(gate1, "gate", lower=True)
+            string_gate2 = check_string(gate2, "gate", lower=True)
             if gate1 not in self.gates:
-                raise ValueError(f"unknown gate '{gate1}'")
+                msg = f"unknown gate '{string_gate1}'"
+                raise ValueError(msg)
             if gate2 not in self.gates:
-                raise ValueError(f"unknown gate '{gate2}'")
+                msg = f"unknown gate '{string_gate2}'"
+                raise ValueError(msg)
 
-            self._not_in_same_cycle[gate1].add(gate2)
-            self._not_in_same_cycle[gate2].add(gate1)
+            self._not_in_same_cycle[string_gate1].add(string_gate2)
+            self._not_in_same_cycle[string_gate2].add(string_gate1)
 
         return self
 
@@ -182,8 +186,10 @@ class MachineProperties:
 
     @property
     def gates(self) -> dict[str, int] | dict[int, int]:
-        """Return a``Dict`` with the gate names the machine can perform as keys, and the
-        number of machine cycles (time) as values.
+        """Return a ``dict`` with the gate names and cycles.
+
+        The keys of this dict are gate names that the machine can perform. The values
+        are the number of machine cycles (time) it takes to execute that gate.
         """
         return self._gates
 
@@ -194,9 +200,7 @@ class MachineProperties:
 
     @property
     def same_start(self) -> set[str] | set[int]:
-        """Set of gate names that should start in the same cycle, or wait till the
-        previous gate is done.
-        """
+        """Set of gate names that should start in the same cycle."""
         return self._same_start
 
     @property
@@ -208,9 +212,7 @@ class MachineProperties:
     def _check_machine_properties_mapping(
         machine_properties: Mapping[str, Any],
     ) -> dict[str, Any]:
-        """Check if the given machine properties ``Mapping`` is a valid descriptions of
-        the machine properties and returns a ``Dict`` to easily initialize a
-        ``MachineProperties`` object.
+        """Check if the given machine properties ``Mapping`` is a valid descriptions.
 
         Args:
             machine_properties: ``Mapping`` containing the machine properties.

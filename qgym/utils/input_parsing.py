@@ -8,11 +8,10 @@ assured that the data has the same format.
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, SupportsInt
+from typing import TYPE_CHECKING, Any, SupportsInt
 
 import networkx as nx
 from numpy.random import Generator, default_rng
-from numpy.typing import ArrayLike
 
 from qgym.templates import Rewarder, Visualiser
 from qgym.utils.input_validation import (
@@ -21,6 +20,9 @@ from qgym.utils.input_validation import (
     check_instance,
     check_string,
 )
+
+if TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 
 def parse_rewarder(rewarder: Rewarder | None, default: type[Rewarder]) -> Rewarder:
@@ -43,7 +45,7 @@ def parse_rewarder(rewarder: Rewarder | None, default: type[Rewarder]) -> Reward
 
 def parse_visualiser(
     render_mode: str | None, vis_type: type[Visualiser], args: list[Any]
-) -> None | Visualiser:
+) -> Visualiser | None:
     """Parse a `Visualiser` by the render mode.
 
     Args:
@@ -89,9 +91,8 @@ def parse_connection_graph(
     try:
         adj_mat = check_adjacency_matrix(graph)
     except ValueError as err:
-        raise ValueError(
-            "No valid arguments for a connection graph were given"
-        ) from err
+        msg = "no valid arguments for a connection graph were given"
+        raise ValueError(msg) from err
 
     return nx.from_numpy_array(adj_mat)
 
@@ -109,7 +110,7 @@ def has_fidelity(graph: nx.Graph) -> bool:
         Boolean value stating wether the graph has fidelity encoded.
     """
     for _, _, weight in graph.edges.data("weight"):
-        if weight is not None and weight not in (0, 1):
+        if weight is not None and weight not in {0, 1}:
             return True
     return False
 
@@ -135,6 +136,5 @@ def parse_seed(seed: Generator | SupportsInt | None) -> Generator:
     if isinstance(seed, Generator):
         return seed
 
-    raise TypeError(
-        f"seed must be a Generator, SupportsInt or None, but was of type {type(seed)}"
-    )
+    msg = f"seed must be a Generator, SupportsInt or None, but was of type {type(seed)}"
+    raise TypeError(msg)

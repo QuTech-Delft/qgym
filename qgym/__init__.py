@@ -1,8 +1,10 @@
-"""The qgym package consist of gyms and tools used for reinforcement learning (RL)
-environments in the Quantum domain. It's main purpose is to easily create RL
-environments for the different passes of the OpenQL framework, by simply initializing an
-environment class. This abstraction of the environment allows RL developers to develop
-RL agents to improve the OpenQL framework, without requiring prior knowledge of OpenQL.
+"""qgym is a package for reinforcement learning (RL) based quantum compilation.
+
+The qgym package consist of gyms and tools used for RL environments in the quantum
+computing domain. It's main purpose is to easily create RL environments for the
+different passes of the OpenQL framework, by simply initializing an environment class.
+This abstraction of the environment allows RL developers to develop RL agents to improve
+the OpenQL framework, without requiring prior knowledge of OpenQL.
 
 
 Example:

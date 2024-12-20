@@ -6,27 +6,27 @@ from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from numpy.typing import NDArray
-from qiskit.transpiler import AnalysisPass, Layout
 
-from qgym.envs.initial_mapping import InitialMappingState
 from qgym.templates import AgentWrapper
 from qgym.utils.qiskit import Circuit, CircuitLike
 
 if TYPE_CHECKING:
     import networkx as nx
+    from qiskit.transpiler import AnalysisPass, Layout
     from stable_baselines3.common.base_class import BaseAlgorithm
 
-    from qgym.envs.initial_mapping import InitialMapping
+    from qgym.envs.initial_mapping import InitialMapping, InitialMappingState
 
 
 class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
     AgentWrapper[NDArray[np.int_]]
 ):
-    """Wrap any trained stable baselines 3 agent that inherits from
-    :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
+    """Wrap a trained stable baselines 3 agent.
 
-    The wrapper makes sure the agent upholds the Mapper protocol , which is required for
-    the qgym benchmarking tools.
+    The agent shoul inherit from
+    :class:`~stable_baselines3.common.base_class.BaseAlgorithm`. The wrapper makes sure
+    the agent upholds the Mapper protocol , which is required for the qgym benchmarking
+    tools.
     """
 
     def __init__(  # pylint: disable=useless-parent-delegation
@@ -52,7 +52,7 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
         """
         super().__init__(agent, env, max_steps, use_action_masking=use_action_masking)
 
-    def _prepare_episode(self, circuit: Circuit) -> dict[str, nx.Graph]:
+    def _prepare_episode(self, circuit: Circuit) -> dict[str, nx.Graph]:  # noqa: PLR6301
         """Extract the interaction graph from `circuit`."""
         interaction_graph = circuit.get_interaction_graph()
         return {"interaction_graph": interaction_graph}
@@ -61,8 +61,8 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
         self, circuit: Circuit
     ) -> NDArray[np.int_]:
         state = cast(
-            InitialMappingState,
-            self.env._state,  # pylint: disable=protected-access
+            "InitialMappingState",
+            self.env._state,  # noqa: SLF001
         )
         if not state.is_done():
             msg = (
@@ -88,17 +88,18 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
 
 
 class QiskitMapperWrapper:
-    """Wrap any qiskit mapper (Layout algorithm) such that it becomes compatible with
-    the qgym framework. This class wraps the qiskit mapper, such that it  is compatible
-    with the qgym Mapper protocol, which is required for the qgym benchmarking tools.
+    """Wrap any qiskit mapper (Layout algorithm).
+
+    This wrapper ensures that the mapper becomes compatible with the qgym framework.
+    This class wraps the qiskit mapper, such that it  is compatible with the qgym
+    Mapper protocol, which is required for the qgym benchmarking tools.
     """
 
     def __init__(self, qiskit_mapper: AnalysisPass) -> None:
         """Init of the :class:`QiskitMapperWrapper`.
 
         Args:
-            qiskit_mapper: The qiskit mapper (:class:`~qiskit.transpiler.Layout`) to
-                wrap.
+            qiskit_mapper: The qiskit mapper wrap.
         """
         self.mapper = qiskit_mapper
 

@@ -20,21 +20,25 @@ Usage:
 from __future__ import annotations
 
 from collections import deque
-from typing import Any, Dict
+from itertools import starmap
+from typing import TYPE_CHECKING, Any
 
 import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.generators.interaction import InteractionGenerator
 from qgym.templates.state import State
 from qgym.utils.input_parsing import has_fidelity
+
+if TYPE_CHECKING:
+    from qgym.generators.interaction import InteractionGenerator
+
 
 # pylint: disable=too-many-instance-attributes
 
 
-class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
+class RoutingState(State[dict[str, NDArray[np.int_]], int]):
     """The :class:`RoutingState` class."""
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -131,8 +135,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         Args:
             seed: Seed for the random number generator, should only be provided
                 (optionally) on the first reset call, i.e., before any learning is done.
-            circuit: Optional list of tuples of ints that the interaction gates via the
-                qubits the gates are acting on.
+            interaction_circuit: Optional 2D-Array of ints that the interaction gates
+                via the qubits the gates are acting on.
             _kwargs: Additional options to configure the reset.
 
         Returns:
@@ -146,10 +150,11 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         else:
             interaction_circuit = np.array(interaction_circuit)
             if interaction_circuit.ndim != 2 or interaction_circuit.shape[1] != 2:
-                raise ValueError(
+                msg = (
                     "'interaction_circuit' should have be an ArrayLike with shape "
                     "(n_interactions,2)."
                 )
+                raise ValueError(msg)
             self.interaction_circuit = interaction_circuit
 
         # Reset position, counters
@@ -284,8 +289,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
 
         if self.observe_legal_surpasses:
             is_legal_surpass = np.fromiter(
-                (self.is_legal_surpass(*gate) for gate in interaction_gates_ahead),
-                dtype=np.bool,
+                iter=starmap(self.is_legal_surpass, interaction_gates_ahead),
+                count=len(interaction_gates_ahead),
+                dtype=np.int8,
             )
             observation["is_legal_surpass"] = is_legal_surpass
 

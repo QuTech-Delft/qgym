@@ -29,7 +29,7 @@ class BenchmarkResult:
             Array with shape (5, n_metrics) containing the quartiles for each metric.
         """
         return cast(
-            NDArray[Any], np.quantile(self._data, [0, 0.25, 0.5, 0.75, 1], axis=1)
+            "NDArray[Any]", np.quantile(self._data, [0, 0.25, 0.5, 0.75, 1], axis=1)
         )
 
     def get_median(self) -> NDArray[Any]:
@@ -38,7 +38,7 @@ class BenchmarkResult:
         Returns:
             Array with shape (n_metrics,) containing the median value for each metric.
         """
-        return cast(NDArray[Any], np.median(self._data, axis=1))
+        return cast("NDArray[Any]", np.median(self._data, axis=1))
 
     def get_mean(self) -> NDArray[Any]:
         """Compute the mean for each metric.
@@ -46,9 +46,9 @@ class BenchmarkResult:
         Returns:
             Array with shape (n_metrics,) containing the mean value for each metric.
         """
-        return cast(NDArray[Any], np.mean(self._data, axis=1))
+        return cast("NDArray[Any]", np.mean(self._data, axis=1))
 
-    def __array__(self, dtype: DTypeLike = None, copy: bool = True) -> NDArray[Any]:
+    def __array__(self, dtype: DTypeLike = None, *, copy: bool = True) -> NDArray[Any]:
         """Convert the :class:`BenchmarkResult` data to an array."""
         return np.array(self._data, dtype=dtype, copy=copy)
 
@@ -60,7 +60,7 @@ class BenchmarkResult:
         """Check if this :class:`BenchmarkResult` is equal to `other`.
 
         Args:
-            Other: object to compare to.
+            other: object to compare to.
 
         Returns:
             Boolean value stating wether `self` is equal to `other`.

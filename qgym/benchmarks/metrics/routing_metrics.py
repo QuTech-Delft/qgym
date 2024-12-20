@@ -11,13 +11,16 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections import deque
-from collections.abc import Iterable, Iterator
-from typing import Protocol, SupportsInt, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, SupportsInt, runtime_checkable
 
 from qgym.benchmarks.benchmark_result import BenchmarkResult
-from qgym.templates.pass_protocols import Router
 from qgym.utils import Circuit, CircuitLike
 from qgym.utils.input_validation import check_int
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
+    from qgym.templates.pass_protocols import Router
 
 
 # pylint: disable=too-few-public-methods
@@ -51,7 +54,7 @@ class InteractionRatioLoss(RoutingMetric):
 
         Args:
             input_circuit: Input circuit before routing was performed.
-            routed_circut: Routed version of the input circuit.
+            routed_circuit: Routed version of the input circuit.
 
         Returns:
             The routing solution quality ratio.

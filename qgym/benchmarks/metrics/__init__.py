@@ -16,6 +16,6 @@ __all__ = [
     "InitialMappingBenchmarker",
     "InitialMappingMetric",
     "InteractionRatioLoss",
-    "RoutingMetric",
     "RoutingBenchmarker",
+    "RoutingMetric",
 ]

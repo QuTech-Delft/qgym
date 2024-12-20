@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Iterator
 from copy import deepcopy
-from typing import Type, cast
+from typing import TYPE_CHECKING, cast
 
 import networkx as nx
 import numpy as np
 import pytest
-from numpy.typing import NDArray
 
 from qgym.envs.initial_mapping.initial_mapping_rewarders import (
     BasicRewarder,
@@ -17,6 +15,11 @@ from qgym.envs.initial_mapping.initial_mapping_rewarders import (
 from qgym.envs.initial_mapping.initial_mapping_state import InitialMappingState
 from qgym.generators.graph import NullGraphGenerator
 from qgym.templates.rewarder import Rewarder
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    from numpy.typing import NDArray
 
 
 def _episode_generator(
@@ -44,7 +47,7 @@ def _episode_generator(
     ),
 )
 def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
-    return cast(Rewarder, request.param)
+    return cast("Rewarder", request.param)
 
 
 @pytest.fixture(
@@ -56,7 +59,7 @@ def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
     ),
 )
 def rewarder_class_fixture(request: pytest.FixtureRequest) -> type[Rewarder]:
-    return cast(Type[Rewarder], request.param)
+    return cast("type[Rewarder]", request.param)
 
 
 def test_illegal_actions(rewarder: Rewarder) -> None:
@@ -80,7 +83,7 @@ def test_inheritance(rewarder: Rewarder) -> None:
 
 
 @pytest.mark.parametrize(
-    "illegal_action_penalty,reward_per_edge,penalty_per_edge,reward_range",
+    ("illegal_action_penalty", "reward_per_edge", "penalty_per_edge", "reward_range"),
     [
         (-1, 0, 0, (-float("inf"), 0)),
         (0, 1, 0, (0, float("inf"))),
@@ -118,7 +121,7 @@ full_graph = np.array(([[0, 1, 1], [1, 0, 1], [1, 1, 0]]), dtype=np.int_)
 
 
 @pytest.mark.parametrize(
-    "connection_graph_matrix, interaction_graph_matrix, rewards",
+    ("connection_graph_matrix", "interaction_graph_matrix", "rewards"),
     [
         (empty_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, -1, -3]),
@@ -151,7 +154,7 @@ Tests for the SingleStepRewarder
 
 
 @pytest.mark.parametrize(
-    "connection_graph_matrix,interaction_graph_matrix,rewards",
+    ("connection_graph_matrix", "interaction_graph_matrix", "rewards"),
     [
         (empty_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, -1, -2]),
@@ -184,7 +187,7 @@ Tests for the EpisodeRewarder
 
 
 @pytest.mark.parametrize(
-    "connection_graph_matrix, interaction_graph_matrix, rewards",
+    ("connection_graph_matrix", "interaction_graph_matrix", "rewards"),
     [
         (empty_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, 0, -3]),
@@ -221,7 +224,7 @@ fidelity_graph = np.array(
 
 
 @pytest.mark.parametrize(
-    "connection_graph_matrix, interaction_graph_matrix, rewards",
+    ("connection_graph_matrix", "interaction_graph_matrix", "rewards"),
     [
         (empty_graph, empty_graph, [0, 0, 0]),
         (empty_graph, full_graph, [0, 0, -3]),

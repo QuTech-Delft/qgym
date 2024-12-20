@@ -4,29 +4,28 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from qiskit.transpiler.basepasses import TransformationPass
-
-from qgym.envs.routing import RoutingState
 from qgym.templates.wrappers import AgentWrapper
 from qgym.utils import Circuit
 
 if TYPE_CHECKING:
     import numpy as np
     from numpy.typing import NDArray
+    from qiskit.transpiler.basepasses import TransformationPass
     from stable_baselines3.common.base_class import BaseAlgorithm
 
-    from qgym.envs.routing import Routing
+    from qgym.envs.routing import Routing, RoutingState
     from qgym.utils import CircuitLike
 
 
 class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
     AgentWrapper[Circuit]
 ):
-    """Wrap any trained stable baselines 3 agent that inherits from
-    :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
+    """Wrap trained stable baselines 3 agent.
 
-    The wrapper makes sure the agent upholds the QubitRouting protocol , which is
-    required for the qgym benchmarking tools.
+    The agent should inherit from
+    :class:`~stable_baselines3.common.base_class.BaseAlgorithm`. The wrapper makes sure
+    the agent upholds the QubitRouting protocol, which is required for the qgym
+    benchmarking tools.
     """
 
     def __init__(  # pylint: disable=useless-parent-delegation
@@ -52,14 +51,14 @@ class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
         """
         super().__init__(agent, env, max_steps, use_action_masking=use_action_masking)
 
-    def _prepare_episode(self, circuit: Circuit) -> dict[str, NDArray[np.int_]]:
+    def _prepare_episode(self, circuit: Circuit) -> dict[str, NDArray[np.int_]]:  # noqa: PLR6301
         """Extract the interaction circuit from `circuit`."""
         interaction_circuit = circuit.get_interaction_circuit()
         return {"interaction_circuit": interaction_circuit}
 
     def _postprocess_episode(self, circuit: Circuit) -> Circuit:
         """Route `circuit` based on the findings of the current episode."""
-        state = cast(RoutingState, self.env._state)  # pylint: disable=protected-access
+        state = cast("RoutingState", self.env._state)  # noqa: SLF001
         if not state.is_done():
             msg = (
                 "routing not found, "

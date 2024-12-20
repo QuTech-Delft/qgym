@@ -1,5 +1,4 @@
-"""This module contains the :class:`CommutationRulebook` class together with basic
-commutation rules used in the :class:`~qgym.envs.Scheduling` environment.
+"""This module contains the :class:`CommutationRulebook` and some commutation rules.
 
 Example:
     The code block below shows how to set up a :class:`CommutationRulebook`, with the
@@ -25,18 +24,20 @@ Example:
 
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
-from numpy.typing import NDArray
 
-from qgym.custom_types import Gate
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
+    from qgym.custom_types import Gate
 
 
 class CommutationRulebook:
     """Commutation rulebook used in the :class:`~qgym.envs.Scheduling` environment."""
 
-    def __init__(self, default_rules: bool = True) -> None:
+    def __init__(self, *, default_rules: bool = True) -> None:
         """Init of the :class:`CommutationRulebook`.
 
         Args:
@@ -44,7 +45,6 @@ class CommutationRulebook:
                 that gates with disjoint qubits commute and that gates that are exactly
                 the same commute. If ``False``, then no rules will be initialized.
         """
-
         self._rules: list[Callable[[Gate, Gate], bool]]
         if default_rules:
             self._rules = [disjoint_qubits, same_gate]
@@ -52,8 +52,10 @@ class CommutationRulebook:
             self._rules = []
 
     def make_blocking_matrix(self, circuit: list[Gate]) -> NDArray[np.int_]:
-        """Make a square array of shape (len(circuit), len(circuit)), with dependencies
-        based on the given commutation rules.
+        """Make a square array of shape (len(circuit), len(circuit)).
+
+        The values of the blocking matrix are computed using the provided commutation
+        rules.
 
         Args:
             circuit: Circuit to check dependencies for.
@@ -83,10 +85,7 @@ class CommutationRulebook:
         Returns:
             Boolean value indicating whether `gate1` commutes with `gate2`.
         """
-        for rule in self._rules:
-            if rule(gate1, gate2):
-                return True
-        return False
+        return any(rule(gate1, gate2) for rule in self._rules)
 
     def add_rule(self, rule: Callable[[Gate, Gate], bool]) -> None:
         """Add a new commutation rule to the rulebook.
@@ -106,8 +105,7 @@ class CommutationRulebook:
                 text += f"{rule.__name__}, "
             else:
                 text += f"{rule}, "
-        text = text[:-2] + "])"
-        return text
+        return text[:-2] + "])"
 
 
 def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
@@ -120,12 +118,7 @@ def disjoint_qubits(gate1: Gate, gate2: Gate) -> bool:
     Returns:
         Boolean value stating whether the gates are disjoint.
     """
-    return bool(
-        gate1.q1 != gate2.q1
-        and gate1.q1 != gate2.q2
-        and gate1.q2 != gate2.q1
-        and gate1.q2 != gate2.q2
-    )
+    return {gate1.q1, gate1.q2}.isdisjoint({gate2.q1, gate2.q2})
 
 
 def same_gate(gate1: Gate, gate2: Gate) -> bool:

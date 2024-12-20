@@ -3,18 +3,21 @@
 from __future__ import annotations
 
 from collections import deque
-from collections.abc import Iterable
 from copy import deepcopy
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 import networkx as nx
 import numpy as np
-from numpy.typing import NDArray
 from qiskit import QuantumCircuit
 from qiskit.circuit.library.standard_gates import SwapGate
 from qiskit.converters import circuit_to_dag, dag_to_circuit
 from qiskit.dagcircuit import DAGCircuit
 from qiskit.transpiler import Layout
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from numpy.typing import NDArray
 
 
 class Circuit:
@@ -69,7 +72,6 @@ class Circuit:
         Returns:
             Interaction circuit representation of the circuit.
         """
-
         if self.dag.multi_qubit_ops():
             msg = "no 3+ qubit operations are supported"
             raise ValueError(msg)
@@ -96,7 +98,7 @@ class Circuit:
         """Insert the provided swap gates in the quantum circuit.
 
         Args:
-            swaps_insterted: Swap gated to insert. Iterable of tuples (g_idx, q1, q2).
+            swaps_inserted: Swap gated to insert. Iterable of tuples (g_idx, q1, q2).
                 Each tuple represents a swap gate, where g_idx is the index of the two
                 qubit gate before which the swap gate needs to be inserted. The swap is
                 performed on q1 and q2.

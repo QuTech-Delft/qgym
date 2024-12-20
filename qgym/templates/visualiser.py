@@ -5,20 +5,23 @@ All visualisers should inherit from ``Visualiser``.
 
 from __future__ import annotations
 
-from abc import abstractmethod
-from typing import Any
+import contextlib
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pygame
-from numpy.typing import NDArray
 
-from qgym.utils.visualisation.typing import Color, Font, Surface
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
+    from qgym.utils.visualisation.typing import Color, Font, Surface
 
 
 class RenderData:
     """Class containing usefull data for rendering like screen, font and colors."""
 
-    __slots__ = ["screen", "font", "colors", "render_mode"]
+    __slots__ = ["colors", "font", "render_mode", "screen"]
 
     def __init__(
         self,
@@ -27,6 +30,14 @@ class RenderData:
         colors: dict[str, Color],
         render_mode: str,
     ) -> None:
+        """Init of the :class:`RenderData` class.
+
+        Args:
+            screen: Screen to store.
+            font: Dictionary of fonts to store.
+            colors: Dictionary of colors to store.
+            render_mode: Render mode to store.
+        """
         self.screen = screen
         self.font = font
         self.colors = colors
@@ -43,7 +54,7 @@ class RenderData:
         return self.screen.get_height()
 
 
-class Visualiser:
+class Visualiser(ABC):
     """Visualizer for the the current state of the problem."""
 
     # --- These attributes should be set in any subclass ---
@@ -51,10 +62,16 @@ class Visualiser:
 
     @abstractmethod
     def __init__(self, render_mode: str, *args: list[Any]) -> None:
-        raise NotImplementedError
+        """Init of the :class:`Visualiser`.
+
+        Args:
+            render_mode: Render mode to use. Should be stored in an instance
+                of :class:`RenderData`.
+            args: Extra positional arguments.
+        """
 
     @abstractmethod
-    def render(self, state: Any) -> None | NDArray[np.int_]:
+    def render(self, state: Any) -> NDArray[np.int_] | None:
         """Render the current state using ``pygame``."""
         raise NotImplementedError
 
@@ -69,7 +86,7 @@ class Visualiser:
         if self.render_data.render_mode == "human":
             self.render(state)
 
-    def _display(self) -> None | NDArray[np.int_]:
+    def _display(self) -> NDArray[np.int_] | None:
         """Display the current state using ``pygame``.
 
         The render function should call this method at the end.
@@ -96,15 +113,16 @@ class Visualiser:
         msg += " supported modes are 'human' and 'rgb_array'."
         raise ValueError(msg)
 
+    @staticmethod
     def _start_screen(
-        self, screen_name: str, render_mode: str, screen_dimensions: tuple[int, int]
+        screen_name: str, render_mode: str, screen_dimensions: tuple[int, int]
     ) -> Surface:
         """Start a pygame screen in the given mode.
 
         Args:
             screen_name: Name of the screen.
             render_mode: The render mode to use. Choose from 'human' or 'rgb_array'.
-            screen_dimension: Width and height of the screen.
+            screen_dimensions: Width and height of the screen.
 
         Raises:
             ValueError: When an invalid mode is provided.
@@ -113,9 +131,8 @@ class Visualiser:
             The initialized screen.
         """
         if not isinstance(render_mode, str):
-            raise TypeError(
-                f"'rendermode' of type {type(render_mode)} has no screen to start"
-            )
+            msg = f"'rendermode' of type {type(render_mode)} has no screen to start"
+            raise TypeError(msg)
 
         pygame.display.init()
         if render_mode == "human":
@@ -123,21 +140,21 @@ class Visualiser:
         elif render_mode == "rgb_array":
             screen = pygame.Surface(screen_dimensions)
         else:
-            raise ValueError(
+            msg = (
                 f"You provided an invalid render mode '{render_mode}', the only "
-                "supported modes are 'human' and 'rgb_array'."
+                "supported modes are 'human' and 'rgb_array'"
             )
+            raise ValueError(msg)
         pygame.display.set_caption(screen_name)
         return screen
 
-    def close(self) -> None:
+    @staticmethod
+    def close() -> None:
         """Close the screen used for rendering."""
         # Sometimes when we try to quit pygame we get a TypeError and the environment
         # crashes. This is a botch to prevent that.
-        try:
+        with contextlib.suppress(TypeError):
             pygame.quit()
-        except TypeError:
-            pass
 
     @property
     def screen_width(self) -> int:

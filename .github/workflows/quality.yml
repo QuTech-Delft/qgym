@@ -24,7 +24,7 @@ jobs:
         run: mypy qgym --strict --install-types --non-interactive --show-error-context --show-error-codes
 
 
-  pylint:
+  lint:
     runs-on: ubuntu-latest
     env:
       UV_SYSTEM_PYTHON: 1
@@ -40,6 +40,6 @@ jobs:
             pip install --upgrade pip
             pip install uv
       - name: Install requirements
-        run: uv pip install pylint .
-      - name: Run pylint
-        run: pylint qgym
+        run: uv pip install ruff .
+      - name: Run ruff linter
+        run: ruff check
