@@ -13,15 +13,6 @@ from qgym.benchmarks.metrics import (
 from qgym.generators import MaxCutQAOAGenerator
 from qgym.utils import Circuit, CircuitLike
 
-from qgym.benchmarks import BenchmarkResult
-from qgym.benchmarks.metrics import (
-    InteractionRatioLoss,
-    RoutingBenchmarker,
-    RoutingMetric,
-)
-from qgym.generators import MaxCutQAOAGenerator
-from qgym.utils import Circuit, CircuitLike
-
 
 def circuit1() -> QuantumCircuit:
     circuit = QuantumCircuit(5)

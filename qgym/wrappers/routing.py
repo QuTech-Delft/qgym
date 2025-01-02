@@ -69,7 +69,7 @@ class AgentRoutingWrapper(  # pylint: disable=too-few-public-methods
 
     def compute_routing(self, circuit: CircuitLike) -> Circuit:
         """Route the `circuit` using the provided `agent` and `env`.
-        
+
         Args:
             circuit: Quantum circuit to route. The circuit must be a physical circuit,
                 i.e., contain exactly one qubit register with name `"q"` and should
