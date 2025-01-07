@@ -57,8 +57,7 @@ test = [
     "scipy>=1.7.3",
 ]
 dev = [
-    "black[jupyter]",
-    "isort",
+    "ruff",
     "matplotlib",
     "notebook",
     "pytest",
@@ -68,7 +67,6 @@ dev = [
     "sphinx-rtd-theme",
     "stable-baselines3>=2.0.0",
     "mypy",
-    "pylint",
     "scipy>=1.7.3",
 ]
 
