@@ -89,7 +89,7 @@ class RoutingState(State[dict[str, NDArray[np.int_]], int]):
         """An array of 2-tuples of integers, where every tuple represents a, not
         specified, gate acting on the two qubits labeled by the integers in the tuples.
         """
-        self.mapping = np.arange(self.n_qubits)
+        self.mapping = np.arange(self.n_qubits, dtype=np.int_)
         """Array of which each index represents a logical qubit and each value
         represents a physical qubit.
         """
