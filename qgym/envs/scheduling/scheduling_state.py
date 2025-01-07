@@ -117,7 +117,7 @@ class SchedulingState(
         self.circuit_info.dependencies = np.zeros_like(self.circuit_info.dependencies)
 
         for gate_idx, blocking_row in enumerate(self.circuit_info.blocking_matrix):
-            blocking_gates = blocking_row[gate_idx:].nonzero()[0]
+            blocking_gates: NDArray[np.int_] = blocking_row[gate_idx:].nonzero()[0]
             for depth in range(
                 min(self.circuit_info.dependencies.shape[0], blocking_gates.shape[0])
             ):

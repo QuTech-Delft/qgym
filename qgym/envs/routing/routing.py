@@ -85,7 +85,7 @@ Action Space:
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
@@ -113,10 +113,8 @@ if TYPE_CHECKING:
     )
 
 
-class Routing(Environment[dict[str, NDArray[np.int_]], int]):
+class Routing(Environment[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], int]):
     """RL environment for the routing problem of OpenQL."""
-
-    _state: RoutingState  # type: ignore[assignment]
 
     def __init__(  # noqa: PLR0913
         self,
@@ -220,7 +218,7 @@ class Routing(Environment[dict[str, NDArray[np.int_]], int]):
         *,
         seed: int | None = None,
         options: Mapping[str, Any] | None = None,
-    ) -> tuple[dict[str, NDArray[np.int_]], dict[str, Any]]:
+    ) -> tuple[dict[str, NDArray[np.int_] | NDArray[np.int8]], dict[str, Any]]:
         r"""Reset the state and set/create a new interaction circuit.
 
         To be used after an episode is finished.

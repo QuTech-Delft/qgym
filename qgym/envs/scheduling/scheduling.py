@@ -160,7 +160,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from numpy.typing import NDArray
@@ -184,6 +184,8 @@ class Scheduling(
     Environment[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
 ):
     """RL environment for the scheduling problem."""
+
+    _state: SchedulingState
 
     def __init__(  # noqa: PLR0913
         self,
@@ -297,13 +299,12 @@ class Scheduling(
             Human or encoded quantum circuit.
         """
         mode = check_string(mode, "mode", lower=True)
-        state = cast("SchedulingState", self._state)
-        encoded_circuit = state.circuit_info.encoded
+        encoded_circuit = self._state.circuit_info.encoded
         if mode == "encoded":
             return deepcopy(encoded_circuit)
 
         if mode == "human":
-            gate_encoder = state.utils.gate_encoder
+            gate_encoder = self._state.utils.gate_encoder
             return gate_encoder.decode_gates(encoded_circuit)
 
         msg = f"mode must be 'human' or 'encoded', but was {mode}"
