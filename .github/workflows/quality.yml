@@ -19,7 +19,7 @@ jobs:
           pip install --upgrade pip
           pip install uv
       - name: Install requirements
-        run: uv pip install mypy .
+        run: uv pip install mypy types-decorator types-redis types-tabulate .
       - name: Run mypy
         run: mypy qgym --strict --install-types --non-interactive --show-error-context --show-error-codes
 
