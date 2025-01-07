@@ -116,6 +116,8 @@ if TYPE_CHECKING:
 class Routing(Environment[dict[str, NDArray[np.int_]], int]):
     """RL environment for the routing problem of OpenQL."""
 
+    _state: RoutingState # type: ignore[assignment]
+
     def __init__(  # noqa: PLR0913
         self,
         connection_graph: nx.Graph | ArrayLike | Gridspecs,

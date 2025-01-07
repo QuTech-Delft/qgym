@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from collections import deque
 from itertools import starmap
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Union
 
 import networkx as nx
 import numpy as np
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 # pylint: disable=too-many-instance-attributes
 
 
-class RoutingState(State[dict[str, NDArray[np.int_]], int]):
+class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], int]):
     """The :class:`RoutingState` class."""
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -263,7 +263,7 @@ class RoutingState(State[dict[str, NDArray[np.int_]], int]):
 
     def obtain_observation(
         self,
-    ) -> dict[str, NDArray[np.int_]]:
+    ) -> dict[str, NDArray[np.int_] | NDArray[np.int8]]:
         """Observe the current state.
 
         Returns:
@@ -279,6 +279,7 @@ class RoutingState(State[dict[str, NDArray[np.int_]], int]):
             constant_values=self.n_qubits,
         )
 
+        observation: dict[str, NDArray[np.int_] | NDArray[np.int8]]
         observation = {
             "interaction_gates_ahead": interaction_gates_ahead.flatten(),
             "mapping": self.mapping,
@@ -291,7 +292,7 @@ class RoutingState(State[dict[str, NDArray[np.int_]], int]):
             is_legal_surpass = np.fromiter(
                 iter=starmap(self.is_legal_surpass, interaction_gates_ahead),
                 count=len(interaction_gates_ahead),
-                dtype=np.int_,
+                dtype=np.int8,
             )
             observation["is_legal_surpass"] = is_legal_surpass
 
