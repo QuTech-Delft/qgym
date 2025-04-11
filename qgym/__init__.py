@@ -2,14 +2,15 @@
 
 The qgym package consist of gyms and tools used for RL environments in the quantum
 computing domain. It's main purpose is to easily create RL environments for the
-different passes of the OpenQL framework, by simply initializing an environment class.
-This abstraction of the environment allows RL developers to develop RL agents to improve
-the OpenQL framework, without requiring prior knowledge of OpenQL.
+different passes of the compilation process of quantum circuits, by simply initializing
+an environment class. This abstraction of the environment allows RL developers to
+develop RL agents to improve a compilation framework, without requiring prior knowledge
+of quantum compilation.
 
 
 Example:
-    We want to create an environment for the OpenQL pass of initial mapping for a system
-    with a QPU topology of 3x3. Using the ``qgym`` package this becomes:
+    We want to create an environment for the compilation pass of initial mapping for a
+    system with a QPU topology of 3x3. Using the ``qgym`` package this becomes:
 
     .. code-block:: python
 

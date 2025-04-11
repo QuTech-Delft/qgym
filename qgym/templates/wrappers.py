@@ -26,7 +26,7 @@ class AgentWrapper(  # pylint: disable=too-few-public-methods
 ):
     """Wrap a trained stable baselines 3 agent.
 
-    The agent should inherits from
+    The agent should inherit from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`.
     """
 
@@ -43,7 +43,8 @@ class AgentWrapper(  # pylint: disable=too-few-public-methods
         Args:
             agent: agent trained on the provided environment.
             env: environment the agent was trained on.
-            max_steps: maximum number steps the `agent` can take to complete an episode.
+            max_steps: maximum number of steps the `agent` can take to complete an
+                episode.
             use_action_masking: If ``True`` it is assumed that action masking was used
                 during training. The `env` should then have a `action_masks` method
                 and the `predict` method of `agent` should accept the keyword argument
@@ -90,7 +91,7 @@ class AgentWrapper(  # pylint: disable=too-few-public-methods
 
     @abstractmethod
     def _postprocess_episode(self, circuit: Circuit) -> WrapperOutputT:
-        """Postprocess the epsiode.
+        """Postprocess the episode.
 
         Extract the useful information from ``self.env`` and do something with it.
         """

@@ -85,7 +85,11 @@ class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], i
         """Sets the maximum amount of gates in the interaction_circuit, when a new
         interaction_circuit is generated.
         """
-        self.interaction_circuit = next(self.interaction_generator)
+        self.interaction_circuit = np.pad(
+                next(self.interaction_generator),
+                ((0, max_observation_reach), (0, 0)),
+                constant_values=self.n_qubits,
+        )
         """An array of 2-tuples of integers, where every tuple represents a, not
         specified, gate acting on the two qubits labeled by the integers in the tuples.
         """
@@ -135,8 +139,8 @@ class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], i
         Args:
             seed: Seed for the random number generator, should only be provided
                 (optionally) on the first reset call, i.e., before any learning is done.
-            interaction_circuit: Optional 2D-Array of ints that the interaction gates
-                via the qubits the gates are acting on.
+            interaction_circuit: Optional 2D-Array of ints. Each in represent a qubit
+                and a tuple of two ints represents an interaction between these qubits.
             _kwargs: Additional options to configure the reset.
 
         Returns:
@@ -146,7 +150,11 @@ class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], i
             self.seed(seed)
 
         if interaction_circuit is None:
-            self.interaction_circuit = next(self.interaction_generator)
+            self.interaction_circuit = np.pad(
+                next(self.interaction_generator),
+                ((0, self.max_observation_reach), (0, 0)),
+                constant_values=self.n_qubits,
+            )
         else:
             interaction_circuit = np.array(interaction_circuit)
             if interaction_circuit.ndim != 2 or interaction_circuit.shape[1] != 2:
@@ -155,7 +163,11 @@ class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], i
                     "(n_interactions,2)."
                 )
                 raise ValueError(msg)
-            self.interaction_circuit = interaction_circuit
+            self.interaction_circuit = np.pad(
+                interaction_circuit,
+                ((0, self.max_observation_reach), (0, 0)),
+                constant_values=self.n_qubits,
+            )
 
         # Reset position, counters
         self.position = 0
@@ -272,12 +284,6 @@ class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], i
         # construct interaction_gates_ahead
         gate_slice = slice(self.position, self.position + self.max_observation_reach)
         interaction_gates_ahead = self.interaction_circuit[gate_slice]
-        n_pad = self.max_observation_reach - len(interaction_gates_ahead)
-        interaction_gates_ahead = np.pad(
-            interaction_gates_ahead,
-            ((0, n_pad), (0, 0)),
-            constant_values=self.n_qubits,
-        )
 
         observation: dict[str, NDArray[np.int_] | NDArray[np.int8]]
         observation = {
@@ -303,7 +309,7 @@ class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], i
 
         Returs: Boolean value stating whether we are in a final state.
         """
-        return self.position == len(self.interaction_circuit)
+        return self.position == len(self.interaction_circuit) - self.max_observation_reach
 
     def _place_swap_gate(
         self,

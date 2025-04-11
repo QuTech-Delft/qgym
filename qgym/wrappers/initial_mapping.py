@@ -23,7 +23,7 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
 ):
     """Wrap a trained stable baselines 3 agent.
 
-    The agent shoul inherit from
+    The agent should inherit from
     :class:`~stable_baselines3.common.base_class.BaseAlgorithm`. The wrapper makes sure
     the agent upholds the Mapper protocol , which is required for the qgym benchmarking
     tools.
@@ -42,7 +42,7 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
         Args:
             agent: agent trained on the initial mapping environment.
             env: environment the agent was trained on.
-            max_steps: maximum number steps the `agent` can take to compute the mapping.
+            max_steps: maximum number of steps the `agent` can take to compute the mapping.
                 If the mapping is not found after `max_steps` steps, the algorithm stops
                 and raises an error.
             use_action_masking: If ``True`` it is assumed that action masking was used
@@ -91,7 +91,7 @@ class QiskitMapperWrapper:
     """Wrap any qiskit mapper (Layout algorithm).
 
     This wrapper ensures that the mapper becomes compatible with the qgym framework.
-    This class wraps the qiskit mapper, such that it  is compatible with the qgym
+    This class wraps the qiskit mapper, such that it is compatible with the qgym
     Mapper protocol, which is required for the qgym benchmarking tools.
     """
 

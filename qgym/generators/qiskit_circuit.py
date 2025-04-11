@@ -44,10 +44,6 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
                 for the underlying MaxCut problem.
             n_layers: Number of times the cost and mixer layers should be repeated.
             seed: Seed to use for the random graph and parameter generation.
-
-        Returns:
-            Simple QAOA circuit for the MaxCut problem on the provided `graph` of depth
-            `self.p` with random parameters.
         """
         self.n_nodes = check_int(n_nodes, "n_nodes", l_bound=1)
         self.edge_probability = check_real(
@@ -58,7 +54,12 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
         self.finite = False
 
     def __next__(self) -> QuantumCircuit:
-        """Simple QAOA circuit for the MaxCut problem of a randomly generated graph."""
+        """Simple QAOA circuit for the MaxCut problem of a randomly generated graph.
+        
+        Returns:
+            Simple QAOA circuit for the MaxCut problem on the provided `graph` of depth
+            `self.p` with random parameters.
+        """
         graph = nx.fast_gnp_random_graph(self.n_nodes, self.edge_probability, self.rng)
         return self._maxcut_qaoa_circuit(graph)
 

@@ -201,6 +201,7 @@ class Routing(Environment[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], 
             observe_legal_surpasses=observe_legal_surpasses,
             observe_connection_graph=observe_connection_graph,
         )
+        self._old_state = deepcopy(self._state)
         self.observation_space = self._state.create_observation_space()
 
         # Define attributes defined in parent class
@@ -236,3 +237,25 @@ class Routing(Environment[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], 
         """
         # call super method for dealing with the general stuff
         return super().reset(seed=seed, options=options)
+    
+    def step(self, action):
+        old_state: RoutingState = self._old_state
+        current_state: RoutingState = self._state
+        
+        old_state.steps_done = current_state.steps_done
+        old_state.interaction_circuit = current_state.interaction_circuit
+        old_state.mapping = current_state.mapping.copy()
+        old_state.position = current_state.position
+        old_state.swap_gates_inserted = current_state.swap_gates_inserted.copy()
+
+        self._state.update_state(action)
+        if self._visualiser is not None:
+            self._visualiser.step(self._state)
+
+        return (
+            self._state.obtain_observation(),
+            self._compute_reward(old_state, action),
+            self._state.is_done(),
+            self._state.is_truncated(),
+            self._state.obtain_info(),
+        )

@@ -39,7 +39,7 @@ simply be installed by using:
 
    pip install qgym[tutorial]
 
-Currently :obj:`~qgym` has support for Python 3.7, 3.8, 3.9, 3.10 and 3.11.
+Currently :obj:`~qgym` has support for Python 3.9, 3.10, 3.11, 3.12 and 3.13.
 
 
 Publication

@@ -47,13 +47,13 @@ class Circuit:
         return circuit
 
     def get_interaction_graph(self) -> nx.Graph:
-        """Create and interaction graph of the circuit.
+        """Create an interaction graph of the circuit.
 
         Returns:
             Interaction graph of the circuit.
         """
         if self.dag.multi_qubit_ops():
-            msg = "no 3+ qubit operations are supported"
+            msg = "3+ qubit operations are not supported"
             raise ValueError(msg)
 
         layout = Layout.generate_trivial_layout(*self.dag.qregs.values())
@@ -67,13 +67,13 @@ class Circuit:
         return interaction_graph
 
     def get_interaction_circuit(self) -> NDArray[np.int_]:
-        """Create and interaction circuit from the circuit.
+        """Create an interaction circuit from the circuit.
 
         Returns:
             Interaction circuit representation of the circuit.
         """
         if self.dag.multi_qubit_ops():
-            msg = "no 3+ qubit operations are supported"
+            msg = "3+ qubit operations are not supported"
             raise ValueError(msg)
 
         if len(self.dag.qregs) != 1 or self.dag.qregs.get("q", None) is None:
@@ -98,7 +98,7 @@ class Circuit:
         """Insert the provided swap gates in the quantum circuit.
 
         Args:
-            swaps_inserted: Swap gated to insert. Iterable of tuples (g_idx, q1, q2).
+            swaps_inserted: Swap gates to insert. Iterable of tuples (g_idx, q1, q2).
                 Each tuple represents a swap gate, where g_idx is the index of the two
                 qubit gate before which the swap gate needs to be inserted. The swap is
                 performed on q1 and q2.
