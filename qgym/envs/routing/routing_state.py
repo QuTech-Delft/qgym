@@ -86,9 +86,9 @@ class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], i
         interaction_circuit is generated.
         """
         self.interaction_circuit = np.pad(
-                next(self.interaction_generator),
-                ((0, max_observation_reach), (0, 0)),
-                constant_values=self.n_qubits,
+            next(self.interaction_generator),
+            ((0, max_observation_reach), (0, 0)),
+            constant_values=self.n_qubits,
         )
         """An array of 2-tuples of integers, where every tuple represents a, not
         specified, gate acting on the two qubits labeled by the integers in the tuples.
@@ -309,7 +309,9 @@ class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], i
 
         Returs: Boolean value stating whether we are in a final state.
         """
-        return self.position == len(self.interaction_circuit) - self.max_observation_reach
+        return (
+            self.position == len(self.interaction_circuit) - self.max_observation_reach
+        )
 
     def _place_swap_gate(
         self,

@@ -42,9 +42,9 @@ class AgentMapperWrapper(  # pylint: disable=too-few-public-methods
         Args:
             agent: agent trained on the initial mapping environment.
             env: environment the agent was trained on.
-            max_steps: maximum number of steps the `agent` can take to compute the mapping.
-                If the mapping is not found after `max_steps` steps, the algorithm stops
-                and raises an error.
+            max_steps: maximum number of steps the `agent` can take to compute the
+                mapping. If the mapping is not found after `max_steps` steps, the
+                algorithm stops and raises an error.
             use_action_masking: If ``True`` it is assumed that action masking was used
                 during training. The `env` should then have a `action_masks` method
                 and the `predict` method of `agent` should accept the keyword argument

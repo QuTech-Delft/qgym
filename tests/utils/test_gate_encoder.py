@@ -35,7 +35,7 @@ def test_learn_gates(empty_encoder: GateEncoder, gates: Iterable[str]) -> None:
 
 
 def test_duplicate_gates_warning(empty_encoder: GateEncoder) -> None:
-    with pytest.warns(UserWarning):
+    with pytest.warns(UserWarning, match="'gates' contains multiple entries of h"):
         empty_encoder.learn_gates(["x", "y", "z", "cnot", "h", "h", "z"])
 
     assert empty_encoder._encoding_dct == {"x": 1, "y": 2, "z": 3, "cnot": 4, "h": 5}

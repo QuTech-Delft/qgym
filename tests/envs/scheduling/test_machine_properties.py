@@ -77,12 +77,11 @@ def test_add_gates(empty_mp: MachineProperties) -> None:
     assert empty_mp.gates == {"x": 1, "y": 2, "z": 3}
     assert empty_mp.n_gates == 3
 
-    with pytest.warns(UserWarning) as record:
+    msg = "Gate 'x was already given. Overwriting it with the new value."
+    with pytest.warns(UserWarning, match=msg):
         empty_mp.add_gates({"x": 4})
-        assert empty_mp.gates == {"x": 4, "y": 2, "z": 3}
-        assert empty_mp.n_gates == 3
-
-    assert len(record) == 1
+    assert empty_mp.gates == {"x": 4, "y": 2, "z": 3}
+    assert empty_mp.n_gates == 3
 
 
 @pytest.mark.parametrize(

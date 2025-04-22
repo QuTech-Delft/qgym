@@ -55,7 +55,7 @@ class MaxCutQAOAGenerator(Iterator[QuantumCircuit]):
 
     def __next__(self) -> QuantumCircuit:
         """Simple QAOA circuit for the MaxCut problem of a randomly generated graph.
-        
+
         Returns:
             Simple QAOA circuit for the MaxCut problem on the provided `graph` of depth
             `self.p` with random parameters.

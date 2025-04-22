@@ -196,21 +196,13 @@ def test_warn_if_positive() -> None:
     warn_if_positive(0, "test")
     warn_if_positive(-1.0, "test")
 
-    with pytest.warns(UserWarning) as record:
+    with pytest.warns(UserWarning, match="'test' was positive"):
         warn_if_positive(1, "test")
-
-    assert len(record) == 1
-    assert isinstance(record[0].message, Warning)
-    assert record[0].message.args[0] == "'test' was positive"
 
 
 def test_warn_if_negative() -> None:
     warn_if_negative(0, "test")
     warn_if_negative(1.0, "test")
 
-    with pytest.warns(UserWarning) as record:
+    with pytest.warns(UserWarning, match="'test' was negative"):
         warn_if_negative(-1, "test")
-
-    assert len(record) == 1
-    assert isinstance(record[0].message, Warning)
-    assert record[0].message.args[0] == "'test' was negative"

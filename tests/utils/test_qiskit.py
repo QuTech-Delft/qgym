@@ -67,7 +67,7 @@ class TestGetInteractionGraph:
         qiskit_circuit = QuantumCircuit(3)
         qiskit_circuit.ccx(0, 1, 2)
         circuit = Circuit(qiskit_circuit)
-        with pytest.raises(ValueError, match="no 3\+ qubit operations are supported"):
+        with pytest.raises(ValueError, match="3\+ qubit operations are not supported"):
             circuit.get_interaction_graph()
 
 
@@ -111,7 +111,7 @@ class TestGetInteractionCircuit:
         qiskit_circuit = QuantumCircuit(3)
         qiskit_circuit.ccx(0, 1, 2)
         circuit = Circuit(qiskit_circuit)
-        with pytest.raises(ValueError, match="no 3\+ qubit operations are supported"):
+        with pytest.raises(ValueError, match="3\+ qubit operations are not supported"):
             circuit.get_interaction_circuit()
 
     @pytest.mark.parametrize(

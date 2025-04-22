@@ -47,7 +47,7 @@ def test_init(max_observation_reach: int, quad_graph: nx.Graph) -> None:
     assert state.steps_done == 0
     circuit = np.asarray(state.interaction_circuit)
     assert circuit.shape[1] == 2
-    assert (circuit < state.n_qubits).all()
+    assert (circuit <= state.n_qubits).all()
     assert state.connection_graph is quad_graph
 
 
