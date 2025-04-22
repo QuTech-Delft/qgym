@@ -55,6 +55,7 @@ test = [
     "pytest",
     "stable-baselines3>=2.0.0",
     "scipy>=1.7.3",
+    "importlib-metadata<8.6",
 ]
 dev = [
     "ruff",
