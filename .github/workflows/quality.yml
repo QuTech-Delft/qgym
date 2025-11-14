@@ -5,28 +5,41 @@ on: push
 jobs:
   mypy:
     runs-on: ubuntu-latest
+    env:
+      UV_SYSTEM_PYTHON: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
-      - name: Install requirements
+        with:
+          python-version: '3.12' 
+      - name: Setup UV
         run: |
           pip install --upgrade pip
-          pip install mypy .
+          pip install uv
+      - name: Install requirements
+        run: uv pip install mypy types-decorator types-redis types-tabulate .
       - name: Run mypy
-        run: mypy qgym
+        run: mypy qgym --strict --install-types --non-interactive --show-error-context --show-error-codes
 
-  pylint:
+
+  lint:
     runs-on: ubuntu-latest
+    env:
+      UV_SYSTEM_PYTHON: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v5
-      - name: Install requirements
+        with:
+          python-version: '3.12' 
+      - name: Setup UV
         run: |
-          pip install --upgrade pip
-          pip install pylint .
-      - name: Run pylint
-        run: pylint qgym
+            pip install --upgrade pip
+            pip install uv
+      - name: Install requirements
+        run: uv pip install ruff .
+      - name: Run ruff linter
+        run: ruff check

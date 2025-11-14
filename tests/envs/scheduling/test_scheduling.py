@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
-from numpy.typing import NDArray
 from stable_baselines3.common.env_checker import check_env
 
 import qgym.spaces
@@ -14,6 +12,10 @@ from qgym.envs import Scheduling
 from qgym.envs.scheduling import SchedulingState
 
 if TYPE_CHECKING:
+    from collections.abc import Collection
+
+    from numpy.typing import NDArray
+
     MP_DICT = dict[
         str, int | dict[str, int] | dict[str, Collection[str] | dict[str, list[str]]]
     ]
@@ -62,7 +64,8 @@ def naive_schedule_algorithm(
         action[1] = 0
 
     if not isinstance(scheduling_env._state, SchedulingState):
-        raise TypeError("The state of the scheduling env is not correct.")
+        msg = "the state of the scheduling env is not correct"
+        raise TypeError(msg)
     return scheduling_env._state.circuit_info.schedule
 
 
@@ -143,7 +146,7 @@ def test_legal_actions(diamond_env: Scheduling) -> None:
 
 
 def test_validity(diamond_env: Scheduling) -> None:
-    check_env(diamond_env, warn=True)  # todo: maybe switch this to the gym env checker
+    check_env(diamond_env, warn=True)
 
 
 def test_full_cnot_circuit(diamond_env: Scheduling) -> None:

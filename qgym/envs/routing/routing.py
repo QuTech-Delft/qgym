@@ -1,4 +1,6 @@
-r"""This module contains an environment for training an RL agent on the routing problem
+r"""This module contains the :class:`Routing` environment.
+
+The :class:`Routing` environment is used for training an RL agent on the routing problem
 of OpenQL. The routing problem is aimed at enabling to execute the quantum circuit
 by putting those physical qubits into connection that have an interaction in the quantum
 circuit. This problem arises when there are mismatches between the interaction graph and
@@ -15,14 +17,14 @@ the QPU.
               QUANTUM CIRCUIT                        INTERACTION GRAPH
            ┌───┐               ┌───┐
     |q3>───┤ R ├───┬───────────┤ M ╞══                 q1 ────── q2
-           └───┘   │           └───┘                            ╱
-           ┌───┐ ┌─┴─┐         ┌───┐                           ╱
-    |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        ╱
-           └───┘ └───┘   │     └───┘                         ╱
-           ┌───┐       ┌─┴─┐   ┌───┐                        ╱
-    |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     ╱
-           └───┘   │   └───┘   └───┘                      ╱
-           ┌───┐ ┌─┴─┐         ┌───┐                     ╱
+           └───┘   │           └───┘                            /
+           ┌───┐ ┌─┴─┐         ┌───┐                           /
+    |q2>───┤ R ├─┤ X ├───┬─────┤ M ╞══                        /
+           └───┘ └───┘   │     └───┘                         /
+           ┌───┐       ┌─┴─┐   ┌───┐                        /
+    |q1>───┤ R ├───┬───┤ X ├───┤ M ╞══                     /
+           └───┘   │   └───┘   └───┘                      /
+           ┌───┐ ┌─┴─┐         ┌───┐                     /
     |q0>───┤ R ├─┤ X ├─────────┤ M ╞══                q3 ─────── q4
            └───┘ └───┘         └───┘
 
@@ -75,23 +77,16 @@ Action Space:
     A valid action is an integer in the domain [0, n_connections]. The values 0 to
     n_connections-1 represent an added SWAP gate. The value of n_connections indicates
     that the agents wants to surpass the current gate and move to the next gate.
-    
+
     Illegal actions will not be executed. An action is considered illegal when the agent
     want to surpass a gate that cannot be executed with the current mapping.
-
-
-# TODO: create Examples
-
-
 """
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Union
 
-import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
@@ -109,22 +104,26 @@ from qgym.utils.input_parsing import (
 from qgym.utils.input_validation import check_bool, check_instance, check_int
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping
+
+    import networkx as nx
+
     Gridspecs = (
         list[int] | list[Iterable[int]] | tuple[int, ...] | tuple[Iterable[int], ...]
     )
 
 
-class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
+class Routing(Environment[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], int]):
     """RL environment for the routing problem of OpenQL."""
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(  # noqa: PLR0913
         self,
         connection_graph: nx.Graph | ArrayLike | Gridspecs,
         interaction_generator: InteractionGenerator | None = None,
         max_observation_reach: int = 5,
+        *,
         observe_legal_surpasses: bool = True,
         observe_connection_graph: bool = False,
-        *,
         rewarder: Rewarder | None = None,
         render_mode: str | None = None,
     ) -> None:
@@ -182,9 +181,8 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
                 interaction_generator, "interaction_generator", InteractionGenerator
             )
             if interaction_generator.finite:
-                raise ValueError(
-                    "'interaction_generator' should not be an infinite iterator"
-                )
+                msg = "'interaction_generator' should not be an infinite iterator"
+                raise ValueError(msg)
             interaction_generator = deepcopy(interaction_generator)
         interaction_generator.set_state_attributes(
             max_observation_reach=max_observation_reach,
@@ -203,6 +201,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
             observe_legal_surpasses=observe_legal_surpasses,
             observe_connection_graph=observe_connection_graph,
         )
+        self._old_state = deepcopy(self._state)
         self.observation_space = self._state.create_observation_space()
 
         # Define attributes defined in parent class
@@ -220,7 +219,7 @@ class Routing(Environment[Dict[str, NDArray[np.int_]], int]):
         *,
         seed: int | None = None,
         options: Mapping[str, Any] | None = None,
-    ) -> tuple[dict[str, NDArray[np.int_]], dict[str, Any]]:
+    ) -> tuple[dict[str, NDArray[np.int_] | NDArray[np.int8]], dict[str, Any]]:
         r"""Reset the state and set/create a new interaction circuit.
 
         To be used after an episode is finished.

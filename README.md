@@ -56,3 +56,4 @@ Building qgym is a joint effort.
 ### Contributors and Power Users
 - [Joris Henstra](https://www.linkedin.com/in/jorishenstra/)
 - [Rares Oancea](https://www.linkedin.com/in/rares-adrian-oancea-8a67b0204/)
+

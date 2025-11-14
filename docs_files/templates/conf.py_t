@@ -1,5 +1,10 @@
+import datetime
+import importlib
 import os
 import sys
+from typing import Optional
+
+from numpy.typing import ArrayLike
 
 package_name = "qgym"
 sys.path.insert(
@@ -7,8 +12,7 @@ sys.path.insert(
 )
 # -- Project information -----------------------------------------------------
 
-import datetime
-import importlib
+
 
 year = datetime.date.today().year
 project = package_name
@@ -34,20 +38,14 @@ napoleon_include_special_with_doc = True
 # Make ArrayLike pretty. The `typehints_formatter`` must be a function with an
 # annotation as first argument and a sphinx.config.Config as second argument. Returns
 # the desired string or None for default behaviour.
-try:
-    from typing import Optional
+def typehints_formatter(annotation, _):
+    if annotation == ArrayLike:
+        return ":py:const:`ArrayLike`"
+    if annotation == Optional[ArrayLike]:
+        return ":py:const:`Optional[ArrayLike]`"
+    return None
 
-    from numpy.typing import ArrayLike
 
-    def typehints_formatter(annotation, _):
-        if annotation == ArrayLike:
-            return ":py:const:`ArrayLike`"
-        if annotation == Optional[ArrayLike]:
-            return ":py:const:`Optional[ArrayLike]`"
-        return None
-
-except ImportError:
-    pass
 
 
 # Intersphinx options for linking to external libraries.
@@ -57,6 +55,8 @@ intersphinx_mapping = {
     "networkx": ("https://networkx.org/documentation/stable/", None),
     "gymnasium": ("https://gymnasium.farama.org/", None),
     "pygame": ("https://www.pygame.org/docs/", None),
+    "qiskit": ("https://docs.quantum.ibm.com/api/qiskit", None),
+    "stable_baselines3" : ("https://stable-baselines3.readthedocs.io/en/master/", None),
 }
 
 mathjax3_config = {

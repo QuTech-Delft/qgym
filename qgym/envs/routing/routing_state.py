@@ -20,21 +20,25 @@ Usage:
 from __future__ import annotations
 
 from collections import deque
-from typing import Any, Dict
+from itertools import starmap
+from typing import TYPE_CHECKING, Any, Union
 
 import networkx as nx
 import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.generators.interaction import InteractionGenerator
 from qgym.templates.state import State
 from qgym.utils.input_parsing import has_fidelity
+
+if TYPE_CHECKING:
+    from qgym.generators.interaction import InteractionGenerator
+
 
 # pylint: disable=too-many-instance-attributes
 
 
-class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
+class RoutingState(State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], int]):
     """The :class:`RoutingState` class."""
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -81,11 +85,15 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         """Sets the maximum amount of gates in the interaction_circuit, when a new
         interaction_circuit is generated.
         """
-        self.interaction_circuit = next(self.interaction_generator)
+        self.interaction_circuit = np.pad(
+            next(self.interaction_generator),
+            ((0, max_observation_reach), (0, 0)),
+            constant_values=self.n_qubits,
+        )
         """An array of 2-tuples of integers, where every tuple represents a, not
         specified, gate acting on the two qubits labeled by the integers in the tuples.
         """
-        self.mapping = np.arange(self.n_qubits)
+        self.mapping = np.arange(self.n_qubits, dtype=np.int_)
         """Array of which each index represents a logical qubit and each value
         represents a physical qubit.
         """
@@ -114,7 +122,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         self.swap_gates_inserted: deque[tuple[int, int, int]] = deque()
         """A deque of 3-tuples of integers, to register which gates to insert and where.
         Every tuple (g, q1, q2) represents the insertion of a SWAP-gate acting on
-        logical qubits q1 and q2 before gate g in the interaction_circuit.
+        physical qubits q1 and q2 before gate g in the interaction_circuit.
         """
 
     def reset(
@@ -131,8 +139,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         Args:
             seed: Seed for the random number generator, should only be provided
                 (optionally) on the first reset call, i.e., before any learning is done.
-            circuit: Optional list of tuples of ints that the interaction gates via the
-                qubits the gates are acting on.
+            interaction_circuit: Optional 2D-Array of ints. Each int represents a qubit
+                and a tuple of two ints represents an interaction between these qubits.
             _kwargs: Additional options to configure the reset.
 
         Returns:
@@ -142,15 +150,24 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
             self.seed(seed)
 
         if interaction_circuit is None:
-            self.interaction_circuit = next(self.interaction_generator)
+            self.interaction_circuit = np.pad(
+                next(self.interaction_generator),
+                ((0, self.max_observation_reach), (0, 0)),
+                constant_values=self.n_qubits,
+            )
         else:
             interaction_circuit = np.array(interaction_circuit)
             if interaction_circuit.ndim != 2 or interaction_circuit.shape[1] != 2:
-                raise ValueError(
+                msg = (
                     "'interaction_circuit' should have be an ArrayLike with shape "
                     "(n_interactions,2)."
                 )
-            self.interaction_circuit = interaction_circuit
+                raise ValueError(msg)
+            self.interaction_circuit = np.pad(
+                interaction_circuit,
+                ((0, self.max_observation_reach), (0, 0)),
+                constant_values=self.n_qubits,
+            )
 
         # Reset position, counters
         self.position = 0
@@ -258,7 +275,7 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
 
     def obtain_observation(
         self,
-    ) -> dict[str, NDArray[np.int_]]:
+    ) -> dict[str, NDArray[np.int_] | NDArray[np.int8]]:
         """Observe the current state.
 
         Returns:
@@ -267,13 +284,8 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
         # construct interaction_gates_ahead
         gate_slice = slice(self.position, self.position + self.max_observation_reach)
         interaction_gates_ahead = self.interaction_circuit[gate_slice]
-        n_pad = self.max_observation_reach - len(interaction_gates_ahead)
-        interaction_gates_ahead = np.pad(
-            interaction_gates_ahead,
-            ((0, n_pad), (0, 0)),
-            constant_values=self.n_qubits,
-        )
 
+        observation: dict[str, NDArray[np.int_] | NDArray[np.int8]]
         observation = {
             "interaction_gates_ahead": interaction_gates_ahead.flatten(),
             "mapping": self.mapping,
@@ -283,8 +295,10 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
             observation["connection_graph"] = self.connection_matrix
 
         if self.observe_legal_surpasses:
-            is_legal_surpass = np.array(
-                [self.is_legal_surpass(*gate) for gate in interaction_gates_ahead]
+            is_legal_surpass = np.fromiter(
+                iter=starmap(self.is_legal_surpass, interaction_gates_ahead),
+                count=len(interaction_gates_ahead),
+                dtype=np.int8,
             )
             observation["is_legal_surpass"] = is_legal_surpass
 
@@ -295,7 +309,9 @@ class RoutingState(State[Dict[str, NDArray[np.int_]], int]):
 
         Returs: Boolean value stating whether we are in a final state.
         """
-        return self.position == len(self.interaction_circuit)
+        return (
+            self.position == len(self.interaction_circuit) - self.max_observation_reach
+        )
 
     def _place_swap_gate(
         self,

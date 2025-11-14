@@ -17,6 +17,7 @@ def draw_point(screen: Surface, pos: ArrayLike, color: Color, r: int = 10) -> No
         screen: Screen to add the point to.
         pos: ``ArrayLike`` containing the x and y coordinates of the point. Non integer
             values will be rounded down to the nearest integer.
+        color: Color of the point.
         r: Radius of the point (in pixels). Defaults to 10.
     """
     pos_x, pos_y = np.asarray(pos, dtype=int)
@@ -70,7 +71,7 @@ def write_text(
         color: Color of the text.
     """
     pos_x, pos_y = np.asarray(pos, dtype=int)
-    pygame_text = font.render(text, True, color)
+    pygame_text = font.render(text, antialias=True, color=color)
     text_position = pygame_text.get_rect(center=(pos_x, pos_y))
     screen.blit(pygame_text, text_position)
 

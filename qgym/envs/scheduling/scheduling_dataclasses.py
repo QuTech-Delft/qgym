@@ -1,18 +1,19 @@
-"""This module contains dataclasses used in the :class:`~qgym.envs.Scheduling`
-environment.
-"""
+"""This module contains dataclasses for :class:`~qgym.envs.Scheduling` environments."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
-from numpy.typing import NDArray
 
-from qgym.custom_types import Gate
-from qgym.envs.scheduling.rulebook import CommutationRulebook
-from qgym.generators.circuit import CircuitGenerator
-from qgym.utils.gate_encoder import GateEncoder
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
+    from qgym.custom_types import Gate
+    from qgym.envs.scheduling.rulebook import CommutationRulebook
+    from qgym.generators.circuit import CircuitGenerator
+    from qgym.utils.gate_encoder import GateEncoder
 
 
 @dataclass
@@ -26,9 +27,7 @@ class SchedulingUtils:
 
 @dataclass
 class GateInfo:
-    """
-    Info of a specific gate used in the :class:`~qgym.envs.Scheduling` environment.
-    """
+    """Info of a specific gate in the :class:`~qgym.envs.Scheduling` environment."""
 
     cycle_length: int
     not_in_same_cycle: set[int]
@@ -51,9 +50,7 @@ class GateInfo:
 
 @dataclass
 class CircuitInfo:
-    """Info of the circuit of the current episode of :class:`~qgym.envs.Scheduling`
-    environment.
-    """
+    """Info of a circuit in the :class:`~qgym.envs.Scheduling` environment."""
 
     encoded: list[Gate]
     names: NDArray[np.int_]

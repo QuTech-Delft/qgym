@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any, Iterator, SupportsInt
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Any, SupportsInt
 
-import networkx as nx
 import numpy as np
-from numpy.random import Generator
 from numpy.typing import NDArray
 
 from qgym.utils.input_parsing import parse_seed
 from qgym.utils.input_validation import check_graph_is_valid_topology, check_int
+
+if TYPE_CHECKING:
+    import networkx as nx
+    from numpy.random import Generator
 
 
 class InteractionGenerator(Iterator[NDArray[np.int_]]):
@@ -109,7 +112,7 @@ class NullInteractionGenerator(InteractionGenerator):
     """
 
     def __init__(self) -> None:
-        """Init of the :class:`NullInteractionGenerator`"""
+        """Init of the :class:`NullInteractionGenerator`."""
         self.finite = False
         super().__init__()
 

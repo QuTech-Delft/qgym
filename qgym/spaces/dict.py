@@ -1,5 +1,6 @@
-"""This module contains the ``Dict`` space, i.e., a dictionary with fixed strings as
-keys and spaces as values.
+"""This module contains the ``Dict`` space.
+
+The ``Dict`` space is a dictionary with fixed strings as keys and spaces as values.
 
 Usage:
     >>> from qgym.spaces import Box, Dict
@@ -17,11 +18,14 @@ Usage:
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import gymnasium.spaces
-from numpy.random import Generator
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from numpy.random import Generator
 
 
 class Dict(gymnasium.spaces.Dict):
@@ -38,8 +42,9 @@ class Dict(gymnasium.spaces.Dict):
         rng: Generator | None = None,
         **spaces_kwargs: gymnasium.Space[Any],
     ) -> None:
-        """Initialize a ``Dict`` space, with string valued keys and spaces inheriting
-        from ``gym.Space`` as values.
+        """Initialize a ``Dict`` space.
+
+        The string valued keys and spaces inheriting from ``gym.Space`` as values.
 
         Args:
             spaces: Dictionary containing string valued keys and spaces that are to form
@@ -51,4 +56,4 @@ class Dict(gymnasium.spaces.Dict):
         super().__init__(spaces, seed=None, **spaces_kwargs)
         for space in self.spaces.values():
             # override the default behaviour of the gym space
-            space._np_random = rng  # pylint: disable=protected-access
+            space._np_random = rng  # noqa: SLF001

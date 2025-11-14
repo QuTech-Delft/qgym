@@ -5,11 +5,11 @@ All rewarders should inherit from ``Rewarder``.
 
 from __future__ import annotations
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any
 
 
-class Rewarder:
+class Rewarder(ABC):
     """RL Rewarder, for computing rewards on a state."""
 
     _reward_range: tuple[float, float]
@@ -47,11 +47,9 @@ class Rewarder:
             return False
 
         if hasattr(self, "__slots__"):
+            attr: str
             for attr in self.__slots__:
                 if getattr(self, attr) != getattr(other, attr):
                     return False
 
-        if hasattr(self, "__dict__") and self.__dict__ != other.__dict__:
-            return False
-
-        return True
+        return hasattr(self, "__dict__") and self.__dict__ == other.__dict__

@@ -6,26 +6,28 @@ This :class:`SchedulingState` represents the :class:`~qgym.templates.State` of t
 
 from __future__ import annotations
 
-from typing import Any, Dict, Set, Union, cast
+from typing import TYPE_CHECKING, Any, Union, cast
 
 import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.custom_types import Gate
-from qgym.envs.scheduling.machine_properties import MachineProperties
-from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_dataclasses import (
     CircuitInfo,
     GateInfo,
     SchedulingUtils,
 )
-from qgym.generators.circuit import CircuitGenerator
 from qgym.templates.state import State
+
+if TYPE_CHECKING:
+    from qgym.custom_types import Gate
+    from qgym.envs.scheduling.machine_properties import MachineProperties
+    from qgym.envs.scheduling.rulebook import CommutationRulebook
+    from qgym.generators.circuit import CircuitGenerator
 
 
 class SchedulingState(
-    State[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
+    State[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
 ):
     """The :class:`SchedulingState` class."""
 
@@ -70,9 +72,9 @@ class SchedulingState(
         """
 
         # At the start no gates should be excluded
-        gate_cycle_lengths = cast(Dict[int, int], machine_properties.gates)
+        gate_cycle_lengths = cast("dict[int, int]", machine_properties.gates)
         not_in_same_cycle = cast(
-            Dict[int, Set[int]], machine_properties.not_in_same_cycle
+            "dict[int, set[int]]", machine_properties.not_in_same_cycle
         )
         self.gates = {
             gate_name: GateInfo(
@@ -115,7 +117,7 @@ class SchedulingState(
         self.circuit_info.dependencies = np.zeros_like(self.circuit_info.dependencies)
 
         for gate_idx, blocking_row in enumerate(self.circuit_info.blocking_matrix):
-            blocking_gates = blocking_row[gate_idx:].nonzero()[0]
+            blocking_gates: NDArray[np.int_] = blocking_row[gate_idx:].nonzero()[0]
             for depth in range(
                 min(self.circuit_info.dependencies.shape[0], blocking_gates.shape[0])
             ):
@@ -198,14 +200,13 @@ class SchedulingState(
             np.full(dependency_depth * max_gates, max_gates), rng=self.rng
         )
 
-        observation_space = qgym.spaces.Dict(
+        return qgym.spaces.Dict(
             rng=self.rng,
             legal_actions=legal_actions_space,
             gate_names=gate_names_space,
             acts_on=acts_on_space,
             dependencies=dependencies_space,
         )
-        return observation_space
 
     def obtain_observation(
         self,

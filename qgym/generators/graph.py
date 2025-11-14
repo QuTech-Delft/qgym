@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any, Iterator, SupportsFloat, SupportsInt
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Any, SupportsFloat, SupportsInt
 
 import networkx as nx
-from numpy.random import Generator
 
 from qgym.utils.input_parsing import parse_seed
 from qgym.utils.input_validation import check_graph_is_valid_topology, check_real
+
+if TYPE_CHECKING:
+    from numpy.random import Generator
 
 
 class GraphGenerator(Iterator[nx.Graph]):
@@ -115,7 +118,7 @@ class NullGraphGenerator(GraphGenerator):
     """
 
     def __init__(self) -> None:
-        """Init of the :class:`NullGraphGenerator`"""
+        """Init of the :class:`NullGraphGenerator`."""
         self.finite = False
 
     def __next__(self) -> nx.Graph:

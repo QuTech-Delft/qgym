@@ -13,13 +13,15 @@ from qgym.generators.interaction import (
     BasicInteractionGenerator,
     NullInteractionGenerator,
 )
+from qgym.generators.qiskit_circuit import MaxCutQAOAGenerator
 
 __all__ = [
     "BasicCircuitGenerator",
-    "NullCircuitGenerator",
-    "WorkshopCircuitGenerator",
     "BasicGraphGenerator",
-    "NullGraphGenerator",
     "BasicInteractionGenerator",
+    "MaxCutQAOAGenerator",
+    "NullCircuitGenerator",
+    "NullGraphGenerator",
     "NullInteractionGenerator",
+    "WorkshopCircuitGenerator",
 ]

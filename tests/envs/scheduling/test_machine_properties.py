@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Iterable
 from typing import TYPE_CHECKING
 
 import pytest
@@ -8,6 +7,8 @@ import pytest
 from qgym.envs.scheduling import MachineProperties
 
 if TYPE_CHECKING:
+    from collections.abc import Collection, Iterable
+
     MP_DICT = dict[
         str, int | dict[str, int] | dict[str, Collection[str] | dict[str, list[str]]]
     ]
@@ -76,16 +77,15 @@ def test_add_gates(empty_mp: MachineProperties) -> None:
     assert empty_mp.gates == {"x": 1, "y": 2, "z": 3}
     assert empty_mp.n_gates == 3
 
-    with pytest.warns(UserWarning) as record:
+    msg = "Gate 'x' was already given. Overwriting it with the new value."
+    with pytest.warns(UserWarning, match=msg):
         empty_mp.add_gates({"x": 4})
-        assert empty_mp.gates == {"x": 4, "y": 2, "z": 3}
-        assert empty_mp.n_gates == 3
-
-    assert len(record) == 1
+    assert empty_mp.gates == {"x": 4, "y": 2, "z": 3}
+    assert empty_mp.n_gates == 3
 
 
 @pytest.mark.parametrize(
-    "known_gates,unknown_gates",
+    ("known_gates", "unknown_gates"),
     [
         (["x", "y"], ["z"]),
         (("x", "y"), ("z",)),
@@ -99,12 +99,12 @@ def test_add_same_start(
 ) -> None:
     mp_with_gates.add_same_start(known_gates)
     assert mp_with_gates.same_start == {"x", "y"}
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown gate"):
         mp_with_gates.add_same_start(unknown_gates)
 
 
 @pytest.mark.parametrize(
-    "known_gates,unknown_gates",
+    ("known_gates", "unknown_gates"),
     [
         ([("x", "y")], [("x", "z")]),
         ((("x", "y"),), (("x", "z"),)),
@@ -118,7 +118,7 @@ def test_add_not_in_same_cycle(
 ) -> None:
     mp_with_gates.add_not_in_same_cycle(known_gates)
     assert mp_with_gates.not_in_same_cycle == {"x": {"y"}, "y": {"x"}}
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unknown gate"):
         mp_with_gates.add_not_in_same_cycle(unknown_gates)
 
 

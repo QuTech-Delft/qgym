@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator
 from copy import deepcopy
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import networkx as nx
 import numpy as np
 import pytest
-from numpy.typing import ArrayLike, NDArray
 
 from qgym.envs.routing import (
     BasicRewarder,
@@ -17,6 +15,11 @@ from qgym.envs.routing import (
 )
 from qgym.generators.interaction import NullInteractionGenerator
 from qgym.templates.rewarder import Rewarder
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
+    from numpy.typing import ArrayLike
 
 
 def _episode_generator(
@@ -45,7 +48,7 @@ def _episode_generator(
             action = new_state.n_connections
         else:
             physical_qubit1 = new_state.mapping[next_gate[0]]
-            if physical_qubit1 in (0, 1):
+            if physical_qubit1 in {0, 1}:
                 action = new_state.edges.index((2, 3))
             else:
                 action = new_state.edges.index((0, 1))
@@ -64,7 +67,7 @@ def _episode_generator(
     ),
 )
 def rewarder_fixture(request: pytest.FixtureRequest) -> Rewarder:
-    return cast(Rewarder, request.param)
+    return cast("Rewarder", request.param)
 
 
 def test_illegal_actions(rewarder: Rewarder) -> None:
@@ -81,7 +84,7 @@ def test_inheritance(rewarder: Rewarder) -> None:
 
 
 @pytest.mark.parametrize(
-    "circuit,rewards",
+    ("circuit", "rewards"),
     [
         ([(0, 1), (1, 2), (2, 3), (3, 0)], [3, 6, 9, 12]),
         ([(0, 1), (0, 2), (1, 3)], [3, -7, -4, -1]),
@@ -101,7 +104,7 @@ def test_basic_rewarder(circuit: ArrayLike, rewards: Iterable[float]) -> None:
 
 
 @pytest.mark.parametrize(
-    "circuit,rewards",
+    ("circuit", "rewards"),
     [
         ([(0, 1), (1, 2), (2, 3), (3, 0)], [0, 0, 0, 0]),
         ([(0, 1), (0, 2), (1, 3)], [0, 0, 0, -10]),
@@ -119,7 +122,7 @@ def test_episode_rewarder(circuit: ArrayLike, rewards: Iterable[float]) -> None:
 
 
 @pytest.mark.parametrize(
-    "circuit,rewards",
+    ("circuit", "rewards"),
     [
         ([(0, 1), (1, 2), (2, 3), (3, 0)], [3, 3, 3, 3]),
         ([(0, 1), (0, 2), (1, 3)], [3, -8, 3, 3]),
@@ -148,5 +151,7 @@ def test_swap_quality_rewarder_error() -> None:
 
     old_state, action, new_state = next(episode_generator)
     old_state.observe_legal_surpasses = False
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="observe_legal_surpasses needs to be True to compute"
+    ):
         rewarder.compute_reward(old_state=old_state, action=action, new_state=new_state)

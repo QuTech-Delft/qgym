@@ -1,4 +1,6 @@
-r"""This module contains an environment for training an RL agent on the quantum
+r"""This module contains the :class:`Scheduling` environment.
+
+The :class:`Scheduling` environment is used for training an RL agent on the quantum
 operation scheduling problem of OpenQL. The quantum operations scheduling problem is
 aimed at finding the shortest possible schedules of operations defined by a **quantum
 circuit**, whilst taking **hardware constraints** and **commutation rules** into
@@ -158,13 +160,12 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any, Dict, Union, cast
+from typing import TYPE_CHECKING, Any, Union
 
 import numpy as np
 from numpy.typing import NDArray
 
 import qgym.spaces
-from qgym.custom_types import Gate
 from qgym.envs.scheduling.machine_properties import MachineProperties
 from qgym.envs.scheduling.rulebook import CommutationRulebook
 from qgym.envs.scheduling.scheduling_rewarders import BasicRewarder
@@ -175,13 +176,18 @@ from qgym.templates import Environment, Rewarder
 from qgym.utils.input_parsing import parse_rewarder, parse_visualiser
 from qgym.utils.input_validation import check_instance, check_int, check_string
 
+if TYPE_CHECKING:
+    from qgym.custom_types import Gate
+
 
 class Scheduling(
-    Environment[Dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
+    Environment[dict[str, Union[NDArray[np.int_], NDArray[np.int8]]], NDArray[np.int_]]
 ):
     """RL environment for the scheduling problem."""
 
-    def __init__(  # pylint: disable=too-many-arguments
+    _state: SchedulingState
+
+    def __init__(  # noqa: PLR0913
         self,
         machine_properties: Mapping[str, Any] | str | MachineProperties,
         *,
@@ -192,8 +198,7 @@ class Scheduling(
         rewarder: Rewarder | None = None,
         render_mode: str | None = None,
     ) -> None:
-        """Initialize the action space, observation space, and initial states for the
-        scheduling environment.
+        """Initialize the action space, observation space, and initial states.
 
         Args:
             machine_properties: A :class:`~qgym.envs.scheduling.MachineProperties`
@@ -228,7 +233,8 @@ class Scheduling(
         else:
             check_instance(circuit_generator, "circuit_generator", CircuitGenerator)
             if circuit_generator.finite:
-                raise ValueError("'circuit_generator' should be an infinite iterator")
+                msg = "'circuit_generator' should be an infinite iterator"
+                raise ValueError(msg)
             circuit_generator = deepcopy(circuit_generator)
         circuit_generator.set_state_attributes(
             machine_properties=machine_properties,
@@ -293,24 +299,22 @@ class Scheduling(
             Human or encoded quantum circuit.
         """
         mode = check_string(mode, "mode", lower=True)
-        state = cast(SchedulingState, self._state)
-        encoded_circuit = state.circuit_info.encoded
+        encoded_circuit = self._state.circuit_info.encoded
         if mode == "encoded":
             return deepcopy(encoded_circuit)
 
         if mode == "human":
-            gate_encoder = state.utils.gate_encoder
+            gate_encoder = self._state.utils.gate_encoder
             return gate_encoder.decode_gates(encoded_circuit)
 
-        raise ValueError(f"mode must be 'human' or 'encoded', but was {mode}")
+        msg = f"mode must be 'human' or 'encoded', but was {mode}"
+        raise ValueError(msg)
 
     @staticmethod
     def _parse_machine_properties(
-        machine_properties: Mapping[str, Any] | str | MachineProperties
+        machine_properties: Mapping[str, Any] | str | MachineProperties,
     ) -> MachineProperties:
-        """
-        Parse the machine_properties given by the user and return a
-        ``MachineProperties`` object.
+        """Parse the machine_properties given by the user.
 
         Args:
             machine_properties: A ``MachineProperties`` object, a ``Mapping`` of machine

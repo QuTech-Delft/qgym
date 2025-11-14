@@ -1,28 +1,34 @@
-"""This module contains a class used for rendering a
+"""This module contains the :class:`RoutingVisualiser` class.
+
+:class:`RoutingVisualiser` is used for rendering a
 :class:`~qgym.envs.Routing` environment.
 """
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import networkx as nx
 import numpy as np
 import pygame
 from networkx import Graph
-from numpy.typing import NDArray
 
-from qgym.envs.routing.routing_state import RoutingState
 from qgym.templates.visualiser import RenderData, Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, GRAY, RED, WHITE
-from qgym.utils.visualisation.typing import Font, Surface
 from qgym.utils.visualisation.wrappers import (
     draw_point,
     draw_wide_line,
     shade_rect,
     write_text,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from numpy.typing import NDArray
+
+    from qgym.envs.routing.routing_state import RoutingState
+    from qgym.utils.visualisation.typing import Font, Surface
 
 
 class RoutingVisualiser(Visualiser):
@@ -89,7 +95,7 @@ class RoutingVisualiser(Visualiser):
         subscreen_graph = screen.subsurface(rect_graph)
         return subscreen_circuit, subscreen_graph
 
-    def render(self, state: RoutingState) -> None | NDArray[np.int_]:
+    def render(self, state: RoutingState) -> NDArray[np.int_] | None:
         """Render the current state using ``pygame``.
 
         Args:
@@ -289,8 +295,8 @@ class RoutingVisualiser(Visualiser):
                 color=self.colors["mapping"],
             )
 
+    @staticmethod
     def _update_mapping(
-        self,
         *,
         mapping: NDArray[np.int_],
         swap_gates_inserted: Sequence[tuple[int, int, int]],
@@ -348,7 +354,9 @@ class RoutingVisualiser(Visualiser):
             text: Text of the header.
             screen: Subscreen to draw the header of.
         """
-        pygame_text = self.font["header"].render(text, True, self.colors["text"])
+        pygame_text = self.font["header"].render(
+            text, antialias=True, color=self.colors["text"]
+        )
         offset = screen.get_offset()
         rect = screen.get_rect(topleft=offset)
         text_center = (rect.center[0], rect.y - self.header_spacing / 2)
@@ -362,7 +370,7 @@ class RoutingVisualiser(Visualiser):
 
         Args:
             graph: Graph of which the node positions must be determined.
-            screen: the subscreen on which the graph will be drawn.
+            padding: Amount of padding to use.
 
         Returns:
             Dictionary where the keys are the names of the nodes, and the values are the
@@ -380,7 +388,8 @@ class RoutingVisualiser(Visualiser):
 
         return node_positions
 
-    def _setup_fonts(self) -> dict[str, Font]:
+    @staticmethod
+    def _setup_fonts() -> dict[str, Font]:
         """Setup the fonts for rendering with pygame."""
         pygame.font.init()
         return {

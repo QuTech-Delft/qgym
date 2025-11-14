@@ -1,21 +1,26 @@
-"""This module contains a class used for rendering the :class:`~qgym.envs.Scheduling`
+"""This module contains the the :class:`SchedulingVisualiser` class.
+
+:class:`SchedulingVisualiser` is used for rendering the :class:`~qgym.envs.Scheduling`
 environment.
 """
 
 from __future__ import annotations
 
-from typing import Dict, cast
+from typing import TYPE_CHECKING, cast
 
-import numpy as np
 import pygame
-from numpy.typing import NDArray
 
-from qgym.custom_types import Gate
-from qgym.envs.scheduling.scheduling_state import SchedulingState
 from qgym.templates.visualiser import RenderData, Visualiser
 from qgym.utils.visualisation.colors import BLACK, BLUE, DARK_BLUE, WHITE
-from qgym.utils.visualisation.typing import Font
 from qgym.utils.visualisation.wrappers import write_text
+
+if TYPE_CHECKING:
+    import numpy as np
+    from numpy.typing import NDArray
+
+    from qgym.custom_types import Gate
+    from qgym.envs.scheduling.scheduling_state import SchedulingState
+    from qgym.utils.visualisation.typing import Font
 
 
 class SchedulingVisualiser(Visualiser):
@@ -62,7 +67,7 @@ class SchedulingVisualiser(Visualiser):
         # define attributes that are set later
         self._cycle_width = 0.0
 
-    def render(self, state: SchedulingState) -> None | NDArray[np.int_]:
+    def render(self, state: SchedulingState) -> NDArray[np.int_] | None:
         """Render the current state using pygame.
 
         Args:
@@ -87,7 +92,7 @@ class SchedulingVisualiser(Visualiser):
             if scheduled_cycle != -1:
                 gate = state.circuit_info.encoded[gate_idx]
                 gate_cycle_length = cast(
-                    Dict[int, int], state.machine_properties.gates
+                    "dict[int, int]", state.machine_properties.gates
                 )[gate.name]
                 gate_name = state.utils.gate_encoder.decode_gates(gate.name)
                 self._draw_scheduled_gate(
@@ -163,7 +168,8 @@ class SchedulingVisualiser(Visualiser):
             color=self.colors["gate_text"],
         )
 
-    def _start_font(self) -> dict[str, Font]:
+    @staticmethod
+    def _start_font() -> dict[str, Font]:
         """Start the ``pygame`` fonts for the gate and axis font.
 
         Returns:

@@ -1,5 +1,6 @@
-"""This module contains the ``MultiDiscrete`` space, i.e., multiple discrete intervals.
-A sample returns one item from each interval.
+"""This module contains the ``MultiDiscrete`` space.
+
+A multi-discrete space is a collection of multiple discrete intervals of given sizes.
 
 Usage:
     >>> from qgym.spaces import MultiDiscrete
@@ -10,12 +11,14 @@ Usage:
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import gymnasium.spaces
 import numpy as np
-from numpy.random import Generator
-from numpy.typing import ArrayLike
+
+if TYPE_CHECKING:
+    from numpy.random import Generator
+    from numpy.typing import ArrayLike
 
 
 class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
@@ -28,7 +31,9 @@ class MultiDiscrete(gymnasium.spaces.MultiDiscrete):
         *,
         rng: Generator | None = None,
     ) -> None:
-        """Initialize a multi-discrete space, i.e., multiple discrete intervals of given
+        """Initialize a multi-discrete space.
+
+        A multi-discrete space is a collection of multiple discrete intervals of given
         sizes.
 
         Args:
